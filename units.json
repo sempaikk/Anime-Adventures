@@ -1,86 +1,86 @@
 [
   {
     "name": "Noruto",
-    "aliases": ["noruto", "naruto", "noruto (base)"],
+    "aliases": ["noruto", "naruto"],
     "rarity": "Rare",
     "type": "Ground",
-    "hint": "Custo inicial baixo (250¥). Ataque rápido. No upgrade final ganha Rasengan."
+    "hint": "Custo inicial baixo. Ataque rápido. No final ganha Rasengan."
   },
   {
     "name": "Vegita",
-    "aliases": ["vegita", "vegeta", "vegita (base)"],
+    "aliases": ["vegita", "vegeta"],
     "rarity": "Rare",
     "type": "Ground",
     "hint": "Custo 400¥. No upgrade 4 libera Galick Gun."
   },
   {
     "name": "Sosuke",
-    "aliases": ["sosuke", "aizen", "sosuke (base)"],
+    "aliases": ["sosuke", "aizen"],
     "rarity": "Rare",
     "type": "Ground",
     "hint": "Custo 350¥. No upgrade 4 libera Dragon Release."
   },
   {
-    "name": "Bro",
-    "aliases": ["bro", "brulo", "super bro"],
-    "rarity": "Mythical",
-    "type": "Ground",
-    "hint": "Só por summon. AoE em círculo. No upgrade 4 ganha Eraser Beam e o ataque vira linha. Evolui com 1x Bro + Restraining Necklace."
-  },
-  {
-    "name": "Golden Freezo",
-    "aliases": ["golden freezo", "freezo", "frieza", "golden frieza"],
-    "rarity": "Mythical",
+    "name": "Freezo",
+    "aliases": ["freezo", "frieza", "freeza"],
+    "rarity": "Epic",
     "type": "Hill",
-    "hint": "Versão dourada de Freezo. Nome e arquivo mudaram na wiki. Torre de colina."
+    "hint": "Torre de colina. Uma das unidades clássicas do lançamento."
   },
   {
-    "name": "Leafy",
-    "aliases": ["leafy", "leafy (sylph)"],
-    "rarity": "Mythical",
-    "type": "Support",
-    "hint": "Unidade de suporte forte. Muito usada no meta antigo."
-  },
-  {
-    "name": "Luffo",
-    "aliases": ["luffo", "luffy", "luffo (gear iv)"],
-    "rarity": "Mythical",
+    "name": "Broly",
+    "aliases": ["broly"],
+    "rarity": "Mythic",
     "type": "Ground",
-    "hint": "Baseado no Gear 4. Unidade ofensiva de chão."
-  },
-  {
-    "name": "Usoap",
-    "aliases": ["usoap", "usopp", "usoap (god)"],
-    "rarity": "Mythical",
-    "type": "Hill",
-    "hint": "Versão God Usopp. Bom para early game e farm."
-  },
-  {
-    "name": "Stain",
-    "aliases": ["stain", "stain (hero slayer)"],
-    "rarity": "Mythical",
-    "type": "Ground",
-    "hint": "Hero Killer. Forte em Ground DPS."
-  },
-  {
-    "name": "Diavolo",
-    "aliases": ["diavolo", "diavoro"],
-    "rarity": "Mythical",
-    "type": "Ground",
-    "hint": "Single Target com habilidade de Time Erase."
-  },
-  {
-    "name": "Future Gohan",
-    "aliases": ["future gohan", "gohan futuro"],
-    "rarity": "Mythical",
-    "type": "Ground",
-    "hint": "Balanced Range e Damage com AoE."
+    "hint": "AoE forte. Uma das unidades Mythic mais conhecidas do início do jogo."
   },
   {
     "name": "Levi",
     "aliases": ["levi", "levi ackerman"],
-    "rarity": "Mythical",
+    "rarity": "Mythic",
     "type": "Ground",
     "hint": "Ataque rápido, range grande e pequeno AoE."
+  },
+  {
+    "name": "All Might",
+    "aliases": ["all might", "allmight"],
+    "rarity": "Mythic",
+    "type": "Ground",
+    "hint": "AoE clássico do lançamento."
+  },
+  {
+    "name": "Diavolo",
+    "aliases": ["diavolo", "diavoro"],
+    "rarity": "Mythic",
+    "type": "Ground",
+    "hint": "Single Target com habilidade de Time Erase."
+  },
+  {
+    "name": "Madara",
+    "aliases": ["madara", "madara uchiha"],
+    "rarity": "Mythic",
+    "type": "Ground",
+    "hint": "Range grande e AoE forte."
+  },
+  {
+    "name": "Armin",
+    "aliases": ["armin"],
+    "rarity": "Mythic",
+    "type": "Ground",
+    "hint": "Super large range, dano baixo."
+  },
+  {
+    "name": "Dio",
+    "aliases": ["dio", "dio brando"],
+    "rarity": "Legendary",
+    "type": "Ground",
+    "hint": "Usa The World. Muito forte no início do jogo."
+  },
+  {
+    "name": "Bulma",
+    "aliases": ["bulma"],
+    "rarity": "Legendary",
+    "type": "Support",
+    "hint": "Uma das melhores unidades de farm/support do lançamento."
   }
 ]
