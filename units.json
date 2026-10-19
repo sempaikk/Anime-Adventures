@@ -1,86 +1,177 @@
 [
   {
-    "name": "Noruto",
-    "aliases": ["noruto", "naruto", "naruto uzumaki"],
+    "name": "Fox Ninja",
+    "anime_name": "Naruto Uzumaki",
+    "aliases": [
+      "Naruto",
+      "Noruto",
+      "Fox Ninja"
+    ],
     "rarity": "Rare",
     "type": "Ground",
-    "hint": "Custo inicial baixo. Ataque rápido. No final do upgrade libera Rasengan."
+    "hint": "Ninja de Konoha conhecido pelo chakra da Raposa de Nove Caudas e pelo sonho de se tornar Hokage."
   },
   {
-    "name": "Vegita",
-    "aliases": ["vegita", "vegeta", "prince vegeta"],
+    "name": "Vego",
+    "anime_name": "Vegeta",
+    "aliases": [
+      "Vegeta",
+      "Vegita",
+      "Vego"
+    ],
     "rarity": "Rare",
     "type": "Ground",
-    "hint": "Custo 400¥. No upgrade 4 libera Galick Gun."
+    "hint": "Príncipe dos Saiyajins, orgulhoso e rival de Goku; uma de suas técnicas conhecidas é o Galick Gun."
   },
   {
-    "name": "Sosuke",
-    "aliases": ["sosuke", "aizen", "sosuke aizen", "aizen sosuke"],
+    "name": "Shinobi",
+    "anime_name": "Sasuke Uchiha",
+    "aliases": [
+      "Sasuke",
+      "Sasuke Uchiha",
+      "Sosuke",
+      "Shinobi"
+    ],
     "rarity": "Rare",
     "type": "Ground",
-    "hint": "Custo 350¥. No upgrade 4 libera Dragon Release."
+    "hint": "Ninja do clã Uchiha, associado ao Sharingan e à técnica Chidori."
   },
   {
-    "name": "Freezo",
-    "aliases": ["freezo", "frieza", "freeza", "lord frieza"],
+    "name": "Tyrant (Final)",
+    "anime_name": "Frieza",
+    "aliases": [
+      "Freezo",
+      "Freezo (Final)",
+      "Tyrant (Final)",
+      "Frieza"
+    ],
     "rarity": "Epic",
     "type": "Hill",
-    "hint": "Torre de colina clássica do lançamento."
+    "hint": "Vilão de Dragon Ball cuja forma final aparece como chefe em Planet Greenie."
   },
   {
-    "name": "Broly",
-    "aliases": ["broly", "legendary super saiyan"],
+    "name": "Bro",
+    "anime_name": "Broly",
+    "aliases": [
+      "Broly",
+      "Brulo",
+      "Legendary Brulo",
+      "Bro",
+      "Super Bro"
+    ],
     "rarity": "Mythic",
     "type": "Ground",
-    "hint": "AoE forte. Uma das Mythic mais conhecidas do início do jogo."
+    "hint": "Saiyajin lendário conhecido por seu poder extraordinário, que aumenta durante a luta."
   },
   {
-    "name": "Levi",
-    "aliases": ["levi", "levi ackerman", "captain levi"],
+    "name": "Lex",
+    "anime_name": "Levi Ackerman",
+    "aliases": [
+      "Levi",
+      "Levi Ackerman",
+      "Levy",
+      "Levy Ackman",
+      "Lex",
+      "Lex Akoman"
+    ],
     "rarity": "Mythic",
     "type": "Ground",
-    "hint": "Ataque rápido, range grande e pequeno AoE."
+    "hint": "Capitão da Divisão de Reconhecimento de Attack on Titan, famoso por sua habilidade de combate."
   },
   {
-    "name": "All Might",
-    "aliases": ["all might", "allmight", "yagi toshinori"],
+    "name": "Prime Force",
+    "anime_name": "All Might",
+    "aliases": [
+      "All Might",
+      "Toshinori Yagi",
+      "All Force",
+      "All Force (Symbol of Peace)",
+      "Prime Force",
+      "Prime Force (Peace)"
+    ],
     "rarity": "Mythic",
     "type": "Ground",
-    "hint": "AoE clássico do lançamento."
+    "hint": "Herói conhecido como Símbolo da Paz, ligado ao poder One For All."
   },
   {
-    "name": "Diavolo",
-    "aliases": ["diavolo", "diavoro", "vinegar doppio"],
+    "name": "Devil Boss",
+    "anime_name": "Diavolo",
+    "aliases": [
+      "Diavolo",
+      "Diavoro",
+      "Devil Boss"
+    ],
     "rarity": "Mythic",
     "type": "Ground",
-    "hint": "Single Target com habilidade de Time Erase."
+    "hint": "Antagonista de JoJo's Bizarre Adventure: Golden Wind; seu Stand é King Crimson."
   },
   {
-    "name": "Madara",
-    "aliases": ["madara", "madara uchiha"],
+    "name": "Mazara",
+    "anime_name": "Madara Uchiha",
+    "aliases": [
+      "Madara",
+      "Madara Uchiha",
+      "Marada",
+      "Marada (Founder)",
+      "Mazara",
+      "Mazara (Founder)"
+    ],
     "rarity": "Mythic",
     "type": "Ground",
-    "hint": "Range grande e AoE forte."
+    "hint": "Um dos ninjas mais temidos de Naruto, ligado ao clã Uchiha e ao Plano Olho da Lua."
   },
   {
-    "name": "Armin",
-    "aliases": ["armin", "armin arlert"],
+    "name": "Arlem",
+    "anime_name": "Armin Arlert",
+    "aliases": [
+      "Armin",
+      "Armin Arlert",
+      "Armein",
+      "Arlem"
+    ],
     "rarity": "Mythic",
     "type": "Ground",
-    "hint": "Super large range, dano baixo."
+    "hint": "Estrategista de Attack on Titan que herda o poder do Titã Colossal."
   },
   {
-    "name": "Dio",
-    "aliases": ["dio", "dio brando", "dino"],
+    "name": "Bulby",
+    "anime_name": "Bulma",
+    "aliases": [
+      "Bulma",
+      "Bulma Briefs",
+      "Bulby"
+    ],
     "rarity": "Legendary",
-    "type": "Ground",
-    "hint": "Usa The World. Muito forte no início do jogo."
+    "type": "Ground / Farm",
+    "hint": "Personagem de Dragon Ball conhecida por sua inteligência, invenções e função econômica no jogo."
   },
   {
-    "name": "Bulma",
-    "aliases": ["bulma", "bulbi", "bulby", "bumi", "bulma briefs"],
-    "rarity": "Legendary",
-    "type": "Support",
-    "hint": "Uma das melhores unidades de farm/support do lançamento."
+    "name": "C.E.O.",
+    "anime_name": "Robert E. O. Speedwagon",
+    "aliases": [
+      "C.E.O",
+      "C.E.O.",
+      "Speedwagon",
+      "Robert E.O. Speedwagon",
+      "Robert E. O. Speedwagon"
+    ],
+    "rarity": "Epic",
+    "type": "Ground / Farm",
+    "hint": "Unidade econômica que gera dinheiro por onda; é inspirada em um personagem de JoJo's Bizarre Adventure."
+  },
+  {
+    "name": "Donut",
+    "anime_name": "Kyojuro Rengoku",
+    "aliases": [
+      "Rengoku",
+      "Kyojuro Rengoku",
+      "Renkoko",
+      "Renkoko (ABLAZE)",
+      "Donut",
+      "Donut (ABLAZE)"
+    ],
+    "rarity": "Mythic",
+    "type": "Ground",
+    "hint": "Hashira das Chamas de Demon Slayer, conhecido por sua Respiração das Chamas."
   }
 ]
