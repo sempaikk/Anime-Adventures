@@ -1,56 +1,56 @@
 [
   {
     "name": "Noruto",
-    "aliases": ["noruto", "naruto"],
+    "aliases": ["noruto", "naruto", "naruto uzumaki"],
     "rarity": "Rare",
     "type": "Ground",
-    "hint": "Custo inicial baixo. Ataque rápido. No final ganha Rasengan."
+    "hint": "Custo inicial baixo. Ataque rápido. No final do upgrade libera Rasengan."
   },
   {
     "name": "Vegita",
-    "aliases": ["vegita", "vegeta"],
+    "aliases": ["vegita", "vegeta", "prince vegeta"],
     "rarity": "Rare",
     "type": "Ground",
     "hint": "Custo 400¥. No upgrade 4 libera Galick Gun."
   },
   {
     "name": "Sosuke",
-    "aliases": ["sosuke", "aizen"],
+    "aliases": ["sosuke", "aizen", "sosuke aizen", "aizen sosuke"],
     "rarity": "Rare",
     "type": "Ground",
     "hint": "Custo 350¥. No upgrade 4 libera Dragon Release."
   },
   {
     "name": "Freezo",
-    "aliases": ["freezo", "frieza", "freeza"],
+    "aliases": ["freezo", "frieza", "freeza", "lord frieza"],
     "rarity": "Epic",
     "type": "Hill",
-    "hint": "Torre de colina. Uma das unidades clássicas do lançamento."
+    "hint": "Torre de colina clássica do lançamento."
   },
   {
     "name": "Broly",
-    "aliases": ["broly"],
+    "aliases": ["broly", "legendary super saiyan"],
     "rarity": "Mythic",
     "type": "Ground",
-    "hint": "AoE forte. Uma das unidades Mythic mais conhecidas do início do jogo."
+    "hint": "AoE forte. Uma das Mythic mais conhecidas do início do jogo."
   },
   {
     "name": "Levi",
-    "aliases": ["levi", "levi ackerman"],
+    "aliases": ["levi", "levi ackerman", "captain levi"],
     "rarity": "Mythic",
     "type": "Ground",
     "hint": "Ataque rápido, range grande e pequeno AoE."
   },
   {
     "name": "All Might",
-    "aliases": ["all might", "allmight"],
+    "aliases": ["all might", "allmight", "yagi toshinori"],
     "rarity": "Mythic",
     "type": "Ground",
     "hint": "AoE clássico do lançamento."
   },
   {
     "name": "Diavolo",
-    "aliases": ["diavolo", "diavoro"],
+    "aliases": ["diavolo", "diavoro", "vinegar doppio"],
     "rarity": "Mythic",
     "type": "Ground",
     "hint": "Single Target com habilidade de Time Erase."
@@ -64,21 +64,21 @@
   },
   {
     "name": "Armin",
-    "aliases": ["armin"],
+    "aliases": ["armin", "armin arlert"],
     "rarity": "Mythic",
     "type": "Ground",
     "hint": "Super large range, dano baixo."
   },
   {
     "name": "Dio",
-    "aliases": ["dio", "dio brando"],
+    "aliases": ["dio", "dio brando", "dino"],
     "rarity": "Legendary",
     "type": "Ground",
     "hint": "Usa The World. Muito forte no início do jogo."
   },
   {
     "name": "Bulma",
-    "aliases": ["bulma"],
+    "aliases": ["bulma", "bulbi", "bulby", "bumi", "bulma briefs"],
     "rarity": "Legendary",
     "type": "Support",
     "hint": "Uma das melhores unidades de farm/support do lançamento."

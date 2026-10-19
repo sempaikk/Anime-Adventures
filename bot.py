@@ -7,12 +7,13 @@ import random
 import asyncio
 from datetime import datetime, timezone
 
-# ================== CONFIG ==================
 TOKEN = os.getenv("DISCORD_TOKEN")
 UNITS_FILE = "units.json"
 SCORES_FILE = "scores.json"
-QUESTION_TIME = 40          # segundos para responder
-BETWEEN_QUESTIONS = 10      # segundos entre perguntas
+
+QUESTION_TIME = 45
+WARNING_TIME = 15          # avisa quando faltar 15s
+BETWEEN_QUESTIONS = 8
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -20,7 +21,6 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 tree = bot.tree
 
-# ================== DADOS ==================
 def load_units():
     with open(UNITS_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -39,16 +39,15 @@ def save_scores(scores):
         json.dump(scores, f, indent=2, ensure_ascii=False)
 
 UNITS = load_units()
-active_sessions = {}  # channel_id: session
+active_sessions = {}
 
-# ================== HELPERS ==================
 def normalize(text: str) -> str:
-    return text.lower().strip().replace("-", " ").replace("_", " ")
+    return text.lower().strip().replace("-", " ").replace("_", " ").replace("  ", " ")
 
 def check_answer(user_answer: str, unit: dict) -> bool:
     user_answer = normalize(user_answer)
-    correct_names = [normalize(unit["name"])] + [normalize(a) for a in unit.get("aliases", [])]
-    return user_answer in correct_names
+    possible = [normalize(unit["name"])] + [normalize(a) for a in unit.get("aliases", [])]
+    return user_answer in possible
 
 def add_point(user_id: int, username: str):
     scores = load_scores()
@@ -60,7 +59,6 @@ def add_point(user_id: int, username: str):
     scores[uid]["name"] = username
     save_scores(scores)
 
-# ================== SESSÃO ==================
 class QuizSession:
     def __init__(self, channel: discord.TextChannel, host: discord.Member):
         self.channel = channel
@@ -69,15 +67,24 @@ class QuizSession:
         self.current_unit = None
         self.question_number = 0
         self.answered = False
-        self.had_participation = False   # se alguém mandou qualquer mensagem
-        self.message = None
+        self.had_participation = False
+        self.question_message = None
+        self.warning_sent = False
 
     async def start(self):
-        await self.channel.send(
-            f"**Quiz Anime Adventures iniciado por {self.host.mention}!**\n"
-            f"Digite o nome da unidade. O primeiro que acertar ganha ponto.\n"
-            f"Tempo por pergunta: **{QUESTION_TIME}s**"
+        embed = discord.Embed(
+            title="Anime Adventures Quiz",
+            description=(
+                f"Iniciado por {self.host.mention}\n\n"
+                f"• Digite o **nome da unidade** no chat\n"
+                f"• O **primeiro** que acertar ganha ponto\n"
+                f"• Tempo por pergunta: **{QUESTION_TIME} segundos**\n\n"
+                f"Boa sorte!"
+            ),
+            color=0x9B59B6
         )
+        embed.set_footer(text="Release Units Only")
+        await self.channel.send(embed=embed)
         await asyncio.sleep(2)
         await self.next_question()
 
@@ -88,24 +95,34 @@ class QuizSession:
         self.question_number += 1
         self.answered = False
         self.had_participation = False
+        self.warning_sent = False
         self.current_unit = random.choice(UNITS)
 
         embed = discord.Embed(
             title=f"Pergunta #{self.question_number}",
-            description=(
-                f"**Qual é essa unidade?**\n\n"
-                f"**Raridade:** {self.current_unit['rarity']}\n"
-                f"**Tipo:** {self.current_unit['type']}\n"
-                f"**Dica:** {self.current_unit['hint']}"
-            ),
-            color=discord.Color.purple()
+            color=0x8E44AD
         )
-        embed.set_footer(text=f"Você tem {QUESTION_TIME} segundos • Digite o nome no chat")
+        embed.add_field(name="Raridade", value=f"`{self.current_unit['rarity']}`", inline=True)
+        embed.add_field(name="Tipo", value=f"`{self.current_unit['type']}`", inline=True)
+        embed.add_field(name="\u200b", value="\u200b", inline=True)
+        embed.add_field(
+            name="Dica",
+            value=self.current_unit["hint"],
+            inline=False
+        )
+        embed.set_footer(text=f"Tempo restante: {QUESTION_TIME}s  •  Digite o nome no chat")
+        embed.timestamp = datetime.now(timezone.utc)
 
-        self.message = await self.channel.send(embed=embed)
+        self.question_message = await self.channel.send(embed=embed)
 
+        # Timer com aviso
         try:
-            await asyncio.sleep(QUESTION_TIME)
+            await asyncio.sleep(QUESTION_TIME - WARNING_TIME)
+            if not self.answered and self.running and not self.warning_sent:
+                self.warning_sent = True
+                await self.channel.send(f"⏳ **{WARNING_TIME} segundos** restantes...", delete_after=WARNING_TIME)
+
+            await asyncio.sleep(WARNING_TIME)
             if not self.answered and self.running:
                 await self.finish_question(None)
         except asyncio.CancelledError:
@@ -118,20 +135,28 @@ class QuizSession:
 
         if winner:
             add_point(winner.id, winner.display_name)
-            text = f"**{winner.display_name}** acertou! +1 ponto\nResposta correta: **{self.current_unit['name']}**"
-            color = discord.Color.green()
+            embed = discord.Embed(
+                title="Acertou!",
+                description=f"**{winner.display_name}** acertou primeiro!\n\nResposta correta: **{self.current_unit['name']}**\n+1 ponto",
+                color=0x2ECC71
+            )
         else:
-            text = f"Tempo esgotado!\nResposta correta: **{self.current_unit['name']}**"
-            color = discord.Color.orange()
+            embed = discord.Embed(
+                title="Tempo esgotado",
+                description=f"Ninguém acertou a tempo.\n\nResposta correta: **{self.current_unit['name']}**",
+                color=0xE74C3C
+            )
 
-        embed = discord.Embed(description=text, color=color)
         await self.channel.send(embed=embed)
 
-        # Lógica pedida:
-        # - Se ninguém mandou NENHUMA mensagem → encerra
-        # - Se alguém mandou (mesmo errado) → continua
+        # Lógica de participação
         if not self.had_participation:
-            await self.channel.send("Ninguém participou desta pergunta. Encerrando o quiz.")
+            end_embed = discord.Embed(
+                title="Quiz encerrado",
+                description="Ninguém participou desta pergunta. Encerrando automaticamente.",
+                color=0x95A5A6
+            )
+            await self.channel.send(embed=end_embed)
             self.running = False
             if self.channel.id in active_sessions:
                 del active_sessions[self.channel.id]
@@ -141,25 +166,6 @@ class QuizSession:
         if self.running:
             await self.next_question()
 
-    async def end(self):
-        self.running = False
-        if self.channel.id in active_sessions:
-            del active_sessions[self.channel.id]
-
-        scores = load_scores()
-        top = sorted(scores.items(), key=lambda x: x[1]["points"], reverse=True)[:5]
-
-        description = "**Ranking atual:**\n\n"
-        if top:
-            for i, (uid, data) in enumerate(top, 1):
-                description += f"**{i}.** {data['name']} — {data['points']} pts\n"
-        else:
-            description += "Ninguém pontuou ainda."
-
-        embed = discord.Embed(title="Quiz finalizado", description=description, color=discord.Color.gold())
-        await self.channel.send(embed=embed)
-
-# ================== EVENTOS ==================
 @bot.event
 async def on_ready():
     print(f"Logado como {bot.user} (ID: {bot.user.id})")
@@ -167,7 +173,7 @@ async def on_ready():
         synced = await tree.sync()
         print(f"Comandos sincronizados: {len(synced)}")
     except Exception as e:
-        print("Erro ao sincronizar comandos:", e)
+        print("Erro ao sincronizar:", e)
 
 @bot.event
 async def on_message(message: discord.Message):
@@ -178,20 +184,19 @@ async def on_message(message: discord.Message):
     if not session or not session.running or session.answered:
         return
 
-    # Qualquer mensagem conta como participação
+    # Qualquer mensagem = participação
     session.had_participation = True
 
     if check_answer(message.content, session.current_unit):
         session.answered = True
         await session.finish_question(message.author)
 
-# ================== COMANDO ÚNICO ==================
-@tree.command(name="adventures", description="Inicia o quiz de Anime Adventures neste canal")
+@tree.command(name="adventures", description="Inicia o quiz de Anime Adventures (Release Units)")
 async def adventures(interaction: discord.Interaction):
     channel = interaction.channel
 
     if channel.id in active_sessions and active_sessions[channel.id].running:
-        await interaction.response.send_message("Já existe um quiz rodando neste canal!", ephemeral=True)
+        await interaction.response.send_message("Já existe um quiz rodando neste canal.", ephemeral=True)
         return
 
     session = QuizSession(channel, interaction.user)
@@ -200,7 +205,6 @@ async def adventures(interaction: discord.Interaction):
     await interaction.response.send_message("Iniciando o quiz...", ephemeral=True)
     await session.start()
 
-# ================== INICIAR ==================
 if __name__ == "__main__":
     if not TOKEN:
         print("ERRO: DISCORD_TOKEN não encontrado!")
