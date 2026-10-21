@@ -18,7 +18,8 @@ class ContentTests(unittest.TestCase):
         self.assertGreaterEqual(len(PACK.questions), 2000)
         self.assertEqual(len({q.category for q in PACK.questions}), 14)
         self.assertEqual(len([q for q in PACK.questions if q.category == 'Evoluções']), 4)
-        self.assertEqual(len([q for q in PACK.questions if q.category == 'Atos']), 24)
+        self.assertEqual(len([q for q in PACK.questions if q.id.startswith('act:')]), 24)
+        self.assertEqual(len([q for q in PACK.questions if q.id.startswith('act-position:')]), 24)
 
     def test_later_and_undated_forms_are_not_activated(self):
         ids = {u['id'] for u in PACK.units}
@@ -87,7 +88,7 @@ class ContentTests(unittest.TestCase):
         for q in PACK.questions:
             if q.id.startswith('unit:'):
                 self.assertTrue(q.requires_image)
-                self.assertIn('Anime Adventures', q.prompt)
+                self.assertIn('forma base', q.prompt)
             self.assertFalse(q.id.startswith('world:') and q.id.endswith(':anime'))
 
     def test_release_resource_practice_calculations(self):
@@ -125,6 +126,21 @@ class ContentTests(unittest.TestCase):
     def test_normalization_keeps_exact_words(self):
         self.assertEqual(normalize_answer('  MÍTICA_ÉPICA-test! '), 'mitica epica test')
         self.assertNotEqual(normalize_answer('prime force'), normalize_answer('primeforce'))
+
+    def test_additional_gameplay_questions_match_the_archived_release_facts(self):
+        for key, expected in [('stats:josuke:total', '6.150 Yen'),
+                              ('ability-owner:madara:7', 'Madara'), ('ability-level:ichigo:4', 'Upgrade 4'),
+                              ('trait-effect:Golden', 'Aumentar o dinheiro gerado'),
+                              ('world-route:next:1', 'Shiganshinu District'),
+                              ('quest-scope:Damage I', 'Qualquer modo'),
+                              ('store-value:Unit Storage', '100'), ('sell-refund:madara', '350 Yen')]:
+            self.assertTrue(QUESTIONS[key].accepts(expected), key)
+        for q in PACK.questions:
+            if q.id.startswith('act-position:'):
+                world, act = q.id.split(':')[1:]
+                original = QUESTIONS[f'act:{world}:{act}']
+                self.assertIn(original.answer, q.prompt)
+                self.assertTrue(q.accepts('Ato ' + act))
 
     def test_original_source_snapshots_match_recorded_hashes(self):
         root = DATA_FILE.parent.parent

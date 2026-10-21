@@ -2,6 +2,8 @@ import asyncio
 import unittest
 from unittest.mock import Mock, patch
 
+from scores import AwardResult
+
 import bot as app
 import quiz_ui as screen
 from quiz_guard import Cooldowns
@@ -34,7 +36,7 @@ class GuardTests(unittest.IsolatedAsyncioTestCase):
         self.limits = Cooldowns(clock=lambda: self.now[0])
         self.patches = [patch.object(app, 'QUESTION_TIME', .6), patch.object(app, 'BETWEEN_QUESTIONS', .03),
                         patch.object(app, 'COUNTDOWN_INTERVAL', .3), patch.object(app, 'click_limits', self.limits),
-                        patch.object(app.bot, 'scores', Mock(points=Mock(return_value=9), award=Mock(return_value=10)))]
+                        patch.object(app.bot, 'scores', Mock(points=Mock(return_value=9), credit=Mock(return_value=AwardResult(10, True))))]
         for p in self.patches:
             p.start()
         self.sessions = []
@@ -151,7 +153,7 @@ class GuardTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(s.running)
         self.assertNotIn(s.channel.id, app.active_sessions)
         self.assertIn('A pausa chegou', view_text(s.control_view))
-        app.bot.scores.award.assert_not_called()
+        app.bot.scores.credit.assert_not_called()
 
     async def test_resume_cancels_old_pause_expiry(self):
         s = await self.playing()
@@ -174,7 +176,7 @@ class GuardTests(unittest.IsolatedAsyncioTestCase):
         await s.pause_expiry
         self.assertFalse(s.running)
         self.assertEqual(s.session_scores[42]['points'], 1)
-        app.bot.scores.award.assert_called_once()
+        app.bot.scores.credit.assert_called_once()
 
     def test_player_name_cannot_insert_fake_score_rows_or_mentions(self):
         value = screen.safe_name('Jogador\n1. **Admin**\t@everyone\u202eevil')

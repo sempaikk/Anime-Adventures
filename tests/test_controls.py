@@ -4,6 +4,8 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, patch
 
 import discord
+from scores import AwardResult
+
 import bot as app
 import quiz_ui as screen
 from test_session import Channel, Deck, IDS, Message, until, user, view_text
@@ -23,7 +25,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         app.click_limits.clear()
         self.patches = [patch.object(app, 'QUESTION_TIME', .15), patch.object(app, 'BETWEEN_QUESTIONS', .02),
                         patch.object(app, 'COUNTDOWN_INTERVAL', .04), patch.object(app, 'LOBBY_TIMEOUT', 60),
-                        patch.object(app.bot, 'scores', Mock(points=Mock(return_value=17), award=Mock(return_value=18)))]
+                        patch.object(app.bot, 'scores', Mock(points=Mock(return_value=17), credit=Mock(return_value=AwardResult(18, True))))]
         for p in self.patches:
             p.start()
         self.sessions = []
@@ -65,7 +67,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         self.sessions.append(session)
         self.assertEqual(session.phase, 'lobby')
         self.assertIsNone(session.question_message)
-        self.assertIn('Bora jogar?', view_text(session.control_view))
+        self.assertIn('Preparar partida', view_text(session.control_view))
         start = next(item for item in session.control_view.walk_children() if getattr(item, 'custom_id', '') == 'aa:start')
         await start.callback(interaction(session))
         await until(lambda: session.question_message is not None)
@@ -191,7 +193,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(session.had_participation)
         self.assertTrue(session.submit(Message(session.channel, content='50')))
         await until(lambda: session.correct_count == 1)
-        app.bot.scores.award.assert_called_once()
+        app.bot.scores.credit.assert_called_once()
 
     async def test_failed_pause_acknowledgement_still_updates_the_frozen_panel(self):
         session = await self.playing()
@@ -209,7 +211,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         await app.handle_control(event, 'pause')
         self.assertFalse(session.is_paused)
         await until(lambda: session.correct_count == 1)
-        app.bot.scores.award.assert_called_once()
+        app.bot.scores.credit.assert_called_once()
 
     async def test_repeated_pause_recovers_a_failed_panel_edit_without_resetting_time(self):
         session = await self.playing()
@@ -275,7 +277,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         await app.on_raw_message_delete(SimpleNamespace(channel_id=session.channel.id, message_id=session.control_message.id))
         await session.runner
         self.assertEqual(session.correct_count, 1)
-        app.bot.scores.award.assert_called_once()
+        app.bot.scores.credit.assert_called_once()
         self.assertNotIn(session.channel.id, app.active_sessions)
 
     async def test_bulk_deletion_of_old_messages_cannot_close_a_new_session(self):
@@ -290,7 +292,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         await app.on_guild_channel_delete(session.channel)
         await session.runner
         self.assertEqual(session.correct_count, 1)
-        app.bot.scores.award.assert_called_once()
+        app.bot.scores.credit.assert_called_once()
         self.assertNotIn(session.channel.id, app.active_sessions)
 
     async def test_stop_during_question_preserves_the_claimed_point(self):
@@ -302,7 +304,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         await session.runner
         self.assertEqual(session.correct_count, 1)
         self.assertEqual(session.question_number, 1)
-        app.bot.scores.award.assert_called_once()
+        app.bot.scores.credit.assert_called_once()
         self.assertIn('Partida encerrada por quem criou', view_text(session.control_view))
         self.assertNotIn(session.channel.id, app.active_sessions)
 
@@ -349,7 +351,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(session.had_participation)
         await session.runner
         self.assertFalse(session.running)
-        app.bot.scores.award.assert_not_called()
+        app.bot.scores.credit.assert_not_called()
 
     async def test_expired_lobby_releases_channel_and_edits_in_place(self):
         with patch.object(app, 'LOBBY_TIMEOUT', .02):

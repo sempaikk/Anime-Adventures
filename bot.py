@@ -43,6 +43,7 @@ class QuizSession:
         self.channel, self.host, self.store = channel, host, store
         self.pack = PACK
         self.group = 'all'
+        self.round_limit = 10
         self.question_time = QUESTION_TIME
         self.between_questions = BETWEEN_QUESTIONS
         self.deck = deck or QuestionDeck(self.selected_questions())
@@ -76,6 +77,9 @@ class QuizSession:
         self.session_scores: dict[int, dict] = {}
         self.correct_count = 0
         self.last_result = None
+        self.global_credited = None
+        self.winner_recorded = False
+        self.award_total = None
         self.control_lock = asyncio.Lock()
 
     @property
@@ -195,7 +199,14 @@ class QuizSession:
 
     def control_state(self):
         return (getattr(self.control_message, 'id', None), self.phase, self.group,
-                self.question_time, self.stop_requested, self.question_number, self.ends_at, self.next_at)
+                self.question_time, self.round_limit, self.stop_requested, self.question_number, self.ends_at, self.next_at)
+
+    def finish_reason(self):
+        if self.stop_requested:
+            return 'Partida encerrada por quem criou o painel ou pela moderação.'
+        if self.round_limit and self.question_number >= self.round_limit:
+            return f'As {self.round_limit} perguntas foram concluídas. Valeu por jogar!'
+        return 'Ninguém tentou responder essa rodada. Quer jogar de novo?'
 
     async def refresh_controls(self):
         async with self.control_lock:
@@ -242,6 +253,7 @@ class QuizSession:
         self.had_participation = True
         if answer in self.current_question.accepted:
             self.answer_future.set_result(message.author)
+            self.record_winner(message.author)
             return True
         return False
 
@@ -262,8 +274,26 @@ class QuizSession:
         self.had_participation = True
         if self.current_question.accepts(self.choice_order[index]):
             self.answer_future.set_result(user)
+            self.record_winner(user)
             return 'correct'
         return 'wrong'
+
+    def record_winner(self, winner):
+        """Record a winner synchronously before UI acknowledgement or task cancellation."""
+        if self.winner_recorded:
+            return self.award_total
+        self.winner_recorded = True
+        entry = self.session_scores.setdefault(winner.id, {'name': winner.display_name, 'points': 0, 'first': self.question_number})
+        entry['name'] = winner.display_name
+        entry['points'] += 1
+        self.correct_count += 1
+        try:
+            credit = self.store.credit(str(self.question_message.id), winner.id, winner.display_name,
+                                       content_id=f'{self.pack.stage}:{self.current_question.id}')
+            self.award_total, self.global_credited = credit.total, credit.credited
+        except (OSError, sqlite3.Error, ValueError):
+            log.exception('Falha ao salvar pontuação da pergunta %s', self.question_message.id)
+        return self.award_total
 
     async def update_clock(self, refresh_immediately=False):
         first = True
@@ -316,6 +346,9 @@ class QuizSession:
         random.SystemRandom().shuffle(self.choice_order)
         self.choice_attempts.clear()
         self.chat_attempts.clear()
+        self.global_credited = None
+        self.winner_recorded = False
+        self.award_total = None
         self.answer_future = asyncio.get_running_loop().create_future()
         self.phase = 'question'
         publishing_started = self.clock()
@@ -336,23 +369,15 @@ class QuizSession:
         finally:
             self.phase = 'resolving'
             await self.stop_ticker()
-        total = None
-        if winner:
-            entry = self.session_scores.setdefault(winner.id, {'name': winner.display_name, 'points': 0, 'first': self.question_number})
-            entry['name'] = winner.display_name
-            entry['points'] += 1
-            self.correct_count += 1
-            try:
-                total = self.store.award(str(self.question_message.id), winner.id, winner.display_name)
-            except (OSError, sqlite3.Error):
-                log.exception('Falha ao salvar pontuação da pergunta %s', self.question_message.id)
+        total = self.record_winner(winner) if winner else None
         async with self.control_lock:
             self.question_view.stop()
             with contextlib.suppress(discord.HTTPException):
                 await self.question_message.edit(view=screen.closed_question_panel(self))
             self.control_message = None
             self.control_view = None
-        continuing = self.had_participation and not self.stop_requested
+        continuing = (self.had_participation and not self.stop_requested
+                      and (self.round_limit is None or self.question_number < self.round_limit))
         self.phase = 'intermission' if continuing else 'ended'
         self.timer = PausableTimer(self.between_questions, self.clock) if continuing else None
         self.next_at = datetime.now(timezone.utc) + timedelta(seconds=self.between_questions)
@@ -410,11 +435,11 @@ class QuizSession:
         except discord.HTTPException:
             log.exception('Sessão interrompida por erro do Discord no canal %s', self.channel.id)
             with contextlib.suppress(discord.HTTPException):
-                await self.channel.send('Não deu para continuar o quiz. Confira as permissões do canal e use **/adventures** para tentar de novo.')
+                await self.channel.send('Não deu para continuar a partida. Confira as permissões do canal e use **/adventures** para tentar de novo.')
         except Exception:
             log.exception('Erro na sessão do canal %s', self.channel.id)
             with contextlib.suppress(discord.HTTPException):
-                await self.channel.send('Deu um erro e o quiz precisou parar. Use **/adventures** para jogar de novo.')
+                await self.channel.send('Deu um erro e a partida precisou parar. Use **/adventures** para jogar de novo.')
         finally:
             self.running = False
             self.phase = 'ended'
@@ -440,6 +465,7 @@ class AdventuresBot(commands.Bot):
         if not legacy.exists():
             legacy = BASE_DIR / 'scores.json'
         self.scores = ScoreStore(data_dir / 'scores.sqlite3', legacy)
+        log.info('Banco de pontos: %s', data_dir / 'scores.sqlite3')
         self.add_view(screen.PersistentControls(handle_control))
         synced = await self.tree.sync()
         log.info('%s comando(s) sincronizado(s); %s perguntas Release; interface Components V2', len(synced), len(PACK.questions))
@@ -473,7 +499,7 @@ def permission_problem(interaction):
     permissions = interaction.app_permissions
     can_send = permissions.send_messages_in_threads if isinstance(interaction.channel, discord.Thread) else permissions.send_messages
     if not (permissions.view_channel and can_send and permissions.embed_links):
-        return 'Preciso de **Ver canal**, **Enviar mensagens** e **Inserir links** para apresentar o quiz aqui.'
+        return 'Preciso de **Ver canal**, **Enviar mensagens** e **Inserir links** para apresentar a partida aqui.'
     return None
 
 
@@ -484,16 +510,16 @@ async def begin_lobby(interaction):
         return
     existing = active_sessions.get(interaction.channel.id)
     if existing and existing.running:
-        await interaction.response.send_message('Já tem um quiz aberto neste canal. É só participar pelo painel mais recente.', ephemeral=True)
+        await interaction.response.send_message('Já tem uma partida aberta neste canal. É só participar pelo painel mais recente.', ephemeral=True)
         return
     if not click_limits.allow(('lobby', interaction.user.id), 3):
-        await interaction.response.send_message('Espere 3 segundos antes de abrir outro quiz.', ephemeral=True)
+        await interaction.response.send_message('Espere 3 segundos antes de abrir outra partida.', ephemeral=True)
         return
     session = QuizSession(interaction.channel, interaction.user, bot.scores)
     session.running = True
     active_sessions[session.channel.id] = session
     try:
-        await interaction.response.send_message('Painel aberto! Escolha os assuntos e toque em **Começar quiz**.', ephemeral=True)
+        await interaction.response.send_message('Painel aberto! Escolha as opções e toque em **Começar**.', ephemeral=True)
         await session.open_lobby()
     except BaseException:
         session.running = False
@@ -542,7 +568,7 @@ async def handle_control(interaction, action, value=None):
             'correct': 'Acertou e chegou primeiro! +1 ponto nesta partida.',
             'wrong': 'Não foi dessa vez! Sua escolha já contou. A resposta aparece no fim da rodada.',
             'duplicate': 'Você já escolheu nesta rodada. Cada pessoa tem uma tentativa por pergunta com alternativas.',
-            'paused': 'O quiz está pausado. Espere retomar para escolher.',
+            'paused': 'A partida está pausada. Espere retomar para escolher.',
             'stale': 'Esse clique é de antes da retomada. Escolha de novo no painel atual.',
             'closed': 'Essa rodada já fechou ou o ponto já foi marcado. Espere a próxima!',
             'invalid': 'Essa alternativa não está disponível. Use os botões da pergunta atual.',
@@ -550,9 +576,9 @@ async def handle_control(interaction, action, value=None):
         await interaction.response.send_message(responses[result], ephemeral=True)
         return
     owner = interaction.user.id == session.host.id
-    if action in ('start', 'category', 'time'):
+    if action in ('start', 'category', 'time', 'rounds'):
         if not owner:
-            await interaction.response.send_message('Só quem abriu o quiz pode ajustar as opções e começar. Quando a pergunta aparecer, todo mundo pode responder!', ephemeral=True)
+            await interaction.response.send_message('Só quem abriu a partida pode ajustar as opções e começar. Quando a pergunta aparecer, todo mundo pode responder!', ephemeral=True)
             return
         if session.phase != 'lobby':
             await interaction.response.send_message('Essas opções só podem mudar antes da partida começar.', ephemeral=True)
@@ -567,6 +593,11 @@ async def handle_control(interaction, action, value=None):
                 await interaction.response.send_message('Escolha 30, 45 ou 60 segundos no menu.', ephemeral=True)
                 return
             session.question_time = int(value)
+        elif action == 'rounds':
+            if value not in ('10', '20', '30', 'continuous'):
+                await interaction.response.send_message('Escolha 10, 20, 30 perguntas ou uma partida contínua.', ephemeral=True)
+                return
+            session.round_limit = None if value == 'continuous' else int(value)
         else:
             session.deck = QuestionDeck(session.selected_questions())
             session.launch()  # Claims starting state before the first await.
@@ -617,9 +648,9 @@ async def handle_control(interaction, action, value=None):
             try:
                 await interaction.response.defer()
             finally:
-                await session.stop_now('Partida encerrada por quem criou o quiz ou pela moderação. Valeu por jogar!')
+                await session.stop_now('Partida encerrada por quem criou o painel ou pela moderação. Valeu por jogar!')
     else:
-        await interaction.response.send_message('O quiz já passou para outra rodada. Use o painel mais recente.', ephemeral=True)
+        await interaction.response.send_message('A partida já passou para outra rodada. Use o painel mais recente.', ephemeral=True)
 
 
 @bot.event
@@ -668,7 +699,7 @@ async def on_guild_channel_delete(channel):
         await session.stop_now('O canal da partida foi removido.')
 
 
-@bot.tree.command(name='adventures', description='Abra o quiz de Anime Adventures com ícones do jogo, imagens e alternativas.')
+@bot.tree.command(name='adventures', description='Responda desafios sobre o lançamento de Anime Adventures. Escolha os assuntos e jogue!')
 @app_commands.guild_only()
 async def adventures(interaction: discord.Interaction):
     await begin_lobby(interaction)

@@ -11,10 +11,10 @@ from unittest.mock import AsyncMock, Mock, patch
 import discord
 import bot as app
 import quiz_ui as screen
-from scores import ScoreStore
+from scores import AwardResult, ScoreStore
 
 QUESTIONS = {q.id: q for q in app.PACK.questions}
-IDS = itertools.count(1000)
+IDS = itertools.count(discord.utils.time_snowflake(datetime.now(timezone.utc)))
 
 
 def user(id=42, name='Jogador', is_bot=False):
@@ -77,7 +77,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         self.sessions = []
         self.tasks = []
         self.channel = Channel()
-        self.store = Mock(award=Mock(return_value=17))
+        self.store = Mock(credit=Mock(return_value=AwardResult(17, True)))
 
     async def asyncTearDown(self):
         for session in self.sessions:
@@ -111,7 +111,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         messages = [Message(self.channel, user(i, f'Player {i}'), '50') for i in range(50, 90)]
         await asyncio.gather(*(app.on_message(message) for message in messages))
         self.assertTrue(await task)
-        self.store.award.assert_called_once_with(str(session.question_message.id), 50, 'Player 50')
+        self.store.credit.assert_called_once_with(str(session.question_message.id), 50, 'Player 50', content_id='release:summon:cost')
         self.assertEqual(session.correct_count, 1)
         self.assertEqual(len(session.session_scores), 1)
         self.assertIn('Player 50', view_text(self.channel.sent[-1]['view']))
@@ -121,7 +121,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         task = await self.play(session)
         self.assertFalse(session.submit(Message(self.channel, content='errado')))
         self.assertTrue(await task)
-        self.store.award.assert_not_called()
+        self.store.credit.assert_not_called()
         self.assertEqual(len(self.channel.sent), 2)
         self.assertIn('Tempo esgotado', view_text(self.channel.sent[-1]['view']))
         self.assertIn('Próxima pergunta', view_text(self.channel.sent[-1]['view']))
@@ -146,7 +146,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         await session.runner
         self.assertEqual(session.question_number, 2)
         self.assertEqual(session.correct_count, 1)
-        self.store.award.assert_called_once()
+        self.store.credit.assert_called_once()
         self.assertFalse(session.running)
 
     async def test_late_answers_are_rejected_even_before_timeout_task_wakes(self):
@@ -157,7 +157,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(session.submit(Message(self.channel, content='50')))
         self.assertFalse(session.had_participation)
         await task
-        self.store.award.assert_not_called()
+        self.store.credit.assert_not_called()
 
     async def test_slow_publication_does_not_consume_answer_time(self):
         original_send = self.channel.send
@@ -213,7 +213,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(session.answer_future.done())
         self.assertFalse(session.submit(Message(self.channel, content='50')))
         self.assertFalse(await asyncio.wait_for(task, 0.3))
-        self.store.award.assert_not_called()
+        self.store.credit.assert_not_called()
 
     async def test_transient_clock_edit_error_does_not_stop_timer(self):
         session = self.session()
@@ -245,7 +245,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(session.running)
 
     async def test_score_write_failure_is_visible_and_does_not_stall_next_round(self):
-        self.store.award.side_effect = sqlite3.OperationalError('read-only')
+        self.store.credit.side_effect = sqlite3.OperationalError('read-only')
         session = self.session()
         task = await self.play(session)
         with self.assertLogs('adventures', level='ERROR'):
@@ -285,15 +285,41 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(store.award(str(session.question_message.id), 42, 'Jogador'), 1)
             store.close()
 
+    async def test_accepted_point_is_persisted_before_runner_can_be_cancelled(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'scores.sqlite3'
+            store = ScoreStore(path)
+            try:
+                session = self.session()
+                session.store = store
+                task = await self.play(session)
+                self.assertTrue(session.submit(Message(self.channel, content='50')))
+                # No await between accepting the message and this simulated shutdown.
+                self.assertEqual(store.points(42), 1)
+                task.cancel()
+                await asyncio.gather(task, return_exceptions=True)
+            finally:
+                store.close()
+            reopened = ScoreStore(path)
+            try:
+                self.assertEqual(reopened.points(42), 1)
+            finally:
+                reopened.close()
+
     async def test_all_cards_fit_discord_limits_and_do_not_reveal_rarity_answer(self):
         session = self.session()
+        difficult_name = '*_[]@everyone\n' * 10
+        session.session_scores = {i: {'name': difficult_name, 'points': 2, 'first': i} for i in range(5)}
+        session.global_credited = False
         session.ends_at = datetime.now(timezone.utc)
         session.next_at = session.ends_at
         for q in app.PACK.questions:
             session.current_question = q
             for panel in [screen.question_panel(session, app.handle_control, session.question_time),
                           screen.result_panel(session, None, None, True, app.handle_control),
-                          screen.result_panel(session, None, None, False, app.handle_control)]:
+                          screen.result_panel(session, None, None, False, app.handle_control),
+                          screen.result_panel(session, user(name=difficult_name), 99, True, app.handle_control),
+                          screen.result_panel(session, user(name=difficult_name), 99, False, app.handle_control)]:
                 self.assertLessEqual(panel.total_children_count, 40, q.id)
                 self.assertLessEqual(panel.content_length(), 4000, q.id)
                 payload = discord.http.handle_message_parameters(view=panel).payload
@@ -304,6 +330,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
                 for item in panel.walk_children():
                     if isinstance(item, discord.ui.TextDisplay):
                         self.assertNotRegex(item.content, r'[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F\u20E3]', q.id)
+                        self.assertNotRegex(item.content, r'(?i)\bquiz\b', q.id)
                     if isinstance(item, discord.ui.Button) and item.emoji:
                         self.assertIsNotNone(item.emoji.id, q.id)
                     if isinstance(item, discord.ui.Thumbnail):

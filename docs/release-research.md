@@ -21,13 +21,13 @@ O banco ativo reconstrói a versão inicial com o changelog Release e revisões 
 - **Loja histórica:** Super Lucky, Ultra Lucky, VIP, Shiny Hunter, Unit Storage e Display 3 Units. Os preços remetem à revisão de julho, não à loja atual. Apenas o código RELEASE foi admitido no quiz; a disponibilidade atual não é afirmada.
 - **Custos/upgrades historicamente preenchidos** de Madara, Ichigo, Josuke e Zoro. Campos escritos como RND na wiki não viraram números inventados. Nenhum dano/SPA moderno foi projetado retroativamente.
 
-O banco ativo tem **2.095 perguntas, 14 categorias, 64 referências e 20 snapshots**. As biografias do anime foram removidas das perguntas e do campo de pistas do elenco. Nomes do anime continuam sendo aliases aceitos da unidade correspondente; isso não cria perguntas sobre episódios, equipes ou biografia.
+O banco ativo tem **2.199 perguntas, 14 categorias, 64 referências e 20 snapshots**. As biografias do anime foram removidas das perguntas e do campo de pistas do elenco. Nomes do anime continuam sendo aliases aceitos da unidade correspondente; isso não cria perguntas sobre episódios, equipes ou biografia.
 
-O total inclui variações de prática derivadas dos mesmos fatos, não 2.095 fatos históricos independentes:
+O total inclui variações de prática derivadas dos mesmos fatos, não 2.199 fatos históricos independentes:
 
 | Família | Perguntas |
 |---|---:|
-| Perguntas manuais sobre mecânicas, fases, chefes, itens, loja e localização documentada | 185 |
+| Perguntas manuais sobre mecânicas, fases, chefes, itens, loja e localização documentada | 289 |
 | Reconhecimento de unidades pela imagem do jogo | 25 |
 | Consulta de raridade de uma unidade | 44 |
 | Comparação de raridade de pares distintos de unidades | 946 |
@@ -40,6 +40,8 @@ O total inclui variações de prática derivadas dos mesmos fatos, não 2.095 fa
 | Comparações de preços da Store | 15 |
 
 As derivações usam regras explícitas em `question_factory.py`: raridades da lista histórica, alimentos de 25/50/115/250 XP, summon de 50 Gems, desconto VIP de 20%, pity em 50 invocações e ciclos de 150 segundos/3 Gems. Quantidades fictícias nos enunciados são cenários de prática, sem inventar atributos ou eventos. XP calculado é a soma do valor dos itens, antes de bônus ou limite de nível. A ordem das alternativas não aumenta a contagem de perguntas.
+
+A revisão final acrescentou 104 perguntas manuais com os snapshots já existentes: efeitos de traits; dono e nível de desbloqueio de ataques; comparações de implantação/upgrades; custo total de Josuke; reembolso simples de venda; comparação de XP; sequência de mundos e números dos 24 atos; objetivos/escopo de Daily quests; benefícios da Store; área Codes e ranking de Infinite. Nenhuma nova faixa de multiplicações ou combinações foi criada para aumentar essa contagem. São 2.000 perguntas com alternativas, 25 visuais e 174 de texto.
 
 O sorteio escolhe categorias e famílias antes de escolher a pergunta, enquanto essas opções estiverem disponíveis. Isso evita que o banco grande de comparações domine o início da partida. O reconhecimento visual só entra quando há um retrato validado; não há adivinhas de anime como substituto de uma imagem ausente.
 

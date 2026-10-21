@@ -2,7 +2,7 @@
 
 Estas ideias foram sugeridas pelo usuário e ficam registradas para planejamento. Ainda não foram implementadas; o bot mantém o comando `/adventures` e a interface em português.
 
-Melhorias seguintes sugeridas para o próprio quiz: dificuldade ajustável, partidas com quantidade fixa de rodadas e um resumo dos assuntos em que o jogador mais errou. Definir a experiência e os critérios antes de acrescentar esses controles.
+Melhorias opcionais seguintes para o próprio comando: dificuldade ajustável, um resumo dos assuntos em que o jogador mais errou. Definir a experiência e os critérios antes de acrescentar esses controles. Partidas de 10/20/30 perguntas já foram implementadas, além da opção contínua.
 
 - **Configurações e idiomas:** permitir escolher idioma no futuro, com português como padrão. Definir antes se a escolha será por servidor ou por jogador.
 - **Updates logs:** mostrar o que mudou no bot em um painel organizado, separado das perguntas. Não criar um comando ou aba nesta etapa.

@@ -3,10 +3,10 @@
   "icons": {
     "units": {
       "asset": "ui-units",
-      "name": "aa015fdffe",
-      "id": "1562349902787514449",
+      "name": "aa019d6446",
+      "id": "1562365745353195561",
       "upload_path": "assets/ui/units.png",
-      "upload_sha256": "5fdffe30ba790026ff5dfbb1740230cc1969552488ca6f2262cf327c4c837926",
+      "upload_sha256": "9d6446a1fa2d7d5f587a9f38204944a6983da6e43352ef5a71ec1b98bac828a4",
       "processing": {
         "type": "resize",
         "maximum_dimensions": [
@@ -19,10 +19,10 @@
     },
     "items": {
       "asset": "ui-items",
-      "name": "aa020c9ef5",
-      "id": "1562349903785631794",
+      "name": "aa022f0301",
+      "id": "1562365746754101288",
       "upload_path": "assets/ui/items.png",
-      "upload_sha256": "0c9ef58490463ba66836af2cfc114461de15cbc099f641a8c19f3eb606e3727f",
+      "upload_sha256": "2f0301f4168a7942db3328b01b22453f7f4e554c4b04222697ee1c052c209ee2",
       "processing": {
         "type": "resize",
         "maximum_dimensions": [
@@ -35,10 +35,10 @@
     },
     "summon": {
       "asset": "ui-summon",
-      "name": "aa033ce027",
-      "id": "1562349905094254592",
+      "name": "aa0315c54e",
+      "id": "1562365749677531166",
       "upload_path": "assets/ui/summon.png",
-      "upload_sha256": "3ce0274ee44f36335f21895524c12f69e627ff1bba31453293cb6975d4af27d9",
+      "upload_sha256": "15c54ee5c53a324d405128b2833f6d4f52db82653dd2095b2137d94114ccd1f8",
       "processing": {
         "type": "resize",
         "maximum_dimensions": [
@@ -67,10 +67,10 @@
     },
     "evolution": {
       "asset": "ui-evolution",
-      "name": "aa058cc6c2",
-      "id": "1562349906935676961",
+      "name": "aa05e2ab0b",
+      "id": "1562365750600278107",
       "upload_path": "assets/ui/evolution.png",
-      "upload_sha256": "8cc6c2f24b558a404552136492d5b9408608b37c428003ef863fbd6a14f658db",
+      "upload_sha256": "e2ab0b3a7b7cdbacf55295418c7b5bb6e24c249d9b1498702e22f5aeb53da556",
       "processing": {
         "type": "resize",
         "maximum_dimensions": [
@@ -83,10 +83,10 @@
     },
     "traits": {
       "asset": "ui-traits",
-      "name": "aa0622b3d9",
-      "id": "1562349908261077075",
+      "name": "aa060a61ad",
+      "id": "1562365751489204294",
       "upload_path": "assets/ui/traits.png",
-      "upload_sha256": "22b3d9106c7a4650160364fca6f9a3ded75555f87cdbace527c434089b1c259c",
+      "upload_sha256": "0a61ade3e55d364e935988ecd7c8b4077d812cc2a1e39e2df6fe1ed38dffda42",
       "processing": {
         "type": "resize",
         "maximum_dimensions": [
@@ -99,10 +99,10 @@
     },
     "power": {
       "asset": "ui-power",
-      "name": "aa071f2323",
-      "id": "1562349909468782632",
+      "name": "aa076a8b72",
+      "id": "1562365752370008113",
       "upload_path": "assets/ui/power.png",
-      "upload_sha256": "1f2323ad5a13d0bd85158705295eb9d47a2ef59ec03cdd0bcb8ea695012a0abb",
+      "upload_sha256": "6a8b72b2ccb361e1a35721dbf32b2279e02d252aec2239c0bb4a5a791390ead8",
       "processing": {
         "type": "resize",
         "maximum_dimensions": [

@@ -4146,6 +4146,2250 @@
         "zoro"
       ],
       "explanation": "A ficha do lançamento indica obtenção de Zoro por summon."
+    },
+    {
+      "id": "trait-effect:Nimble",
+      "category": "Traits",
+      "subject": "trait:Nimble",
+      "prompt": "Qual era o **efeito de Nimble** no lançamento?",
+      "answer": "Atacar mais rápido",
+      "answers": [
+        "Atacar mais rápido"
+      ],
+      "options": [
+        "Aumentar o dano geral",
+        "Atacar mais rápido",
+        "Aumentar especialmente o dano contra chefes"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Nimble: atacar mais rápido.",
+      "family": "trait-effect",
+      "media_key": "trait-nimble",
+      "image_after_answer": false
+    },
+    {
+      "id": "trait-effect:Adept",
+      "category": "Traits",
+      "subject": "trait:Adept",
+      "prompt": "Qual era o **efeito de Adept** no lançamento?",
+      "answer": "Ganhar níveis mais rápido",
+      "answers": [
+        "Ganhar níveis mais rápido"
+      ],
+      "options": [
+        "Aumentar a velocidade de ataque mais que Nimble",
+        "Aumentar o alcance",
+        "Ganhar níveis mais rápido"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Adept: ganhar níveis mais rápido.",
+      "family": "trait-effect",
+      "media_key": "trait-adept",
+      "image_after_answer": false
+    },
+    {
+      "id": "trait-effect:Superior",
+      "category": "Traits",
+      "subject": "trait:Superior",
+      "prompt": "Qual era o **efeito de Superior** no lançamento?",
+      "answer": "Aumentar o dano geral",
+      "answers": [
+        "Aumentar o dano geral"
+      ],
+      "options": [
+        "Ganhar níveis mais rápido",
+        "Aumentar o dano geral",
+        "Causar mais dano em inimigos com pouca vida"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Superior: aumentar o dano geral.",
+      "family": "trait-effect",
+      "media_key": "trait-superior",
+      "image_after_answer": false
+    },
+    {
+      "id": "trait-effect:Range",
+      "category": "Traits",
+      "subject": "trait:Range",
+      "prompt": "Qual era o **efeito de Range** no lançamento?",
+      "answer": "Aumentar o alcance",
+      "answers": [
+        "Aumentar o alcance"
+      ],
+      "options": [
+        "Ganhar níveis mais rápido",
+        "Aumentar o alcance",
+        "Causar mais dano em inimigos com pouca vida"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Range: aumentar o alcance.",
+      "family": "trait-effect",
+      "media_key": "trait-range",
+      "image_after_answer": false
+    },
+    {
+      "id": "trait-effect:Culling",
+      "category": "Traits",
+      "subject": "trait:Culling",
+      "prompt": "Qual era o **efeito de Culling** no lançamento?",
+      "answer": "Causar mais dano em inimigos com pouca vida",
+      "answers": [
+        "Causar mais dano em inimigos com pouca vida"
+      ],
+      "options": [
+        "Melhorar dano, alcance e velocidade de ataque",
+        "Aumentar o alcance",
+        "Causar mais dano em inimigos com pouca vida"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Culling: causar mais dano em inimigos com pouca vida.",
+      "family": "trait-effect",
+      "media_key": "trait-culling",
+      "image_after_answer": false
+    },
+    {
+      "id": "trait-effect:Sniper",
+      "category": "Traits",
+      "subject": "trait:Sniper",
+      "prompt": "Qual era o **efeito de Sniper** no lançamento?",
+      "answer": "Aumentar o alcance mais que Range",
+      "answers": [
+        "Aumentar o alcance mais que Range"
+      ],
+      "options": [
+        "Aumentar o alcance mais que Range",
+        "Ganhar níveis mais rápido",
+        "Aumentar o alcance"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Sniper: aumentar o alcance mais que range.",
+      "family": "trait-effect",
+      "media_key": "trait-sniper",
+      "image_after_answer": false
+    },
+    {
+      "id": "trait-effect:Godspeed",
+      "category": "Traits",
+      "subject": "trait:Godspeed",
+      "prompt": "Qual era o **efeito de Godspeed** no lançamento?",
+      "answer": "Aumentar a velocidade de ataque mais que Nimble",
+      "answers": [
+        "Aumentar a velocidade de ataque mais que Nimble"
+      ],
+      "options": [
+        "Aumentar a velocidade de ataque mais que Nimble",
+        "Causar mais dano em inimigos com pouca vida",
+        "Aumentar o alcance"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Godspeed: aumentar a velocidade de ataque mais que nimble.",
+      "family": "trait-effect",
+      "media_key": "trait-godspeed",
+      "image_after_answer": false
+    },
+    {
+      "id": "trait-effect:Reaper",
+      "category": "Traits",
+      "subject": "trait:Reaper",
+      "prompt": "Qual era o **efeito de Reaper** no lançamento?",
+      "answer": "Aumentar especialmente o dano contra chefes",
+      "answers": [
+        "Aumentar especialmente o dano contra chefes"
+      ],
+      "options": [
+        "Atacar mais rápido",
+        "Aumentar o alcance mais que Range",
+        "Aumentar especialmente o dano contra chefes"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Reaper: aumentar especialmente o dano contra chefes.",
+      "family": "trait-effect",
+      "media_key": "trait-reaper",
+      "image_after_answer": false
+    },
+    {
+      "id": "trait-effect:Golden",
+      "category": "Traits",
+      "subject": "trait:Golden",
+      "prompt": "Qual era o **efeito de Golden** no lançamento?",
+      "answer": "Aumentar o dinheiro gerado",
+      "answers": [
+        "Aumentar o dinheiro gerado"
+      ],
+      "options": [
+        "Aumentar o dinheiro gerado",
+        "Causar mais dano em inimigos com pouca vida",
+        "Ganhar níveis mais rápido"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Golden: aumentar o dinheiro gerado.",
+      "family": "trait-effect",
+      "media_key": "trait-golden",
+      "image_after_answer": false
+    },
+    {
+      "id": "trait-effect:Divine",
+      "category": "Traits",
+      "subject": "trait:Divine",
+      "prompt": "Qual era o **efeito de Divine** no lançamento?",
+      "answer": "Melhorar dano, alcance e velocidade de ataque",
+      "answers": [
+        "Melhorar dano, alcance e velocidade de ataque"
+      ],
+      "options": [
+        "Aumentar o alcance",
+        "Aumentar o dinheiro gerado",
+        "Melhorar dano, alcance e velocidade de ataque"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Divine: melhorar dano, alcance e velocidade de ataque.",
+      "family": "trait-effect",
+      "media_key": "trait-divine",
+      "image_after_answer": false
+    },
+    {
+      "id": "ability-owner:madara:2",
+      "category": "Unidades",
+      "subject": "madara",
+      "prompt": "Qual **unidade do lançamento** desbloqueava o ataque **Susanoo Strike**?",
+      "answer": "Mazara",
+      "answers": [
+        "Mazara",
+        "Madara",
+        "Madara Uchiha",
+        "Marada"
+      ],
+      "options": [
+        "Jose",
+        "Mazara",
+        "Spirit Reaper"
+      ],
+      "sources": [
+        "madara"
+      ],
+      "explanation": "Mazara (Madara) ganhava Susanoo Strike no upgrade 2.",
+      "family": "ability-owner",
+      "media_key": "unit-madara",
+      "image_after_answer": true,
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "ability-level:madara:2",
+      "category": "Upgrades",
+      "subject": "madara",
+      "prompt": "Em qual **upgrade de Madara** era desbloqueado **Susanoo Strike**, no lançamento?",
+      "answer": "Upgrade 2",
+      "answers": [
+        "Upgrade 2"
+      ],
+      "options": [
+        "Upgrade 3",
+        "Upgrade 2",
+        "Upgrade 4"
+      ],
+      "sources": [
+        "madara"
+      ],
+      "explanation": "Susanoo Strike era desbloqueado no upgrade 2.",
+      "family": "ability-level",
+      "media_key": "unit-madara",
+      "image_after_answer": false
+    },
+    {
+      "id": "ability-owner:madara:7",
+      "category": "Unidades",
+      "subject": "madara",
+      "prompt": "Qual **unidade do lançamento** desbloqueava o ataque **Perfected Susanoo**?",
+      "answer": "Mazara",
+      "answers": [
+        "Mazara",
+        "Madara",
+        "Madara Uchiha",
+        "Marada"
+      ],
+      "options": [
+        "Zen",
+        "Mazara",
+        "Jose"
+      ],
+      "sources": [
+        "madara"
+      ],
+      "explanation": "Mazara (Madara) ganhava Perfected Susanoo no upgrade 7.",
+      "family": "ability-owner",
+      "media_key": "unit-madara",
+      "image_after_answer": true,
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "ability-level:madara:7",
+      "category": "Upgrades",
+      "subject": "madara",
+      "prompt": "Em qual **upgrade de Madara** era desbloqueado **Perfected Susanoo**, no lançamento?",
+      "answer": "Upgrade 7",
+      "answers": [
+        "Upgrade 7"
+      ],
+      "options": [
+        "Upgrade 3",
+        "Upgrade 7",
+        "Upgrade 2"
+      ],
+      "sources": [
+        "madara"
+      ],
+      "explanation": "Perfected Susanoo era desbloqueado no upgrade 7.",
+      "family": "ability-level",
+      "media_key": "unit-madara",
+      "image_after_answer": false
+    },
+    {
+      "id": "ability-owner:ichigo:4",
+      "category": "Unidades",
+      "subject": "ichigo",
+      "prompt": "Qual **unidade do lançamento** desbloqueava o ataque **Cross Slash**?",
+      "answer": "Spirit Reaper",
+      "answers": [
+        "Spirit Reaper",
+        "Ichigo",
+        "Ichigo Kurosaki",
+        "Ichi"
+      ],
+      "options": [
+        "Spirit Reaper",
+        "Jose",
+        "Mazara"
+      ],
+      "sources": [
+        "ichigo"
+      ],
+      "explanation": "Spirit Reaper (Ichigo) ganhava Cross Slash no upgrade 4.",
+      "family": "ability-owner",
+      "media_key": "unit-ichigo",
+      "image_after_answer": true,
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "ability-level:ichigo:4",
+      "category": "Upgrades",
+      "subject": "ichigo",
+      "prompt": "Em qual **upgrade de Ichigo** era desbloqueado **Cross Slash**, no lançamento?",
+      "answer": "Upgrade 4",
+      "answers": [
+        "Upgrade 4"
+      ],
+      "options": [
+        "Upgrade 5",
+        "Upgrade 6",
+        "Upgrade 4"
+      ],
+      "sources": [
+        "ichigo"
+      ],
+      "explanation": "Cross Slash era desbloqueado no upgrade 4.",
+      "family": "ability-level",
+      "media_key": "unit-ichigo",
+      "image_after_answer": false
+    },
+    {
+      "id": "ability-owner:josuke:3",
+      "category": "Unidades",
+      "subject": "josuke",
+      "prompt": "Qual **unidade do lançamento** desbloqueava o ataque **Disassembling Punch**?",
+      "answer": "Jose",
+      "answers": [
+        "Jose",
+        "Josuke",
+        "Josuke Higashikata",
+        "Josuka"
+      ],
+      "options": [
+        "Spirit Reaper",
+        "Mazara",
+        "Jose"
+      ],
+      "sources": [
+        "josuke"
+      ],
+      "explanation": "Jose (Josuke) ganhava Disassembling Punch no upgrade 3.",
+      "family": "ability-owner",
+      "media_key": "unit-josuke",
+      "image_after_answer": true,
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "ability-level:josuke:3",
+      "category": "Upgrades",
+      "subject": "josuke",
+      "prompt": "Em qual **upgrade de Josuke** era desbloqueado **Disassembling Punch**, no lançamento?",
+      "answer": "Upgrade 3",
+      "answers": [
+        "Upgrade 3"
+      ],
+      "options": [
+        "Upgrade 1",
+        "Upgrade 3",
+        "Upgrade 7"
+      ],
+      "sources": [
+        "josuke"
+      ],
+      "explanation": "Disassembling Punch era desbloqueado no upgrade 3.",
+      "family": "ability-level",
+      "media_key": "unit-josuke",
+      "image_after_answer": false
+    },
+    {
+      "id": "ability-owner:zoro:3",
+      "category": "Unidades",
+      "subject": "zoro",
+      "prompt": "Qual **unidade do lançamento** desbloqueava o ataque **Three Sword Style**?",
+      "answer": "Zen",
+      "answers": [
+        "Zen",
+        "Zoro",
+        "Roronoa Zoro",
+        "Zoru"
+      ],
+      "options": [
+        "Zen",
+        "Jose",
+        "Spirit Reaper"
+      ],
+      "sources": [
+        "zoro"
+      ],
+      "explanation": "Zen (Zoro) ganhava Three Sword Style no upgrade 3.",
+      "family": "ability-owner",
+      "media_key": "unit-zoro",
+      "image_after_answer": true,
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "ability-level:zoro:3",
+      "category": "Upgrades",
+      "subject": "zoro",
+      "prompt": "Em qual **upgrade de Zoro** era desbloqueado **Three Sword Style**, no lançamento?",
+      "answer": "Upgrade 3",
+      "answers": [
+        "Upgrade 3"
+      ],
+      "options": [
+        "Upgrade 1",
+        "Upgrade 3",
+        "Upgrade 6"
+      ],
+      "sources": [
+        "zoro"
+      ],
+      "explanation": "Three Sword Style era desbloqueado no upgrade 3.",
+      "family": "ability-level",
+      "media_key": "unit-zoro",
+      "image_after_answer": false
+    },
+    {
+      "id": "deploy-compare:madara:ichigo",
+      "category": "Upgrades",
+      "subject": "madara:ichigo",
+      "prompt": "Qual custava **menos Yen para colocar no mapa** no lançamento: **Madara** ou **Ichigo**?",
+      "answer": "Spirit Reaper",
+      "answers": [
+        "Spirit Reaper",
+        "Ichigo",
+        "Ichigo Kurosaki",
+        "Ichi"
+      ],
+      "options": [
+        "Spirit Reaper",
+        "Mazara",
+        "Mesmo custo"
+      ],
+      "sources": [
+        "madara",
+        "ichigo"
+      ],
+      "explanation": "Madara: 1400 Yen. Ichigo: 350 Yen.",
+      "family": "deploy-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "upgrades-compare:madara:ichigo",
+      "category": "Upgrades",
+      "subject": "madara:ichigo",
+      "prompt": "Quem tinha **mais upgrades** no lançamento: **Madara** ou **Ichigo**?",
+      "answer": "Mazara",
+      "answers": [
+        "Mazara",
+        "Madara",
+        "Madara Uchiha",
+        "Marada"
+      ],
+      "options": [
+        "Mesma quantidade",
+        "Spirit Reaper",
+        "Mazara"
+      ],
+      "sources": [
+        "madara",
+        "ichigo"
+      ],
+      "explanation": "Madara: 7. Ichigo: 4.",
+      "family": "upgrades-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "deploy-compare:madara:josuke",
+      "category": "Upgrades",
+      "subject": "madara:josuke",
+      "prompt": "Qual custava **menos Yen para colocar no mapa** no lançamento: **Madara** ou **Josuke**?",
+      "answer": "Jose",
+      "answers": [
+        "Jose",
+        "Josuke",
+        "Josuke Higashikata",
+        "Josuka"
+      ],
+      "options": [
+        "Jose",
+        "Mesmo custo",
+        "Mazara"
+      ],
+      "sources": [
+        "madara",
+        "josuke"
+      ],
+      "explanation": "Madara: 1400 Yen. Josuke: 400 Yen.",
+      "family": "deploy-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "upgrades-compare:madara:josuke",
+      "category": "Upgrades",
+      "subject": "madara:josuke",
+      "prompt": "Quem tinha **mais upgrades** no lançamento: **Madara** ou **Josuke**?",
+      "answer": "Mazara",
+      "answers": [
+        "Mazara",
+        "Madara",
+        "Madara Uchiha",
+        "Marada"
+      ],
+      "options": [
+        "Mazara",
+        "Jose",
+        "Mesma quantidade"
+      ],
+      "sources": [
+        "madara",
+        "josuke"
+      ],
+      "explanation": "Madara: 7. Josuke: 4.",
+      "family": "upgrades-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "deploy-compare:madara:zoro",
+      "category": "Upgrades",
+      "subject": "madara:zoro",
+      "prompt": "Qual custava **menos Yen para colocar no mapa** no lançamento: **Madara** ou **Zoro**?",
+      "answer": "Zen",
+      "answers": [
+        "Zen",
+        "Zoro",
+        "Roronoa Zoro",
+        "Zoru"
+      ],
+      "options": [
+        "Zen",
+        "Mesmo custo",
+        "Mazara"
+      ],
+      "sources": [
+        "madara",
+        "zoro"
+      ],
+      "explanation": "Madara: 1400 Yen. Zoro: 400 Yen.",
+      "family": "deploy-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "upgrades-compare:madara:zoro",
+      "category": "Upgrades",
+      "subject": "madara:zoro",
+      "prompt": "Quem tinha **mais upgrades** no lançamento: **Madara** ou **Zoro**?",
+      "answer": "Mazara",
+      "answers": [
+        "Mazara",
+        "Madara",
+        "Madara Uchiha",
+        "Marada"
+      ],
+      "options": [
+        "Zen",
+        "Mazara",
+        "Mesma quantidade"
+      ],
+      "sources": [
+        "madara",
+        "zoro"
+      ],
+      "explanation": "Madara: 7. Zoro: 4.",
+      "family": "upgrades-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "deploy-compare:ichigo:josuke",
+      "category": "Upgrades",
+      "subject": "ichigo:josuke",
+      "prompt": "Qual custava **menos Yen para colocar no mapa** no lançamento: **Ichigo** ou **Josuke**?",
+      "answer": "Spirit Reaper",
+      "answers": [
+        "Spirit Reaper",
+        "Ichigo",
+        "Ichigo Kurosaki",
+        "Ichi"
+      ],
+      "options": [
+        "Spirit Reaper",
+        "Mesmo custo",
+        "Jose"
+      ],
+      "sources": [
+        "ichigo",
+        "josuke"
+      ],
+      "explanation": "Ichigo: 350 Yen. Josuke: 400 Yen.",
+      "family": "deploy-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "upgrades-compare:ichigo:josuke",
+      "category": "Upgrades",
+      "subject": "ichigo:josuke",
+      "prompt": "Quem tinha **mais upgrades** no lançamento: **Ichigo** ou **Josuke**?",
+      "answer": "Mesma quantidade",
+      "answers": [
+        "Mesma quantidade"
+      ],
+      "options": [
+        "Mesma quantidade",
+        "Spirit Reaper",
+        "Jose"
+      ],
+      "sources": [
+        "ichigo",
+        "josuke"
+      ],
+      "explanation": "Ichigo: 4. Josuke: 4.",
+      "family": "upgrades-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "deploy-compare:ichigo:zoro",
+      "category": "Upgrades",
+      "subject": "ichigo:zoro",
+      "prompt": "Qual custava **menos Yen para colocar no mapa** no lançamento: **Ichigo** ou **Zoro**?",
+      "answer": "Spirit Reaper",
+      "answers": [
+        "Spirit Reaper",
+        "Ichigo",
+        "Ichigo Kurosaki",
+        "Ichi"
+      ],
+      "options": [
+        "Spirit Reaper",
+        "Zen",
+        "Mesmo custo"
+      ],
+      "sources": [
+        "ichigo",
+        "zoro"
+      ],
+      "explanation": "Ichigo: 350 Yen. Zoro: 400 Yen.",
+      "family": "deploy-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "upgrades-compare:ichigo:zoro",
+      "category": "Upgrades",
+      "subject": "ichigo:zoro",
+      "prompt": "Quem tinha **mais upgrades** no lançamento: **Ichigo** ou **Zoro**?",
+      "answer": "Mesma quantidade",
+      "answers": [
+        "Mesma quantidade"
+      ],
+      "options": [
+        "Spirit Reaper",
+        "Zen",
+        "Mesma quantidade"
+      ],
+      "sources": [
+        "ichigo",
+        "zoro"
+      ],
+      "explanation": "Ichigo: 4. Zoro: 4.",
+      "family": "upgrades-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "deploy-compare:josuke:zoro",
+      "category": "Upgrades",
+      "subject": "josuke:zoro",
+      "prompt": "Qual custava **menos Yen para colocar no mapa** no lançamento: **Josuke** ou **Zoro**?",
+      "answer": "Mesmo custo",
+      "answers": [
+        "Mesmo custo"
+      ],
+      "options": [
+        "Mesmo custo",
+        "Zen",
+        "Jose"
+      ],
+      "sources": [
+        "josuke",
+        "zoro"
+      ],
+      "explanation": "Josuke: 400 Yen. Zoro: 400 Yen.",
+      "family": "deploy-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "upgrades-compare:josuke:zoro",
+      "category": "Upgrades",
+      "subject": "josuke:zoro",
+      "prompt": "Quem tinha **mais upgrades** no lançamento: **Josuke** ou **Zoro**?",
+      "answer": "Mesma quantidade",
+      "answers": [
+        "Mesma quantidade"
+      ],
+      "options": [
+        "Zen",
+        "Jose",
+        "Mesma quantidade"
+      ],
+      "sources": [
+        "josuke",
+        "zoro"
+      ],
+      "explanation": "Josuke: 4. Zoro: 4.",
+      "family": "upgrades-compare",
+      "alias_sources": [
+        "names"
+      ]
+    },
+    {
+      "id": "stats:josuke:total",
+      "category": "Upgrades",
+      "subject": "josuke",
+      "prompt": "Quanto **Yen custava Josuke com todos os upgrades**, no lançamento e sem modificadores?",
+      "answer": "6150 Yen",
+      "answers": [
+        "6150 Yen",
+        "6150",
+        "6.150",
+        "6.150 Yen",
+        "6 150",
+        "6 150 Yen"
+      ],
+      "options": [
+        "6150 Yen",
+        "5750 Yen",
+        "400 Yen"
+      ],
+      "sources": [
+        "josuke"
+      ],
+      "explanation": "O custo total registrado para Josuke era 6150 Yen, incluindo a implantação.",
+      "family": "stats",
+      "media_key": "unit-josuke",
+      "image_after_answer": false
+    },
+    {
+      "id": "sell-refund:madara",
+      "category": "Economia",
+      "subject": "madara",
+      "prompt": "Sem upgrades nem modificadores, vender **Madara logo após colocar no mapa** devolvia quanto Yen?",
+      "answer": "350 Yen",
+      "answers": [
+        "350 Yen",
+        "350"
+      ],
+      "options": [
+        "350 Yen",
+        "700 Yen",
+        "1400 Yen"
+      ],
+      "sources": [
+        "madara"
+      ],
+      "explanation": "A venda devolvia 25% do investimento: 1400 × 0,25 = 350 Yen.",
+      "family": "sell-refund",
+      "media_key": "unit-madara",
+      "image_after_answer": false
+    },
+    {
+      "id": "sell-refund:josuke",
+      "category": "Economia",
+      "subject": "josuke",
+      "prompt": "Sem upgrades nem modificadores, vender **Josuke logo após colocar no mapa** devolvia quanto Yen?",
+      "answer": "100 Yen",
+      "answers": [
+        "100 Yen",
+        "100"
+      ],
+      "options": [
+        "400 Yen",
+        "200 Yen",
+        "100 Yen"
+      ],
+      "sources": [
+        "josuke"
+      ],
+      "explanation": "A venda devolvia 25% do investimento: 400 × 0,25 = 100 Yen.",
+      "family": "sell-refund",
+      "media_key": "unit-josuke",
+      "image_after_answer": false
+    },
+    {
+      "id": "sell-refund:zoro",
+      "category": "Economia",
+      "subject": "zoro",
+      "prompt": "Sem upgrades nem modificadores, vender **Zoro logo após colocar no mapa** devolvia quanto Yen?",
+      "answer": "100 Yen",
+      "answers": [
+        "100 Yen",
+        "100"
+      ],
+      "options": [
+        "800 Yen",
+        "100 Yen",
+        "400 Yen"
+      ],
+      "sources": [
+        "zoro"
+      ],
+      "explanation": "A venda devolvia 25% do investimento: 400 × 0,25 = 100 Yen.",
+      "family": "sell-refund",
+      "media_key": "unit-zoro",
+      "image_after_answer": false
+    },
+    {
+      "id": "food-compare:Senzu Beans:Mysterious Fluid",
+      "category": "Comida e XP",
+      "subject": "Senzu Beans:Mysterious Fluid",
+      "prompt": "Qual item dava **mais XP por unidade** no lançamento: **Senzu Beans** ou **Mysterious Fluid**?",
+      "answer": "Mysterious Fluid",
+      "answers": [
+        "Mysterious Fluid"
+      ],
+      "options": [
+        "Wisteria Flower",
+        "Senzu Beans",
+        "Mysterious Fluid"
+      ],
+      "sources": [
+        "items"
+      ],
+      "explanation": "Senzu Beans: 25 XP. Mysterious Fluid: 50 XP.",
+      "family": "food-compare"
+    },
+    {
+      "id": "food-compare:Senzu Beans:Wisteria Flower",
+      "category": "Comida e XP",
+      "subject": "Senzu Beans:Wisteria Flower",
+      "prompt": "Qual item dava **mais XP por unidade** no lançamento: **Senzu Beans** ou **Wisteria Flower**?",
+      "answer": "Wisteria Flower",
+      "answers": [
+        "Wisteria Flower"
+      ],
+      "options": [
+        "Ramen",
+        "Wisteria Flower",
+        "Mysterious Fluid"
+      ],
+      "sources": [
+        "items"
+      ],
+      "explanation": "Senzu Beans: 25 XP. Wisteria Flower: 115 XP.",
+      "family": "food-compare"
+    },
+    {
+      "id": "food-compare:Senzu Beans:Ramen",
+      "category": "Comida e XP",
+      "subject": "Senzu Beans:Ramen",
+      "prompt": "Qual item dava **mais XP por unidade** no lançamento: **Senzu Beans** ou **Ramen**?",
+      "answer": "Ramen",
+      "answers": [
+        "Ramen"
+      ],
+      "options": [
+        "Ramen",
+        "Wisteria Flower",
+        "Senzu Beans"
+      ],
+      "sources": [
+        "items"
+      ],
+      "explanation": "Senzu Beans: 25 XP. Ramen: 250 XP.",
+      "family": "food-compare"
+    },
+    {
+      "id": "food-compare:Mysterious Fluid:Wisteria Flower",
+      "category": "Comida e XP",
+      "subject": "Mysterious Fluid:Wisteria Flower",
+      "prompt": "Qual item dava **mais XP por unidade** no lançamento: **Mysterious Fluid** ou **Wisteria Flower**?",
+      "answer": "Wisteria Flower",
+      "answers": [
+        "Wisteria Flower"
+      ],
+      "options": [
+        "Mysterious Fluid",
+        "Ramen",
+        "Wisteria Flower"
+      ],
+      "sources": [
+        "items"
+      ],
+      "explanation": "Mysterious Fluid: 50 XP. Wisteria Flower: 115 XP.",
+      "family": "food-compare"
+    },
+    {
+      "id": "food-compare:Mysterious Fluid:Ramen",
+      "category": "Comida e XP",
+      "subject": "Mysterious Fluid:Ramen",
+      "prompt": "Qual item dava **mais XP por unidade** no lançamento: **Mysterious Fluid** ou **Ramen**?",
+      "answer": "Ramen",
+      "answers": [
+        "Ramen"
+      ],
+      "options": [
+        "Ramen",
+        "Mysterious Fluid",
+        "Senzu Beans"
+      ],
+      "sources": [
+        "items"
+      ],
+      "explanation": "Mysterious Fluid: 50 XP. Ramen: 250 XP.",
+      "family": "food-compare"
+    },
+    {
+      "id": "food-compare:Wisteria Flower:Ramen",
+      "category": "Comida e XP",
+      "subject": "Wisteria Flower:Ramen",
+      "prompt": "Qual item dava **mais XP por unidade** no lançamento: **Wisteria Flower** ou **Ramen**?",
+      "answer": "Ramen",
+      "answers": [
+        "Ramen"
+      ],
+      "options": [
+        "Senzu Beans",
+        "Ramen",
+        "Mysterious Fluid"
+      ],
+      "sources": [
+        "items"
+      ],
+      "explanation": "Wisteria Flower: 115 XP. Ramen: 250 XP.",
+      "family": "food-compare"
+    },
+    {
+      "id": "food-extreme:mais",
+      "category": "Comida e XP",
+      "subject": "food",
+      "prompt": "Entre **Senzu Beans, Mysterious Fluid, Wisteria Flower e Ramen**, qual dava **mais XP** por item?",
+      "answer": "Ramen",
+      "answers": [
+        "Ramen"
+      ],
+      "options": [
+        "Mysterious Fluid",
+        "Wisteria Flower",
+        "Ramen"
+      ],
+      "sources": [
+        "items"
+      ],
+      "explanation": "Ramen dava 250 XP por item.",
+      "family": "food-extreme"
+    },
+    {
+      "id": "food-extreme:menos",
+      "category": "Comida e XP",
+      "subject": "food",
+      "prompt": "Entre **Senzu Beans, Mysterious Fluid, Wisteria Flower e Ramen**, qual dava **menos XP** por item?",
+      "answer": "Senzu Beans",
+      "answers": [
+        "Senzu Beans"
+      ],
+      "options": [
+        "Senzu Beans",
+        "Ramen",
+        "Wisteria Flower"
+      ],
+      "sources": [
+        "items"
+      ],
+      "explanation": "Senzu Beans dava 25 XP por item.",
+      "family": "food-extreme"
+    },
+    {
+      "id": "world-route:next:1",
+      "category": "Mundos",
+      "subject": "world:1",
+      "prompt": "Qual era o **próximo mundo do Story depois de Planet Namak** no lançamento?",
+      "answer": "Shiganshinu District",
+      "answers": [
+        "Shiganshinu District"
+      ],
+      "options": [
+        "Shiganshinu District",
+        "Planet Namak",
+        "Hidden Sand Village"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "A sequência era Planet Namak → Shiganshinu District.",
+      "family": "world-route"
+    },
+    {
+      "id": "world-route:previous:2",
+      "category": "Mundos",
+      "subject": "world:2",
+      "prompt": "Qual mundo vinha **imediatamente antes de Shiganshinu District** no Story do lançamento?",
+      "answer": "Planet Namak",
+      "answers": [
+        "Planet Namak"
+      ],
+      "options": [
+        "Hidden Sand Village",
+        "Snowy Town",
+        "Planet Namak"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "A sequência era Planet Namak → Shiganshinu District.",
+      "family": "world-route"
+    },
+    {
+      "id": "world-route:next:2",
+      "category": "Mundos",
+      "subject": "world:2",
+      "prompt": "Qual era o **próximo mundo do Story depois de Shiganshinu District** no lançamento?",
+      "answer": "Snowy Town",
+      "answers": [
+        "Snowy Town"
+      ],
+      "options": [
+        "Snowy Town",
+        "Shiganshinu District",
+        "Hidden Sand Village"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "A sequência era Shiganshinu District → Snowy Town.",
+      "family": "world-route"
+    },
+    {
+      "id": "world-route:previous:3",
+      "category": "Mundos",
+      "subject": "world:3",
+      "prompt": "Qual mundo vinha **imediatamente antes de Snowy Town** no Story do lançamento?",
+      "answer": "Shiganshinu District",
+      "answers": [
+        "Shiganshinu District"
+      ],
+      "options": [
+        "Snowy Town",
+        "Hidden Sand Village",
+        "Shiganshinu District"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "A sequência era Shiganshinu District → Snowy Town.",
+      "family": "world-route"
+    },
+    {
+      "id": "world-route:next:3",
+      "category": "Mundos",
+      "subject": "world:3",
+      "prompt": "Qual era o **próximo mundo do Story depois de Snowy Town** no lançamento?",
+      "answer": "Hidden Sand Village",
+      "answers": [
+        "Hidden Sand Village"
+      ],
+      "options": [
+        "Hidden Sand Village",
+        "Snowy Town",
+        "Shiganshinu District"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "A sequência era Snowy Town → Hidden Sand Village.",
+      "family": "world-route"
+    },
+    {
+      "id": "world-route:previous:4",
+      "category": "Mundos",
+      "subject": "world:4",
+      "prompt": "Qual mundo vinha **imediatamente antes de Hidden Sand Village** no Story do lançamento?",
+      "answer": "Snowy Town",
+      "answers": [
+        "Snowy Town"
+      ],
+      "options": [
+        "Shiganshinu District",
+        "Snowy Town",
+        "Planet Namak"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "A sequência era Snowy Town → Hidden Sand Village.",
+      "family": "world-route"
+    },
+    {
+      "id": "world-route:compare:1:2",
+      "category": "Mundos",
+      "subject": "world:1",
+      "prompt": "Na progressão do Story do lançamento, qual vinha **primeiro**: **Planet Namak** ou **Shiganshinu District**?",
+      "answer": "Planet Namak",
+      "answers": [
+        "Planet Namak"
+      ],
+      "options": [
+        "Hidden Sand Village",
+        "Planet Namak",
+        "Shiganshinu District"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "Planet Namak era o mundo 1; Shiganshinu District, o mundo 2.",
+      "family": "world-route"
+    },
+    {
+      "id": "world-route:compare:1:3",
+      "category": "Mundos",
+      "subject": "world:1",
+      "prompt": "Na progressão do Story do lançamento, qual vinha **primeiro**: **Planet Namak** ou **Snowy Town**?",
+      "answer": "Planet Namak",
+      "answers": [
+        "Planet Namak"
+      ],
+      "options": [
+        "Planet Namak",
+        "Shiganshinu District",
+        "Snowy Town"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "Planet Namak era o mundo 1; Snowy Town, o mundo 3.",
+      "family": "world-route"
+    },
+    {
+      "id": "world-route:compare:1:4",
+      "category": "Mundos",
+      "subject": "world:1",
+      "prompt": "Na progressão do Story do lançamento, qual vinha **primeiro**: **Planet Namak** ou **Hidden Sand Village**?",
+      "answer": "Planet Namak",
+      "answers": [
+        "Planet Namak"
+      ],
+      "options": [
+        "Snowy Town",
+        "Planet Namak",
+        "Hidden Sand Village"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "Planet Namak era o mundo 1; Hidden Sand Village, o mundo 4.",
+      "family": "world-route"
+    },
+    {
+      "id": "world-route:compare:2:3",
+      "category": "Mundos",
+      "subject": "world:2",
+      "prompt": "Na progressão do Story do lançamento, qual vinha **primeiro**: **Shiganshinu District** ou **Snowy Town**?",
+      "answer": "Shiganshinu District",
+      "answers": [
+        "Shiganshinu District"
+      ],
+      "options": [
+        "Snowy Town",
+        "Shiganshinu District",
+        "Hidden Sand Village"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "Shiganshinu District era o mundo 2; Snowy Town, o mundo 3.",
+      "family": "world-route"
+    },
+    {
+      "id": "world-route:compare:2:4",
+      "category": "Mundos",
+      "subject": "world:2",
+      "prompt": "Na progressão do Story do lançamento, qual vinha **primeiro**: **Shiganshinu District** ou **Hidden Sand Village**?",
+      "answer": "Shiganshinu District",
+      "answers": [
+        "Shiganshinu District"
+      ],
+      "options": [
+        "Shiganshinu District",
+        "Snowy Town",
+        "Planet Namak"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "Shiganshinu District era o mundo 2; Hidden Sand Village, o mundo 4.",
+      "family": "world-route"
+    },
+    {
+      "id": "world-route:compare:3:4",
+      "category": "Mundos",
+      "subject": "world:3",
+      "prompt": "Na progressão do Story do lançamento, qual vinha **primeiro**: **Snowy Town** ou **Hidden Sand Village**?",
+      "answer": "Snowy Town",
+      "answers": [
+        "Snowy Town"
+      ],
+      "options": [
+        "Snowy Town",
+        "Hidden Sand Village",
+        "Shiganshinu District"
+      ],
+      "sources": [
+        "worlds"
+      ],
+      "explanation": "Snowy Town era o mundo 3; Hidden Sand Village, o mundo 4.",
+      "family": "world-route"
+    },
+    {
+      "id": "act-position:1:1",
+      "category": "Atos",
+      "subject": "world:1",
+      "prompt": "Em **Planet Namak**, qual era o **número do ato Evil Elegeance**?",
+      "answer": "Ato 1",
+      "answers": [
+        "Ato 1"
+      ],
+      "options": [
+        "Ato 1",
+        "Ato 5",
+        "Ato 2"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "Evil Elegeance era o ato 1 de Planet Namak.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:1:2",
+      "category": "Atos",
+      "subject": "world:1",
+      "prompt": "Em **Planet Namak**, qual era o **número do ato Technician of Time**?",
+      "answer": "Ato 2",
+      "answers": [
+        "Ato 2"
+      ],
+      "options": [
+        "Ato 3",
+        "Ato 5",
+        "Ato 2"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "Technician of Time era o ato 2 de Planet Namak.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:1:3",
+      "category": "Atos",
+      "subject": "world:1",
+      "prompt": "Em **Planet Namak**, qual era o **número do ato Dazzling Destruction**?",
+      "answer": "Ato 3",
+      "answers": [
+        "Ato 3"
+      ],
+      "options": [
+        "Ato 3",
+        "Ato 5",
+        "Ato 2"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "Dazzling Destruction era o ato 3 de Planet Namak.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:1:4",
+      "category": "Atos",
+      "subject": "world:1",
+      "prompt": "Em **Planet Namak**, qual era o **número do ato The Blue Hurricane**?",
+      "answer": "Ato 4",
+      "answers": [
+        "Ato 4"
+      ],
+      "options": [
+        "Ato 3",
+        "Ato 1",
+        "Ato 4"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Blue Hurricane era o ato 4 de Planet Namak.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:1:5",
+      "category": "Atos",
+      "subject": "world:1",
+      "prompt": "Em **Planet Namak**, qual era o **número do ato The Ultimate Squadron**?",
+      "answer": "Ato 5",
+      "answers": [
+        "Ato 5"
+      ],
+      "options": [
+        "Ato 1",
+        "Ato 4",
+        "Ato 5"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Ultimate Squadron era o ato 5 de Planet Namak.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:1:6",
+      "category": "Atos",
+      "subject": "world:1",
+      "prompt": "Em **Planet Namak**, qual era o **número do ato The Purple Tyrant**?",
+      "answer": "Ato 6",
+      "answers": [
+        "Ato 6"
+      ],
+      "options": [
+        "Ato 5",
+        "Ato 6",
+        "Ato 2"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Purple Tyrant era o ato 6 de Planet Namak.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:2:1",
+      "category": "Atos",
+      "subject": "world:2",
+      "prompt": "Em **Shiganshinu District**, qual era o **número do ato The Jaw Titan**?",
+      "answer": "Ato 1",
+      "answers": [
+        "Ato 1"
+      ],
+      "options": [
+        "Ato 5",
+        "Ato 1",
+        "Ato 6"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Jaw Titan era o ato 1 de Shiganshinu District.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:2:2",
+      "category": "Atos",
+      "subject": "world:2",
+      "prompt": "Em **Shiganshinu District**, qual era o **número do ato The Female Titan**?",
+      "answer": "Ato 2",
+      "answers": [
+        "Ato 2"
+      ],
+      "options": [
+        "Ato 2",
+        "Ato 3",
+        "Ato 6"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Female Titan era o ato 2 de Shiganshinu District.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:2:3",
+      "category": "Atos",
+      "subject": "world:2",
+      "prompt": "Em **Shiganshinu District**, qual era o **número do ato The Beast Titan**?",
+      "answer": "Ato 3",
+      "answers": [
+        "Ato 3"
+      ],
+      "options": [
+        "Ato 6",
+        "Ato 3",
+        "Ato 1"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Beast Titan era o ato 3 de Shiganshinu District.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:2:4",
+      "category": "Atos",
+      "subject": "world:2",
+      "prompt": "Em **Shiganshinu District**, qual era o **número do ato The Armored Titan**?",
+      "answer": "Ato 4",
+      "answers": [
+        "Ato 4"
+      ],
+      "options": [
+        "Ato 4",
+        "Ato 3",
+        "Ato 2"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Armored Titan era o ato 4 de Shiganshinu District.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:2:5",
+      "category": "Atos",
+      "subject": "world:2",
+      "prompt": "Em **Shiganshinu District**, qual era o **número do ato The Warhammer Titan**?",
+      "answer": "Ato 5",
+      "answers": [
+        "Ato 5"
+      ],
+      "options": [
+        "Ato 1",
+        "Ato 5",
+        "Ato 3"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Warhammer Titan era o ato 5 de Shiganshinu District.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:2:6",
+      "category": "Atos",
+      "subject": "world:2",
+      "prompt": "Em **Shiganshinu District**, qual era o **número do ato The Colossal Titan**?",
+      "answer": "Ato 6",
+      "answers": [
+        "Ato 6"
+      ],
+      "options": [
+        "Ato 6",
+        "Ato 4",
+        "Ato 2"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Colossal Titan era o ato 6 de Shiganshinu District.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:3:1",
+      "category": "Atos",
+      "subject": "world:3",
+      "prompt": "Em **Snowy Town**, qual era o **número do ato The Arrow Demon**?",
+      "answer": "Ato 1",
+      "answers": [
+        "Ato 1"
+      ],
+      "options": [
+        "Ato 4",
+        "Ato 1",
+        "Ato 5"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Arrow Demon era o ato 1 de Snowy Town.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:3:2",
+      "category": "Atos",
+      "subject": "world:3",
+      "prompt": "Em **Snowy Town**, qual era o **número do ato The Spider Demon**?",
+      "answer": "Ato 2",
+      "answers": [
+        "Ato 2"
+      ],
+      "options": [
+        "Ato 1",
+        "Ato 2",
+        "Ato 6"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Spider Demon era o ato 2 de Snowy Town.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:3:3",
+      "category": "Atos",
+      "subject": "world:3",
+      "prompt": "Em **Snowy Town**, qual era o **número do ato Upper Moon**?",
+      "answer": "Ato 3",
+      "answers": [
+        "Ato 3"
+      ],
+      "options": [
+        "Ato 4",
+        "Ato 6",
+        "Ato 3"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "Upper Moon era o ato 3 de Snowy Town.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:3:4",
+      "category": "Atos",
+      "subject": "world:3",
+      "prompt": "Em **Snowy Town**, qual era o **número do ato The Ice Demon**?",
+      "answer": "Ato 4",
+      "answers": [
+        "Ato 4"
+      ],
+      "options": [
+        "Ato 5",
+        "Ato 4",
+        "Ato 1"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Ice Demon era o ato 4 de Snowy Town.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:3:5",
+      "category": "Atos",
+      "subject": "world:3",
+      "prompt": "Em **Snowy Town**, qual era o **número do ato The Moon Demon**?",
+      "answer": "Ato 5",
+      "answers": [
+        "Ato 5"
+      ],
+      "options": [
+        "Ato 6",
+        "Ato 5",
+        "Ato 2"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Moon Demon era o ato 5 de Snowy Town.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:3:6",
+      "category": "Atos",
+      "subject": "world:3",
+      "prompt": "Em **Snowy Town**, qual era o **número do ato The Demon King**?",
+      "answer": "Ato 6",
+      "answers": [
+        "Ato 6"
+      ],
+      "options": [
+        "Ato 1",
+        "Ato 6",
+        "Ato 3"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Demon King era o ato 6 de Snowy Town.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:4:1",
+      "category": "Atos",
+      "subject": "world:4",
+      "prompt": "Em **Hidden Sand Village**, qual era o **número do ato The Immortal Ninja**?",
+      "answer": "Ato 1",
+      "answers": [
+        "Ato 1"
+      ],
+      "options": [
+        "Ato 3",
+        "Ato 4",
+        "Ato 1"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Immortal Ninja era o ato 1 de Hidden Sand Village.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:4:2",
+      "category": "Atos",
+      "subject": "world:4",
+      "prompt": "Em **Hidden Sand Village**, qual era o **número do ato The Monster of the Hidden Mist**?",
+      "answer": "Ato 2",
+      "answers": [
+        "Ato 2"
+      ],
+      "options": [
+        "Ato 2",
+        "Ato 3",
+        "Ato 4"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Monster of the Hidden Mist era o ato 2 de Hidden Sand Village.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:4:3",
+      "category": "Atos",
+      "subject": "world:4",
+      "prompt": "Em **Hidden Sand Village**, qual era o **número do ato The White Land**?",
+      "answer": "Ato 3",
+      "answers": [
+        "Ato 3"
+      ],
+      "options": [
+        "Ato 1",
+        "Ato 3",
+        "Ato 4"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The White Land era o ato 3 de Hidden Sand Village.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:4:4",
+      "category": "Atos",
+      "subject": "world:4",
+      "prompt": "Em **Hidden Sand Village**, qual era o **número do ato The Crow**?",
+      "answer": "Ato 4",
+      "answers": [
+        "Ato 4"
+      ],
+      "options": [
+        "Ato 3",
+        "Ato 4",
+        "Ato 1"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Crow era o ato 4 de Hidden Sand Village.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:4:5",
+      "category": "Atos",
+      "subject": "world:4",
+      "prompt": "Em **Hidden Sand Village**, qual era o **número do ato The Revived Puppet**?",
+      "answer": "Ato 5",
+      "answers": [
+        "Ato 5"
+      ],
+      "options": [
+        "Ato 3",
+        "Ato 6",
+        "Ato 5"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Revived Puppet era o ato 5 de Hidden Sand Village.",
+      "family": "act-position"
+    },
+    {
+      "id": "act-position:4:6",
+      "category": "Atos",
+      "subject": "world:4",
+      "prompt": "Em **Hidden Sand Village**, qual era o **número do ato The Scorpion of the Red Sand**?",
+      "answer": "Ato 6",
+      "answers": [
+        "Ato 6"
+      ],
+      "options": [
+        "Ato 1",
+        "Ato 4",
+        "Ato 6"
+      ],
+      "sources": [
+        "story"
+      ],
+      "explanation": "The Scorpion of the Red Sand era o ato 6 de Hidden Sand Village.",
+      "family": "act-position"
+    },
+    {
+      "id": "quest-identify:Summoning I",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Qual **Daily quest do lançamento** tinha como objetivo **fazer pelo menos 1 summon**?",
+      "answer": "Summoning I",
+      "answers": [
+        "Summoning I"
+      ],
+      "options": [
+        "Challenge I",
+        "Summoning I",
+        "Damage I"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Summoning I: fazer pelo menos 1 summon.",
+      "family": "quest-identify"
+    },
+    {
+      "id": "quest-identify:Challenge I",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Qual **Daily quest do lançamento** tinha como objetivo **concluir dois Challenges**?",
+      "answer": "Challenge I",
+      "answers": [
+        "Challenge I"
+      ],
+      "options": [
+        "Challenge I",
+        "Kills V",
+        "Multiplayer II"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Challenge I: concluir dois Challenges.",
+      "family": "quest-identify"
+    },
+    {
+      "id": "quest-identify:Damage I",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Qual **Daily quest do lançamento** tinha como objetivo **causar 10.000 de dano**?",
+      "answer": "Damage I",
+      "answers": [
+        "Damage I"
+      ],
+      "options": [
+        "Kills IV",
+        "Damage I",
+        "Kills V"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Damage I: causar 10.000 de dano.",
+      "family": "quest-identify"
+    },
+    {
+      "id": "quest-identify:Story II",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Qual **Daily quest do lançamento** tinha como objetivo **concluir fases de Story três vezes**?",
+      "answer": "Story II",
+      "answers": [
+        "Story II"
+      ],
+      "options": [
+        "Story II",
+        "Damage I",
+        "Challenge I"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Story II: concluir fases de Story três vezes.",
+      "family": "quest-identify"
+    },
+    {
+      "id": "quest-identify:Story III",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Qual **Daily quest do lançamento** tinha como objetivo **concluir fases de Story cinco vezes**?",
+      "answer": "Story III",
+      "answers": [
+        "Story III"
+      ],
+      "options": [
+        "Kills IV",
+        "Story III",
+        "Challenge I"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Story III: concluir fases de Story cinco vezes.",
+      "family": "quest-identify"
+    },
+    {
+      "id": "quest-identify:Multiplayer II",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Qual **Daily quest do lançamento** tinha como objetivo **concluir três fases com pelo menos outro jogador**?",
+      "answer": "Multiplayer II",
+      "answers": [
+        "Multiplayer II"
+      ],
+      "options": [
+        "Multiplayer II",
+        "Damage I",
+        "Kills V"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Multiplayer II: concluir três fases com pelo menos outro jogador.",
+      "family": "quest-identify"
+    },
+    {
+      "id": "quest-identify:Multiplayer III",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Qual **Daily quest do lançamento** tinha como objetivo **concluir cinco fases com pelo menos outro jogador**?",
+      "answer": "Multiplayer III",
+      "answers": [
+        "Multiplayer III"
+      ],
+      "options": [
+        "Challenge I",
+        "Multiplayer III",
+        "Kills V"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Multiplayer III: concluir cinco fases com pelo menos outro jogador.",
+      "family": "quest-identify"
+    },
+    {
+      "id": "quest-identify:Kills IV",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Qual **Daily quest do lançamento** tinha como objetivo **derrotar 1.000 inimigos**?",
+      "answer": "Kills IV",
+      "answers": [
+        "Kills IV"
+      ],
+      "options": [
+        "Multiplayer II",
+        "Challenge I",
+        "Kills IV"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Kills IV: derrotar 1.000 inimigos.",
+      "family": "quest-identify"
+    },
+    {
+      "id": "quest-identify:Kills V",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Qual **Daily quest do lançamento** tinha como objetivo **derrotar 2.000 inimigos**?",
+      "answer": "Kills V",
+      "answers": [
+        "Kills V"
+      ],
+      "options": [
+        "Story II",
+        "Kills V",
+        "Multiplayer III"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Kills V: derrotar 2.000 inimigos.",
+      "family": "quest-identify"
+    },
+    {
+      "id": "quest-scope:Damage I",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Em quais modos o progresso de **Damage I** podia ser feito no lançamento?",
+      "answer": "Qualquer modo",
+      "answers": [
+        "Qualquer modo"
+      ],
+      "options": [
+        "Somente Infinite",
+        "Qualquer modo",
+        "Somente Story"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "O objetivo de Damage I podia ser cumprido em qualquer modo.",
+      "family": "quest-scope"
+    },
+    {
+      "id": "quest-scope:Kills IV",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Em quais modos o progresso de **Kills IV** podia ser feito no lançamento?",
+      "answer": "Qualquer modo",
+      "answers": [
+        "Qualquer modo"
+      ],
+      "options": [
+        "Somente Infinite",
+        "Somente Story",
+        "Qualquer modo"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "O objetivo de Kills IV podia ser cumprido em qualquer modo.",
+      "family": "quest-scope"
+    },
+    {
+      "id": "quest-scope:Kills V",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Em quais modos o progresso de **Kills V** podia ser feito no lançamento?",
+      "answer": "Qualquer modo",
+      "answers": [
+        "Qualquer modo"
+      ],
+      "options": [
+        "Somente Story",
+        "Qualquer modo",
+        "Somente Infinite"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "O objetivo de Kills V podia ser cumprido em qualquer modo.",
+      "family": "quest-scope"
+    },
+    {
+      "id": "quest-scope:Story II",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Para **Story II**, quais fases de Story contavam no lançamento?",
+      "answer": "Qualquer fase e dificuldade de Story",
+      "answers": [
+        "Qualquer fase e dificuldade de Story"
+      ],
+      "options": [
+        "Somente a dificuldade Hard",
+        "Somente a primeira conclusão de um ato",
+        "Qualquer fase e dificuldade de Story"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Story II aceitava qualquer fase de Story, em qualquer dificuldade.",
+      "family": "quest-scope"
+    },
+    {
+      "id": "quest-scope:Story III",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Para **Story III**, quais fases de Story contavam no lançamento?",
+      "answer": "Qualquer fase e dificuldade de Story",
+      "answers": [
+        "Qualquer fase e dificuldade de Story"
+      ],
+      "options": [
+        "Somente a primeira conclusão de um ato",
+        "Somente a dificuldade Hard",
+        "Qualquer fase e dificuldade de Story"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Story III aceitava qualquer fase de Story, em qualquer dificuldade.",
+      "family": "quest-scope"
+    },
+    {
+      "id": "quest-team:Multiplayer II",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Qual era a **condição de equipe** para avançar em **Multiplayer II** no lançamento?",
+      "answer": "Jogar com pelo menos outra pessoa",
+      "answers": [
+        "Jogar com pelo menos outra pessoa"
+      ],
+      "options": [
+        "Jogar com pelo menos outra pessoa",
+        "Jogar sozinho",
+        "Ter pelo menos três outras pessoas"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Multiplayer II exigia concluir as fases com pelo menos outro jogador.",
+      "family": "quest-team"
+    },
+    {
+      "id": "quest-team:Multiplayer III",
+      "category": "Missões",
+      "subject": "daily",
+      "prompt": "Qual era a **condição de equipe** para avançar em **Multiplayer III** no lançamento?",
+      "answer": "Jogar com pelo menos outra pessoa",
+      "answers": [
+        "Jogar com pelo menos outra pessoa"
+      ],
+      "options": [
+        "Ter pelo menos três outras pessoas",
+        "Jogar com pelo menos outra pessoa",
+        "Jogar sozinho"
+      ],
+      "sources": [
+        "quests"
+      ],
+      "explanation": "Multiplayer III exigia concluir as fases com pelo menos outro jogador.",
+      "family": "quest-team"
+    },
+    {
+      "id": "store-value:VIP",
+      "category": "Loja e códigos",
+      "subject": "VIP",
+      "prompt": "De quanto era o **desconto do VIP no summon** no lançamento?",
+      "answer": "20 %",
+      "answers": [
+        "20",
+        "20 %"
+      ],
+      "options": [
+        "60 %",
+        "20 %",
+        "21 %"
+      ],
+      "sources": [
+        "store"
+      ],
+      "explanation": "VIP: 20 %.",
+      "family": "store-value"
+    },
+    {
+      "id": "store-value:Unit Storage",
+      "category": "Loja e códigos",
+      "subject": "Unit Storage",
+      "prompt": "Quantos **espaços de inventário** o produto **Unit Storage** adicionava no lançamento?",
+      "answer": "100 espaços",
+      "answers": [
+        "100",
+        "100 espaços"
+      ],
+      "options": [
+        "100 espaços",
+        "101 espaços",
+        "300 espaços"
+      ],
+      "sources": [
+        "store"
+      ],
+      "explanation": "Unit Storage: 100 espaços.",
+      "family": "store-value"
+    },
+    {
+      "id": "store:vip-tag",
+      "category": "Loja e códigos",
+      "subject": "VIP",
+      "prompt": "Além do desconto no summon, qual **benefício visual o VIP** dava no lançamento?",
+      "answer": "Nametag exclusiva",
+      "answers": [
+        "Nametag exclusiva",
+        "Uma nametag exclusiva",
+        "Tag exclusiva"
+      ],
+      "options": [
+        "Todas as unidades Shiny",
+        "Nametag exclusiva",
+        "Exibir três unidades no avatar"
+      ],
+      "sources": [
+        "store"
+      ],
+      "explanation": "O VIP dava desconto de 20% no summon e uma nametag exclusiva.",
+      "family": "store:visual"
+    },
+    {
+      "id": "store-value:Super Lucky",
+      "category": "Loja e códigos",
+      "subject": "Super Lucky",
+      "prompt": "Em quantas vezes **Super Lucky** multiplicava as chances de Legendary e Mythic?",
+      "answer": "2 vezes",
+      "answers": [
+        "2",
+        "2 vezes"
+      ],
+      "options": [
+        "2 vezes",
+        "4 vezes",
+        "6 vezes"
+      ],
+      "sources": [
+        "store"
+      ],
+      "explanation": "Super Lucky: 2 vezes.",
+      "family": "store-value"
+    },
+    {
+      "id": "store-value:Ultra Lucky",
+      "category": "Loja e códigos",
+      "subject": "Ultra Lucky",
+      "prompt": "Em quantas vezes **Ultra Lucky** multiplicava as chances de Legendary e Mythic?",
+      "answer": "3 vezes",
+      "answers": [
+        "3",
+        "3 vezes"
+      ],
+      "options": [
+        "9 vezes",
+        "6 vezes",
+        "3 vezes"
+      ],
+      "sources": [
+        "store"
+      ],
+      "explanation": "Ultra Lucky: 3 vezes.",
+      "family": "store-value"
+    },
+    {
+      "id": "store:temporary",
+      "category": "Loja e códigos",
+      "subject": "store",
+      "prompt": "Quais produtos da Store eram **boosts com duração limitada** no lançamento?",
+      "answer": "Super Lucky e Ultra Lucky",
+      "answers": [
+        "Super Lucky e Ultra Lucky"
+      ],
+      "options": [
+        "Super Lucky e Ultra Lucky",
+        "VIP e Shiny Hunter",
+        "Unit Storage e Display 3 Units"
+      ],
+      "sources": [
+        "store"
+      ],
+      "explanation": "Super Lucky e Ultra Lucky eram os produtos temporários descritos na loja.",
+      "family": "store"
+    },
+    {
+      "id": "codes:area",
+      "category": "Loja e códigos",
+      "subject": "codes",
+      "prompt": "Em qual **área do Lobby** os códigos eram resgatados no lançamento?",
+      "answer": "Codes",
+      "answers": [
+        "Codes"
+      ],
+      "options": [
+        "Leaderboard",
+        "Summon",
+        "Codes"
+      ],
+      "sources": [
+        "codes"
+      ],
+      "explanation": "Os códigos eram resgatados na área Codes do Lobby.",
+      "family": "codes"
+    },
+    {
+      "id": "infinite:leaderboard",
+      "category": "Modos",
+      "subject": "infinite",
+      "prompt": "Em qual **área do Lobby** ficava o ranking dos jogadores de Infinite?",
+      "answer": "Leaderboard",
+      "answers": [
+        "Leaderboard"
+      ],
+      "options": [
+        "Leaderboard",
+        "Shop",
+        "Evolve"
+      ],
+      "sources": [
+        "infinite"
+      ],
+      "explanation": "O ranking de Infinite ficava na área Leaderboard.",
+      "family": "infinite"
     }
   ],
   "question_policy": "Only in-game mechanics, visuals, names, areas, progression and source-derived practice scenarios. No anime biography riddles. Modern aliases/images do not update Release gameplay facts."

@@ -17,7 +17,7 @@ def load_media(path=MEDIA_FILE):
     for asset in data["assets"].values():
         if asset["kind"] not in ("wiki", "user_provided"):
             raise ValueError("A mídia deve vir do usuário ou da wiki de Anime Adventures.")
-        for value in (asset["path"], asset.get("quiz_path")):
+        for value in (asset["path"], asset.get("quiz_path"), asset.get('original_path')):
             if value:
                 local = (ROOT / value).resolve()
                 if not local.is_relative_to(ROOT / "assets") or not local.is_file():
@@ -50,6 +50,8 @@ def banner(index=0):
 
 
 def for_question(question, *, revealed=False):
+    if question.image_after_answer and not revealed:
+        return None
     prefix = question.id.split(":", 1)[0]
     units = MEDIA["units"]
     if question.media_key and (revealed or not question.image_after_answer):

@@ -74,7 +74,7 @@ def build_questions(data, normalize):
         asset = media['assets'].get(media['units'].get(u['id']))
         if asset and asset.get('quiz_path'):
             raw.append({'id': 'unit:' + u['id'], 'category': 'Unidades', 'subject': u['id'],
-                        'prompt': 'Qual é esta **unidade do Anime Adventures**, na forma base?',
+                        'prompt': 'Qual é esta **unidade na forma base**?',
                         'answer': u['game_name'] + ' · ' + u['character'], 'answers': aliases,
                         'explanation': '**Também vale:** ' + ', '.join(aliases[1:]) + '.',
                         'sources': u['sources'], 'family': 'unit:image', 'requires_image': True})

@@ -19,7 +19,13 @@ class IconTests(unittest.IsolatedAsyncioTestCase):
         for key, icon in icons.ICONS.items():
             asset = icons.asset(key)
             self.assertTrue(asset['transparent'])
-            self.assertEqual(asset['sha256'], asset['original_sha256'])
+            self.assertTrue(asset['colored'])
+            if asset.get('original_path'):
+                original = Path(__file__).resolve().parents[1] / asset['original_path']
+                self.assertEqual(hashlib.sha256(original.read_bytes()).hexdigest(), asset['original_sha256'])
+                self.assertIs(asset['processing']['recolored'], False)
+            else:
+                self.assertEqual(asset['sha256'], asset['original_sha256'])
             self.assertFalse(icon['processing']['generation'])
             raw = (Path(__file__).resolve().parents[1] / icon['upload_path']).read_bytes()
             self.assertEqual(hashlib.sha256(raw).hexdigest(), icon['upload_sha256'])
@@ -54,7 +60,7 @@ class IconTests(unittest.IsolatedAsyncioTestCase):
             self.assertNotIn('<:', view_text(view))
             start = next(i for i in view.walk_children() if getattr(i, 'custom_id', '') == 'aa:start')
             self.assertIsNone(start.emoji)
-            self.assertEqual(start.label, 'Começar quiz')
+            self.assertEqual(start.label, 'Começar')
 
     async def test_rarity_category_icon_cannot_signal_the_correct_rarity(self):
         s = app.QuizSession(Channel(), user(), None)
@@ -66,3 +72,13 @@ class IconTests(unittest.IsolatedAsyncioTestCase):
             headers.append(panel.children[0].to_component_dict())
         self.assertEqual(headers[0], headers[1])
         self.assertEqual(headers[1], headers[2])
+
+    async def test_reroll_item_question_cannot_show_its_answer_as_a_category_icon(self):
+        s = app.QuizSession(Channel(), user(), None)
+        s.ends_at = datetime.now(timezone.utc)
+        s.current_question = next(q for q in app.PACK.questions if q.id == 'trait:item')
+        panel = screen.question_panel(s, app.handle_control, 45)
+        payload = str(panel.to_components())
+        self.assertNotIn('item-star-remnant', payload)
+        if icons.ICONS['traits']['id']:
+            self.assertNotIn(icons.ICONS['traits']['id'], payload)

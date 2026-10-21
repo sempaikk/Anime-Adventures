@@ -4,6 +4,8 @@ from unittest.mock import Mock, patch
 
 import discord
 
+from scores import AwardResult
+
 import bot as app
 from test_controls import interaction
 from test_session import Channel, Message, until, user
@@ -21,7 +23,7 @@ class ChoiceTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.patches = [patch.object(app, 'QUESTION_TIME', .25), patch.object(app, 'BETWEEN_QUESTIONS', .01),
                         patch.object(app, 'COUNTDOWN_INTERVAL', .08),
-                        patch.object(app.bot, 'scores', Mock(award=Mock(return_value=1)))]
+                        patch.object(app.bot, 'scores', Mock(credit=Mock(return_value=AwardResult(1, True))))]
         for p in self.patches:
             p.start()
         self.sessions = []
@@ -64,7 +66,7 @@ class ChoiceTests(unittest.IsolatedAsyncioTestCase):
         events = [interaction(s, user(i, f'Player {i}')) for i in range(100, 140)]
         await asyncio.gather(*(app.handle_control(e, f'answer:{self.correct(s)}') for e in events))
         await until(lambda: s.correct_count == 1)
-        app.bot.scores.award.assert_called_once()
+        app.bot.scores.credit.assert_called_once()
         self.assertEqual(sum('chegou primeiro' in e.response.send_message.call_args.args[0] for e in events), 1)
         self.assertEqual(sum(row['points'] for row in s.session_scores.values()), 1)
 
@@ -135,7 +137,7 @@ class ChoiceTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(s.running)
         event = interaction(s, user(99), old)
         await app.handle_control(event, f'answer:{self.correct(s)}')
-        app.bot.scores.award.assert_not_called()
+        app.bot.scores.credit.assert_not_called()
 
     async def test_a_wrong_choice_counts_as_participation_and_next_round_clears_attempts(self):
         s = await self.playing()
@@ -153,4 +155,4 @@ class ChoiceTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(RuntimeError):
             await app.handle_control(event, f'answer:{self.correct(s)}')
         await until(lambda: s.correct_count == 1)
-        app.bot.scores.award.assert_called_once()
+        app.bot.scores.credit.assert_called_once()

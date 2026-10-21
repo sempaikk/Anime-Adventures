@@ -94,6 +94,12 @@ class MediaTests(unittest.TestCase):
             if asset.get('stage') != 'deferred':
                 self.assertEqual(media.get_asset(key)['alt'], '.', key)
 
+    def test_ability_owner_portraits_are_hidden_until_the_answer(self):
+        for q in PACK.questions:
+            if q.id.startswith('ability-owner:'):
+                self.assertIsNone(media.for_question(q), q.id)
+                self.assertIsNotNone(media.for_question(q, revealed=True), q.id)
+
     def test_identification_never_requires_a_missing_image_or_deferred_item(self):
         for q in PACK.questions:
             if q.requires_image:

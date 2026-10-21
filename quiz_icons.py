@@ -17,8 +17,9 @@ def load_icons(path=ICONS_FILE):
         raise ValueError('Manifesto de ícones inválido.')
     for icon in data['icons'].values():
         asset = media.get_asset(icon['asset'])
-        if not asset or asset.get('stage') != 'interface' or asset.get('transparent') is not True:
-            raise ValueError('O ícone precisa usar a imagem transparente original da wiki.')
+        if (not asset or asset.get('stage') != 'interface' or asset.get('transparent') is not True
+                or asset.get('colored') is not True):
+            raise ValueError('O ícone precisa usar uma imagem colorida e transparente da wiki.')
         if icon['id'] is not None and (not isinstance(icon['id'], str) or not icon['id'].isdigit()):
             raise ValueError('Identificador de ícone inválido.')
         if not 2 <= len(icon['name']) <= 32 or not icon['name'].isascii() or not icon['name'].isalnum():
