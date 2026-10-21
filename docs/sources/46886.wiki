@@ -1,0 +1,2009 @@
+{{Anchor2|id=back|css=transform: translate(0, -60px);}}
+__TOC__
+
+<tabber>
+|-|Update 20.4.1 - Fools Hunt=
+==Update Log (20.4.1): Fool's Hunt!==
+New [[Unit List|Secret Limited Unit]]:
+{{Container Characterbox|
+{{Characterbox|Vengeful Swordsman (Sky Reaver)}}
+{{Characterbox|Vengeful Swordsman}}
+}}   
+New [[Unit List|Limited Units]]: 
+{{Container Characterbox|
+{{Characterbox|Chuuni (Delusion)}}
+{{Characterbox|Chuuni}}
+{{Characterbox|Violentine (Brutal Angel)}}
+{{Characterbox|Violentine}}
+{{Characterbox|Kansai (Daydream)}}
+{{Characterbox|Kansai}}
+}}
+* Test your skill and knowledge in a limited time gamemode where all your units are replaced by random units and spells! Some spells allow you to use units you equipped, so make sure to experiment!  
+** Instead of your units, you get a new unit to place every few seconds, so make sure you pick carefully which units to place!  
+** Obtain event currency by completing waves, and pick modifiers every few waves to affect the game!  
+** You may sometimes receive a spell to use instead of a unit, which can have very powerful effects!  
+* Brand new unique units to collect, upgrade, and evolve!  
+* New units provide increased drop rate and damage in the new gamemode!  
+* New Limited-Time Secret Unit!  
+
+* New Featured unit pity added to Special and Legacy banners!  
+* There is now a pity to guarantee the featured MIDDLE mythic!  
+* New Secret unit pity added to April Fools Banner!  
+* Added 10 tiers to the current Battlepass!  
+
+* New Quality of Life Features:  
+** Unit View UI now shows Passive abilities! More information for older units will be added over time!  
+** Quick Summon setting added! Enable to skip the first part of any summoning animation!  
+** Enemy targetted by units are now highlighted in game!  
+** In game placement UI updated to show more unit information when hovering over them!  
+** Enemy health UI revamped to more cleanly show resistances and modifiers!  
+** Daily Infinite quest shortened from 50 to 40 waves!  
+** Critical Damage now works as a true multiplier to damage!  
+
+* New unit mechanics!  
+* Lots of new Cosmetics added to units!  
+* More units have become tradable!  
+* Balance changes + bug fixes!  
+
+|-|Update 20 - Shibuya + Dungeons!=  
+==Update 20 - Shibuya + Dungeons! - 9 march 2025==  
+New [[Unit List|Secret Limited Units]]: 
+{{Container Characterbox|
+{{Characterbox|Sorcerer Killer (Heavenly Body)}}
+{{Characterbox|Sorcerer Killer}}
+{{Characterbox|Snow Reaper (Final)}}
+{{Characterbox|Snow Reaper (War)}}
+}}
+New [[Unit List|Mythic Units]]: 
+{{Container Characterbox|
+{{Characterbox|Elyssia (Abyssal)}}
+{{Characterbox|Elyssia}}
+{{Characterbox|Demihuman (Gamer)}}
+{{Characterbox|Demihuman}}
+{{Characterbox|Zombie (Risen)}}
+{{Characterbox|Zombie}}
+{{Characterbox|Gambler (Jackpot)}}
+{{Characterbox|Gambler}}
+{{Characterbox|Shadow Sorcerer (Incident)}}
+{{Characterbox|Shadow Sorcerer (Ritual)}}
+}}
+New [[Unit List|Infinity Mansion Unit]]: 
+{{Container Characterbox|
+{{Characterbox|Robot Sorcerer}}
+}}
+New [[Unit List|Leaderboard Unit]]: 
+{{Container Characterbox|
+{{Characterbox|Joker}}
+}}
+New [[Unit List|Battlepass Unit]]: 
+{{Container Characterbox|
+{{Characterbox|Black Assassin (Reaper)}}
+{{Characterbox|Black Assassin}}
+}}
+New World: Shibuya!  
+* Brand new unique units to collect, upgrade, and evolve!<br><br>  
+* New Evolve Quests and Special Quests!  
+* All new units have increased drop rate and damage in new Portals!  
+* Event shop added! Exchange Sacred Treasures daily for rewards! (Speak with Gambler in the lobby)  
+* New Limited-Time Secret Units!  
+* New Gamemode: [[Dungeon]]!  
+** Step into the dungeon once you receive a [[Items|dungeon key]]!  
+** Buy dungeon keys by talking to Gambler in the lobby and opening his shop! Get a free key from login rewards daily!  
+** Every dungeon is randomly generated and has different levels to play!  
+** Collect chests through the rooms and open them for rewards at checkpoints or at the end of the Dungeon!  
+** Open chests early at checkpoints, or wait to open at the end of the Dungeon for a chance at receiving a secret unit!  
+** Pick up money from Hoard rooms to use on shops in the dungeon!  
+** Buy powerful weapons from shops to help your run or greatly boost rewards!  
+** Receive cursed items which challenge your skills!  
+** If you're up for it, receive stronger cursed items from shrines at a chance to greatly boost your rewards!  
+** Complete the whole dungeon for a chance to get a special limited secret unit!
+
+* New Battle Pass: Lily Hunt!  
+* A new battle pass has released, along with new units to collect! Progress through the battle pass by taking down enemies in any game mode!  
+
+* New Quests added, make sure to complete them for exciting rewards!  
+* Lots of new unit mechanics and evolutions!  
+
+* Ashborn added back to the banner!  
+* Curse debuff cooldown rate removed!  
+
+* New Quality of Life Features:  
+** Unit Overview added!  
+** Press F in game to toggle the unit overview! You can view, upgrade, sell, select, all your units there!  
+** Worthiness changed, now max worthiness is 400%, but each reroll still uses up to 100%!  
+** Stat reroll now asks for confirmation if you reroll S tier stats!  
+
+* Evolve requirements for some units reduced!  
+* More units have become tradable!  
+* Balance changes + bug fixes!  
+
+|-|Update 19.5 - Assassin Park Event!=  
+==Update 19.5 - Assassin Park Event! - 1 Febuary2025==  
+ New [[Unit List|Limited Unit]]: 
+{{Container Characterbox|
+{{Characterbox|Legendary Assassin (Prime)}}
+{{Characterbox|Legendary Assassin}}
+{{Characterbox|Killstreak (Speedrun)}}
+{{Characterbox|Killstreak}}
+{{Characterbox|Somber (Buzzsaw)}}
+{{Characterbox|Somber}}
+}}
+ New [[Unit List|Secret Limited Unit]]: 
+{{Container Characterbox|
+{{Characterbox|Switchblade (Deception)}}
+{{Characterbox|Switchblade}}
+}}
+ New [[Raids|Raid Unit]]: 
+{{Container Characterbox|
+{{Characterbox|Spider}}
+}}
+
+New Gamemode/Event: Assassin Contracts! 
+* Accept high-stakes contracts to eliminate powerful targets! The stronger the target, the rarer the contract, but the rewards are worth the risk!  
+* Every contract has different modifiers and deadly countermeasures. Use strategy and quick thinking to survive!  
+* Go solo or squad up with other assassins through global matchmaking!  
+* Complete contracts to earn big payouts, with a chance at exclusive rewards!  
+
+* Brand new unique units to collect, upgrade, and evolve!
+* New units have increased damage and drop rate boost in Assassin Contracts!  
+* New Unique Relic added with a powerful effect!  
+
+New Raid: The Spider!  
+* Complete enough raids for a guaranteed unit!
+* Beat new raid quests to earn extra rewards!  
+* Speak with Legendary Assassin in the lobby for more information!  
+
+Quality of Life (QOL) Updates:  
+* Graphics update for most maps!  
+* Roblox Chat upgrade!  
+* Idol now negates High Cost debuffs!  
+* Stat Potentials are now more visible and appear in more UIs!  
+* Targeting modes now use a dropdown menu!  
+* Damage Type buffs/resistances show in-game!  
+* Active ability cooldowns now show in-game!  
+* Color coding for upgrade levels improved!  
+* Notifications added whenever a Quest is completed!  
+* Takedowns in level now visible on in-game UI next to damage dealt!  
+* Teams UI revamp! Load, save, and rename teams without hassle! Damage types also shown on your Teams for visual clarity!  
+* If you try to equip a unit while already at the max limit, you'll now be prompted to swap it with another unit!  
+* Keybinds added for upgrading/selling unit (R and X)! Emote keybind remapped to Z!  
+
+Fixes & Changes:  
+* Challenge rewards bug fixed!  
+* New unit mechanics!  
+* More units have become tradable!  
+* Balance changes + bug fixes!
+
+
+|-|Update 19 - Winter Event=
+==Update 19 - Winter Event Update - 25 December 2024==
+[[File:Christmas Event 2024.png|200px]]
+**UPDATE - Holidays Event!**
+New Gamemode: Frozen Abyss!
+* Enter the Frozen Abyss, and play in a randomly generated map!
+** Fight against hordes of incoming enemies!
+** Every few waves, choose an option to modify the game! If you're brave, pick options to add new enemy paths for significant increases in rewards!
+** Defeat all 50 waves to gain even more rewards and a chance at 2 Secret portals!
+** Equip new skins and new units to boost damage and drop rates!
+** Obtain Holiday Stars and open capsules, which contain skins and 3 new units, along with a secret!
+* 3 New Limited-Time Mythic Capsule Units and their Evos!<br><br>
+
+{{Container Characterbox|
+ {{Characterbox|Elf Mage (Aura)}}
+ {{Characterbox|Elf Mage}}
+ {{Characterbox|Cream (Void)}}
+ {{Characterbox|Cream}}
+ {{Characterbox|Siren (Harpy)}}
+ {{Characterbox|Siren}}
+}}
+* 3 New Limited-Time Secret Units and their Evos!<br><br>
+
+{{Container Characterbox|
+ {{Characterbox|Illusionist (Transcended)}}
+ {{Characterbox|Dark Mage (Fallen Star)}}
+ {{Characterbox|Dark Mage}}
+ {{Characterbox|Enlightened (Nirvana)}}
+ {{Characterbox|Enlightened}}
+}}
+
+* Brand new Units to collect, upgrade and evolve!
+** 4 new Mythic units added to the Special banner and their Evos!<br><br>
+
+{{Container Characterbox|
+ {{Characterbox|Honey (Hive)}}
+ {{Characterbox|Honey}}
+ {{Characterbox|Ghost-kun (Bound)}}
+ {{Characterbox|Ghost-kun}}
+ {{Characterbox|Iceclaw (Azure Fang)}}
+ {{Characterbox|Iceclaw (Rebirth)}}
+ {{Characterbox|Dreamer (Visionary)}}
+ {{Characterbox|Dreamer}}
+}}
+* New unit mechanics!
+
+* New Battle Pass: Silver Hunt!
+**  A new battle pass has released, along with new units to collect! Progress through the battle pass by taking down enemies in any game mode!
+New [[Unit List|Battlepass Units]]:
+{{Container Characterbox|
+{{Characterbox|Psychic Princess (Evo)}}
+{{Characterbox|Psychic Princess}}
+{{Characterbox|Silver Slayer (Hunter)}}
+{{Characterbox|Silver Slayer}}
+}}
+
+* Four New Limited-Time Holidays and re-release Bundles!
+
+* New Feature: Limit Break!
+**  Fuse together strong units to break the limits of a selected unit! Talk to Fused Hero next to the Evolve area to limit break your units! 
+**  Limit breaking a unit increases past their max level, and each equipped Limit Broken unit powers up your entire team with a +5% damage boost (stacks additionally)!
+**  Limit breaking a unit also unlocks new mysterious powers that unlock soon!
+**   Evolved units contribute more progress towards limit breaking a unit (unevo = 1, evo = 2, you need a totl of 12)!
+
+* New Feature: Trait transfer!
+**  Sacrifice units to transfer traits to another of the same unit, with a 100% chance to succeed!
+
+* Event: Present Hunt!
+**  Presents have appeared! Defeat enemies holding presents, and turn them in to Rookie Hunter to obtain rewards!
+
+* New Player level rewards added!
+**  Gain rewards for reaching player level milestones! Talk to Prayer Master to claim your rewards! Check back often for more milestone reward increases!
+
+* New Holiday Rewards calendar added!
+**  Enjoy free rewards for logging in every day!
+
+* Legacy disenchant feature!
+**   Several legacy units can now be disenchanted for free rewards to help you catch up!
+**   Obtain legacy gems, trait rerolls, and gifts and shiny luck potions for disenchanting units!
+**   Spend legacy gems on the legacy banner to obtain older units to quickly catch up!
+**   Convert gems to legacy gems via the banner if you want!
+
+* Challenge rewards increased, Daily Challenge rewards significantly increased!
+
+* Auto-sell setting added for Skins!
+
+* You can now select units and change your team before the game starts! You no longer need to leave to the lobby to do so!
+
+* More unit information available on in-game unit overhead!
+* Added option to join Global Matchmaking for Holiday Event, along with Infinite, Legend Stages, and Halloween Event!
+* Added UI improvements!
+* Lobby upgraded and improvements!
+* Exclusive rarity added for leaderboard and tournament units!
+* New enemy type: Burst Enemies! Burst Enemies have an initial burst of speed but slow down later!
+* Added matchmaking improvements!
+* Halloween Event here to stay a bit longer!
+* More units have become tradable!
+* Back to lobby setting added!
+* Cosmetics added to some units!
+* New Settings added for lobby music!
+*Paths indicators option added for games on top right!
+*Unit upgrade number information now appears in game!
+*Emotes now play on your units as well!
+*Most Rares, Epics and Legendaries along with some old Mythics/Secrets buffed!
+*Trait visual effects improvements!
+*You can now rotate units when viewing/summoning them with Q and E!
+*New Emotes!
+*Snowball Throw emote is back for a limited time in the trophy shop!
+*New Titles added!
+*More World Skips!
+*New Event Quests!
+*Balance changes + bug fixes!
+
+|-|Update 18.5 - Buu Saga Raid=
+==Update 18.5 - Buu Saga Raid Update - 9 December 2023==
+*New Raid: Sacred Planet!  
+** As the ancient Byu awakens and wreaks havoc upon the world, Goko and his allies must face their greatest challenge yet. Unleash powerful transformations and engage in the intense battle as the fate of the universe hangs in the balance! 
+* New Limited-Time Event Units! 
+* New unit mechanics! 
+* New Event Quests!
+* More units have become tradable! 
+* Matchmaking added to Raids and Daily Challenge! 
+* Balance changes + bug fixes!
+* And much more coming soon!
+
+|-|Update 18 =
+==Update 18 - 18 November 2023==
+[[File:Update 18.png|200px]]
+New [[Unit List|Units]]
+{{Container Characterbox|
+{{Characterbox|Noruto (Six Tails)}}
+{{Characterbox|Noruto (Sage)}}
+{{Characterbox|Sosuke (Eternal)}}
+{{Characterbox|Sosuke (Awakened)}}
+{{Characterbox|Komon (Paper Angel)}}
+{{Characterbox|Komon}}
+{{Characterbox|Jirayo (Toad Sage)}}
+{{Characterbox|Jirayo}}
+}}
+
+New [[Unit List|Limited Unit]]:
+{{Container Characterbox|
+{{Characterbox|Pain (Divine)}}
+{{Characterbox|Pain (Path)}}
+}}
+
+
+New [[Battlepass|Battlepass Units]]:
+{{Container Characterbox|
+{{Characterbox|Chiko}}
+{{Characterbox|Yumo}}
+}}
+
+New [[Unit List|Infinity Castle Unit]]:
+{{Container Characterbox|
+{{Characterbox|Cooler}}
+}}
+
+New [[Unit List|Leaderboard Unit]]:
+{{Container Characterbox|
+{{Characterbox|Boxo}}
+}}
+*UPDATE - Rain Village! 
+* New World: Rain Village!  
+* Join Noruto and his allies as they face the formidable Six Paths of Pain, navigating through Rain Village to uncover the secrets behind this enigmatic threat!  
+* Brand new unique units to collect, upgrade, and evolve!  
+* New Evolve Quests!  
+* All new units have increased drop rate and damage in new Legend Stages!  
+* Event shop added! Exchange Ninja Scrolls daily for rewards! (Speak with Jirayo in the lobby)  
+* New Limited-Time Secret Unit! 
+* New Battle Pass: Trion Hunt!  
+** A new battle pass has released, along with new units to collect! Progress through the battle pass by taking down enemies in any game mode! 
+* Evolve requirements for many Mythics greatly reduced! 
+* New Feature: Matchmaking (Beta)!  
+** Option to join Global Matchmaking added for Infinite, Legend Stages, and Halloween Event!  
+** Use to automatically get matched with other players!  
+** Matchmaking improvements coming soon! 
+* Guild Ranking now visible on player overhead! 
+* New Daily Missions! Navi has more missions that can be completed to help you evolve units! 
+* New Infinity Castle, Leaderboard, and Tournament seasons! 
+* Mangekyō Eye Relic can now buff and be equipped for any Damage Type! 
+* More units have become tradable! 
+* Cosmetics added to some units!
+* New Event Quests! 
+* Balance changes + bug fixes! 
+* Much more coming soon! 
+* Units that are now tradable:  
+** Rohon and Rohon (Artist)  
+** Boxo  
+** Cooler
+|-|Update - Halloween Event=
+==Update - Halloween Event - 28 October 2023==
+[[File:Halloween Event 2023.png|200px]]
+
+New [[Unit List|Limited Units]]:
+{{Container Characterbox}}
+{{Characterbox|Zid (Shadow)}}
+{{Characterbox|Zid}}
+{{Characterbox|Hido (Immortal Butcher)}}
+{{Characterbox|Hido}}
+{{Characterbox|Hinamy (Yotsume)}}
+{{Characterbox|Hinamy}}
+{{Characterbox|Gas (Toxic)}}
+{{Characterbox|Gas}}
+{{Characterbox|Alucard (Unholy King)}}
+{{Characterbox|Alucard}}
+
+*The Halloween Event is here! Enter the Nightmare Hunt and battle an undead army! Gather Candies as you survive waves, and make pivotal choices along the way. Conquer enough waves for a chance at a shadowy Secret unit! Discover new limited units and skins to aid your progress. Keep an eye out for another unholy figure, revealed only to those with enough Candies!
+**New Gamemode: Nightmare Hunt!
+*Fight against hordes of incoming enemies!
+*Every few waves, choose a path to modify the game! Pick buffs to help out your team, or pick challenges to increase your rewards!
+*Defeat all 50 waves to gain even more rewards and a chance at a Secret unit!
+*Equip new skins and new units to boost damage and drop rates!
+*New Limited-Time Event Units!
+*New Limited-Time Secret Units!
+*New Limited-Time Halloween Skins!
+*New units have increased damage and drop rate in Nightmare Hunt!
+*New skins increase damage and drops too! Click on the skin for more details!
+*Two New Limited-Time Halloween Bundles!
+**New Halloween Bundles are available for a limited time in the "Specials" section of the Store!
+*New Event Quests!
+*New unit mechanics!
+*Balance changes + bug fixes!
+*And much more coming soon!
+
+|-|Update 17.5 - The Port Agency!=
+==Update 17.5 - The Port Agency! - 14 October 2023==
+[[File:Update 17.5.png|200px]]
+New [[Unit List|Limited Units]]:
+{{Container Characterbox|
+{{Characterbox|Dazai (No Longer Human)}}
+{{Characterbox|Dazai}}
+{{Characterbox|Aku (Rashamon)}}
+{{Characterbox|Aku}}
+{{Characterbox|Asushi (Moonlight Beast)}}
+{{Characterbox|Asushi}}
+{{Characterbox|Chuyo (Corruption)}}
+{{Characterbox|Chuyo}}
+{{Characterbox|Izu (Demon Snow)}}
+{{Characterbox|Izu}}
+}}
+
+*New Event: Port Agency!
+**Asushi taps into his powers and joins the Port Agency, a dedicated force combating crime and mafia influence. Engage in their relentless battle, and recruit formidable ability users to strengthen your team!
+*Speak with Dazai in the lobby for more information!
+*Brand new unique units to collect, upgrade, and evolve!
+*New units have increased damage and drop rate boost in Port Agency portals!
+*New unit mechanics!
+*Balance changes + bug fixes!
+*And much more coming soon!
+
+|-|Update 17 =
+==Update 17 - 30 September 2023==
+[[File:Update 17.png|200px]]
+New [[Unit List|Units]]
+{{Container Characterbox|
+{{Characterbox|Lancer (Child of Light)}}
+{{Characterbox|Lancer}}
+{{Characterbox|Saber (Promised Sword)}}
+{{Characterbox|Saber}}
+{{Characterbox|Archer (Heroic Spirit)}}
+{{Characterbox|Archer}}
+{{Characterbox|Illy (Homunculus)}}
+{{Characterbox|Illy}}
+{{Characterbox|Medae (Witch of Betrayal)}}
+{{Characterbox|Medae}}
+}}
+
+New [[Unit List|Limited Unit]]:
+{{Container Characterbox|
+{{Characterbox|Gilgamesh (King of Heroes)}}
+{{Characterbox|Gilgamesh}}
+}}
+
+New [[Battlepass|Battlepass Units]]:
+{{Container Characterbox|
+{{Characterbox|Bell (Argonaut)}}
+{{Characterbox|Bell}}
+{{Characterbox|Tuna (Reborn)}}
+{{Characterbox|Tuna}}
+}}
+
+New [[Unit List|Leaderboard Unit]]:
+{{Container Characterbox|
+{{Characterbox|Kimomaro}}
+}}
+
+New [[Unit List|Infinity Castle Unit]]:
+{{Container Characterbox|
+{{Characterbox|Bombietta}}
+}}
+
+New [[Unit List|Tournament Unit]]:
+{{Container Characterbox|
+{{Characterbox|Caesar}}
+}}
+
+* The Holy Grail War has started, bringing in legendary heroes from across history in a fight to the death to make their ultimate wishes come true. Gain powerful servants as allies, obtain powerful limited time rewards and prove your worth in this life or death battle!
+**New World: Mountain Temple!
+**Brand new unique units to collect, upgrade, and evolve!
+**New unit mechanics!
+**New Evolve Quests!
+**All new units have drop rate boost and increased damage in new Noble Portals!
+*Event shop added! Exchange Lesser Grails daily for rewards! - New Battle Pass: Flame Hunt!
+*A new battle pass has released, along with new units to collect! Progress through the battle pass by taking down enemies in any game mode!
+*More World Jumper stages added!
+**World Jumper items removed, instead you are automatically prompted when you select a World!
+**Use to skip to the last stage of a world, and clear it to instantly unlock other stages!
+**World Jumper stages added up to and including Hero City (World #15)!
+*New Daily Missions! Navi has more missions that can be completed to help you evolve units!
+*New Infinity Castle, Leaderboard, and Tournament seasons!
+*Many older Mythic units have been moved out of Special Banner (only obtainable in Standard Banner now) to improve the pool of units in Special Banner!
+**All units moved out of Special Banner: All Force, Marada, Brulo, Levy, Diavoro, Renkoko, Armein, Whitehair, Akano, Red Scar, Mochi, Ariva, Eta, Tarata, Juozu, Uru, Aizo, Ulquiro, Coyote, Kizzua (Whirlwind), Meruam, Pito, Neteru, Gone (Adult), Gray, Natzo, Crush, Itadoki, Megomu, Goju, Yuto
+
+*Global messages added for players who reach a new top room in Infinity Castle!
+*Infinity Castle Rooms rebalanced above Room 150 - Global difficulty rebalance - New Event Quests!
+*Balance changes + bug fixes
+*Much more coming soon!
+
+*Balance changes:
+**Buff units rebalanced (most buffs add rather than multiply together)
+**Griffin (Ascension) sacrifice requirement 30k -> 100k
+*Units that are now tradable: 
+**Skull Knight and Skull Knight (King) 
+**Harribu and Harribu (Shark Empress)
+**Avdo and Avdo (Magician's Red) 
+**Kizume and Kizume (Tailless Beast) 
+**Poseidon and Poseidon (Tyrant of the Seas)
+**Roger and Roger (Pirate King)  
+**Bombietta 
+**Kimomaro 
+**Isago
+
+|-|Update 16.5 =
+==Update 16.5 - 8 September 2023==
+[[File:Update 16.5.png|200px]]
+
+New [[Unit List|Units]]
+{{Container Characterbox|
+{{Characterbox|Kiro (Bites the Dust)}}
+{{Characterbox|Kiro}}
+{{Characterbox|Josuka (Unbreakable)}}
+{{Characterbox|Josuka (Crazy Diamond)}}
+{{Characterbox|Koichy (Echoes)}}
+{{Characterbox|Koichy}}
+}}New [[Unit List|Limited Units]]:{{Container Characterbox|
+{{Characterbox|Rohon (Artist)}}
+{{Characterbox|Rohon}}
+}}
+*In the tranquil town of Moryo, Josuka and his close-knit crew embark on a relentless pursuit of the elusive Stand user, Kiro, and his lethal Stand, 'Killer Queen.' As the enigma deepens, join Josuka and his comrades in their mission to confront Kiro and safeguard Moryo from impending danger!
+**New Raid: Bizarre Town!
+**New Limited-Time Event Units!
+**10 more tiers added to Key Hunt Battlepass!
+**New Evolve Quests!
+**Much more coming soon!
+*Units that are now tradable: 
+**Heathcliff and Heathcliff (Admin) 
+**Klay and Klay (Bachelor)
+|-|Update 16 =
+==Update 16 - 19 August 2023==
+[[File:Update 16.png|200px]]
+New [[Unit List|Units]]
+{{Container Characterbox|
+{{Characterbox|Anz (Overlord)}}
+{{Characterbox|Anz}}
+{{Characterbox|Narbera (Battle Maid)}}
+{{Characterbox|Narbera}}
+{{Characterbox|Evileye (Landfall)}}
+{{Characterbox|Evileye}}
+{{Characterbox|Demiurge (Demon Emperor)}}
+{{Characterbox|Demiurge}}
+{{Characterbox|Albedo (Overseer)}}
+{{Characterbox|Albedo}}
+{{Characterbox|Shallta (Bloodfallen)}}
+{{Characterbox|Shallta}}
+}}
+**The Great Undead Tomb has appeared, along with Anz and his guardians! Are you worthy of the supreme being's attention? Collect powerful new units and pass his trials to obtain exciting rewards! Also try the newly revamped infinity castle!
+**New World: Undead Tomb!
+*Brand new unique units to collect, upgrade, and evolve!
+*New unit mechanics!
+*New Evolve Quests!
+
+**New Battle Pass: Key Hunt!
+*A new battle pass has released, along with new units to collect! Progress through the battle pass by taking down enemies in any game mode!
+
+**Infinity Castle Revamp!
+*Hard Mode added up to room 100! Skip two rooms at once for completing harder rooms!
+*More maps, enemies, and bosses added!
+
+**New Daily Missions!
+*Navi has more missions that can be completed to help you evolve units!
+*New Leaderboard unit!
+*New Infinity Castle season and season rewards!
+*New Tournament unit!
+
+*New Evolve Quests!
+*New Event Quests!
+*Balance changes + bug fixes!
+*Much more coming soon!
+
+**Units that are now tradable:
+*Flamingo and Flamingo (Awakened)
+*Issai and Issai (Boosted Gear)
+*Buggy
+*Minata
+*Kenshi
+
+
+|-|Update 15.5 - Summer Event!=
+==Update 15.5 - Summer Event! - 29 July 2023==
+[[File:Update 15.5.png|200px]]
+
+New [[Unit List|Limited Units]]:
+{{Container Characterbox|
+{{Characterbox|Roger (Pirate King)}}
+{{Characterbox|Roger}}
+{{Characterbox|Poseidon (Tyrant of the Seas)}}
+{{Characterbox|Poseidon}}
+{{Characterbox|Avdo (Magician's Red)}}
+{{Characterbox|Avdo}}
+{{Characterbox|Harribu (Shark Empress)}}
+{{Characterbox|Harribu}}
+{{Characterbox|Kizume (Tailless Beast)}}
+{{Characterbox|Kizume}}
+}}
+*New Event: Summer!
+**The Summer Event is here! Enter summer portals and find pearls to obtain limited units and skins! Progress through the portals and reach [[Poseidon]], and challenge him to obtain a new secret unit! The [[Roger|Pirate King]] has also arrived, and open summer stars for a chance to add him to your team!
+**New Limited-Time Event Units!
+**New Limited-Time Secret Units!
+**New Limited-Time Summer Skins!
+**New units have +50% damage and drop rate in Summer Portals!
+**New skins increase damage and drops too! Click on the skins for more details!
+*10 More tiers added to the Flower Hunt Battlepass!
+*More units have become tradable!
+*Teleporting/loading into games should be faster!
+*Voice-Chat Enabled!
+*New Evolve Quests!
+*New Event Quests!
+*Balance changes + bug fixes!
+*Much more coming soon!
+*Units that are now tradable: 
+**[[Madoko|All]] [[Mamy|Witch]] [[Sayako|City]] [[Kyoka|Event]] [[Homuru|Units]]
+
+|-|Update 15 - Anniversary + Eclipse!=
+==Update 15 - Anniversary + Eclipse! - 3 July 2023==
+New [[Unit List|Units]]:
+{{Container Characterbox|
+{{Characterbox|Guts (Berserk)}}
+{{Characterbox|Guts}}
+{{Characterbox|Griffin (Ascension)}}
+{{Characterbox|Griffin (Darkness)}}
+{{Characterbox|Griffin (Reincarnation)}}
+{{Characterbox|Griffin}}
+{{Characterbox|Senbodu (Buddha)}}
+{{Characterbox|Senbodu}}
+}}
+
+New [[Unit List|Limited Units]]:
+{{Container Characterbox|
+{{Characterbox|Skull Knight (King)}}
+{{Characterbox|Skull Knight}}
+{{Characterbox|Issai (Boosted Gear)}}
+{{Characterbox|Issai}}
+}}
+
+New [[Battlepass|Flower Hunt Units]]:
+{{Container Characterbox|
+{{Characterbox|Chad (Fullbringer)}}
+{{Characterbox|Chad}}
+{{Characterbox|Gabimaro (Ascetic Blaze)}}
+{{Characterbox|Gabimaro}}
+}}
+
+*New Worlds: Windhym + The Eclipse!
+**[[Guts]], a former mercenary for the Band of the Hawk seeks revenge on [[Griffin]], their leader who betrayed him. Help Guts on his cursed path for vengeance and gain allies along the way. Participate in the new anniversary event and check out the new exciting features and units! Be sure to check out Guilds to play and compete with your friends!
+*New Feature: Guilds (Beta)!
+**Guild area in the Lobby opened!
+**Talk to [[Melio]] to create your own Guild! Or join an existing one via invitation!
+**Set a Guild icon, Guild colors, description and announcment to customize your Guild!
+**Easily check the status and join other guild members if they are online!
+**New special Guild Event leaderboard and ranking for most damage dealt!
+**More Guild activities/features coming!
+*New Anniversary Event!
+**Anniversary Dragon Balls have appeared, along with Shenro! He will grant one of your wishes, altough you must collect all 7 balls first!
+**Collect Anniversary Dragon Balls by completing a daily Anniversary Stage for a guaranteed ball!
+**Also obtain Anniversary Capsules by playing the game! Each has a chance to drop an Anniversary Dragon Ball!
+**One of Shenro's wishes includes a [[Issai|limited unit]]...
+*Two New Limited-Time Anniversary Bundles!
+**New Anniversary Bundles are available for a limited time in the "Specials" section of the Store!
+*New Battle Pass: Flower Hunt!
+**A new battle pass has released, along with new units to collect! Progress through the battle pass by taking down enemies in any game mode!
+*New Raid: Marine's Ford - The Buddha!
+**[[Senbodu]] has arrived at Marine's Ford to put an end to the lengthy battle! Defeat him and gain a special reward!
+**Complete enough raids for a guaranteed unit!
+**Beat raid quests to earn extra rewards!
+*New Evolve Quests!
+*New Daily Missions added!
+*[[Navi]] has more missions that can be completed to help you evolve units!
+*In-game UI improvements!
+*More units have become tradable!
+*Units that are now tradable: 
+**[[Daky (Obi)]] and [[Daky (Obi)]]
+*New Event Quests!
+*New enemy types and mechanics!
+*Balance changes + bug fixes!
+*Much more coming soon!
+
+|-|Update 14 =
+==Update 14 - 16 June 2023==
+[[File:Update 14.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox|
+{{Characterbox|Kiroto (Dual)}}
+{{Characterbox|Kiroto}}
+{{Characterbox|Asuno (Flash)}}
+{{Characterbox|Asuno}}
+{{Characterbox|Leafy (Sylph)}}
+{{Characterbox|Leafy}}
+{{Characterbox|Stain (Hero Slayer)}}
+{{Characterbox|Stain}}
+}}
+
+New [[Unit List|Limited Units]]:
+{{Container Characterbox|
+{{Characterbox|Heathcliff (Admin)}}
+{{Characterbox|Heathcliff}}
+{{Characterbox|Klay (Bachelor)}}
+{{Characterbox|Klay}}
+}}
+New [[Unit List|Leaderboard Unit]]:
+{{Container Characterbox|
+{{Characterbox|Temori}}
+}}
+
+New [[Infinity Castle Units|Infinity Castle Unit]]:
+{{Container Characterbox|
+{{Characterbox|Roshy}}
+}}
+
+New [[Unit List|Tournament Unit]]:
+{{Container Characterbox|
+{{Characterbox|Buggy}}
+}}
+
+*New World: Virtual Dungeon!
+**Kiroto and his friends are trapped in a VR game, due to the actions of Heathcliff, the game's creator! Help Kiroto and his friends navigate dangerous levels and defeat bosses to fight your way to Heathcliff, and challenge him and save the game once and for all! 
+*New Raid: Hero City - The Hero Slayer! 
+**Stain has appeared in Hero City and is on a relentless hunt to eradicate heroes he deems unworthy! Put an end to his terror and claim an exclusive reward for your victory! 
+**Complete enough raids for a guaranteed unit! 
+**Beat new raid quests to earn extra rewards! 
+*Damage Affinities Revamped! 
+**Most units now have an affinity towards a certain element! 
+**Added new affinity type and revamped Lightning/Ice! 
+**Some affinities now have an advantage in the new legend stages! 
+*Filter added to inventory UI to easily find a unit with the right damage affinities!
+*Status effects UI added! 
+**New UI added to show buff amounts on units!
+**Debuff immunity cooldowns are now visible on enemies!
+*New Evolve Quests! 
+*Level requirement for unit slots reduced! 
+*New Leaderboard unit! 
+*New Infinity Castle season and season rewards!
+*New Tournament unit! 
+*New Daily Missions added! 
+*Navi has more missions that can be completed to help you evolve units!
+*In-game UI improvements! 
+*New Emotes! 
+*More units have become tradable! 
+*New Event Quests! 
+*New enemy types and mechanics! 
+*Balance changes + bug fixes! 
+*Much more coming soon! 
+*Units that are now tradable: 
+**Merlyn and Merlyn (Infinity) 
+**Piccoru (Fusion) and Piccoru (Nameless) 
+**Oshy and Oshy (Idol) 
+**Ipo 
+**Roshy 
+**Temori 
+*Non-limited version of Oshy added to Special Banner (no cosmetic and different shiny, untradable)
+
+|-|Update 13.5 =
+==Update 13.5 26 May 2023==
+[[File:Update 13.5.png|200px]]
+
+New [[Unit List|Limited Units]]:
+{{Container Characterbox|
+{{Characterbox|Homuru (Time Traveller)}}
+{{Characterbox|Homuru}}
+{{Characterbox|Madoko (Salvation)}}
+{{Characterbox|Madoko}}
+{{Characterbox|Mamy (Holy)}}
+{{Characterbox|Mamy}}
+{{Characterbox|Kyoka (Scarlet Lance)}}
+{{Characterbox|Kyoka}}
+{{Characterbox|Sayako (Sapphire Blade)}}
+{{Characterbox|Sayako}}
+}}
+
+New [[Past Battlepasses|Magic Hunt Units]]:
+{{Container Characterbox|
+{{Characterbox|Charmi (Sheep)}}
+{{Characterbox|Charmi}}
+{{Characterbox|Mash (Muscles)}}
+{{Characterbox|Mash}}
+}}
+* New Battle Pass: Magic Hunt! 
+**A new battle pass has released, along with new units to collect! Progress through the battle pass by taking down enemies in any game mode! 
+*New Event: Witch City! 
+**Witches have invaded Witch City! Form a contract with Kyubyu and enter the portals to save Witch City! Recruit allies along the way and uncover the truth behind what it means to make your wish come true... 
+*New Battlepass and rewards! Take down enemies in any mode to progress!
+*New Limited-Time Banner and Event Units!  
+**Speak with Kyubyu in the lobby for more information! 
+*New Portal Replay Mechanic!
+**Portal host can now select another Portal from the same group to replay! 
+*Auto-activate Active Attacks!  
+**Active Attacks can be automatically triggered when off cooldown! 
+*New emote in trophy shop!  
+*Units that are now tradable:
+**Ria and Ria (Devil Princess)  
+**Kuneko and Kuneko (Hell-Cat) 
+**Akena and Akena (Fallen Angel) 
+*New enemy type: Armor  
+**Armored enemies take less damage from Full AOE attacks - 
+*Balance changes:  
+**Mochi and Mochi Charlot stats changed slightly to match Emili
+
+|-|Update 13 =
+==Update 13 May 2023==
+[[File:Update 13.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox|
+{{Characterbox|Luffo (Gear IV)}}
+{{Characterbox|Luffo (Bounce)}}
+{{Characterbox|Usoap (God)}}
+{{Characterbox|Usoap (Timeskip)}}
+{{Characterbox|Fuji (Admiral)}}
+{{Characterbox|Fuji}}
+{{Characterbox|Lao (ROOM)}}
+{{Characterbox|Lao (Heart)}}
+{{Characterbox|Saby (Flame Emperor)}}
+{{Characterbox|Saby}}
+}}
+
+New [[Unit List|Limited Units]]:
+{{Container Characterbox|
+{{Characterbox|Flamingo (Awakened)}}
+{{Characterbox|Flamingo}}
+}}
+
+New [[Unit List|Leaderboard Unit]]:
+{{Container Characterbox|
+{{Characterbox|Nejiri}}
+}}
+
+New [[Infinity Castle Units|Infinity Castle Unit]]:
+{{Container Characterbox|
+{{Characterbox|Raylay}}
+}}
+
+New [[Unit List|Tournament Unit]]:
+{{Container Characterbox|
+{{Characterbox|Ipo}}
+}}
+
+*New World: Puppet Island!
+*Brand new unique units to collect, upgrade, and evolve! 
+*New unit mechanics! - New Leaderboard unit!
+*New Infinity Castle season and season rewards! 
+*New Tournament unit! - New World Jumper stages! 
+**Obtain from redeeming codes to quickly progress through Story stages! 
+**Use to skip to the last stage of a world, and clear it to instantly unlock other stages!  
+** World Jumper stages added up to and including Clover Kingdom! 
+*1 Billion visits login celebration event! Login every day for rewards! 
+*New Daily Missions added! 
+**Navi has more missions that can be completed to help you evolve units! 
+*More Unit collection space available from the Gold shop! Speak to Pride NPC to buy! 
+*In-game UI improvements! 
+*New Emotes! - More units have become tradable! 
+*New Event Quests! 
+*New enemy types and mechanics!  
+*Units that are now tradable:  
+**Boron and Lord Boron 
+**Gowthy and Gowthy (Invasion)  
+**Ji Mo Ri 
+**Raylay  
+**Nejiri
+*Balance changes:
+**Gone (Adult) and Gone (???) damage buffed by 100%
+
+|-|Update 12.5 - Entertainment District Raid=
+==Update 12.5 - Entertainment District Raid Update - 22 April 2023==
+[[File:Update 12.5.jpg|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox|
+{{Characterbox|Gyutaru (Moon)}}
+{{Characterbox|Gyutaru}}
+{{Characterbox|Tango (God of Flashiness)}}
+{{Characterbox|Tango (Score)}}
+}}
+
+New [[Unit List|Limited Units]]:
+{{Container Characterbox|
+{{Characterbox|Daky (Obi)}}
+{{Characterbox|Daky}}
+}}
+
+New [[Past Battlepasses|Cake Hunt Units]]
+{{Container Characterbox|
+{{Characterbox|Haze (Rage)}}
+{{Characterbox|Haze}}
+{{Characterbox|Oshy (Idol)}}
+{{Characterbox|Oshy}}
+}}
+
+*New Battle Pass: Cake Hunt!  
+*New Raid: Entertainment District! 
+*New Limited-Time Event Units!
+*All three Egg Hunt eggs have hatched!  
+*New Twitter Verification! 
+**Follow @strayanz and @dev_scripts on Twitter, wait 5 minutes, then speak to Geno beside the Codes area for a special reward!
+*New Depth-of-Field setting! Only enable if your device can handle it! 
+*New Return to Spawn setting! Activate if you get stuck somewhere inside a round! 
+*Fusing and evolving units no longer require you to unlock the unit first! 
+*Big banner on top of the Shop in lobby now shows the Special banner! 
+*Balance changes: 
+**Jokujo (Epic Rarity) Time Stop 5s -> 4s
+
+|-|Update 12.1 - Easter=
+==Update 12.1 - Easter Update - 9 April 2023==
+New [[Unit List|Limited Units]]:
+{{Container Characterbox|
+{{Characterbox|Carrot (Sulong)}}
+{{Characterbox|Carrot}}
+{{Characterbox|Mirka (Tiger Bunny)}}
+{{Characterbox|Mirka}}
+{{Characterbox|Yoshina (Spirit)}}
+{{Characterbox|Yoshina}}
+}}
+
+|-|Update 12.05 - April Fools=
+==Update 12.05 - April Fools Update - 1 April 2023==
+New [[Unit List|Limited Units]]:
+{{Container Characterbox|
+{{Characterbox|Veko}}
+{{Characterbox|Ria (Devil Princess)}}
+{{Characterbox|Ria}}
+{{Characterbox|Akena (Fallen Angel)}}
+{{Characterbox|Akena}}
+{{Characterbox|Kuneko (Hell-Cat)}}
+{{Characterbox|Kuneko}}
+}}
+
+*New special event added
+*New secret units and new portal 
+*Balance changes:
+**Dezu (Vigilante) and Hawk (Fierce Wings) buffs
+
+|-|Update 12 =
+==Update 12 - 31 March 2023==
+[[File:Update 12.jpg|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox|
+{{Characterbox|Dezu (Vigilante)}}
+{{Characterbox|Dezu (Blackwhip)}}
+{{Characterbox|Shigaruko (Symbol of Fear)}}
+{{Characterbox|Shigaruko}}
+{{Characterbox|Endeavor (Hellflame)}}
+{{Characterbox|Endeavor}}
+{{Characterbox|Hawk (Fierce Wings)}}
+{{Characterbox|Hawk}}
+{{Characterbox|Bakugo (Howitzer)}}
+{{Characterbox|Bakugo (Explosion)}}
+}}
+
+
+New Leaderboard [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Jozo}}
+}}
+
+New Infinity Castle [[Infinity Castle Units|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Unohona}}
+}}
+
+New Weekly Tournament Unit [[Unit List|Unit]]:
+{{Container Characterbox|
+{{Characterbox|Ji Mo Ri}}
+|
+}}
+
+*New World: Hero City!
+*Brand new unique units to collect, upgrade, and evolve!
+*New Leaderboard rewards!
+* New Infinity Castle season and season rewards!
+*Buffed some Story mode completion rewards!
+* Daily Raid attempts no longer count if you lose! Try as many times as you need!
+* Trade Level requirement reduced to 40!
+*Trading any gift removes all trade tax for you! (Gem gifts do not count.)
+*Maximum amount of units/items in a trade increased from 6 to 9!
+*Falling off the map will no longer kill you most of the time!
+*New Event Quests!
+*New enemy types and mechanics!
+*Balance changes + bug fixes!
+*The Update that would soon take everything from us...
+
+|-|Update 11.7.5 - Freezo Invasion=
+==Update 11.7.5 - Freezo Invasion Update - 18 March 2023==
+[[File:Update 11.7.5.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox|
+{{Characterbox|Vegita (Super)}}
+{{Characterbox|Vegita (Super II)}}
+{{Characterbox|Golden Freezo}}
+{{Characterbox|Golden Freezo (Emperor)}}
+}}
+New [[Unit List|Limited Units]]:
+{{Container Characterbox|
+{{Characterbox|Piccoru (Fusion)}}
+{{Characterbox|Piccoru (Nameless)}}
+}}
+
+New [[Past Battlepasses|Ammo Hunt Units]]:
+{{Container Characterbox|
+{{Characterbox|Hanje}}
+{{Characterbox|Hanje (Captain)}}
+{{Characterbox|Vas}}
+{{Characterbox|Vas (Cross)}}
+}}
+
+
+*New Battle Pass: Ammo Hunt added with new rewards!
+*New Raid: West City: Freezo's Invasion!
+*New Units!
+*New Limited-Time Event Units!
+*New Daily Missions! Talk to Navi for daily missions that can be completed for evolve items!
+*New Event Quests!
+*Balance changes + bug fixes!
+
+|-|Update 11.5 Part 2=
+==Update 11.5 Part 2 - 4 March 2023==
+[[File:Update 11.5.jpg|200px]]
+
+New [[Unit List|Units:]]
+
+{{Container Characterbox|
+{{Characterbox|Pride (The One)}}
+{{Characterbox|Pride (Day)}}
+{{Characterbox|Pride (Night)}}
+}}
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Merlyn}}
+{{Characterbox|Merlyn (Infinity)}}
+}}
+
+New Weekly Tournament [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Inuyashu}}
+}}
+
+*Brand new unique units to collect, upgrade, and evolve!
+* New Limited Event Unit! - New Relic!
+*Crits past 100% now have a chance to crit again for even more damage!
+*New tournament reward!
+*Tournaments now show your past rankings!
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 11 Part 1=
+==Update 11 Part 1 - 25 February 2023==
+[[File:Update 11.jpeg|200px]]
+
+New [[Unit List|Units:]]
+
+{{Container Characterbox
+|{{Characterbox|Dany (Creation)}}
+{{Characterbox|Dany}}
+{{Characterbox|Greed (Hunt)}}
+{{Characterbox|Greed}}
+{{Characterbox|King (Sloth)}}
+{{Characterbox|King}}
+{{Characterbox|Melio (Assault)}}
+{{Characterbox|Melio}}}}
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Gowthy (Invasion)}}
+{{Characterbox|Gowthy}}
+}}
+
+New Leaderboard [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Mist Ninja}}
+}}
+
+New Infinity Castle [[Infinity Castle Units|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Snake Princess}}
+}}
+
+*New World: Fabled Kingdom!
+*Brand new unique units to collect, upgrade, and evolve!
+* New Feature: Stat Potential!
+**Talk to Beeruh to reveal your unit's hidden potential!
+**Collect Stat Cubes by evolving units or by completing game modes!
+**Use Stat Cubes to reroll your unit's stat potential!
+**Gain worthiness on your units to improve the roll outcome! Worthiness can be gained by scoring takedowns!
+**Optionally, speak to Wish Girl to sacrifice a unit to transfer its potential! However, this method may fail!
+*More units have become tradable!
+*New Leaderboard rewards!
+*New Infinity Castle season and season rewards!
+*New Event Quests!
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 10.7.5 - Storm Hideout Raid=
+==Update 10.7.5 - Storm Hideout Raid - 12 February 2023==
+[[File:Update 10.7.5.png|200px]]
+
+New [[Unit List|Units:]]
+{{Container Characterbox
+|
+{{Characterbox|Itochi (Susanoo)}}
+{{Characterbox|Itochi (Amaterasu)}}
+{{Characterbox|Sosuke (Storm)}}
+{{Characterbox|Sosuke (Hebi)}}}}
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Shisu (Flicker)}}
+{{Characterbox|Shisu}}}}
+
+*New Raid: Storm Hideout!
+*Raids system has been revamped!
+* New Units and Relics!
+*New Limited-Time Event Units!
+*Purchase more Unit and Skin inventory space from the Gold shop! Speak to Bartender NPC for details!
+*New Emotes!
+*New Event Quests!
+*UI performance improvements!
+*Balance changes + bug fixes!
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 10.5 - Cloud Hunt=
+==Update 10.5 - Cloud Hunt Update - 3 February 2023==
+[[File:Update 10.jpg|200px]]
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Navi (Thief)}}
+{{Characterbox|Navi}}
+{{Characterbox|Thor}}
+{{Characterbox|Thor (Awakened)}}}}
+
+New Battle Pass: Cloud Hunt!
+* New Battlepass added with new rewards!
+
+Balance Changes: 
+*[[Julio]] and [[Julio (Wizard King)]] buffed by 60%
+*[[Akano]] and [[Fleet Admiral Akano]] buffed by 100%
+*[[Wenda]] now gains more damage on upgrades
+*[[Megomu (Chimera Shadow)]]'s curse duration buffed from 4 -> 5 seconds
+*[[Uru]] and [[Uru (Antithesis)]] buffed by 35%
+*Reaper trait buffed slightly
+
+Others:
+*Added a "Next Level" for story mode levels. 
+**Host gets to choose, non-host players have about 10 seconds to leave to lobby
+*Skip tiers for battle passes are now giftable
+*All legend stages are now easier and more soloable
+*Completing all Daily Quests now gives you battle pass XP (clouds)
+*Daily multiplayer quest revamped to count per wave instead of per win
+*Some relics are now tradable
+*Luck potions are now counted per banner instead of every 15-30 minutes
+*Daily challenge reward variance improved
+*Mobile performance improvements
+*Anti-exploit improved
+*Prevented spamming trait rerolls when server is lagging
+*Placement of units improved to be much faster and more responsive
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 10 =
+==Update 10 - 28 January 2023==
+[[File:Update 10.jpg|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Geno (Incinerate)}}
+{{Characterbox|Geno (Overdrive)}}
+{{Characterbox|Tatsumiki (Tornado)}}
+{{Characterbox|Tatsumiki}}
+{{Characterbox|Bang (Silver Fang)}}
+{{Characterbox|Bang}}
+{{Characterbox|Sonic (Speed)}}
+{{Characterbox|Sonic}}
+{{Characterbox|Metal Knight (Arsenal)}}
+{{Characterbox|Metal Knight}}
+}}
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Lord Boron}}
+{{Characterbox|Boron}}
+}}
+New Leaderboard [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Android 21}}
+}}
+New Infinity Castle [[Infinity Castle Units|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Toby}}
+}}
+New Weekly Tournament [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Tatsumo}}
+}}
+New World: 
+*Alien Spaceship!
+New Gamemode:  
+*Tournaments! - Each week, you will be placed into a random bracket! Face off against your rivals and score the highest points to claim the top prizes! See your exact ranking against other players in your bracket!
+*New Infinity Castle season and season rewards!
+** Infinity Castle ranking has been improved!
+**Your Infinity Castle rank now depends on how well you do relative to all other players, not the highest room reached!
+*More units have become tradable!
+*Buffed Story Mode rewards!
+*New Event Quests!
+*Balance changes + bug fixes!
+*And much more coming very soon... 😳!
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 9 =
+==Update 9 - 14 January 2023==
+[[File:Update 9.jpg|200px]]
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Denjy}}
+{{Characterbox|Chainsaw (Hybrid)}}
+{{Characterbox|Chainsaw}}
+{{Characterbox|Akin (Contract)}}
+{{Characterbox|Akin}}
+{{Characterbox|Power (Fiend)}}
+{{Characterbox|Power}}
+{{Characterbox|Hime (Ghost)}}
+{{Characterbox|Hime}}
+{{Characterbox|Kobeno (Scared)}}
+{{Characterbox|Kobeno}}
+{{Characterbox|Angel (Devil)}}
+{{Characterbox|Angel}}
+}}
+
+New World: 
+*Devil City!
+
+New Features:  
+*Emotes! - Press X to emote! Gather Trophies by completing milestones and collecting titles! Spend trophies to buy flashy emotes! More emotes and use for trophies coming soon!
+*Titles! - Collect titles to show off your in game achievements! Titles appear above your character and in chats!
+
+Others:
+*Brand new unique units to collect, upgrade, and evolve!
+*New Event Quests!
+*New enemy types and mechanics!
+*[[Ging]] has been removed from the banner
+*Karakora Town: The Fire dungeon rotated out
+*More units have become tradable!
+**Ging, [[Yamomoto]], [[Shingo]], and [[Getan]] are now tradable
+*Adjusted base HP (now scales with level difficulty)
+*[[Sakuro]] now heals/adds 3-5% of your base HP every wave
+*Balance changes + bug fixes!
+*And much more coming very soon... 😳!
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update Christmas=
+==Update Christmas - 25 December 2022==
+[[File:Update 8.5.2.png|200px]]
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|JIO (Over Heaven)}}
+{{Characterbox|Ice Queen (Empire's Strongest)}}
+{{Characterbox|Ice Queen}}
+{{Characterbox|Todorro (Released)}}
+{{Characterbox|Todorro (Half)}}
+{{Characterbox|Toshin (Dragon Lotus)}}
+{{Characterbox|Toshin}}
+{{Characterbox|Haka (Reflection)}}
+{{Characterbox|Haka}}
+{{Characterbox|Getan}}
+}}
+
+New Cake Hunt [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Aokijo (Blue Pheasant)}}
+{{Characterbox|Aokijo}}
+}}
+
+New Event Gamemode: 
+* Travel through Portals to discover frozen worlds and complete challenges for rewards!
+
+Others:
+*New Limited-Time Event Units!
+*New Limited-Time Secret Unit! ✨
+*New Mythic Trait! 🌌
+*New Limited-Time Holiday Skins! ❄️
+*All Cake Hunt tiers unlocked! 🍰
+*Premium Passes are now giftable! 🎁
+*Balance changes + bug fixes!
+*And much more coming very soon... 😳!
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 8 =
+==Update 8 - 21 December 2022==
+[[File:Update 8.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Jokujo (The World)}}
+{{Characterbox|Jokujo (Serious)}}
+{{Characterbox|Jolyna (Determination)}}
+{{Characterbox|Jolyna}}
+{{Characterbox|Ermo (Duplicate)}}
+{{Characterbox|Ermo}}
+{{Characterbox|Puchi (Heaven)}}
+{{Characterbox|Puchi (New Moon)}}
+{{Characterbox|Puchi}}
+}}
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Heavy Weather}}
+{{Characterbox|Weather}}
+}}
+
+New Cake Hunt [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Ghacco (Album)}}
+{{Characterbox|Ghacco}}
+}}
+
+New Leaderboard [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Hie}}
+}}
+New Infinity Castle [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Emili}}
+}}
+
+New World: 
+* [[Story#Cape Canaveral|Cape Canaveral!]] 🚀
+
+Holiday Event (Part One): Cake Hunt! 🍰  
+*Gather Holiday Cakes from enemies in any gamemode!
+*Level up in the Hunt to collect tons of rewards! Purchase the Premium Pass anytime to collect even more rewards!
+New Features: 
+*Unit Trading! - Trading for some units has been enabled!
+*Gifting! - Share gifts with friends! Gifts can also be given in trades!
+*🎁LIMITED HOLIDAY SPECIAL🎁: Each purchased Gift also comes with an exclusive limited reward!
+
+Balance Changes: 
+*[[Mochi Charlot]]: Slow duration increased from 3 -> 4 seconds, buffed Damage +200%
+*Stun/Freeze/Walkback and similar effects no longer stack, and there is a 1s delay before an enemy can be affected again
+
+Others:
+*Brand new unique units to collect, upgrade, and evolve! ✨
+*New Leaderboard rewards! - New Infinity Castle season and season rewards!
+*New Infinity Castle rank rewards! See how you perform against all other players!
+*New Event Quests!
+*New enemy types and mechanics!
+*Balance changes + bug fixes!
+*And much more coming very soon... 😳!
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 7.6 Part 2=
+==Update 7.6 - 2 December 2022 ==
+[[File:Update 7.6.webp|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Aizo (Final)}}
+{{Characterbox|Aizo (Fusion)}}
+{{Characterbox|Aizo (Chrysalis)}}
+
+}}
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Yamomoto (Hellfire)}}
+{{Characterbox|Yamomoto}}
+}}
+
+New Legend Stages: 
+*Karakora Town: The Final Standoff!
+
+New Event dungeon: Karakora Town  
+*The Fire - Obtain a Key from Karakora Town: Legend Stage 6, or buy one in the lobby!
+
+Unit Balances:
+*[[Wenda]] is now a hybrid unit
+
+Others:
+*New Units and Relics!
+*New Limited-Time Event Units!
+*New Replay option added to several gamemodes! Quickly replay a level without rejoining the lobby!
+*Balance changes + bug fixes!
+*And much more coming very soon... 😳!
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 7.6 Part 1=
+== Update 7.6 Part 1 - 26 November 2022==
+[[File:Update 7.6.webp|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Soi Fan (Hornet)}}
+{{Characterbox|Soi Fan}}
+{{Characterbox|Ichi (Final Dusk)}}
+{{Characterbox|Ichi (Dusk)}}
+{{Characterbox|Kenpaki (Maniac)}}
+{{Characterbox|Kenpaki}}
+}}
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Ging (Sacred Spear)}}
+{{Characterbox|Ging}}
+{{Characterbox|Shingo}}
+}}
+
+New Legend Stages: 
+*Hollow Invasion!
+
+Unit Balances:
+* [[Ulquiro]] and [[Ulquiro (Resurrección)]] fixed, he should now hit flying enemies
+
+Others:
+*New Units and Relics!
+*New Limited-Time Event Units!
+*New Event Quests! - Ichi and the Shinigami need your help! Help them prepare to face Aizo when he inevitably arrives... - Craft powerful Relics to greatly increase your damage against certain enemies!
+*Balance changes + bug fixes!
+*And much more coming very soon... 😳!
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 7.5 Part 2=
+==Update 7.5 - 18 November 2022==
+[[File:Update 7.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Julio (Wizard King)}}
+{{Characterbox|Julio}}
+}}
+
+New Legend Stage: 
+*Clover Kingdom (Elf Invasion): The Final Attack
+
+New Features: 
+*Teams - Quickly save and load your teams for different situations!
+*New Daily Challenge Gamemode! - Complete a challenging level for rewards! (Refreshes daily)
+
+Unit Balances:
+*[[Armein]] damaged buffed +100%, casttime now instant
+*[[Akano]] and [[Fleet Admiral Akano]] AOE radius on 1st and 2nd attacks buffed
+
+Others:
+*New Units and Relics!
+*UI improvements!
+*Raid/Dungeon daily quest removed
+*Balance changes + bug fixes!
+*And much more coming very soon... 😳!
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 7 Part 1=
+==Update 7 Part 1 - 12 November 2022==
+[[File:Update 7.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Dark Asto}}
+{{Characterbox|Asto}}
+{{Characterbox|Yono (Spirit)}}
+{{Characterbox|Yono}}
+{{Characterbox|Yamo (Captain)}}
+{{Characterbox|Yamo}}
+{{Characterbox|Noel (Valkyrie Armor)}}
+{{Characterbox|Noel}}
+{{Characterbox|Wenda}}
+{{Characterbox|Magnu}}
+}}
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Lucky (Thunder Fiend)}}
+{{Characterbox|Lucky}}
+}}
+New Leaderboard [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Kumo}}
+}}
+New Infinity Castle [[Infinity Castle Units|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Tango}}
+}}
+
+New World: 
+*[[Story#Clover Kingdom|Clover Kingdom!]]
+
+New Features: 
+*New Special Banner with 2x Mythic chance!  - Featured Units have a much higher chance to be pulled! Banner refreshes every hour!
+*Damage Styles!  - All units now have special affinity towards certain Damage Styles! Some units have more than one affinity!
+*Relics! - Craft, collect, and equip Relics to enhance your units! 
+**Speak with Gilgamesh beside the Gold Shop for more details!
+*Fusing! - Fuse units with others to quickly gain XP!
+*Gold Shop! - Spend extra gold in the lobby for valuable materials! - Shop restocks daily!
+
+Unit Balances:
+*[[Uru]] and [[Uru (Antithesis)]] damage buffed by 30%
+
+Others:
+*Brand new unique units to collect, upgrade, and evolve!
+*4x Daily Quest rewards and Daily Infinite revamp! - Three worlds are chosen daily for triple the normal rewards!
+*New Leaderboard rewards!
+*New Infinity Castle season and season rewards!
+*New Infinity Castle rank rewards! See how you perform against all other players!
+*New Event Quests!
+*Star Golem boss has a chance to spawn in the latest Infinite map!
+*New enemy types and mechanics!
+*Balance changes + bug fixes!
+*Ice enemies nerfed
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update Halloween=
+==Update Halloween - 28 October 2022==
+[[File:Update 6.7.5.png|200px]]
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Moriu (Shadow Lord)}}
+{{Characterbox|Moriu}}
+{{Characterbox|Peruna (Ghost Princess)}}
+{{Characterbox|Peruna}}
+{{Characterbox|Broke (Soul King)}}
+{{Characterbox|Broke}}
+{{Characterbox|Nightmare Luffo}}
+}}
+
+New Event Gamemode: 
+*Thriller Park! - Find a team and go to the end of Play area to play!
+*Reach higher waves to collect more Candies and challenge stronger enemies!
+
+Unit Balances:
+*[[Nobaba]] placement cap increased 4 -> 5
+*Rebalanced [[Levy]] and [[Levy Ackman]] (crit chance for Levy Ackman buffed by 25%, crit damage for Levy Ackman buffed from 1.5x to 2x, evolve damage boost buffed from 30%-60%, both Levy and Levy Ackman now apply bleed on his primary target)
+*Buffed [[Marada]] and [[Marada (Founder)]] damage by 250%
+*Buffed [[Pito]] and [[Pito (Terpsichora)]] damage by 20%, evolving to Pito (Terpsichora) buffed from 20% -> 30%
+
+Others:  
+*Spend Candies to buy Haunted Stars from Navi beside the spawn!
+*Hunt Candy Golems in any infinite mode for even more Candies!
+*Try your luck with the Spooky Fortune daily draw for a chance at insane rewards!
+*Collect all the new skins and units before they vanish!
+
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 6.5 Part 2=
+==Update 6.5 - 16 October 2022 ==
+[[File:Update 6.5.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Sukuno}}
+{{Characterbox|Yuto (Cursed Child)}}
+{{Characterbox|Yuto}}
+}}
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Getu (Maximum)}}
+{{Characterbox|Getu}}
+}}
+
+New Event dungeon: Cursed Academy 
+*Cursed Parade! - Take on the challenging dungeon with friends for exclusive rewards!
+
+Others:
+*New Event units!
+*Deal the most damage in your team for one extra drop!
+*Earn enough materials to unlock unique evolutions!
+*Complete the dungeon for a chance at obtaining an exclusive secret unit!
+
+The King of Curses has arrived... Somewhere. Obtain his Cursed Fingers from Cursed Academy infinite mode to discover his secrets, if you dare...
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 6 Part 1=
+==Update 6 - 8 October 2022==
+[[File:Update 6.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Goju (Six Eyes)}}
+{{Characterbox|Goju}}
+{{Characterbox|Megomu (Chimera Shadow)}}
+{{Characterbox|Megomu}}
+{{Characterbox|Itadoki}}
+{{Characterbox|Nobaba}}
+{{Characterbox|Togu}}
+}}
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Kent (Overtime)}}
+{{Characterbox|Kent}}
+}}
+
+New World:
+*[[Story#Cursed Academy|Cursed Academy]] ⛩️
+
+New Gamemode:
+*Infinity Castle! - Reach deeper Rooms to gain more gems and rewards!  - Reach Room 100 for an exclusive reward!
+
+Unit Balances: 
+*[[All Force]] - Buffed Damage by 75%, Buffed Range by about 25%
+*[[Whitehair]] - Buffed Damage by 50%
+*[[Eta]] - Buffed Damage by 30%
+
+Others:
+*New feature: Trading!  - Trade skins with friends and strangers!
+*Trading for some units is coming soon!
+*New special unit evolution mechanics!
+*New event quests!
+*And much more coming very soon... 😳
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 5.6 =
+== Update 5.6 - 2 October 2022==
+[[File:Update 5.6.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Super Chunks}}
+{{Characterbox|Cel (SUPER PERFECT)}}
+{{Characterbox|Cel (Perfect)}}
+{{Characterbox|Chunks}}
+{{Characterbox|Cel (Semi-Perfect)}}
+{{Characterbox|Cel (Imperfect)}}
+}}
+New Limited [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Mecha Freezo}}
+}}
+
+New Raid:
+*[[Raids#West City|West City - Android Attack]]
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 5.5 =
+== Update 5.5 - 24 September 2022==
+[[File:Update 5.5.png|200px]]
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Jelly (Heaven)}}
+{{Characterbox|Jelly}}
+{{Characterbox|Ezra (Lightning)}}
+{{Characterbox|Ezra (Valkyrie)}}
+{{Characterbox|Ezra (True Heart)}}
+{{Characterbox|Ezra}}
+}}
+Dungeons:  
+*Take on the challenging dungeon with friends for exclusive rewards!
+*Complete the dungeon for a chance at obtaining an exclusive secret unit!
+New Dungeon
+*Magic Town - Heavenly Invasion! 🌠
+
+Others:
+*Deal the most damage in your team for one extra drop!
+*Earn enough materials to evolve a new special limited unit into one of three unique forms!
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 5 Part 1=
+==Update 5 - 20 September 2022==
+[[File:Update 5.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Natzo (Lightning Dragon Mode)}}
+{{Characterbox|Natzo}}
+{{Characterbox|Gray (Devil Slayer)}}
+{{Characterbox|Gray}}
+{{Characterbox|Crush (Ace)}}
+{{Characterbox|Crush}}
+{{Characterbox|Gajule}}
+{{Characterbox|Juvy}}
+}}
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Luci (Celestial)}}
+{{Characterbox|Luci}}
+}}
+
+New Leaderboard [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Saicky}}
+}}
+
+New World:
+*[[Story#Magic Town|Magic Town]]
+
+Others:
+*Unit level cap -> 100
+*New Limited-time event currency and shop!
+*Complete missions to earn exclusive rewards!
+*New skins feature!
+*Autosell feature added!
+*New Event quests!
+*New enemy types and unique unit mechanics!
+*And much more coming very soon... 😳!
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 4 =
+==Update 4 - 4 September 2022==
+[[File:Update 4.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Gone (???)}}
+{{Characterbox|Gone (Adult)}}
+{{Characterbox|Kizzua (Godspeed)}}
+{{Characterbox|Kizzua (Whirlwind)}}
+{{Characterbox|King Meruam}}
+{{Characterbox|Meruam}}
+{{Characterbox|Chairman Neteru}}
+{{Characterbox|Neteru}}
+{{Characterbox|Pito (Terpsichora)}}
+{{Characterbox|Pito}}
+{{Characterbox|Gone}}
+{{Characterbox|Hisova}}
+}}
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Kit (Focus)}}
+{{Characterbox|Kit (Frenzy)}}
+{{Characterbox|Kit (Lethal)}}
+{{Characterbox|Kit (Precision)}}
+{{Characterbox|Kit}}
+}}
+New World:
+*[[Story#Ant Kingdom|Ant Kingdom]]
+
+Others
+*Unit level cap -> 90
+*New Event Quests!
+*Exclusive limited unit added!
+*New secret questline added!
+*Low quality FX setting added (Does not affect all effects yet)!
+*Cosmetic effects added when equipping some units!
+*New enemy types and unique unit mechanics!
+*And much more coming very soon... 😳!
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 3 =
+==Update 3 - 19 August 2022==
+[[File:Update 3.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+
+{{Characterbox|Coyote (Primera)}}
+{{Characterbox|Coyote}}
+{{Characterbox|Ulquiro (Resurrección)}}
+{{Characterbox|Ulquiro}}
+{{Characterbox|Aizo (Betrayal)}}
+{{Characterbox|Aizo}}
+{{Characterbox|Uru (Antithesis)}}
+{{Characterbox|Uru}}
+{{Characterbox|Ruki}}
+{{Characterbox|Grim Jaw}}
+{{Characterbox|Bakayua}}
+}}
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Ichi (Full Hollow)}}
+{{Characterbox|Kisoko (Bankai)}}
+{{Characterbox|Kisoko}}
+}}
+
+New Leaderboard [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Blue Devil}}
+}}
+
+New World:
+*[[Story#Hollow World|Hollow World]]
+
+Notes
+*Brand New Units to collect!
+*Unit level cap -> 80
+*New Event Quests!
+*Exclusive limited unit added!
+*New secret questline added!
+*New leaderboard unit reward and leaderboard reset!
+*Infinite mode now automatically saves gems and wave progress!
+*Added ability to lock units!
+*New star remnant challenge added!
+* And much more coming very soon... !
+
+Notes/FAQ: 
+*Infinite mode will reward you gems and wave progress (for leaderboard) even if you get disconnected.
+*Infinite rewards were not nerfed!
+*Locked units cannot be sold
+*Yoruichi gives a daily quest during this event
+*Several hill units were buffed
+*Leaderboard rewards were for players who reached the leaderboards before the shutdown only
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 2.5 =
+==Update 2.5 - 8 August 2022==
+[[File:Update 2.5.jpg|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Renkoko (ABLAZE)}}
+{{Characterbox|Akoku (Destruction)}}
+{{Characterbox|Akoku}}
+}}
+New Raid:
+*[[Raids#Infinity Train|Infinity Train - Demonic Invasion]]
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 2 =
+==Update 2 - 1 August 2022==
+[[File:Update 2.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Ariva (Reaper)}}
+{{Characterbox|Ariva}}
+{{Characterbox|Eta (One-Eye)}}
+{{Characterbox|Eta}}
+{{Characterbox|Juozu (Joker)}}
+{{Characterbox|Juozu}}
+{{Characterbox|Tarata (Ignite)}}
+{{Characterbox|Tarata}}
+{{Characterbox|Kazeki (Centipede)}}
+{{Characterbox|Touci}}
+{{Characterbox|Norro}}
+{{Characterbox|Kazeki}}
+{{Characterbox|Aman}}
+}}
+
+New Limited [[Unit List|Unit]]:
+{{Container Characterbox
+|
+{{Characterbox|Renzi}}
+}}
+
+New World:
+*[[Story#Ghoul City|Ghoul City]]
+
+Others
+* Brand new map to play on – Ghoul City
+*The unit level cap is increased to 70
+*New event quests added
+* Limited time units added
+*A new secret questline added
+*Added a “hide other player effects” setting
+*More improvements to reduce server lag have been added
+*More bug fixes, balance changes, and overall improvements
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 1.5 - Raid=
+==Update 1.5 - Raid Update - 24 July 2022==
+[[File:Update 1.5.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox
+|
+{{Characterbox|Erein (Founder)}}
+{{Characterbox|Noruto (Beast Cloak)}}
+{{Characterbox|Zeike}}
+{{Characterbox|Noruto (Demon Cloak)}}
+}}
+New Raids:
+*[[Raids#Shiganshinu District|Shiganshinu District - Rumbling]]
+*[[Raids#Hidden Sand Village|Hidden Sand Village - Midnight Attack]]
+Others 
+*Two new challenging raids added! - New raid units, and evolutions!
+*Raids are scheduled randomly during the day
+*Banner Tiers Added (Tier 0: Can't summon secrets or shinies, Tier 1: Can summon Shinies but not Secrets, Tier 2: Can summon secrets and shinies!)
+*Added ability to remove shiny from your shiny units
+*More bug fixes + balance changes and improvements.
+*New world coming soon..
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+
+|-|Update 1 =
+==Update 1 - 15 July 2022==
+[[File:Update 1.25.png|200px]]
+
+New [[Unit List|Units]]:
+{{Container Characterbox|
+{{Characterbox|Fleet Admiral Akano}}
+{{Characterbox|Akano}}
+{{Characterbox|Red Scar (Conqueror)}}
+{{Characterbox|Red Scar}}
+{{Characterbox|Mochi Charlot}}
+{{Characterbox|Mochi}}
+{{Characterbox|Emperor Whitehair}}
+{{Characterbox|Whitehair}}
+{{Characterbox|Kazoru}}
+{{Characterbox|Blackhair}}
+{{Characterbox|Mivawk}}
+{{Characterbox|Lao}}
+{{Characterbox|Croc}}
+}}
+
+New Limited [[Unit List|Units]]:
+{{Container Characterbox|
+{{Characterbox|Fire Fist}}
+{{Characterbox|Luffo (Marine's Ford)}}
+}}
+
+New Leaderboard [[Unit List|Unit]]:
+{{Container Characterbox|
+{{Characterbox|Future Guhon}}
+}}
+*New World: [[Story#Marine's Ford|Marine's Ford]]!
+*Unit level cap -> 60
+*New Event Quests
+*Increased infinite rewards, made rounds last shorter
+*Leaderboard reset due to infinite changes, exclusive leaderboard units added
+*Majority of server crashes fixed, server lag greatly reduced
+*Autosave added to Time Machine and Neo-Tokyo
+*Greatly increased daily infinite gem rewards per world
+*Greatly increased challenge gem rewards
+*Increased repeat story/challenge gem rewards
+*Fixed overlapping units when 2+ people place at same time
+*Added number keybinds to select units
+*Luck boosts no longer countdown when you are in a game
+*Limited time secret units added
+*New mythic trait added, buffed mythic traits
+*Reduced evolve requirements for shiny mythic units
+*More bug fixes
+*Balance changes
+*Improvements
+
+|-|Release=
+==Release - 3 July 2022==
+[[File:Update 1.png|200px]]
+{{Container Characterbox|
+{{Characterbox|All Force (Symbol of Peace)}}
+{{Characterbox|All Force}}
+{{Characterbox|Armein}}
+{{Characterbox|Brulo}}
+{{Characterbox|Diavoro}}
+{{Characterbox|Marada (Founder)}}
+{{Characterbox|Marada}}
+{{Characterbox|Legendary Brulo}}
+{{Characterbox|Levy Ackman}}
+{{Characterbox|Levy}}
+{{Characterbox|Renkoko}}
+}}
+|-|Pre-Release=
+==Pre-Release==
+[[File:Update 0.webp|200px]]
+<center>{{Anchor1|text=⮝ back|id=back|class=listOfRetiredButton2|css=display: inline-block; color: #e6e6e6;}}</center>
+</tabber>
+__NOEDITSECTION__

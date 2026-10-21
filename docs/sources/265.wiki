@@ -1,0 +1,7 @@
+There are currently '''two''' currencies, that being '''Gems''' and '''Gold'''. They are used to purchase a variety of things in the game.
+
+==[[File:Gems.png|40px]]  Gems ==
+Gems are one of the most important currencies in Anime Adventures, as they are used to obtain powerful Units. They can be obtained by completing [[Quests]], Story Mode missions, redeeming [[Codes]], staying in the [[Time Machine]], logging in daily and buying them with Robux. 
+
+==[[File:Gold.png|30px]]  Gold ==
+Gold is the 2nd most important currency, as they allow the Player to purchase powerful items, such as Summon Tickets. Gold can be earned through selling your Units and completing Story Mode missions.

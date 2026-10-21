@@ -1,0 +1,27 @@
+<p style="text-align:center;"> Below are the list of '''Items''' that are currently obtainable. Please help expand the table if you know any other Items! 
+{| class="fandom-table"
+!Item
+!Information
+!Obtainment
+|-
+|[[File:SenzuBeans.png|center|thumb|101x101px|Senzu Beans]]
+|One of the many '''XP Foods'''. Gives a Unit +25 XP
+|Completing '''Planet Namak''' Acts
+|-
+|[[File:MysteriousFluid.png|center|thumb|100x100px|Mysterious Fluid]]
+|One of the many '''XP Foods'''. Gives a Unit +50 XP
+|Completing '''Shiganshinu District''' Acts
+|-
+|[[File:WisteriaFlower.png|center|thumb|100x100px|Wisteria Flower]]
+|One of the many '''XP Foods'''. Gives a Unit +115 XP
+|Completing '''Snowy Town''' Acts
+|-
+|[[File:Ramen.png|center|thumb|101x101px|Ramen]]
+|One of the many '''XP Foods'''. Gives a Unit +250 XP
+|Completing '''Hidden Sand Village''' Acts
+|-
+|[[File:StarRemnant.png|center|thumb|101x101px|Star Remnant]]
+|Reroll or gives a Unit '''[[Traits]]'''
+|Purchased through the '''Travelling Merchant Shop'''
+|}
+<p style="text-align:center;">

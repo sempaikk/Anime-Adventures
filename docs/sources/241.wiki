@@ -1,0 +1,12 @@
+== Overview ==
+[[File:TimeMachine.png|thumb|240x240px]]
+The '''Time Machine''' is a location in the Lobby. Entering it will teleport you into the Time Machine. It will grant the Player +3 Gems every '''150 seconds'''. This is doubled for '''Premium''' and '''VIP''' Players.
+
+Clicking '''Leave & Claim Reward''' will teleport you back to the main game. Your accumulated Gems will save if you get kicked for being idle for too long. These Gems cannot be accumulated '''OUTSIDE''' of the Time Machine. You have to be in it to produce Gems. 
+
+== Notes ==
+
+* VIP and Roblox's Premium subscription '''do not''' stack with each other
+* '''AFKing''' in here is not a very good option. Overheating your computer is not worth it so it is advisable to treat '''AFKing''' as a minority
+* Getting kicked while there are Gems in the Time Machine will save
+*Recommended to use an Autoclicker so you don't get constantly kicked

@@ -1,0 +1,36 @@
+[[File:Store.png|thumb|400x400px]]
+The '''Store''' is an openable Interface for Players to make purchases. It can also be accessed through the '''Shop''' area in the Lobby. 
+
+==Information==
+Inside the '''Shop''', Players can purchase '''Developer Products''' and '''Gamepasses''' with '''Robux''' to either boost their progress, or show off the purchased product. Some products like '''Super Lucky''' and '''Ultra Lucky''' only lasts for a set period of time, so use it wisely! 
+
+==Products==
+{| class="fandom-table"
+!Name
+!Description
+!Price
+|-
+|Super Lucky
+|Gives the Player 2x Legendary and Mythical rates
+|99R$
+|-
+|Ultra Lucky
+|Gives the Player 3x Legendary and Mythical rates
+|149R$
+|-
+|VIP
+|Reduces Summon prices by '''20%''' and gives the Player an '''Exclusive Nametag'''
+|299R$
+|-
+|Shiny Hunter
+|Gives the Player a much higher chance for a '''Shiny''' Character
+|1299R$
+|-
+|Unit Storage
+|Grants the Player +100 Unit Storage
+|99R$
+|-
+|Display 3 Units
+|Grants the Player the ability to showcase 3 separate Characters on their Roblox avatar
+|199R$
+|}

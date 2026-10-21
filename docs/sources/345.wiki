@@ -1,0 +1,17 @@
+[[File:Summon.png|thumb|340x340px]]
+'''Summon''' is an area in the lobby where players can obtain powerful '''Characters''' to aid them in the completion of Levels. It is located to the left of the '''Leaderboard''' area. 
+
+== Information ==
+Each summon is equivalent to 2% Pity. Accumulating 100% Pity will grant you a guaranteed '''Legendary'''. If you were to pull a Legendary character before accumulating 100% Pity, whatever Pity you had before will be reset back to 0%. Each summon costs 50 Gems. 
+
+Every hour, the '''Banner''' will be refreshed, granting different Characters from the previous Banner. This is completely randomized and '''DO NOT''' affect the appearance rate of each Character. 
+
+== Rates ==
+Every single '''Character''' has the same rates according to their Rarity. Below are the rates for each Rarity:
+
+* '''Rare''' = 27.3%
+* '''Epic''' = 16%
+* '''Legendary''' = 2%
+* '''Mythic''' = 0.25%
+
+Mythics are known to be very rare! When somebody summons one in '''ANY''' server, it is announced in the Roblox chat globally.

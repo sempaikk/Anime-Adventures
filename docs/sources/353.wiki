@@ -1,0 +1,8 @@
+'''Challenges''' are default Story Levels with added difficulty, but also extra rewards.[[File:Challenges.png|center|thumb|400x400px]]
+
+== Information ==
+
+===These are the available Challenges===
+<big>Tank Enemies</big> - Enemies have more Health and Armor<br /><big>Cost</big> - Units cost more to upgrade and place<br /><big>Shields</big> - Enemies have shields<br /><big>Regeneration</big> - Enemies Regenerate health over time<br /><big>Short Range</big> - All Units have a shorter range
+
+Beating any of these Challenges will grant you a random '''Star Fruit'''.

@@ -1,0 +1,165 @@
+'''Story Mode''' is the main mode of the game, with each World being different iconic Anime locations. They reward the Player items and Gems, and your Units receive XP to level up. For every level completed for the first time, you receive an extra 60 Gems in addition to the completion reward.[[File:StoryMode.png|thumb|400x400px|center]]
+
+
+<tabber>
+|-|Planet Namak=
+== Planet Namak ==
+Planet Namak '''(Planet Namek)''' from Dragon Ball Z, is the first World of Story Mode. This Map consists of a fairly long path. Each act you complete in this World grants you '''Senzu Beans''' for your units and Gems.
+
+{| class="fandom-table article-table"
+!'''Stage'''
+!'''Boss(es)'''
+!'''Reward(s)'''
+
+|-
+|Act 1 - Evil Elegeance
+|Zarbo → Zarbo (Evolved)
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 2 - Technician of Time
+|Goldeo
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 3 - Dazzling Destruction
+|Zezoom
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 4 - The Blue Hurricane
+|Jayce, Vurtor
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|- 
+|Act 5 - The Ultimate Squadron
+|Gunyu
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 6 - The Purple Tyrant
+|Freezo → Freezo (Final)
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+
+
+|-|Shiganshinu District=
+== Shinganshinu District  ==
+Shiganshinu District '''(Shiganshina District)''' from Attack on Titan, is the second World of Story Mode. This Map features a complex looking path and introduces new Enemies with '''Buffs'''. Each act you complete in this World grants you '''Mysterious Fluid''' for your units and Gems.
+
+{| class="fandom-table article-table"
+!'''Stage'''
+!'''Boss(es)'''
+!'''Reward(s)'''
+
+|-
+|Act 1 - The Jaw Titan
+|Jaw Titan
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 2 - The Female Titan
+|Female Titan
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 3 - The Beast Titan
+|Beast Titan
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 4 - The Armored Titan
+|Armored Titan
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|- 
+|Act 5 - The Warhammer Titan
+|Warhammer Titan
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 6 - The Colossal Titan
+|Colossal Titan
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+
+|-|Snowy Town=
+== Snowy Town ==
+Snowy Town from Demon Slayer, is the third World of Story Mode. This Map has a short path and one curve around the center of the path. Each act you complete in this World grants you '''Wisteria Flower''' for your units and Gems.
+
+{| class="fandom-table article-table"
+!'''Stage'''
+!'''Boss(es)'''
+!'''Reward(s)'''
+
+|-
+|Act 1 - The Arrow Demon
+|Yahobu
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 2 - The Spider Demon
+|Zui
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 3 - Upper Moon
+|Daka
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 4 - The Ice Demon
+|Akoku
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|- 
+|Act 5 - The Moon Demon
+|Kokoshibon
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 6 - The Demon King
+|Muzo
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+
+|-|Hidden Sand Village=
+== Hidden Sand Village ==
+Hidden Sand Village '''(Sunagakure)''' from Naruto, is the fourth World of Story Mode. Each act you complete in this World grants you '''Ramen''' and Gems.
+
+{| class="fandom-table article-table"
+!'''Stage'''
+!'''Boss(es)'''
+!'''Reward(s)'''
+
+|-
+|Act 1 - The Immortal Ninja
+|Hido
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 2 - The Monster of the Hidden Mist
+|Kizume
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 3 - The White Land
+|Zezsuo
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 4 - The Crow
+|Reanimated Puppet
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|- 
+|Act 5 - The Revived Puppet
+|Reanimated Puppet
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+|-
+|Act 6 - The Scorpion of the Red Sand
+|Sashora → Sashora (Puppet Master)
+|75 Gems (First Completion)
+15 Gems (Completing Again)
+</tabber>

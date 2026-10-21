@@ -1,0 +1,774 @@
+return {
+	-- [""] = {name =""},
+	-- [""] = {name =""},
+	-- [""] = {name =""},
+	-- [""] = {name ="",Asushi (Moonlight Beast)
+
+	--	ChBox_Text = "",
+	--	ChBox_Text_Style = "Fz(__%)"},
+--Update 20.4.1
+    ["Kansai"] = {name ="kasuga"},
+    ["Kansai (Daydream)"] = {name ="kasuga_evo"},
+    ["Chuuni"] = {name ="rikka"},
+    ["Chuuni (Delusion)"] = {name ="rikka_evo"},
+    ["Violentine"] = {name ="dokuro"},
+    ["Violentine (Brutal Angel)"] = {name ="dokuro_evo", ChBox_Text_Style = "Fz(85%)"},
+    ["Vengeful Swordsman"] = {name ="rokuhira"},
+    ["Vengeful Swordsman (Sky Reaver)"] = {name ="rokuhira_evo", ChBox_Text_Style = "Fz(67%)"},
+
+
+--Update 20.0.0
+    ["Robot Sorcerer"] = {name ="mechamaru"},
+    ["Joker"] = {name ="shidou"},
+    ["Divine General"] = {name ="mahoraga"},
+    ["Snow Reaper (War)"] = {name ="rukia_2"},
+    ["Snow Reaper (Final)"] = {name ="rukia_2_evo"},
+    ["Sorcerer Killer"] = {name ="toji"},
+    ["Sorcerer Killer (Heavenly Body)"] = {name ="toji_evo", ChBox_Text_Style = "Fz(67%)"},
+    ["Black Assassin"] = {name ="hei"},
+    ["Black Assassin (Reaper)"] = {name ="hei_evo"},
+    ["Demihuman"] = {name ="sato"},
+    ["Demihuman (Gamer)"] = {name ="sato_evo"},
+    ["Zombie"] = {name ="giselle"},
+    ["Zombie (Risen)"] = {name ="giselle_evo"},
+    ["Shadow Sorcerer (Incident)"] = {name ="megumi_2", ChBox_Text_Style = "Fz(75%)"},
+    ["Shadow Sorcerer (Ritual)"] = {name ="megumi_2_evo", ChBox_Text_Style = "Fz(80%)"},
+    ["Gambler"] = {name ="hakari"},
+    ["Gambler (Jackpot)"] = {name ="hakari_evo"},
+    ["Elyssia"] = {name ="isharmla"},
+    ["Elyssia (Abyssal)"] = {name ="isharmla_evo"},
+
+--Update 19.5.0
+    ["Killstreak"] = {name ="gaku"},
+    ["Killstreak (Speedrun)"] = {name ="gaku_evo"},
+    ["Switchblade"] = {name ="nagumo"},
+    ["Switchblade (Deception)"] = {name ="nagumo_evo"},
+    ["Legendary Assassin"] = {name ="sakamoto"},
+    ["Legendary Assassin (Prime)"] = {name ="sakamoto_evo"},
+    ["Somber"] = {name ="osaragi"},
+    ["Somber (Buzzsaw)"] = {name ="osaragi_evo"},
+    ["Spider"] = {name ="feitan"},
+    ["Spider (Immolation)"] = {name ="feitan_evo"},
+	
+	
+--Update 19.0.0
+    ["Deer-tan"] = {name ="nokotan"},
+    ["Psychic Princess"] = {name ="starlia"},
+    ["Psychic Princess (Evo)"] = {name ="starlia_evo"},
+    ["Silver Slayer"] = {name ="ragna"},
+    ["Silver Slayer (Hunter)"] = {name ="ragna_evo"},
+
+	["Illusionist (Transcended)"] = {name ="aizen_transcended"},
+    ["Honey"] = {name ="honey"},
+    ["Honey (Hive)"] = {name ="honey_evo"},
+    ["Elf Mage"] = {name ="frieren"},
+    ["Elf Mage (Aura)"] = {name ="frieren_evo"},
+    ["Siren"] = {name ="monet"},
+    ["Siren (Harpy)"] = {name ="monet_evo"},
+    ["Enlightened"] = {name ="buddha"},
+    ["Enlightened (Nirvana)"] = {name ="buddha_evo"},
+    ["Iceclaw (Rebirth)"] = {name ="rebirth_grimmjow"},
+    ["Iceclaw (Azure Fang)"] = {name ="rebirth_grimmjow_evo"},
+    ["Dreamer"] = {name ="gremmy"},
+    ["Dreamer (Visionary)"] = {name ="gremmy_evo"},
+    ["Cream"] = {name ="vanilla_ice"},
+    ["Cream (Void)"] = {name ="vanilla_ice_evo"},
+    ["Ghost-kun"] = {name ="hanako_kun"},
+    ["Ghost-kun (Bound)"] = {name ="hanako_kun_evo"},
+    ["Dark Mage"] = {name ="judar"},
+    ["Dark Mage (Fallen Star)"] = {name ="judar_evo"},
+
+--Update 18.5.0
+	["Carrot (Super III)"] = {name ="goku_ssj3"},
+	["Carrot (Ultra)"] = {name ="goku_ssj3_evolved"},
+	["Vego (Mage)"] = {name ="vegeta_majin"},
+	["Vego (Mage II)"] = {name ="vegeta_majin_evolved"},
+	["Bubblegum"] = {name ="buu"},
+	["Bubblegum (Ultimate)"] = {name ="buu_evolved"},
+	["Fused Hero"] = {name ="vegito"},
+	
+
+--Update 18.0.0
+	["Agony (Path)"] = {name ="pain_2"},
+	["Agony (Divine)"] = {name ="pain_2_evolved"},
+	["Toad Sensei"] = {name ="jiraiya"},
+	["Toad Sensei (Toad Sage)"] = {name ="jiraiya_evolved"},
+	["Shinobi (Awakened)"] = {name ="sasuke_3"},
+	["Shinobi (Eternal)"] = {name ="sasuke_3_evolved"},
+	["Fox Ninja (Sage)"] = {name ="naruto_sage"},
+	["Fox Ninja (Six Tails)"] = {name ="naruto_6tails"},
+	["Fridge"] = {name ="cooler"},
+	["Origami"] = {name ="konan_unit"},
+	["Origami (Paper Angel)"] = {name ="konan_unit_evolved"},
+	["Spirit Sniper"] = {name ="chika"},
+	["Spirit Sniper (Prodigy)"] = {name ="chika_evolved"},
+	["Shrimp"] = {name ="yuma"},
+	["Shrimp (White Terror)"] = {name ="yuma_evolved"},
+	["Dispenser"] = {name ="boxxo"},
+
+
+--Update Halloween 2023
+	["Death Ninja"] = {name ="hidan_unit"},
+	["Death Ninja (Immortal Butcher)"] = {name ="hidan_unit_evolved", ChBox_Text_Style = "Fz(63%)"},
+	["Gas"] = {name ="caesarclown"},
+	["Gas (Toxic)"] = {name ="caesarclown_evolved", ChBox_Text_Style = "Fz(86%)"},
+	["Fiend Girl"] = {name ="hinami", ChBox_Text_Style = "Fz(95%)"},
+	["Fiend Girl (Buttterfly)"] = {name ="hinami_evolved", ChBox_Text_Style = "Fz(72%)"},
+	["Dracula"] = {name ="alucard", ChBox_Text_Style = "Fz(90%)"},
+	["Dracula (Unholy King)"] = {name ="alucard_evolved", ChBox_Text_Style = "Fz(69%)"},
+	["Umbra"] = {name ="cid"},
+	["Umbra (Nuclear)"] = {name ="cid_evolved", ChBox_Text_Style = "Fz(77%)"},
+
+
+--Update 17.5.0
+	["Tiger"] = {name ="atsushi"},
+	["Tiger (Moonlight Beast)"] = {name ="atsushi_evolved", ChBox_Text = 'Tiger<br><span class="Fz(86%)">(Moonlight Beast)</span>', ChBox_Text_Style = "Fz(70%)"},
+	["Gravity Mage"] = {name ="chuya"},
+	["Gravity Mage (Void)"] = {name ="chuya_evolved", ChBox_Text_Style = "Fz(68%)"},
+	["InHuman"] = {name ="dazai"},
+	["InHuman (Nullifier)"] = {name ="dazai_evolved", ChBox_Text_Style = "Fz(66%)"},
+	["Black Dog"] = {name ="akutagawa"},
+	["Black Dog (HellHound)"] = {name ="akutagawa_evolved", ChBox_Text_Style = "Fz(80%)"},
+	["Scarlet Slayer"] = {name ="izumi"},
+	["Scarlet Slayer (Cursed Frost)"] = {name ="izumi_evolved", ChBox_Text = 'Scarlet Slayer<br>(Cursed Frost)', ChBox_Text_Style = "Fz(75%)"},
+
+
+
+--Update 17.0.0
+	["Takamu"] = {name ="tsuna"},
+	["Takamu (Reborn)"] = {name ="tsuna_evolved"},
+	["Julias"] = {name ="caesar"},
+	["Sword Queen"] = {name ="saber"},
+	["Sword Queen (Knight)"] = {name ="saber_evolved", ChBox_Text = 'Sword Queen<br><span class="Fz(85%)">(Knight)</span>', ChBox_Text_Style = "Fz(73%)"},
+	["Faker"] = {name ="archer"},
+	["Faker (Hero's Soul)"] = {name ="archer_evolved", ChBox_Text_Style = "Fz(72%)"},
+	["Hex"] = {name ="medea"},
+	["Hex (Witch of Betrayal)"] = {name ="medea_evolved", ChBox_Text_Style = "Fz(65%)"},
+	["Lilia"] = {name ="illya"},
+	["Lilia (Homunculus)"] = {name ="illya_evolved", ChBox_Text_Style = "Fz(78%)"},
+	["Bombietta"] = {name ="bambietta"},
+	["Kimoaro"] = {name ="kimimaro"},
+	["Player"] = {name ="cranel"},
+	["Player (Argus)"] = {name ="cranel_evolved", ChBox_Text_Style = "Fz(85%)"},
+	["Spearer"] = {name ="lancer"},
+	["Spearer (Child of Light)"] = {name ="lancer_evolved", ChBox_Text_Style = "Fz(72%)"},
+	["Golden King"] = {name ="gilgamesh"},
+	["Golden King (Lord of Heroes)"] = {name ="gilgamesh_evolved", ChBox_Text_Style = "Fz(67%)"},
+	
+	
+	
+	
+
+--Update 16.5.0
+	["Mangaka"] = {name ="rohan"},
+	["Mangaka (Artist)"] = {name ="rohan_evolved", ChBox_Text_Style = "Fz(75%)"},
+	["Reliable Student"] = {name ="koichi"},
+	["Reliable Student (Echoes)"] = {name ="koichi_evolved", ChBox_Text_Style = "Fz(69%)"},
+	["Calm Killer"] = {name ="kira"},
+	["Calm Killer (Meets the End)"] = {name ="kira_evolved", ChBox_Text = 'Calm Killer<br>(Meets the End)',  ChBox_Text_Style = "Fz(75%)"},
+	["Jose (Shining Gem)"] = {name ="josuke_2", ChBox_Text = 'Jose<br>(Shining Gem)',  ChBox_Text_Style = "Fz(64%)"},
+	["Jose (Unbreakable)"] = {name ="josuke_2_evolved", ChBox_Text_Style = "Fz(69%)"},
+	
+
+
+--Update 16.0.0
+	["Connor"] = {name ="conrad"},
+	["Connor (Wizard King)"] = {name ="conrad_evolved", ChBox_Text_Style = "Fz(65%)"},
+
+
+	["Supreme Being"] = {name ="ainz"},
+	["Supreme Being (Sovereign)"] = {name ="ainz_evolved", ChBox_Text_Style = "Fz(71%)"},
+	["Cherub"] = {name ="albedo", ChBox_Text_Style = "Fz(90%)"},
+	["Cherub (Overseer)"] = {name ="albedo_evolved", ChBox_Text_Style = "Fz(63%)"},
+	["Lucifer"] = {name ="demiurge"},
+	["Lucifer (Demon Emperor)"] = {name ="demiurge_evolved", ChBox_Text_Style = "Fz(61%)"},
+	["Bloodcry"] = {name ="shalltear"},
+	["Bloodcry (Fallen)"] = {name ="shalltear_evolved", ChBox_Text_Style = "Fz(63%)"},
+	["Thunder Maid"] = {name ="narberal"},
+	["Thunder Maid (Servant)"] = {name ="narberal_evolved", ChBox_Text = 'Thunder Maid<br>(Servant)', ChBox_Text_Style = "Fz(67%)"},
+	["Flash Ninja"] = {name ="minato"},
+	["Katana"] = {name ="kenshin"},
+	["Smoka"] = {name ="smoker_unit"},
+	["Smoka (Hunter)"] = {name ="smoker_unit_evolved", ChBox_Text_Style = "Fz(70%)"},
+	["Dark Young"] = {name ="dark_young"},
+	["Messi"] = {name ="isagi"},
+	["Crystal Rose"] = {name ="evileye"},
+	["Crystal Rose (Impact)"] = {name ="evileye_evolved", ChBox_Text_Style = "Fz(61%)"},
+
+
+
+
+
+--Update 15.5.0
+	["Sharkfin (Tailless Beast)"] = {name ="kisame_unit_evolved", ChBox_Text_Style = "Fz(65%)"},
+	["Sharkfin"] = {name ="kisame_unit"},
+	["Sea God (Tyrant of the Seas)"] = {name ="poseidon_evolved", ChBox_Text = 'Sea God <span class="Fz(70%)">(Tyrant of the Seas)</span>',  ChBox_Text_Style = "Fz(77%)"},
+	["Sea God"] = {name ="poseidon"},
+	["Flamefeather (Arcane Blaze)"] = {name ="avdol_evolved", ChBox_Text_Style = "Fz(67%)"},
+	["Flamefeather"] = {name ="avdol"},
+	["Hammerhead (Shark Empress)"] = {name ="harribel_evolved", ChBox_Text = 'Hammerhead<br>(Shark Empress)', ChBox_Text_Style = "Fz(70%)"},
+	["Hammerhead"] = {name ="harribel"},
+	["Pirate King (Final)"] = {name ="roger_evolved", ChBox_Text_Style = "Fz(67%)"},
+	["Pirate King"] = {name ="roger"},
+	
+--Update ???
+	["Fan Ninja"] = {name ="temari"},
+
+
+		 --Update 15
+	["Flower Ninja"] = {name ="gabimaru"},
+	["Flower Ninja (Austere Flame)"] = {name ="gabimaru_evolved", ChBox_Text_Style = "Fz(72%)"},
+	["Brawler"] = {name ="chad"},
+	["Brawler (Soul)"] = {name ="chad_evolved", ChBox_Text_Style = "Fz(75%)"},
+
+
+	["Griffin (Reincarnation)"] = {name ="griffith_reincarnation", ChBox_Text = 'Griffin<br>(Reincarnation)', ChBox_Text_Style = "Fz(68%)"},
+	["Griffin (Ascension)"] = {name ="femto_egg", ChBox_Text = 'Griffin<br>(Ascension)', ChBox_Text_Style = "Fz(74%)"},
+	["Griffin (Darkness)"] = {name ="femto", ChBox_Text = 'Griffin<br>(Darkness)', ChBox_Text_Style = "Fz(75%)"},
+	["Berserker"] = {name ="guts"},
+	["Berserker (Rage)"] = {name ="guts_berserker", ChBox_Text_Style = "Fz(77%)"},
+	["Griffin"] = {name ="griffith"},
+	["Skeleton Knight"] = {name ="skull_knight"},
+	["Skeleton Knight (King)"] = {name ="skull_knight_evolved", ChBox_Text_Style = "Fz(69%)"},
+	["Dragon Knight"] = {name ="issei"},
+	["Dragon Knight (Gauntlet)"] = {name ="issei_evolved", ChBox_Text = 'Dragon Knigh<br>(Gauntlet)', ChBox_Text_Style = "Fz(68%)"},
+	["Golden Navy"] = {name ="sengoku_unit"},
+	["Golden Navy (Buddha)"] = {name ="sengoku_unit_evolved", ChBox_Text_Style = "Fz(75%)"},
+
+         --Update 14
+	
+	["Gamer"] = {name ="kirito"},
+	["Gamer (Dual)"] = {name ="kirito_evolved", ChBox_Text_Style = "Fz(72%)"},
+	["Menace"] = {name ="stain"},
+	["Menace (Terror)"] = {name ="stain_evolved", ChBox_Text = 'Menace<br>(Terror)', ChBox_Text_Style = "Fz(66%)"},
+	["Gamer Girl"] = {name ="asuna"},
+	["Gamer Girl (Flash)"] = {name ="asuna_evolved", ChBox_Text_Style = "Fz(66%)"},
+	["Crusader"] = {name ="heathcliff", ChBox_Text_Style = "Fz(77%)"},
+	["Crusader (Admin)"] = {name ="heathcliff_evolved", ChBox_Text_Style = "Fz(66%)"},
+	["Virtual Samurai"] = {name ="klein"},
+	["Virtual Samurai (Bachelor)"] = {name ="klein_evolved", ChBox_Text = 'Virtual Samurai<br>(Bachelor)', ChBox_Text_Style = "Fz(75%)"},
+	["Elfy"] = {name ="leafa"},
+	["Elfy (Sylph)"] = {name ="leafa_evolved", ChBox_Text_Style = "Fz(72%)"},
+	["Turtle Master"] = {name ="roshi"},
+	["Stitches"] = {name ="buggy"},
+	["Fan Ninja"] = {name ="temari"},
+	
+			-- Update 13.5
+
+	["Bodybuilder"] = {name="mash"},
+	["Bodybuilder (Muscles)"] = {name="mash_evolved", ChBox_Text_Style = "Fz(70%)"},
+	["Cotton"] = {name="charmy"},
+	["Cotton (Sheep)"] = {name="charmy_evolved", ChBox_Text_Style = "Fz(70%)"},
+
+
+
+	["Shadowgirl"] = {name="homura"},
+	["Shadowgirl (Time Traveller)"] = {name="homura_evolved", ChBox_Text = 'Shadowgirl <span class="Fz(67%)">(Time Traveller)</span>',  ChBox_Text_Style = "Fz(77%)"},
+	["Millie"] = {name="mami"},
+	["Millie (Holy)"] = {name="mami_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Magic Girl"] = {name="madoka"},
+	["Magic Girl (Salvation)"] = {name="madoka_evolved", ChBox_Text = 'Magic Girl<br>(Salvation)',	ChBox_Text_Style = "Fz(77%)"},
+	["Kyko"] = {name="kyoko"},
+	["Kyko (Crimson Spear)"] = {name="kyoko_evolved", ChBox_Text = 'Kyko <span class="Fz(60%)">(Crimson Spear)</span>', ChBox_Text_Style = "Fz(78%)"},
+	["Saki"] = {name="sayaka"},
+	["Saki (Cyanblade)"] = {name="sayaka_evolved", ChBox_Text = 'Saki <span class="Fz(67%)">(Cyanblade)</span>', ChBox_Text_Style = "Fz(77%)"}, 
+	
+			-- Update 13
+	
+	["Captain (Timeskip)"] = {name="usopp_ts", ChBox_Text_Style = "Fz(72%)"},	
+	["Captain (God)"] = {name="usopp_ts_evolved", ChBox_Text_Style = "Fz(72%)"},	
+	["Joykid (Bounce)"] = {name="luffy_g4", ChBox_Text_Style = "Fz(72%)"},	
+	["Joykid (Mode IV)"] = {name="luffy_g4_evolved", ChBox_Text_Style = "Fz(75%)"},	
+	["Operator (Heart)"] = {name="law_2", ChBox_Text_Style = "Fz(72%)"},	
+	["Operator (ROOM)"] = {name="law_2_evolved", ChBox_Text_Style = "Fz(75%)"},	
+	["Gravity Navy"] = {name="fujitora", ChBox_Text_Style = "Fz(66%)"},	
+	["Gravity Navy (Admiral)"] = {name="fujitora_evolved", ChBox_Text_Style = "Fz(72%)"},	
+	["Rebel"] = {name="sabo", ChBox_Text_Style = "Fz(66%)"},	
+	["Rebel (Flame Ruler)"] = {name="sabo_evolved", ChBox_Text_Style = "Fz(75%)"},	
+	["Silver King"] = {name="rayleigh"},	
+	["Boxer"] = {name="ippo"},	
+	["Stringy"] = {name="doflamingo", ChBox_Text_Style = "Fz(72%)"},	
+	["Stringy (Awakened)"] = {name="doflamingo_evolved", ChBox_Text = 'Stringy<br>(Awakened)', ChBox_Text_Style = "Fz(75%)"},
+	["Windspire"] = {name="nejire"},	
+
+           --Update 12.5
+
+	["Haze"] = {name="fugo"},
+	["Haze (Rage)"] = {name="fugo_evolved", ChBox_Text_Style = "Fz(82%)"},
+	["Idol"] = {name="hoshino"},
+	["Idol (Star)"] = {name="hoshino_evolved", ChBox_Text_Style = "Fz(84%)"},
+	
+	
+	
+	["Bunny"] = {name="carrot"},	
+	["Bunny (Night)"] = {name="carrot_evolved", ChBox_Text_Style = "Fz(66%)"},	
+	["Lunar Hare"] = {name="mirko"},	
+	["Lunar Hare (Tiger)"] = {name="mirko_evolved", ChBox_Text_Style = "Fz(74%)"},
+	["Puppet Girl"] = {name="yoshino"},	
+	["Puppet Girl (Spirit)"] = {name="yoshino_evolved", ChBox_Text_Style = "Fz(69%)"},	
+	["Sepsis"] = {name="gyutaro"},
+	["Sepsis (Moon)"] = {name="gyutaro_evolved",	ChBox_Text_Style = "Fz(67%)"},
+	["Tango (Score)"] = {name="tengen_2"},	
+	["Tango (Flash God)"] = {name="tengen_2_evolved", ChBox_Text_Style = "Fz(69%)"},	
+	["Saka"] = {name="daki"},
+	["Saka (Ribbon)"] = {name="daki_evolved"},
+	
+	        --Update 12.0.0
+	        
+	["Gunslinger"] = {name="vash"},
+	["Gunslinger (Cross)"] = {name="vash_evolved", ChBox_Text_Style = "Fz(80%)"},
+	["Verdant Hero (String)"] = {name="deku_vigilante", ChBox_Text_Style = "Fz(66%)"},	
+	["Verdant Hero (Dark)"] = {name="deku_vigilante_evolved", ChBox_Text_Style = "Fz(66%)"},	
+	["Flame Hero"] = {name="endeavor"},
+	["Flame Hero (Hellfire)"] = {name="endeavor_evolved", ChBox_Text_Style = "Fz(61%)"},	
+	["Explosion Hero (Bang)"] = {name="bakugou_2", ChBox_Text_Style = "Fz(61%)"},	
+	["Explosion Hero (Impact)"] = {name="bakugou_2_evolved", ChBox_Text_Style = "Fz(61%)"},	
+	["Falcon"] = {name="hawks"},
+	["Falcon (Feather Strike)"] = {name="hawks_evolved", ChBox_Text_Style = "Fz(66%)"},
+	["Ashborn"] = {name="shigaraki"},
+	["Ashborn (Decay)"] = {name="shigaraki_evolved", ChBox_Text_Style = "Fz(65%)"},
+	["Bleed Queen"] = {name="unohana"},
+	["Wukong"] = {name="jin_mori"},
+	["Bozo"] = {name="jozu"},
+	["???"] = {name="gogeta_failed"},
+	["Riony"] = {name="rias"},
+	["Riony (Devil Princess)"] = {name="rias_evolved", ChBox_Text = 'Riony<br>(Devil Princess)', ChBox_Text_Style = "Fz(68%)"},
+	["Catgirl"] = {name="koneko"},
+	["Catgirl (Hell-Cat)"] = {name="koneko_evolved", ChBox_Text = 'Catgirl<br>(Hell-Cat)', ChBox_Text_Style = "Fz(77%)"},
+	["Akemy"] = {name="akeno"},
+	["Akemy (Fallen Angel)"] = {name="akeno_evolved", ChBox_Text = 'Akemy<br>(Fallen Angel)', ChBox_Text_Style = "Fz(61%)"},
+	
+	
+	
+	
+	
+	
+	        --Update 11.7.5
+	["Eccentric Researcher"] = {name="hange"},
+	["Eccentric Researcher (Captain)"] = {name="hange_evolved", ChBox_Text_Style = "Fz(68%)"},
+	
+	
+	["Golden Tyrant"] = {name="frieza_golden"},
+	["Golden Tyrant (Emperor)"] = {name="frieza_golden_evolved", ChBox_Text_Style = "Fz(58%)"},	
+	["Green Alien (Fusion)"] = {name="piccolo_fused", ChBox_Text_Style = "Fz(66%)"},	
+	["Green Alien (Nameless)"] = {name="piccolo_fused_evolved", ChBox_Text_Style = "Fz(66%)"},
+	["Vego (Super)"] = {name="vegeta_super", ChBox_Text_Style = "Fz(72%)"},
+	["Vego (Super II)"] = {name="vegeta_super_evolved", ChBox_Text_Style = "Fz(68%)"},
+	
+	
+	
+            --Update 11.5.0
+	["Hubris (Day)"] = {name="escanor"},
+	["Hubris (Night)"] = {name="escanor_weak"},
+	["Hubris (The One)"] = {name="escanor_evolved", ChBox_Text_Style = "Fz(76%)"},
+	["Infinity Mage"] = {name="merlin"},
+	["Infinity Mage (Endless)"] = {name="merlin_evolved", ChBox_Text_Style = "Fz(65%)"},	
+	["Dog Demon"] = {name="inuyasha"},
+	    --Update 11.0.0
+
+	["Mist Ninja"] = {name="zabuza"},
+	["Snake Princess"] = {name="boa"},
+	    
+	    
+	    
+	["Wratho"] = {name="meliodas"},
+	["Wratho (Assault)"] = {name="meliodas_evolved", ChBox_Text_Style = "Fz(76%)"},
+	["Crimson Thief"] = {name="ban"},
+	["Crimson Thief (Hunt)"] = {name="ban_evolved",	ChBox_Text_Style = "Fz(83%)"},
+	["Doll"] = {name="gowther"},
+	["Doll (Spirit Archer)"] = {name="gowther_evolved", ChBox_Text_Style = "Fz(77%)"},	
+	["Fairy Ruler"] = {name="king_7ds"},
+	["Fairy Ruler (Sloth)"] = {name="king_7ds_evolved"},
+	["Hammer Giantess"] = {name="diane"},
+	["Hammer Giantess (Creation)"] = {name="diane_evolved", ChBox_Text_Style = "Fz(72%)"},
+	
+	
+	
+	
+		--Update 10.7.5
+	["Shizo"] = {name ="shisui"},
+	["Shizo (Flicker)"] = {name ="shisui_evolved", ChBox_Text_Style = "Fz(72%)"},	
+	["Shinobi (Hood)"] = {name ="sasuke_2", ChBox_Text_Style = "Fz(77%)"},	
+	["Shinobi (Storm)"] = {name ="sasuke_2_evolved", ChBox_Text_Style = "Fz(71%)"},	
+	["Izo (Black Fire)"] = {name ="itachi_2", ChBox_Text_Style = "Fz(72%)"},	
+	["Izo (Samurai)"] = {name ="itachi_2_evolved", ChBox_Text_Style = "Fz(72%)"},	
+	
+	
+	    --Update 10.5 ? (Maybe)
+	["Lightning God"] = {name ="thor"},
+	["Lightning God (Awakened)"] = {name ="thor_evolved", ChBox_Text_Style = "Fz(72%)"},	
+	    
+	    
+	    --Update ????
+	["Ice Shaper"] = {name='geten'},
+	
+	
+		--Update 10
+	["Weather Girl (Thief)"] = {name ="nami_evolved", ChBox_Text_Style = "Fz(84%)"},	
+	["Weather Girl"] = {name ="nami"},
+	["Tattermo"] = {name ="tatsumi"},
+	["Toby"] = {name ="obito"},
+	["Android AAA"] = {name ="android21"},
+	["Alien King"] = {name ="boros"},
+	["Lord Alien King"] = {name ="boros_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Waterfist"] = {name ="bang"},
+	["Waterfist (White Tooth)"] = {name ="bang_evolved", ChBox_Text_Style = "Fz(66%)"},
+	["Cyborg (Overdrive)"] = {name ="genos_2", ChBox_Text_Style = "Fz(72%)"},	
+	["Cyborg (Incinerate)"] = {name ="genos_2_evolved", ChBox_Text_Style = "Fz(72%)"},
+	["Iron Knight"] = {name ="metal_knight", ChBox_Text_Style = "Fz(77%)"},
+	["Iron Knight (Arsenal)"] = {name ="metal_knight_evolved", ChBox_Text_Style = "Fz(66%)"},
+	["Supersound"] = {name ='sonic'},
+	["Supersound (Speed)"] = {name ="sonic_evolved", ChBox_Text_Style = "Fz(80%)"},
+	["Tamiki"] = {name ='tatsumaki', ChBox_Text_Style = "Fz(77%)"},
+	["Tamiki (Tornado)"] = {name ="tatsumaki_evolved", ChBox_Text_Style = "Fz(66%)"},
+	
+	--Update 9
+	["Curse"] = {name ="aki"},
+	["Curse (Contract)"] = {name ="aki_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Blade Beast"] = {name ="denji"},
+	["Blade Beast (Hybrid)"] = {name ="denji_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Blade Beast (Past)"] = {name ="denji_secret"},	
+	["Paragon"] = {name ="angel_devil"},
+	["Paragon (Devil)"] = {name ="angel_devil_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Ghosty"] = {name ="himeno"},
+	["Ghosty (Sacrifice)"] = {name ='himeno_evolved', ChBox_Text_Style = "Fz(77%)"},
+	["Blood"] = {name ="power"},
+	["Blood (Unleashed)"] = {name ='power_evolved', ChBox_Text_Style = "Fz(77%)"},
+	["Cowardly"] = {name ="kobeni"},
+	["Cowardly (Scared)"] = {name ='kobeni_evolved', ChBox_Text_Style = "Fz(77%)"},
+
+	--Update 8
+	["Ice Queen"] = {name ="esdeath"},
+	["Ice Queen (Empire's Strongest)"] = {name ="esdeath_evolved", ChBox_Text = 'Ice Queen <span class="Fz(53%)">(Empire&#39;s Strongest)</span>',  ChBox_Text_Style = "Fz(77%)"},
+	["JIO (Over Heaven)"] = {name ="dio_heaven", ChBox_Text = 'JIO<br> <span class="Fz(73%)">(Over Heaven)</span>',  ChBox_Text_Style = "Fz(77%)"},
+	["Frost Navy"] = {name ="aokiji"},
+	["Frost Navy (Blue Pigeon)"] = {name ="aokiji_evolved", ChBox_Text = 'Frost Navy <br><span class="Fz(67%)">(Blue Pigeon)</span>',  ChBox_Text_Style = "Fz(77%)"},
+	["Mirror Ninja"] = {name ="haku"},
+	["Mirror Ninja (Reflection)"] = {name ="haku_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Blaze Frost"] = {name ="todoroki_2", ChBox_Text_Style = "Fz(75%)"},
+	["Blaze Frost (Released)"] = {name ="todoroki_2_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Icy Dragon"] = {name ="toshiro"},
+	["Icy Dragon (Lotus)"] = {name ="toshiro_evolved",  ChBox_Text_Style = "Fz(77%)"},
+
+	
+	["Skater"] = {name ="ghiaccio"},
+	["Skater (Album)"] = {name ="ghiaccio_evolved", ChBox_Text_Style = "Fz(66%)"},
+	
+	["Demonshade"] = {name ="hiei"},
+	["Ice Lily"] = {name ="emilia"},
+	
+            ["Weather"] = {name ="dominico"},
+            ["Heavy Weather"] = {name ="dominico_evolved", ChBox_Text_Style = "Fz(77%)"},
+            ["Dolphin"] = {name ="jolyne"},
+            ["Dolphin (Determination)"] = {name ="jolyne_evolved", ChBox_Text_Style = "Fz(68%)"},
+            ["Hermy"] = {name ="ermes"},
+            ["Hermy (Duplicate)"] = {name ="ermes_evolved", ChBox_Text_Style = "Fz(77%)"},
+
+            ["Priest"] = {name ="pucci"},
+            ["Priest (New Moon)"] = {name ="pucci_cmoon", ChBox_Text = "Priest<br>(New Moon)",  ChBox_Text_Style = "Fz(77%)"},
+            ["Priest (Heaven)"] = {name ="pucci_heaven", ChBox_Text = "Priest<br>(Heaven)",  ChBox_Text_Style = "Fz(77%)"},
+            ["Delinquent (Serious)"] = {name ="jotaro_p6",  ChBox_Text_Style = "Fz(77%)"},
+            ["Delinquent (The Universe)"] = {name ="jotaro_p6_evolved",  ChBox_Text_Style = "Fz(72%)"},
+
+         -- Update 7
+            ["Illusionist (Chrysalis)"] = {name ="aizen_chrys",  ChBox_Text_Style = "Fz(77%)"},
+            ["Illusionist (Fusion)"] = {name ="aizen_hog",  ChBox_Text_Style = "Fz(81%)"},
+            ["Illusionist (Final)"] = {name ="aizen_hog_evolved",  ChBox_Text_Style = "Fz(92%)"},
+            ["Fiery Commander"] = {name ="yamamoto"},
+            ["Fiery Commander (Hellfire)"] = {name ="yamamoto_evolved",  ChBox_Text_Style = "Fz(77%)"},
+
+	
+            ["White Snake"] = {name ="gin"},
+            ["White Snake (Sacred Spear)"] = {name ="gin_evolved",  ChBox_Text_Style = "Fz(73%)"},
+            ["Spirit Reaper (Dusk)"] = {name ="ichigo_mugetsu"},
+            ["Spirit Reaper (Final Dusk)"] = {name ="ichigo_mugetsu_evolved",  ChBox_Text = "Spirit Reaper<br>(Final Dusk)",  ChBox_Text_Style = "Fz(83%)"},
+            ["Wasp"] = {name ="soifon"},
+            ["Wasp (Hornet)"] = {name ="soifon_evolved", ChBox_Text_Style = "Fz(77%)"},
+            ["Packy"] = {name ="kenpachi"},
+            ["Packy (Maniac)"] = {name ="kenpachi_evolved", ChBox_Text_Style = "Fz(77%)"},
+            ["Swingo"] = {name ="shinji"},
+
+	
+-- Names
+	["Time Wizard"] = {name ="julius"},
+	["Time Wizard (Chronos)"] = {name ="julius_evolved", ChBox_Text_Style = "Fz(72%)"},
+
+	["Aquatic Mage"] = {name ="noelle"},
+	["Black Blade"] = {name ="yami"},
+	["Black Blade (Captain)"] = {name ="yami_evolved", ChBox_Text_Style = "Fz(72%)"},
+	["Tango"] = {name ="tengen"},
+	["Komo"] = {name ="kuma_unit"},
+	["Magic Disbeliever"] = {name ="asta"},
+	["Elf Spirit"] = {name ="yuno"},
+	["Karma"] = {name ="luck"},
+	["Flame Wizard"] = {name ="magna"},
+	["Wind Dragon"] = {name ="wendy"},
+	["Aquatic Mage (Valkyrie Armor)"] = {name ="noelle_evolved", ChBox_Text = "Noel<br>(Valkyrie Armor)",
+	ChBox_Text_Style = "Fz(63%)"},
+	["Magic Disbeliever (Dark)"] = {name ="asta_evolved"},
+	["Elf Spirit (Wind)"] = {name ="yuno_evolved", ChBox_Text_Style = "Fz(87%)"},
+	["Karma (Thunder Fiend)"] = {name ="luck_evolved",
+	ChBox_Text_Style = "Fz(66%)"},
+	-- [""] = {name =""},
+	-- [""] = {name =""},
+	
+	
+	
+	
+	
+
+	-- Update
+	["Nightmare Joykid"] = {name ="luffy_nightmare",
+		ChBox_Text_Style = "Fz(66%)"},
+	["Ghost Lady"] = {name ="perona"},
+	["Ghost Lady (Princess)"] = {name ="perona_evolved",
+		ChBox_Text_Style = "Fz(66%)"},
+	
+	["Skeleton"] = {name ="brook"},
+	["Skeleton (Soul King)"] = {name ="brook_evolved",
+		ChBox_Text_Style = "Fz(80%)"},
+	["Morbid"] = {name ="moria"},
+	["Morbid (Shadow Lord)"] = {name ="moria_evolved",
+		ChBox_Text_Style = "Fz(74%)"},
+
+	
+	
+	-- Update 6.5
+	["Gazu (Maximum)"] = {name ="geto_evolved", ChBox_Text_Style = "Fz(80%)"},
+	["Gazu"] = {name ="geto"},
+	["Mimic Sorcerer"] = {name ="yuta"},
+	["Mimic Sorcerer (Cursed Child)"] = {name ="yuta_evolved",
+		ChBox_Text_Style = "Fz(75%)"},
+	["Cursed King"] = {name ="sukuna"},
+
+	-- Update 6
+	["Paradox"] = {name ="gojo"},
+	["Paradox (Divine Sight)"] = {name ="gojo_evolved",
+		ChBox_Text = 'Paradox<br>(Divine Sight)',
+		ChBox_Text_Style = "Fz(80%)",
+		
+	},
+	["Itukoda"] = {name ="itadori"},
+	["Shadow Sorcerer"] = {name ="megumi"},
+	["Shadow Sorcerer (Hybrid Shadow)"] = {name ="megumi_evolved",
+		ChBox_Text = 'Shadow Sorcerer<br><span class="Fz(59%)">(Hybrid Shadow)</span>',
+		ChBox_Text_Style = "Fz(83%)",
+	},
+	["Ratio"] = {name ="kento"},
+	["Ratio (Overtime)"] = {name ="kento_evolved",
+		ChBox_Text_Style = "Fz(80%)",
+	},
+	["Hammergirl"] = {name ="nobara"},
+	["Silent"] = {name ="toge"},
+
+
+	-- Update 5.3
+	["Experiment X (Imperfect)"] = {name ="cell_imperfect", ChBox_Text = 'Experiment X <br>Imperfect', ChBox_Text_Style = "Fz(94%)"},
+	["Experiment X (Semi-Perfect)"] = {name ="cell_semi_perfect", ChBox_Text = 'Experiment X <br>(Semi-Perfect)',  ChBox_Text_Style = "Fz(73%)"},
+	["Experiment X (Perfect)"] = {name ="cell_perfect", ChBox_Text = 'Experiment X <br>(Perfect)', ChBox_Text_Style = "Fz(84%)"},
+	["Experiment X (SUPER PERFECT)"] = {name ="cell_super_perfect", ChBox_Text = 'Experiment X <br>(SUPER PERFECT)', ChBox_Text_Style = "Fz(73%)"},
+	["Chunks"] = {name ="trunks"},
+	["Super Chunks"] = {name ="trunks_evolved", ChBox_Text_Style = "Fz(74%)"},
+	["Mecha Tyrant"] = {name ="frieza_mecha", ChBox_Text_Style = "Fz(72%)"},
+
+
+
+	-- Update 5.2: Magic Town! ✨
+
+	["Jelly"] = {name ="jellal"},
+	["Jelly (Heaven)"] = {name ="jellal_evolved", ChBox_Text_Style = "Fz(80%)"},
+	["Elize"] = {name ="erza"},
+	["Elize (Random Equip)"] = {name ="erza_evolved"},
+	["Elize (True Heart)"] = {name ="erza_samurai",	ChBox_Text_Style = "Fz(77%)"},
+	["Elize (Valkyrie)"] = {name ="erza_valkyrie",	ChBox_Text_Style = "Fz(77%)"},
+	["Elize (Lightning)"] = {name ="erza_lightning",	ChBox_Text_Style = "Fz(77%)"},
+	["Saickik"] = {name ="saiki"},
+
+
+	-- Update 5: Magic Town! ✨
+	["Dragonslayer (Lightning Mode)"] = {name ="natsu_evolved",
+		ChBox_Text_Style = "Fz(72%)"},
+	["Dragonslayer"] = {name ="natsu"}, 
+	["Lyla"] = {name ="lucy"},
+	["Lyla (Celestial)"] = {name ="lucy_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Cold Mage"] = {name ="gray"},
+	["Cold Mage (Devil Slayer)"] = {name ="gray_evolved",
+		ChBox_Text_Style = "Fz(78%)"},
+	["Gajoze"] = {name ="gajeel"},
+	["Crush (Ace)"] = {name ="gildarts_evolved", ChBox_Text_Style = "Fz(92%)"},
+	["Crush"] = {name ="gildarts"},
+	["Juvy"] = {name ="juvia"},
+
+	-- Update 4: Ant Kingdom! 🐛
+	["Gene (???)"] = {name ="gon_adult_evolved"},
+	["Gene (Adult)"] = {name ="gon_adult"},
+	["Gene"] = {name ="gon"},
+	["Chairman Prayer Master"] = {name ="netero_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Prayer Master"] = {name ="netero"},
+	["Cat Guard (Ballet)"] = {
+		name ="pitou_evolved",
+		ChBox_Text_Style = "Fz(76%)"},
+	["Cat Guard"] = {name ="pitou"},
+	["King Ant"] = {name ="meruem_evolved", ChBox_Text_Style = "Fz(83%)"},
+	["Ant"] = {name ="meruem"},
+	["Killer (Godspeed)"] = {
+		name ="killua_godspeed_evolved",
+		ChBox_Text_Style = "Fz(87%)"},
+	["Killer (Whirlwind)"] = {
+		name ="killua_godspeed",
+		ChBox_Text_Style = "Fz(87%)"},
+	["Magician"] = {name ="hisoka"},
+
+
+	["Chance (Focus)"] = {name ="kite_evolved_focus"},
+	["Chance (Lethal)"] = {name ="kite_evolved_lethal", ChBox_Text_Style = "Fz(88%)"},
+	["Chance (Precision)"] = {name ="kite_evolved_precision", ChBox_Text_Style = "Fz(77%)"},
+	["Chance (Frenzy)"] = {name ="kite_evolved_frenzy", ChBox_Text_Style = "Fz(88%)"},
+	["Chance"] = {name ="kite"},
+
+
+	
+	["Donut (ABLAZE)"] = {name ="rengoku_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Martial Demon"] = {name ="akaza_unit"},
+	["Martial Demon (Destruction)"] = {name ="akaza_unit_evolved", ChBox_Text_Style = "Fz(78%)"},
+	["Blue Devil"] = {name ="rin_oku"},
+	["Future Goh"] = {name ="future_gohan", ChBox_Text_Style = "Fz(79%)"},
+	
+	
+	["Agony"] = {name ="pain"},
+	["Illusionist (Betrayal)"] = {name ="aizen_evolved", ChBox_Text_Style = "Fz(83%)"},
+	["Illusionist"] = {name ="aizen"},
+	["Magma"] = {name ="akainu"},
+	["Prime Force (Peace)"] = {name ="all_might_evolved",
+		ChBox_Text_Style = "Fz(60%)", ChBox_Text = "Prime Force<br>(Peace)"},
+	["Prime Force"] = {name ="all_might"},
+	["Aman"] = {name ="amon"},
+	["Ariva (Reaper)"] = {name ="arima_evolved", ChBox_Text_Style = "Fz(73%)"},
+	["Ariva"] = {name ="arima"},
+	["Arlem"] = {name ="armin"},
+	["Attack Titan"] = {name ="attack_titan"},
+	["Lotus Samurai"] = {name ="byakuya"},
+	["Explosion Hero"] = {name ="bakugou"},
+	["Blackhair"] = {name ="blackbeard"},
+	["Britannia Soldier"] = {name ="britannia_soldier"},
+	["Bro"] = {name ="broly"},
+	["Bulby"] = {name ="bulma"},
+	["Jackal (Alpha)"] = {name ="starrk_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Jackal"] = {name ="starrk"},
+	["Sandy"] = {name ="crocodile"},
+	["Scorch"] = {name ="dabi"},
+	["Verdant Hero"] = {name ="deku"},
+	["Devil Boss"] = {name ="diavolo"},
+	["Emperor Whitehair"] = {name ="whitebeard_evolved", ChBox_Text_Style = "Fz(77%)"},  
+	["Usurper (Founder)"] = {name = "eren_final",
+		ChBox_Text_Style = "Fz(94%)"},
+	["Usurper"] = {name ="eren"},
+	["Eta (One-Eye)"] = {name ="eto_evolved",
+		ChBox_Text = "Eta (One&#8209;Eye)",
+		ChBox_Text_Style = "Fz(78%)"},
+	["Eta"] = {name ="eto"},
+	["Fire Fist"] = {name ="ace"},
+	["Fleet Admiral Magma"] = {
+		name ="akainu_evolved",
+		ChBox_Text_Style = "Fz(79%)"},
+	["Tyrant (Final)"] = {
+		name ="frieza",
+		ChBox_Text_Style = "Fz(76%)"},
+	["Sand Ninja"] = {name ="gaara"},
+	["Cyborg"] = {name ="genos"},
+	["Carrot Black"] = {
+		name ="goku_black",
+		ChBox_Text_Style = "Fz(96%)"},
+	["Carrot (Super)"] = {name ="goku_ssb"},
+	["Carrot"] = {name ="goku"},
+	["Iceclaw"] = {name ="grimmjow"},
+	["Spirit Reaper (Full Hollow)"] = {
+		name = "ichigo_hollow",
+		ChBox_Text_Style = "Fz(83%)"},      
+	["Spirit Reaper (Masked)"] = {
+		name = "ichigo_mask",
+		ChBox_Text = "Spirit Reaper (Masked)",
+		ChBox_Text_Style = "Fz(83%)"},
+	["Spirit Reaper"] = {name ="ichigo"},
+	["Beast"] = {name ="inosuke"},
+	["Izo"] = {name ="itachi"},
+	["JIO"] = {name ="dio"},
+	["Gold Boy"] = {name ="giorno"},
+	["Johna"] = {name ="jonathan"},
+	["Delinquent"] = {name ="jotaro"},
+	["Jose"] = {name ="josuke"},
+	["Juozu (Joker)"] = {name ="juuzou_evolved", ChBox_Text_Style = "Fz(78%)"},
+	["Juozu"] = {name ="juuzou"},
+	["Karyn"] = {name ="kakyoin"},
+	["Copy Ninja"] = {name ="kakashi"},
+	["Ghoul (Centipede)"] = {
+		name ="kaneki_2",
+		ChBox_Text_Style = "Fz(88%)"},
+	["Ghoul"] = {name ="kaneki"},
+	["Light Admiral"] = {name ="kizaru_unit"},
+	["Trickster (Release)"] = {
+		name ="kisuke_evolved",
+		ChBox_Text_Style = "Fz(83%)"},
+	["Trickster"] = {name ="kisuke"},
+	["Killer"] = {name ="killua"},
+	["Kolo"] = {name ="krillin"},
+	["Operator"] = {name ="law"},
+	["Super Bro"] = {name ="broly_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Lex Akoman"] = {name ="levi_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Lex"] = {name ="levi"},
+	["Joykid (Navy Bay)"] = {name ="luffy_marineford",
+		ChBox_Text ="Joykid (Navy Bay)",
+		ChBox_Text_Style = "Fz(73%)"},
+	["Joykid"] = {name ="luffy"},
+	["Lulu (Emperor)"] = {name ="lelouch_evolved", ChBox_Text_Style = "Fz(87%)"},
+	["Lulu"] = {name ="lelouch"},
+	["Mazara (Founder)"] = {name ="madara_evolved", ChBox_Text_Style = "Fz(77%)"},
+	["Mazara"] = {name ="madara"},
+	["Zorrawk"] = {name ="mihawk"},
+	["Mochi (Rage)"] = {name ="katakuri_evolved", ChBox_Text_Style = "Fz(82%)"},
+	["Mochi"] = {name ="katakuri"},
+	["Demon Girl"] = {name ="nezuko"},
+	["Norro"] = {name ="noro"},
+	["Fox Ninja (Beast Cloak)"] = {
+		name ="naruto_pts_evolved",
+		ChBox_Text_Style = "Fz(78%)"},
+	["Fox Ninja (Demon Cloak)"] = {
+		name ="naruto_pts",
+		ChBox_Text_Style = "Fz(74%)"},
+	["Fox Ninja"] = {name ="naruto"},
+	["Commander"] = {name ="erwin"},
+	["Green Alien"] = {name ="piccolo"},
+	["Red Scar (Conqueror)"] = {name ="shanks_evolved",
+		ChBox_Text_Style = "Fz(86%)"},
+	["Red Scar"] = {name ="shanks"},
+	["Donut"] = {name ="rengoku"},
+	["Renzi"] = {name ="renji",},
+	["Snow Reaper"] = {name ="rukia"},
+	["Blossom"] = {name ="sakura"},
+	["Joan"] = {name ="sanji"},
+	["Shinjira"] = {name ="shinkiro"},
+	["Shinobi"] = {name ="sasuke"},
+	["C.E.O."] = {name ="speedwagon"},
+	["Spirit Wolf"] = {name ="starrk_wolf_unit"},
+	["Survey Corps Member"] = {name ="aot_generic"},
+	["Demonkiller"] = {name ="tanjiro"},
+	["Tarata (Ignite)"] = {name ="tatara_evolved", ChBox_Text_Style = "Fz(89%)"},
+	["Tarata"] = {name ="tatara"},
+	["Blaze Frost (Epic)"] = {name ="todoroki"},
+	["Touci"] = {name ="touka"},
+	["Void Spear (Revival)"] = {
+		name ="ulquiorra_evolved",
+		ChBox_Text_Style = "Fz(74%)"},
+	["Void Spear"] = {name ="ulquiorra"},
+	["Restructure"] = {name ="overhaul"},
+	["Gravity Hero"] = {name ="uraraka"},
+	["Spirit Archer (Reversal)"] = {name ="uryu_evolved",
+		ChBox_Text_Style = "Fz(88%)"},
+	["Spirit Archer"] = {name ="uryu"},
+	["Captain"] = {name ="usopp"},
+	["Vego"] = {name ="vegeta"},
+	["Whitehair"] = {name ="whitebeard"},
+	["Monkey"] = {name ="zeke"},
+	["Zapstu"] = {name ="zenitsu"},
+	["Zen"] = {name ="zoro"},
+}

@@ -1,0 +1,4 @@
+'''Infinite Mode''' is a mode where the Player defends against endless waves of enemies, with each wave progressively getting harder. Infinite Mode is only available on '''Hard''' mode. There is a leaderboard for top Infinite Mode players in the '''Leaderboard''' area.
+
+==Rewards==
+- Wave 10: +15 gems<br />- Wave 25: +25 Gems<br />- Wave 50: +50 Gems

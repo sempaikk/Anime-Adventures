@@ -1,0 +1,40 @@
+{{Quote|quote=Fine! I'd rather be a pirate than die here.}}__NOTOC__
+=='''Overview'''==
+'''Zoru''' is a Rare unit based on Zoro from the anime ''[https://en.wikipedia.org/wiki/One_Piece One Piece].'' He is only obtainable through summons.
+
+==Stats Overview==
+{{Unit Stats|caption1=|deployment_cost=400¥|upgrade_levels=4|tower_type=Ground|attack_type=AoE -> AoE (Straight)|damage=RND|spa_(second_per_attack)=RND|range=RND|image1=Zoru.png}}
+===Deployment - 400<small>¥</small>=== 
+
+*Tower Type: Ground, Full AoE
+* Damage: RND
+* Range: RND
+*SPA: RND
+
+===Upgrade 1=== 
+
+*Damage: RND
+*Range: RND
+*SPA: RND
+
+===Upgrade 2===
+
+*Damage: RND
+*Range: RND
+*SPA: RND
+
+===Upgrade 3===
+
+*Damage: RND
+*Range: RND
+*SPA: RND
+*+ Three Sword Style
+
+===Upgrade 4===
+
+* Attack: RND
+*Range: RND
+*SPA: RND
+
+==Selling==
+Units sell for 25% of their deployment cost and upgrades.

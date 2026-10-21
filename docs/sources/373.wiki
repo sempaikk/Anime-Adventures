@@ -1,0 +1,30 @@
+__NOTOC__
+{{Quote|quote=Hey... senior... What was that about my hair?}}
+=='''Overview'''==
+'''Josuka''' is a Rare unit based on Josuke from the anime ''[https://en.wikipedia.org/wiki/JoJo%27s_Bizarre_Adventure Jojo's Bizarre Adventure].'' He is only obtainable through summons.
+==Stats Overview==
+{{Unit Stats|caption1=|deployment_cost=400¥|upgrade_levels=4|tower_type=Ground|attack_type=Single Target|damage=RND|spa_(second_per_attack)=RND|range=RND|image1=Josuka.png|total_cost=6150¥}}
+===Deployment - 400<small>¥</small>===
+*Tower Type: Ground, Single Target
+*Damage: RND
+*Range: RND
+*SPA: RND
+===Upgrade 1===
+*Damage: RND
+*Range: RND
+*SPA: RND
+===Upgrade 2===
+*Damage: RND
+*Range: RND
+*SPA: RND
+===Upgrade 3===
+*Damage: RND
+*Range: RND
+*SPA: RND
+*+ Disassembling Punch
+===Upgrade 4===
+*Attack: RND
+*Range: RND
+*SPA: RND
+==Selling==
+Units sell for 25% of their deployment cost and upgrades.
