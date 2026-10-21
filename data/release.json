@@ -441,7 +441,6 @@
       "historical_name": null,
       "anime": "One Piece",
       "rarity": "Rare",
-      "hint": "Espadachim dos Chapéus de Palha que luta com três espadas.",
       "aliases": [
         "Roronoa Zoro",
         "Zoru"
@@ -459,7 +458,6 @@
       "historical_name": null,
       "anime": "JoJo’s Bizarre Adventure",
       "rarity": "Rare",
-      "hint": "Jovem de Morioh com topete marcante; seu Stand é Crazy Diamond.",
       "aliases": [
         "Josuke Higashikata",
         "Josuka"
@@ -477,7 +475,6 @@
       "historical_name": null,
       "anime": "Bleach",
       "rarity": "Rare",
-      "hint": "Shinigami substituto que empunha Zangetsu.",
       "aliases": [
         "Ichigo Kurosaki",
         "Ichi"
@@ -495,7 +492,6 @@
       "historical_name": null,
       "anime": "Demon Slayer",
       "rarity": "Rare",
-      "hint": "Irmã de Tanjiro, transformada em demônio e conhecida pelo bambu na boca.",
       "aliases": [
         "Nezuko Kamado"
       ],
@@ -512,7 +508,6 @@
       "historical_name": null,
       "anime": "One Piece",
       "rarity": "Rare",
-      "hint": "Atirador dos Chapéus de Palha, famoso por suas histórias exageradas.",
       "aliases": [],
       "sources": [
         "roster",
@@ -527,7 +522,6 @@
       "historical_name": null,
       "anime": "Dragon Ball Z",
       "rarity": "Rare",
-      "hint": "Saiyajin criado na Terra, protagonista que usa o Kamehameha. Considere a forma base.",
       "aliases": [
         "Son Goku",
         "Goku base"
@@ -545,7 +539,6 @@
       "historical_name": null,
       "anime": "My Hero Academia",
       "rarity": "Rare",
-      "hint": "Estudante da U.A. cuja individualidade permite anular a gravidade.",
       "aliases": [
         "Ochaco Uraraka",
         "Ochako Uraraka"
@@ -563,7 +556,6 @@
       "historical_name": null,
       "anime": "One Piece",
       "rarity": "Rare",
-      "hint": "Capitão dos Chapéus de Palha que sonha em ser o Rei dos Piratas. Considere a forma base.",
       "aliases": [
         "Monkey D. Luffy",
         "Luffy base"
@@ -581,7 +573,6 @@
       "historical_name": null,
       "anime": "Demon Slayer",
       "rarity": "Rare",
-      "hint": "Caçador de demônios que carrega a irmã em uma caixa nas costas.",
       "aliases": [
         "Tanjiro Kamado"
       ],
@@ -598,7 +589,6 @@
       "historical_name": null,
       "anime": "Naruto",
       "rarity": "Rare",
-      "hint": "Ninja de Konoha que sonha em ser Hokage e abriga a Raposa de Nove Caudas.",
       "aliases": [
         "Naruto Uzumaki"
       ],
@@ -615,7 +605,6 @@
       "historical_name": null,
       "anime": "Dragon Ball Z",
       "rarity": "Rare",
-      "hint": "Lutador humano, amigo de Goku, reconhecido pelos seis pontos na testa.",
       "aliases": [
         "Kuririn"
       ],
@@ -632,7 +621,6 @@
       "historical_name": null,
       "anime": "Dragon Ball Z",
       "rarity": "Rare",
-      "hint": "Príncipe dos Saiyajins e rival de Goku. Considere a forma base.",
       "aliases": [
         "Vegeta base"
       ],
@@ -649,7 +637,6 @@
       "historical_name": null,
       "anime": "JoJo’s Bizarre Adventure",
       "rarity": "Rare",
-      "hint": "Primeiro JoJo: cavalheiro que enfrenta Dio e aprende Hamon com Zeppeli.",
       "aliases": [
         "Jonathan Joestar"
       ],
@@ -666,7 +653,6 @@
       "historical_name": null,
       "anime": "My Hero Academia",
       "rarity": "Rare",
-      "hint": "Rival explosivo de Deku, com uma individualidade ligada ao suor das mãos.",
       "aliases": [
         "Katsuki Bakugo",
         "Katsuki Bakugou",
@@ -685,7 +671,6 @@
       "historical_name": null,
       "anime": "Naruto",
       "rarity": "Rare",
-      "hint": "Ninja Uchiha, irmão mais novo de Itachi e integrante do Time 7.",
       "aliases": [
         "Sasuke Uchiha"
       ],
@@ -702,7 +687,6 @@
       "historical_name": null,
       "anime": "My Hero Academia",
       "rarity": "Rare",
-      "hint": "Sucessor de All Might que recebe o One For All.",
       "aliases": [
         "Izuku Midoriya",
         "Midoriya"
@@ -720,7 +704,6 @@
       "historical_name": null,
       "anime": "Naruto",
       "rarity": "Rare",
-      "hint": "Kunoichi de cabelos rosas que integra o Time 7 com Naruto e Sasuke.",
       "aliases": [
         "Sakura Haruno"
       ],
@@ -737,7 +720,6 @@
       "historical_name": null,
       "anime": "One Piece",
       "rarity": "Rare",
-      "hint": "Cozinheiro dos Chapéus de Palha que luta usando as pernas.",
       "aliases": [
         "Vinsmoke Sanji"
       ],
@@ -754,7 +736,6 @@
       "historical_name": null,
       "anime": "My Hero Academia",
       "rarity": "Epic",
-      "hint": "Líder dos Shie Hassaikai cuja individualidade desmonta e reconstrói matéria.",
       "aliases": [
         "Kai Chisaki",
         "Underhaul"
@@ -772,7 +753,6 @@
       "historical_name": null,
       "anime": "Demon Slayer",
       "rarity": "Epic",
-      "hint": "Caçador que usa máscara de javali e duas espadas serrilhadas.",
       "aliases": [
         "Inosuke Hashibira",
         "Inosuku"
@@ -790,7 +770,6 @@
       "historical_name": null,
       "anime": "Naruto",
       "rarity": "Epic",
-      "hint": "Sensei do Time 7, conhecido como o Ninja Copiador.",
       "aliases": [
         "Kakashi Hatake",
         "Kazashu"
@@ -808,7 +787,6 @@
       "historical_name": null,
       "anime": "JoJo’s Bizarre Adventure",
       "rarity": "Epic",
-      "hint": "Protagonista de Stardust Crusaders; seu Stand é Star Platinum.",
       "aliases": [
         "Jotaro Kujo"
       ],
@@ -825,7 +803,6 @@
       "historical_name": null,
       "anime": "JoJo’s Bizarre Adventure",
       "rarity": "Epic",
-      "hint": "Aliado de Jonathan Joestar que dá nome a uma fundação.",
       "aliases": [
         "Robert E. O. Speedwagon",
         "Robert Speedwagon",
@@ -844,7 +821,6 @@
       "historical_name": null,
       "anime": "Demon Slayer",
       "rarity": "Epic",
-      "hint": "Caçador de cabelos amarelos que usa a Respiração do Trovão.",
       "aliases": [
         "Zenitsu Agatsuma"
       ],
@@ -861,7 +837,6 @@
       "historical_name": null,
       "anime": "Dragon Ball Z",
       "rarity": "Epic",
-      "hint": "Guerreiro namekuseijin de pele verde que treina Gohan.",
       "aliases": [],
       "sources": [
         "roster",
@@ -876,7 +851,6 @@
       "historical_name": null,
       "anime": "JoJo’s Bizarre Adventure",
       "rarity": "Epic",
-      "hint": "Aliado de Jotaro cujo Stand é Hierophant Green.",
       "aliases": [
         "Noriaki Kakyoin"
       ],
@@ -893,7 +867,6 @@
       "historical_name": null,
       "anime": "Naruto",
       "rarity": "Epic",
-      "hint": "Ninja da Areia que carrega uma cabaça e se torna Kazekage.",
       "aliases": [],
       "sources": [
         "roster",
@@ -908,7 +881,6 @@
       "historical_name": null,
       "anime": "One Punch Man",
       "rarity": "Epic",
-      "hint": "Ciborgue que se torna discípulo de Saitama.",
       "aliases": [],
       "sources": [
         "roster",
@@ -923,7 +895,6 @@
       "historical_name": null,
       "anime": "JoJo’s Bizarre Adventure",
       "rarity": "Legendary",
-      "hint": "Protagonista de Golden Wind; seu Stand é Gold Experience.",
       "aliases": [
         "Giorno Giovanna",
         "Jiorno"
@@ -941,7 +912,6 @@
       "historical_name": null,
       "anime": "Dragon Ball Super",
       "rarity": "Legendary",
-      "hint": "Forma de Goku conhecida como Super Saiyajin Blue, de cabelos azuis.",
       "aliases": [
         "Goku Super Saiyan Blue",
         "Goku Super Saiyajin Blue",
@@ -961,7 +931,6 @@
       "historical_name": null,
       "anime": "My Hero Academia",
       "rarity": "Legendary",
-      "hint": "Vilão da Liga dos Vilões conhecido por suas chamas azuis.",
       "aliases": [],
       "sources": [
         "roster",
@@ -976,7 +945,6 @@
       "historical_name": null,
       "anime": "Attack on Titan",
       "rarity": "Legendary",
-      "hint": "Comandante da Tropa de Exploração que lidera com discursos e estratégias.",
       "aliases": [
         "Erwin Smith"
       ],
@@ -993,7 +961,6 @@
       "historical_name": null,
       "anime": "Naruto",
       "rarity": "Legendary",
-      "hint": "Irmão mais velho de Sasuke, integrante da Akatsuki e usuário do Sharingan.",
       "aliases": [
         "Itachi Uchiha"
       ],
@@ -1010,7 +977,6 @@
       "historical_name": null,
       "anime": "Naruto",
       "rarity": "Legendary",
-      "hint": "Líder da Akatsuki associado aos Seis Caminhos e ao Rinnegan.",
       "aliases": [],
       "sources": [
         "roster",
@@ -1025,7 +991,6 @@
       "historical_name": null,
       "anime": "Dragon Ball Super",
       "rarity": "Legendary",
-      "hint": "Antagonista com a aparência de Goku, ligado a Zamasu.",
       "aliases": [
         "Black Goku"
       ],
@@ -1042,7 +1007,6 @@
       "historical_name": null,
       "anime": "Attack on Titan",
       "rarity": "Legendary",
-      "hint": "Protagonista de sobrenome Yeager, portador do Titã de Ataque. Considere a forma base.",
       "aliases": [
         "Eren Yeager",
         "Eren Jaeger"
@@ -1060,7 +1024,6 @@
       "historical_name": null,
       "anime": "JoJo’s Bizarre Adventure",
       "rarity": "Legendary",
-      "hint": "Vampiro inimigo dos Joestar; seu Stand é The World.",
       "aliases": [
         "Dio Brando"
       ],
@@ -1077,7 +1040,6 @@
       "historical_name": "Levy",
       "anime": "Attack on Titan",
       "rarity": "Mythic",
-      "hint": "Capitão da Tropa de Exploração conhecido como o soldado mais forte da humanidade.",
       "aliases": [
         "Levi Ackerman",
         "Levy"
@@ -1096,7 +1058,6 @@
       "historical_name": "Armein",
       "anime": "Attack on Titan",
       "rarity": "Mythic",
-      "hint": "Estrategista amigo de Eren e Mikasa, que herda o Titã Colossal.",
       "aliases": [
         "Armin Arlert",
         "Armein"
@@ -1115,7 +1076,6 @@
       "historical_name": "All Force",
       "anime": "My Hero Academia",
       "rarity": "Mythic",
-      "hint": "Herói conhecido como Símbolo da Paz; seu poder é o One For All.",
       "aliases": [
         "Toshinori Yagi",
         "All Force"
@@ -1134,7 +1094,6 @@
       "historical_name": "Marada",
       "anime": "Naruto",
       "rarity": "Mythic",
-      "hint": "Lendário Uchiha, rival de Hashirama e ligado ao Plano Olho da Lua.",
       "aliases": [
         "Madara Uchiha",
         "Marada"
@@ -1153,7 +1112,6 @@
       "historical_name": "Brulo",
       "anime": "Dragon Ball",
       "rarity": "Mythic",
-      "hint": "Saiyajin de poder imenso, conhecido como o Lendário Super Saiyajin.",
       "aliases": [
         "Brulo"
       ],
@@ -1171,7 +1129,6 @@
       "historical_name": "Renkoko",
       "anime": "Demon Slayer",
       "rarity": "Mythic",
-      "hint": "Hashira das Chamas, reconhecido por sua atuação no Trem Infinito.",
       "aliases": [
         "Kyojuro Rengoku",
         "Renkoko"
@@ -1190,7 +1147,6 @@
       "historical_name": "Diavoro",
       "anime": "JoJo’s Bizarre Adventure",
       "rarity": "Mythic",
-      "hint": "Chefe da Passione, antagonista de Golden Wind; seu Stand é King Crimson.",
       "aliases": [
         "Diavoro"
       ],
@@ -1287,22 +1243,6 @@
       "explanation": "Planet Namak é o mundo 1, inspirado em Dragon Ball Z.",
       "sources": [
         "worlds"
-      ]
-    },
-    {
-      "id": "world:1:anime",
-      "category": "Mundos",
-      "subject": "world:1",
-      "prompt": "Em qual **anime** o mundo Planet Namak é inspirado?",
-      "answer": "Dragon Ball Z",
-      "answers": [
-        "Dragon Ball Z",
-        "Dragon Ball",
-        "DBZ"
-      ],
-      "explanation": "Planet Namak adapta o universo de Dragon Ball Z.",
-      "sources": [
-        "story"
       ]
     },
     {
@@ -1587,22 +1527,6 @@
       ]
     },
     {
-      "id": "world:2:anime",
-      "category": "Mundos",
-      "subject": "world:2",
-      "prompt": "Em qual **anime** o mundo Shiganshinu District é inspirado?",
-      "answer": "Attack on Titan",
-      "answers": [
-        "Attack on Titan",
-        "Shingeki no Kyojin",
-        "AOT"
-      ],
-      "explanation": "Shiganshinu District adapta o universo de Attack on Titan.",
-      "sources": [
-        "story"
-      ]
-    },
-    {
       "id": "world:2:acts",
       "category": "Mundos",
       "subject": "world:2",
@@ -1805,21 +1729,6 @@
       "explanation": "Snowy Town é o mundo 3, inspirado em Demon Slayer.",
       "sources": [
         "worlds"
-      ]
-    },
-    {
-      "id": "world:3:anime",
-      "category": "Mundos",
-      "subject": "world:3",
-      "prompt": "Em qual **anime** o mundo Snowy Town é inspirado?",
-      "answer": "Demon Slayer",
-      "answers": [
-        "Demon Slayer",
-        "Kimetsu no Yaiba"
-      ],
-      "explanation": "Snowy Town adapta o universo de Demon Slayer.",
-      "sources": [
-        "story"
       ]
     },
     {
@@ -2045,21 +1954,6 @@
       "explanation": "Hidden Sand Village é o mundo 4, inspirado em Naruto.",
       "sources": [
         "worlds"
-      ]
-    },
-    {
-      "id": "world:4:anime",
-      "category": "Mundos",
-      "subject": "world:4",
-      "prompt": "Em qual **anime** o mundo Hidden Sand Village é inspirado?",
-      "answer": "Naruto",
-      "answers": [
-        "Naruto",
-        "Naruto Shippuden"
-      ],
-      "explanation": "Hidden Sand Village adapta o universo de Naruto.",
-      "sources": [
-        "story"
       ]
     },
     {
@@ -2683,6 +2577,11 @@
       "explanation": "Wis ficava fora da área Evolve.",
       "sources": [
         "traits"
+      ],
+      "options": [
+        "Evolve",
+        "Summon",
+        "Leaderboard"
       ]
     },
     {
@@ -3739,6 +3638,515 @@
       "sources": [
         "madara"
       ]
+    },
+    {
+      "id": "lobby:summon-position",
+      "category": "Modos",
+      "subject": "lobby",
+      "prompt": "No Lobby do lançamento, onde ficava a **área de Summon em relação ao Leaderboard**?",
+      "answer": "À esquerda do Leaderboard",
+      "answers": [
+        "À esquerda do Leaderboard"
+      ],
+      "options": [
+        "À esquerda do Leaderboard",
+        "À direita do Leaderboard",
+        "Dentro da área Evolve"
+      ],
+      "sources": [
+        "summon"
+      ],
+      "explanation": "A página de Summon da época indica que a área ficava à esquerda do Leaderboard."
+    },
+    {
+      "id": "lobby:store-access",
+      "category": "Loja e códigos",
+      "subject": "store",
+      "prompt": "Qual **área do Lobby** também permitia abrir a Store?",
+      "answer": "Shop",
+      "answers": [
+        "Shop"
+      ],
+      "options": [
+        "Shop",
+        "Evolve",
+        "Time Machine"
+      ],
+      "sources": [
+        "store"
+      ],
+      "explanation": "A Store podia ser aberta pela interface ou pela área Shop do Lobby."
+    },
+    {
+      "id": "trait:robux",
+      "category": "Traits",
+      "subject": "traits",
+      "prompt": "Além de Star Remnants, o que podia ser usado para **reroll de traits** no lançamento?",
+      "answer": "Robux",
+      "answers": [
+        "Robux"
+      ],
+      "options": [
+        "Robux",
+        "Yen da partida",
+        "XP da unidade"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "A fonte da época lista Star Remnants e Robux como as duas formas de reroll.",
+      "media_key": "item-star-remnant",
+      "image_after_answer": false
+    },
+    {
+      "id": "trait:on-summon",
+      "category": "Traits",
+      "subject": "traits",
+      "prompt": "Em qual situação uma unidade **já podia vir com trait** no lançamento?",
+      "answer": "Ao ser obtida por summon",
+      "answers": [
+        "Ao ser obtida por summon"
+      ],
+      "options": [
+        "Ao ser obtida por summon",
+        "Ao ser renomeada",
+        "Ao ser vendida"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Unidades podiam vir com trait ao serem obtidas por summon.",
+      "media_key": "system-traits",
+      "image_after_answer": false
+    },
+    {
+      "id": "trait:purpose",
+      "category": "Traits",
+      "subject": "traits",
+      "prompt": "Para que serviam as **traits** nas unidades?",
+      "answer": "Modificar o desempenho e os atributos",
+      "answers": [
+        "Modificar o desempenho e os atributos"
+      ],
+      "options": [
+        "Modificar o desempenho e os atributos",
+        "Trocar o mundo do Story",
+        "Alterar somente o nome"
+      ],
+      "sources": [
+        "traits"
+      ],
+      "explanation": "Traits modificam o desempenho da unidade, como dano, alcance ou velocidade de ataque.",
+      "media_key": "system-traits",
+      "image_after_answer": false
+    },
+    {
+      "id": "summon:mythic-announcement",
+      "category": "Summon",
+      "subject": "summon",
+      "prompt": "Segundo o registro do lançamento, onde era **anunciado um summon Mythic**, mesmo vindo de outro servidor?",
+      "answer": "No chat global do Roblox",
+      "answers": [
+        "No chat global do Roblox"
+      ],
+      "options": [
+        "No chat global do Roblox",
+        "Só em uma mensagem privada",
+        "Somente no ranking do Story"
+      ],
+      "sources": [
+        "summon"
+      ],
+      "explanation": "O registro diz que summons Mythic eram anunciados globalmente no chat do Roblox."
+    },
+    {
+      "id": "summon:refresh-rates",
+      "category": "Summon",
+      "subject": "summon",
+      "prompt": "A renovação do banner **mudava as taxas por raridade** no lançamento?",
+      "answer": "Não; mudava a seleção de unidades",
+      "answers": [
+        "Não; mudava a seleção de unidades"
+      ],
+      "options": [
+        "Não; mudava a seleção de unidades",
+        "Sim; tornava Mythic garantido",
+        "Sim; eliminava a raridade Rare"
+      ],
+      "sources": [
+        "summon"
+      ],
+      "explanation": "O banner trocava a seleção de personagens, sem alterar a taxa por raridade."
+    },
+    {
+      "id": "time:claim-button",
+      "category": "Economia",
+      "subject": "time_machine",
+      "prompt": "Qual **botão** levava você da Time Machine de volta ao jogo?",
+      "answer": "Leave & Claim Reward",
+      "answers": [
+        "Leave & Claim Reward"
+      ],
+      "options": [
+        "Leave & Claim Reward",
+        "Evolve Unit",
+        "Reroll Trait"
+      ],
+      "sources": [
+        "time"
+      ],
+      "explanation": "O botão Leave & Claim Reward retornava ao jogo e permitia coletar a recompensa.",
+      "media_key": "system-time-machine",
+      "image_after_answer": false
+    },
+    {
+      "id": "time:inside",
+      "category": "Economia",
+      "subject": "time_machine",
+      "prompt": "No lançamento, a Time Machine gerava Gems **se você estivesse fora dela**?",
+      "answer": "Não; precisava ficar dentro dela",
+      "answers": [
+        "Não; precisava ficar dentro dela"
+      ],
+      "options": [
+        "Não; precisava ficar dentro dela",
+        "Sim; bastava ficar no Lobby",
+        "Sim; bastava jogar Story"
+      ],
+      "sources": [
+        "time"
+      ],
+      "explanation": "As Gems só eram geradas enquanto o jogador estava dentro da Time Machine.",
+      "media_key": "system-time-machine",
+      "image_after_answer": false
+    },
+    {
+      "id": "time:idle-save",
+      "category": "Economia",
+      "subject": "time_machine",
+      "prompt": "No registro da Time Machine, ser **desconectado por inatividade** apagava as Gems já acumuladas?",
+      "answer": "Não; as Gems acumuladas eram salvas",
+      "answers": [
+        "Não; as Gems acumuladas eram salvas"
+      ],
+      "options": [
+        "Não; as Gems acumuladas eram salvas",
+        "Sim; o saldo voltava a zero",
+        "As Gems viravam Yen da partida"
+      ],
+      "sources": [
+        "time"
+      ],
+      "explanation": "A fonte da época informa que as Gems acumuladas eram salvas ao ser desconectado por inatividade.",
+      "media_key": "system-time-machine",
+      "image_after_answer": false
+    },
+    {
+      "id": "currency:gold-source",
+      "category": "Economia",
+      "subject": "gold",
+      "prompt": "Qual destas opções era uma forma de **ganhar Gold** no lançamento?",
+      "answer": "Vender unidades ou completar Story",
+      "answers": [
+        "Vender unidades ou completar Story"
+      ],
+      "options": [
+        "Vender unidades ou completar Story",
+        "Permanecer na Time Machine",
+        "Refazer uma trait"
+      ],
+      "sources": [
+        "currencies"
+      ],
+      "explanation": "Gold podia ser obtido vendendo unidades e completando missões de Story.",
+      "media_key": "currency-gold",
+      "image_after_answer": false
+    },
+    {
+      "id": "challenge:base",
+      "category": "Modos",
+      "subject": "challenges",
+      "prompt": "Os **Challenges** eram versões de quais fases com dificuldade adicional?",
+      "answer": "Fases de Story",
+      "answers": [
+        "Fases de Story"
+      ],
+      "options": [
+        "Fases de Story",
+        "Somente ondas de Infinite",
+        "A área de Summon"
+      ],
+      "sources": [
+        "challenges"
+      ],
+      "explanation": "Challenges eram fases de Story com dificuldade adicional e recompensas extras."
+    },
+    {
+      "id": "store:currency",
+      "category": "Loja e códigos",
+      "subject": "store",
+      "prompt": "Qual moeda comprava os **produtos e gamepasses da Store**?",
+      "answer": "Robux",
+      "answers": [
+        "Robux"
+      ],
+      "options": [
+        "Robux",
+        "Yen",
+        "XP"
+      ],
+      "sources": [
+        "store"
+      ],
+      "explanation": "Produtos e gamepasses da Store eram comprados com Robux."
+    },
+    {
+      "id": "stats:spa-meaning",
+      "category": "Upgrades",
+      "subject": "stats",
+      "prompt": "O que significa **SPA** nas estatísticas de uma unidade?",
+      "answer": "Segundos por ataque",
+      "answers": [
+        "Segundos por ataque"
+      ],
+      "options": [
+        "Segundos por ataque",
+        "Quantidade total de upgrades",
+        "Preço de venda"
+      ],
+      "sources": [
+        "ichigo"
+      ],
+      "explanation": "A ficha usa SPA como seconds per attack: segundos por ataque."
+    },
+    {
+      "id": "stats:madara:placement",
+      "category": "Upgrades",
+      "subject": "madara",
+      "prompt": "Na ficha do lançamento, **Madara era colocado em qual tipo de terreno**?",
+      "answer": "Ground",
+      "answers": [
+        "Ground"
+      ],
+      "options": [
+        "Ground",
+        "Hill",
+        "Hybrid"
+      ],
+      "sources": [
+        "madara"
+      ],
+      "explanation": "A ficha de Madara registra Tower Type: Ground."
+    },
+    {
+      "id": "stats:madara:initial-attack",
+      "category": "Upgrades",
+      "subject": "madara",
+      "prompt": "Qual era o **tipo de ataque inicial de Madara** na ficha do lançamento?",
+      "answer": "AoE (Cone)",
+      "answers": [
+        "AoE (Cone)"
+      ],
+      "options": [
+        "AoE (Cone)",
+        "Single Target",
+        "Full AoE"
+      ],
+      "sources": [
+        "madara"
+      ],
+      "explanation": "A implantação de Madara registra o ataque AoE (Cone)."
+    },
+    {
+      "id": "obtain:madara",
+      "category": "Unidades",
+      "subject": "madara",
+      "prompt": "Como **Madara** era obtido, segundo a ficha do lançamento?",
+      "answer": "Summon",
+      "answers": [
+        "Summon"
+      ],
+      "options": [
+        "Summon",
+        "Recompensa de Infinite",
+        "Conclusão de Challenge"
+      ],
+      "sources": [
+        "madara"
+      ],
+      "explanation": "A ficha do lançamento indica obtenção de Madara por summon."
+    },
+    {
+      "id": "stats:ichigo:placement",
+      "category": "Upgrades",
+      "subject": "ichigo",
+      "prompt": "Na ficha do lançamento, **Ichigo era colocado em qual tipo de terreno**?",
+      "answer": "Ground",
+      "answers": [
+        "Ground"
+      ],
+      "options": [
+        "Ground",
+        "Hill",
+        "Hybrid"
+      ],
+      "sources": [
+        "ichigo"
+      ],
+      "explanation": "A ficha de Ichigo registra Tower Type: Ground."
+    },
+    {
+      "id": "stats:ichigo:initial-attack",
+      "category": "Upgrades",
+      "subject": "ichigo",
+      "prompt": "Qual era o **tipo de ataque inicial de Ichigo** na ficha do lançamento?",
+      "answer": "Single Target",
+      "answers": [
+        "Single Target"
+      ],
+      "options": [
+        "Single Target",
+        "AoE (Cone)",
+        "Full AoE"
+      ],
+      "sources": [
+        "ichigo"
+      ],
+      "explanation": "A implantação de Ichigo registra o ataque Single Target."
+    },
+    {
+      "id": "obtain:ichigo",
+      "category": "Unidades",
+      "subject": "ichigo",
+      "prompt": "Como **Ichigo** era obtido, segundo a ficha do lançamento?",
+      "answer": "Summon",
+      "answers": [
+        "Summon"
+      ],
+      "options": [
+        "Summon",
+        "Recompensa de Infinite",
+        "Conclusão de Challenge"
+      ],
+      "sources": [
+        "ichigo"
+      ],
+      "explanation": "A ficha do lançamento indica obtenção de Ichigo por summon."
+    },
+    {
+      "id": "stats:josuke:placement",
+      "category": "Upgrades",
+      "subject": "josuke",
+      "prompt": "Na ficha do lançamento, **Josuke era colocado em qual tipo de terreno**?",
+      "answer": "Ground",
+      "answers": [
+        "Ground"
+      ],
+      "options": [
+        "Ground",
+        "Hill",
+        "Hybrid"
+      ],
+      "sources": [
+        "josuke"
+      ],
+      "explanation": "A ficha de Josuke registra Tower Type: Ground."
+    },
+    {
+      "id": "stats:josuke:initial-attack",
+      "category": "Upgrades",
+      "subject": "josuke",
+      "prompt": "Qual era o **tipo de ataque inicial de Josuke** na ficha do lançamento?",
+      "answer": "Single Target",
+      "answers": [
+        "Single Target"
+      ],
+      "options": [
+        "Single Target",
+        "AoE (Cone)",
+        "Full AoE"
+      ],
+      "sources": [
+        "josuke"
+      ],
+      "explanation": "A implantação de Josuke registra o ataque Single Target."
+    },
+    {
+      "id": "obtain:josuke",
+      "category": "Unidades",
+      "subject": "josuke",
+      "prompt": "Como **Josuke** era obtido, segundo a ficha do lançamento?",
+      "answer": "Summon",
+      "answers": [
+        "Summon"
+      ],
+      "options": [
+        "Summon",
+        "Recompensa de Infinite",
+        "Conclusão de Challenge"
+      ],
+      "sources": [
+        "josuke"
+      ],
+      "explanation": "A ficha do lançamento indica obtenção de Josuke por summon."
+    },
+    {
+      "id": "stats:zoro:placement",
+      "category": "Upgrades",
+      "subject": "zoro",
+      "prompt": "Na ficha do lançamento, **Zoro era colocado em qual tipo de terreno**?",
+      "answer": "Ground",
+      "answers": [
+        "Ground"
+      ],
+      "options": [
+        "Ground",
+        "Hill",
+        "Hybrid"
+      ],
+      "sources": [
+        "zoro"
+      ],
+      "explanation": "A ficha de Zoro registra Tower Type: Ground."
+    },
+    {
+      "id": "stats:zoro:initial-attack",
+      "category": "Upgrades",
+      "subject": "zoro",
+      "prompt": "Qual era o **tipo de ataque inicial de Zoro** na ficha do lançamento?",
+      "answer": "Full AoE",
+      "answers": [
+        "Full AoE"
+      ],
+      "options": [
+        "Full AoE",
+        "Single Target",
+        "AoE (Cone)"
+      ],
+      "sources": [
+        "zoro"
+      ],
+      "explanation": "A implantação de Zoro registra o ataque Full AoE."
+    },
+    {
+      "id": "obtain:zoro",
+      "category": "Unidades",
+      "subject": "zoro",
+      "prompt": "Como **Zoro** era obtido, segundo a ficha do lançamento?",
+      "answer": "Summon",
+      "answers": [
+        "Summon"
+      ],
+      "options": [
+        "Summon",
+        "Recompensa de Infinite",
+        "Conclusão de Challenge"
+      ],
+      "sources": [
+        "zoro"
+      ],
+      "explanation": "A ficha do lançamento indica obtenção de Zoro por summon."
     }
-  ]
+  ],
+  "question_policy": "Only in-game mechanics, visuals, names, areas, progression and source-derived practice scenarios. No anime biography riddles. Modern aliases/images do not update Release gameplay facts."
 }

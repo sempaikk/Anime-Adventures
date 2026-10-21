@@ -6,6 +6,7 @@ import asyncio
 import contextlib
 import logging
 import os
+import random
 import sqlite3
 import time
 from datetime import datetime, timedelta, timezone
@@ -49,6 +50,8 @@ class QuizSession:
         self.had_participation = False
         self.timer = None
         self.answer_min_id = 0
+        self.choice_order = []
+        self.choice_attempts = set()
         self.ends_at = None
         self.next_at = None
         self.answer_future = None
@@ -189,6 +192,8 @@ class QuizSession:
         if (not self.running or self.phase != 'question' or self.question_message is None
                 or self.answer_future is None or self.answer_future.done() or self.remaining_seconds <= 0):
             return False
+        if self.current_question.options:
+            return False
         if message.author.bot or message.webhook_id is not None or message.id <= self.answer_min_id:
             return False
         self.had_participation = True
@@ -196,6 +201,26 @@ class QuizSession:
             self.answer_future.set_result(message.author)
             return True
         return False
+
+    def submit_choice(self, user, index, interaction_id):
+        """Validate and claim before awaiting Discord; one attempt per human per round."""
+        if self.is_paused:
+            return 'paused'
+        if (not self.running or self.phase != 'question' or self.question_message is None or not self.current_question.options
+                or self.answer_future is None or self.answer_future.done() or self.remaining_seconds <= 0):
+            return 'closed'
+        if interaction_id <= self.answer_min_id:
+            return 'stale'
+        if getattr(user, 'bot', False) or not 0 <= index < len(self.choice_order):
+            return 'invalid'
+        if user.id in self.choice_attempts:
+            return 'duplicate'
+        self.choice_attempts.add(user.id)
+        self.had_participation = True
+        if self.current_question.accepts(self.choice_order[index]):
+            self.answer_future.set_result(user)
+            return 'correct'
+        return 'wrong'
 
     async def update_clock(self, refresh_immediately=False):
         first = True
@@ -244,6 +269,9 @@ class QuizSession:
         self.question_message = None
         self.had_participation = False
         self.current_question = self.deck.draw()
+        self.choice_order = list(self.current_question.options)
+        random.SystemRandom().shuffle(self.choice_order)
+        self.choice_attempts.clear()
         self.answer_future = asyncio.get_running_loop().create_future()
         self.phase = 'question'
         publishing_started = self.clock()
@@ -451,6 +479,23 @@ async def handle_control(interaction, action, value=None):
             or interaction.message is None or session.control_message.id != interaction.message.id):
         await interaction.response.send_message('Esse painel já foi encerrado. Use o mais recente ou abra outro com **/adventures**.', ephemeral=True)
         return
+    if action.startswith('answer:'):
+        try:
+            index = int(action.split(':', 1)[1])
+        except ValueError:
+            index = -1
+        result = session.submit_choice(interaction.user, index, interaction.id)
+        responses = {
+            'correct': 'Acertou e chegou primeiro! +1 ponto nesta partida.',
+            'wrong': 'Não foi dessa vez! Sua escolha já contou. A resposta aparece no fim da rodada.',
+            'duplicate': 'Você já escolheu nesta rodada. Cada pessoa tem uma tentativa por pergunta com alternativas.',
+            'paused': 'O quiz está pausado. Espere retomar para escolher.',
+            'stale': 'Esse clique é de antes da retomada. Escolha de novo no painel atual.',
+            'closed': 'Essa rodada já fechou ou o ponto já foi marcado. Espere a próxima!',
+            'invalid': 'Essa alternativa não está disponível. Use os botões da pergunta atual.',
+        }
+        await interaction.response.send_message(responses[result], ephemeral=True)
+        return
     owner = interaction.user.id == session.host.id
     if action in ('start', 'category', 'time'):
         if not owner:
@@ -570,7 +615,7 @@ async def on_guild_channel_delete(channel):
         await session.stop_now('O canal da partida foi removido.')
 
 
-@bot.tree.command(name='adventures', description='Jogue o quiz de Anime Adventures com imagens, placar e pausa.')
+@bot.tree.command(name='adventures', description='Jogue o quiz de Anime Adventures: chat, imagens e três alternativas.')
 @app_commands.guild_only()
 async def adventures(interaction: discord.Interaction):
     await begin_lobby(interaction)

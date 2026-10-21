@@ -39,7 +39,9 @@ MEDIA = load_media()
 
 def get_asset(key):
     item = MEDIA["assets"].get(key)
-    return {**item, "url": PUBLIC_ASSETS + item["path"]} if item else None
+    if item and item.get('stage') == 'deferred':
+        return None
+    return {**item, "url": PUBLIC_ASSETS + item["path"], "alt": "."} if item else None
 
 
 def banner(index=0):
@@ -50,6 +52,8 @@ def banner(index=0):
 def for_question(question, *, revealed=False):
     prefix = question.id.split(":", 1)[0]
     units = MEDIA["units"]
+    if question.media_key and (revealed or not question.image_after_answer):
+        return get_asset(question.media_key)
     if prefix == "unit":
         asset = get_asset(units.get(question.subject))
         if revealed or not asset:
@@ -58,11 +62,11 @@ def for_question(question, *, revealed=False):
             return None
         # ALT text and the public filename must not contain the character's name.
         return {**asset, "url": PUBLIC_ASSETS + asset["quiz_path"],
-                "alt": "Personagem de Anime Adventures. Use a imagem e a dica para responder."}
+                "alt": "."}
     if prefix == "rarity":
         asset = get_asset(units.get(question.subject))
         return asset if revealed or (asset and asset.get("rarity_safe") is True) else None
-    if prefix == "stats":
+    if prefix in ("stats", "obtain"):
         return get_asset(units.get(question.subject))
     if prefix == "evolution":
         target = question.id.split(":", 1)[1] if revealed else question.subject
@@ -79,4 +83,17 @@ def for_question(question, *, revealed=False):
         if kind == "name" and not revealed:
             return None
         return get_asset(MEDIA["foods"].get(name))
+    if prefix == 'trait' and revealed:
+        icon = MEDIA.get('traits', {}).get(question.id.split(':', 1)[1])
+        if icon:
+            return get_asset(icon)
+    icons = {
+        'trait:item': 'item-star-remnant', 'trait:shop': 'item-star-remnant',
+        'trait:npc': 'system-traits', 'trait:area': 'system-traits',
+        'currency:summon': 'currency-gems', 'currency:ticket': 'item-summon-ticket',
+        'challenge:reward': 'item-star-fruit', 'time:name': 'system-time-machine',
+        'time:gems': 'system-time-machine', 'time:interval': 'system-time-machine',
+    }
+    if revealed:
+        return get_asset(icons.get(question.id))
     return None

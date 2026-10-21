@@ -38,6 +38,11 @@ class Question:
     subject: str
     rarity: str | None = None
     alias_sources: tuple[str, ...] = ()
+    options: tuple[str, ...] = ()
+    family: str = ''
+    requires_image: bool = False
+    media_key: str | None = None
+    image_after_answer: bool = False
 
     def accepts(self, answer: str) -> bool:
         return normalize_answer(answer) in self.accepted
@@ -60,29 +65,8 @@ def load_pack(path: Path = DATA_FILE) -> ContentPack:
         url = urlparse(source["url"])
         if url.scheme != "https" or url.hostname != "animeadventures.fandom.com":
             raise ValueError("Fonte de conteúdo inválida.")
-    raw_questions = list(data["questions"])
-    for unit in data["units"]:
-        if unit["rarity"] not in RARITIES:
-            raise ValueError(f"Raridade histórica inválida: {unit['id']}")
-        aliases = list(dict.fromkeys([unit["game_name"], unit["character"],
-                                      *([unit["historical_name"]] if unit.get("historical_name") else []),
-                                      *unit["aliases"]]))
-        label = f"{unit['game_name']} · {unit['character']}"
-        detail = f"**Anime:** {unit['anime']}\n**Também vale:** {', '.join(aliases[1:])}."
-        raw_questions.append({
-            "id": f"unit:{unit['id']}", "category": "Unidades", "subject": unit["id"],
-            "prompt": f"Quem é esse personagem?\n\n{unit['hint']}",
-            "answer": label, "answers": aliases,
-            "explanation": detail, "sources": unit["sources"], "rarity": unit["rarity"],
-        })
-        raw_questions.append({
-            "id": f"rarity:{unit['id']}", "category": "Raridades", "subject": unit["id"],
-            "prompt": f"Qual era a **raridade de {unit['character']} na forma base**, no lançamento?",
-            "answer": f"{RARITIES[unit['rarity']]} · {unit['rarity']}",
-            "answers": RARITY_ANSWERS[unit["rarity"]],
-            "explanation": f"No lançamento, {unit['game_name']} ({unit['character']}) era uma unidade {RARITIES[unit['rarity']].lower()}.",
-            "sources": ["roster"],
-        })
+    from question_factory import build_questions
+    raw_questions = build_questions(data, normalize_answer)
     questions = []
     identifiers = set()
     for raw in raw_questions:
@@ -103,6 +87,12 @@ def load_pack(path: Path = DATA_FILE) -> ContentPack:
         answers = tuple(dict.fromkeys(normalize_answer(a) for a in raw["answers"]))
         if not all(answers):
             raise ValueError(f"Resposta vazia: {raw['id']}")
+        options = raw.get('options', [])
+        if not isinstance(options, list) or (options and (len(options) != 3
+                        or not all(isinstance(o, str) and 0 < len(o) <= 80 for o in options)
+                        or len({normalize_answer(o) for o in options}) != 3
+                        or sum(normalize_answer(o) in answers for o in options) != 1)):
+            raise ValueError(f"Alternativas inválidas: {raw['id']}")
         if len(raw["prompt"]) > 1500 or len(raw["explanation"]) > 1000:
             raise ValueError(f"Conteúdo longo demais para o Discord: {raw['id']}")
         questions.append(Question(
@@ -110,6 +100,9 @@ def load_pack(path: Path = DATA_FILE) -> ContentPack:
             prompt=raw["prompt"], answer=raw["answer"], accepted=answers,
             explanation=raw["explanation"], sources=tuple(raw["sources"]), rarity=raw.get("rarity"),
             alias_sources=tuple(alias_sources),
+            options=tuple(options), family=raw.get('family', raw['id'].split(':')[0]),
+            requires_image=raw.get('requires_image', False),
+            media_key=raw.get('media_key'), image_after_answer=raw.get('image_after_answer', False),
         ))
     if not questions:
         raise ValueError("O pacote não tem perguntas.")
@@ -124,18 +117,31 @@ class QuestionDeck:
             raise ValueError("O baralho não pode ser vazio.")
         self.questions = questions
         self.rng = rng or random.Random()
-        self.remaining: list[Question] = []
+        self.remaining: dict[str, Question] = {}
+        self.buckets: dict[tuple[str, str], dict[str, Question]] = {}
         self.last: Question | None = None
 
     def draw(self) -> Question:
         if not self.remaining:
-            self.remaining = list(self.questions)
-        candidates = [q for q in self.remaining if self.last is None or q.id != self.last.id]
-        candidates = candidates or self.remaining
-        varied = [q for q in candidates if self.last is None or (
-            q.category != self.last.category and q.subject != self.last.subject
-        )]
+            self.remaining = {q.id: q for q in self.questions}
+            self.buckets = {}
+            for q in self.questions:
+                self.buckets.setdefault((q.category, q.family), {})[q.id] = q
+        keys = list(self.buckets)
+        categories = sorted({key[0] for key in keys})
+        varied = [c for c in categories if self.last is None or c != self.last.category]
+        category = self.rng.choice(varied or categories)
+        families = [key for key in keys if key[0] == category]
+        varied = [key for key in families if self.last is None or key[1] != self.last.family]
+        key = self.rng.choice(varied or families)
+        bucket = self.buckets[key]
+        candidates = [q for q in bucket.values() if self.last is None or q.id != self.last.id]
+        candidates = candidates or list(bucket.values())
+        varied = [q for q in candidates if self.last is None or q.subject != self.last.subject]
         chosen = self.rng.choice(varied or candidates)
-        self.remaining.remove(chosen)
+        del self.remaining[chosen.id]
+        del bucket[chosen.id]
+        if not bucket:
+            del self.buckets[key]
         self.last = chosen
         return chosen

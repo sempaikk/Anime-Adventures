@@ -153,7 +153,7 @@ def lobby_panel(session, callback):
         divider(),
         ui.ActionRow(ActionButton('start', callback, label='Começar quiz', emoji='⚔️', style=discord.ButtonStyle.success),
                      ActionButton('stop', callback, label='Fechar painel', emoji='✖️')),
-        text(f'-# Criado por {safe_name(session.host.display_name)} · todo mundo pode responder no chat.\n'
+        text(f'-# Criado por {safe_name(session.host.display_name)} · respostas no chat ou nos botões, conforme a pergunta.\n'
              '-# O painel fecha após 2 minutos sem iniciar.'),
         header=[*artwork(0), text(f'{BRAND}\n# Anime Adventures Quiz\nConhece o jogo? Mostra no quiz.')],
         footer=[utilities(callback)],
@@ -177,14 +177,18 @@ def question_panel(session, callback, remaining):
     paused = ' · EM PAUSA' if session.is_paused else ''
     asset = media.for_question(question)
     identification = question.id.startswith('unit:')
-    clue = '-# Veja a imagem e a dica.' if asset else '-# Essa vai pela dica acima.'
-    identity_note = '\n' + clue + ' Vale o nome do jogo ou do anime.' if identification else ''
+    identity_note = '\n-# Reconheça a unidade pela imagem. Vale nome atual, antigo ou do anime.' if identification else ''
+    instruction = 'Escolha abaixo · 1 tentativa por pessoa · primeiro acerto vale +1 ponto' if question.options else 'Responda no chat · primeiro acerto vale +1 ponto'
     panel = Panel(
         *illustrated(f'## {question.prompt}', asset, focus=identification),
-        text(f'-# Responda no chat · primeiro acerto vale +1 ponto{badge}{identity_note}'),
+        text(f'-# {instruction}{badge}{identity_note}'),
         color=RARITY_COLORS.get(question.rarity, BRAND_COLOR),
         header=[text(f'{BRAND}\n### {icon} {question.category} · Pergunta {session.question_number:02d}{paused}')],
     )
+    if question.options:
+        for index, label in enumerate(session.choice_order or question.options):
+            panel.card.add_item(ui.ActionRow(ActionButton(f'answer:{index}', callback, label=label,
+                                emoji=('1️⃣', '2️⃣', '3️⃣')[index], disabled=session.is_paused)))
     panel.clock_text = text(clock_label(session, remaining))
     panel.add_item(ui.Container(panel.clock_text, session_controls(session, callback), accent_color=GOLD if session.is_paused else BRAND_COLOR))
     panel.add_item(utilities(callback))
@@ -256,7 +260,7 @@ def help_panel():
     return Panel(
         text(f'{BRAND}\n## 📖 Como jogar'), divider(),
         text('### 1 · Comece uma partida\nUse **/adventures**, escolha os assuntos e o tempo, e toque em **Começar quiz**. Só quem abriu o painel ajusta essas opções.'),
-        text('### 2 · Mande sua resposta no chat\n**O primeiro acerto vale 1 ponto.** Dá para jogar sozinho ou com todo o canal. Nas perguntas de personagem, use a imagem e a dica; se não tiver imagem, vale a dica em texto.'),
+        text('### 2 · Veja como responder\n**O primeiro acerto vale 1 ponto.** Algumas perguntas pedem resposta no chat, outras mostram uma imagem ou três alternativas. Nas alternativas, cada pessoa tem **uma tentativa**; quem acertar primeiro leva o ponto. A pergunta sempre indica o formato.'),
         text('### 3 · Qual nome vale?\nAceitamos os nomes cadastrados do jogo (atuais e antigos) e do anime. Maiúsculas e acentos não fazem diferença. Confira a digitação: nomes parecidos não contam. Se a pergunta pedir uma evolução, responda a forma evoluída.'),
         text('### 4 · Mantenha o quiz rolando\nTentou e errou? Tudo bem, a partida continua. Se ninguém tentar responder uma rodada, o quiz termina. Abrir ajuda ou placar não conta como resposta.'),
         text('### ⏸️ Precisa de uma pausa?\nQuem criou a partida e a moderação podem pausar e encerrar. Pausar trava o relógio e as respostas; retomar continua do mesmo ponto. Ao encerrar com uma pergunta ativa, ela termina primeiro. Com o quiz pausado, encerra na hora.'),
@@ -279,7 +283,7 @@ class PersistentControls(ui.View):
     """Fallback routing lets old cards offer help, scores and replay after a restart."""
     def __init__(self, callback):
         super().__init__(timeout=None)
-        for index, action in enumerate(['start', 'pause', 'resume', 'stop', 'replay', 'scores', 'help']):
+        for index, action in enumerate(['start', 'pause', 'resume', 'stop', 'replay', 'scores', 'help', 'answer:0', 'answer:1', 'answer:2']):
             button = ActionButton(action, callback, label=action)
             button.row = index // 5
             self.add_item(button)

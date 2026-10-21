@@ -34,7 +34,7 @@ class MediaTests(unittest.TestCase):
                     self.assertIsNone(before, q.id)
                     continue
                 self.assertEqual(before['form'], 'base', q.id)
-                self.assertEqual(before['alt'], 'Personagem de Anime Adventures. Use a imagem e a dica para responder.')
+                self.assertEqual(before['alt'], '.')
                 self.assertEqual(len(Path(before['url']).stem), 24)
                 self.assertTrue(all(c in '0123456789abcdef' for c in Path(before['url']).stem))
         revealed = media.for_question(QUESTIONS['unit:broly'], revealed=True)
@@ -88,3 +88,19 @@ class MediaTests(unittest.TestCase):
             self.assertFalse(banner['processing']['generation'])
             self.assertEqual(banner['sha256'], banner['original_sha256'])
             self.assertTrue(banner['url'].startswith(media.PUBLIC_ASSETS))
+
+    def test_all_active_image_descriptions_are_a_single_period(self):
+        for key, asset in media.MEDIA['assets'].items():
+            if asset.get('stage') != 'deferred':
+                self.assertEqual(media.get_asset(key)['alt'], '.', key)
+
+    def test_identification_never_requires_a_missing_image_or_deferred_item(self):
+        for q in PACK.questions:
+            if q.requires_image:
+                self.assertIsNotNone(media.for_question(q), q.id)
+            for revealed in (False, True):
+                image = media.for_question(q, revealed=revealed)
+                if image:
+                    self.assertNotEqual(image.get('stage'), 'deferred', q.id)
+        for key in media.MEDIA['deferred']:
+            self.assertIsNone(media.get_asset(key))

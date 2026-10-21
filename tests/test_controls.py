@@ -432,19 +432,15 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         session.current_question = next(q for q in app.PACK.questions if q.id == 'unit:uraraka')
         session.ends_at = app.datetime.now(app.timezone.utc)
         panel = screen.question_panel(session, app.handle_control, 45)
-        self.assertIn('Veja a imagem e a dica', view_text(panel))
+        self.assertIn('Reconheça a unidade pela imagem', view_text(panel))
         image = next(item for item in panel.walk_children() if isinstance(item, (discord.ui.MediaGallery, discord.ui.Thumbnail)))
         payload = str(image.to_component_dict()).lower()
         for name in ('uraraka', 'gravity hero', 'ochaco', 'ochako'):
             self.assertNotIn(name, payload)
 
-    async def test_missing_portrait_clearly_uses_a_text_clue(self):
-        session = await self.lobby()
-        session.current_question = next(q for q in app.PACK.questions if q.id == 'unit:deku')
-        session.ends_at = app.datetime.now(app.timezone.utc)
-        panel = screen.question_panel(session, app.handle_control, 45)
-        self.assertIn('Essa vai pela dica acima', view_text(panel))
-        self.assertFalse(any(isinstance(item, discord.ui.MediaGallery) for item in panel.walk_children()))
+    async def test_missing_portrait_cannot_create_an_anime_riddle(self):
+        self.assertFalse(any(q.id == 'unit:deku' for q in app.PACK.questions))
+        self.assertTrue(any(q.id == 'rarity:deku' for q in app.PACK.questions))
 
     async def test_previous_result_does_not_keep_a_past_next_question_timestamp(self):
         session = await self.playing()

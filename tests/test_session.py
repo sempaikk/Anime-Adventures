@@ -301,8 +301,13 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
                 self.assertNotIn('embeds', payload)
                 ids = [item.custom_id for item in panel.walk_children() if getattr(item, 'custom_id', None)]
                 self.assertEqual(len(ids), len(set(ids)), q.id)
+                for item in panel.walk_children():
+                    if isinstance(item, discord.ui.Thumbnail):
+                        self.assertEqual(item.description, '.', q.id)
+                    if isinstance(item, discord.ui.MediaGallery):
+                        self.assertTrue(all(image.description == '.' for image in item.items), q.id)
             panel = screen.question_panel(session, app.handle_control, session.question_time)
-            if q.category == 'Raridades':
+            if q.id.startswith('rarity:'):
                 self.assertEqual(panel.card.to_component_dict()['accent_color'], screen.BRAND_COLOR)
                 self.assertNotIn(q.answer, view_text(panel))
 

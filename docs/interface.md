@@ -1,11 +1,11 @@
 # Interface do quiz
 
-A interface usa **Discord Components V2**, disponíveis em discord.py 2.7.1. A pesquisa foi feita na documentação oficial do Discord e do discord.py. O conteúdo do Release continua no mesmo banco: esta mudança trata da apresentação e dos controles.
+A interface usa **Discord Components V2**, disponíveis em discord.py 2.7.1. O quiz é focado no jogo e combina resposta pelo chat, reconhecimento de imagem do jogo e três alternativas por botões. O conteúdo continua restrito ao lançamento e a cenários derivados dos valores documentados.
 
 ## Telas e interação
 
 1. **Painel inicial:** banner com “P2W” enviado pelo usuário e título em um cartão próprio. Outro cartão reúne resumo da partida, menus numerados de assunto e duração, **Começar quiz** e **Fechar painel**. O painel expira após dois minutos sem iniciar e libera o canal. Não repete o nome da etapa nem a data em cabeçalhos.
-2. **Pergunta:** categoria e número no cabeçalho; enunciado em destaque e imagem contextual no cartão central; relógio e controles em outro cartão. Raridade quando ela é uma pista, recompensa, barra de tempo e prazo relativo. As respostas continuam abertas no chat.
+2. **Pergunta:** categoria e número no cabeçalho; enunciado em destaque, imagem contextual e indicação de como responder. Perguntas com alternativas mostram três botões neutros, um por linha. Relógio e controles ficam em outro cartão. Raridade só aparece quando ela é uma pista.
 3. **Resultado:** vencedor ou fim do tempo, resposta comentada e imagem correspondente, total acumulado quando salvo, placar da sessão, próxima etapa e botão da revisão histórica usada como fonte.
 4. **Pausa:** congela imediatamente a pergunta ou o intervalo. Mostra os segundos restantes sem um prazo relativo que continue se movendo. **Retomar** usa o mesmo tempo restante, sem reiniciar a contagem. Respostas enviadas durante a pausa são rejeitadas, mesmo se entregues após a retomada. Um acerto recebido antes do pedido de pausa continua valendo.
 5. **Encerramento:** banner de Summon enviado pelo usuário, resumo e **Jogar de novo**. Encerrar uma pergunta ativa aguarda seu desfecho para preservar o ponto em disputa; em pausa ou fora da pergunta, encerra imediatamente.
@@ -14,6 +14,8 @@ A interface usa **Discord Components V2**, disponíveis em discord.py 2.7.1. A p
 ## Escolhas de uso
 
 - Tempo: **30, 45 ou 60 segundos**, com 45 como padrão. Intervalo de 8 segundos entre perguntas.
+- Alternativas: uma escolha por pessoa e rodada; o primeiro clique correto processado recebe o ponto. Escolhas erradas recebem feedback privado, sem revelar a resposta. Repetir o clique, pausar ou retomar não devolve a tentativa. Mensagens no chat não substituem um botão nesse formato.
+- A ordem das alternativas muda a cada rodada e fica estável durante atualizações do relógio e pausa/retomada. Botões ficam desabilitados durante a pausa; cliques atrasados da pausa não contam depois de retomar. IDs dos controles não indicam qual alternativa é correta.
 - Assuntos: **Tudo junto**, **Personagens**, **Mundos e chefes**, **Sistemas do jogo**. A escolha filtra somente o pacote Release antes de embaralhar.
 - O anfitrião escolhe opções e inicia. Anfitrião e moderadores com Administrador, Gerenciar Servidor ou Gerenciar Canais podem pausar, retomar e encerrar. Outros jogadores mantêm acesso a respostas, ajuda e placar.
 - Uma sessão por canal, inclusive durante a configuração. Dois cliques simultâneos em começar não criam duas partidas.
@@ -31,15 +33,17 @@ Roxo e dourado remetem à identidade da wiki. Cores de raridade só aparecem qua
 
 **Somente os dois banners autorizados pelo usuário ou imagens da wiki de Anime Adventures podem ser usados. Nenhuma imagem gerada por IA.** A antiga ilustração gerada foi removida. Os dois banners foram preservados como arquivos originais; o primeiro foi baixado pelo link de anexo fornecido no chat e o segundo foi localizado na miniatura oficial do jogo e conferido visualmente.
 
-O manifesto [`data/media.json`](../data/media.json) registra 39 imagens: dois banners, logotipo da wiki, 28 formas de unidades, quatro cenários e quatro alimentos. Cada registro guarda página e URL de origem, dimensões, hash do original e do arquivo exibido, além de eventual recorte. Há 25 cópias idênticas em `assets/quiz/` com nomes neutros para identificar personagens sem expor o nome no link da imagem. A revisão descartou retratos genéricos usados como placeholders. O índice da wiki contém 2.387 arquivos; isso não significa que todos foram selecionados ou revisados visualmente.
+O manifesto [`data/media.json`](../data/media.json) registra 62 imagens: dois banners, logotipo da wiki, 28 formas de unidades, quatro cenários, quatro alimentos, 17 novos ícones ativos e seis imagens reservadas para pesquisa de etapas futuras. Cada registro guarda página e URL de origem, dimensões, hashes e eventual recorte. Há 25 cópias idênticas em `assets/quiz/` com nomes neutros para reconhecer unidades sem expor o nome no link. A revisão descartou placeholders. O índice da wiki contém 2.387 arquivos; isso não significa que todos foram selecionados ou revisados visualmente.
 
-Identificar um personagem usa o retrato e a dica quando há imagem; a descrição acessível (ALT) e o nome público do arquivo não revelam a identidade. Retratos pequenos ficam em miniatura, com ampliação ao clicar; arquivos maiores podem aparecer em destaque. Quando não há retrato, a pergunta avisa que a identificação é pela dica em texto. O resultado mostra os nomes cadastrados do jogo e do anime.
+Reconhecimento de uma unidade usa sua imagem no Anime Adventures, sem pista de biografia do anime. Sem retrato validado, esse reconhecimento fica fora do sorteio; outras perguntas sobre a unidade, como raridade, continuam válidas sem foto. Inosuke ainda não tem um retrato validado na biblioteca: a ausência na captura enviada pelo usuário não era uma tentativa de carregar uma imagem quebrada.
+
+**Toda descrição de imagem enviada ao Discord é apenas `.`**, inclusive banners, unidades, itens, ícones, mapas e resultados. O botão ALT pertence ao cliente do Discord; seu conteúdo não inclui relatos do chat nem detalhes de pesquisa. A origem completa continua apenas no registro de mídia. Nomes públicos dos arquivos de reconhecimento são neutros. Retratos pequenos ficam em miniatura, com ampliação ao clicar; arquivos maiores podem aparecer em destaque.
 
 Nas perguntas de raridade, um retrato só aparece antes da resposta se o manifesto o marca explicitamente como `rarity_safe`. As 15 imagens com moldura azul ficam ocultas nesse contexto até o resultado. A ausência desse campo também oculta a imagem: uma nova imagem não é considerada segura por padrão.
 
 Em evolução, o enunciado pode mostrar a unidade base e o resultado só mostra a forma evoluída quando há uma imagem correspondente. A imagem base nunca substitui uma evolução ausente. Identificação de mundos e alimentos mantém as imagens ocultas antes do resultado, conforme o tipo de pergunta.
 
-Recortes determinísticos removem nomes, rótulos de raridade e taxas que poderiam entregar a resposta. Não há geração de pixels por IA. Ausência de imagem não bloqueia uma pergunta válida. Visuais atuais da wiki podem ilustrar perguntas históricas, sem alterar os fatos do Release nem comprovar a aparência de julho de 2022.
+Recortes determinísticos removem nomes, rótulos de raridade e taxas que poderiam entregar a resposta. Não há geração de pixels por IA. Perguntas de mecânica podem funcionar sem ilustração; reconhecimentos visuais exigem imagem. Visuais atuais da wiki não alteram fatos do Release nem comprovam aparência de julho de 2022.
 
 Os arquivos usam URLs públicas do repositório. O bot não precisa consultar o Fandom durante uma partida e não depende da validade do link temporário do anexo do Discord. Não exige permissão de anexar arquivos. O envio usa `AllowedMentions.none()`, e nomes exibidos são escapados para preservar a leitura do placar.
 
@@ -57,7 +61,8 @@ As prévias abaixo foram renderizadas localmente a partir dos componentes serial
 - Edições de relógio e controles são serializadas. Erros de atualização não alongam o prazo; o primeiro acerto continua sendo decidido antes de qualquer await.
 - Casos de teste incluem tempo congelado além do prazo original, ciclos de pausa, resposta atrasada da pausa, acerto simultâneo, exclusão de painel, cliques concorrentes, controle de acesso, expiração, falhas do Discord e pontuação transacional.
 - Hashes dos arquivos e política de origem são conferidos. Testes da seleção de mídia protegem identificação de unidades, raridades e formas evoluídas.
-- Casos específicos verificam Tanjiro sem moldura na pergunta de raridade, Uraraka com imagem e metadados neutros na identificação e a indicação de dica em texto quando falta retrato.
+- Casos específicos verificam Tanjiro sem moldura na pergunta de raridade, Uraraka com imagem e metadados neutros e a exclusão de reconhecimento sem retrato.
+- Testes de alternativas incluem 40 acertos simultâneos com um único crédito, tentativa única, ordem preservada na pausa, cliques antigos, respostas tardias, falha no aviso privado e bloqueio de atalhos pelo chat.
 
 ## Referências oficiais
 

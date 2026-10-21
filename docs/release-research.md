@@ -21,7 +21,29 @@ O banco ativo reconstrói a versão inicial com o changelog Release e revisões 
 - **Loja histórica:** Super Lucky, Ultra Lucky, VIP, Shiny Hunter, Unit Storage e Display 3 Units. Os preços remetem à revisão de julho, não à loja atual. Apenas o código RELEASE foi admitido no quiz; a disponibilidade atual não é afirmada.
 - **Custos/upgrades historicamente preenchidos** de Madara, Ichigo, Josuke e Zoro. Campos escritos como RND na wiki não viraram números inventados. Nenhum dano/SPA moderno foi projetado retroativamente.
 
-O pacote tem **251 perguntas, 14 categorias, 63 referências e 19 snapshots textuais**. As 44 perguntas de identidade e 44 de raridade são geradas pelo carregador; as demais estão escritas no JSON. Os fatos de identidade do anime ajudam as pistas, sem transportar habilidades de gameplay posteriores.
+O banco ativo tem **2.095 perguntas, 14 categorias, 64 referências e 20 snapshots**. As biografias do anime foram removidas das perguntas e do campo de pistas do elenco. Nomes do anime continuam sendo aliases aceitos da unidade correspondente; isso não cria perguntas sobre episódios, equipes ou biografia.
+
+O total inclui variações de prática derivadas dos mesmos fatos, não 2.095 fatos históricos independentes:
+
+| Família | Perguntas |
+|---|---:|
+| Perguntas manuais sobre mecânicas, fases, chefes, itens, loja e localização documentada | 185 |
+| Reconhecimento de unidades pela imagem do jogo | 25 |
+| Consulta de raridade de uma unidade | 44 |
+| Comparação de raridade de pares distintos de unidades | 946 |
+| Maior raridade em uma seleção fixa e limitada de trios | 360 |
+| Relações de atos/chefes com mundo e número de ato | 72 |
+| XP de quantidades e combinações de alimentos | 226 |
+| Custos de summon, desconto VIP e progresso do pity | 147 |
+| Ciclos da Time Machine sem VIP/Premium | 39 |
+| Comparações de recompensas de Daily quests | 36 |
+| Comparações de preços da Store | 15 |
+
+As derivações usam regras explícitas em `question_factory.py`: raridades da lista histórica, alimentos de 25/50/115/250 XP, summon de 50 Gems, desconto VIP de 20%, pity em 50 invocações e ciclos de 150 segundos/3 Gems. Quantidades fictícias nos enunciados são cenários de prática, sem inventar atributos ou eventos. XP calculado é a soma do valor dos itens, antes de bônus ou limite de nível. A ordem das alternativas não aumenta a contagem de perguntas.
+
+O sorteio escolhe categorias e famílias antes de escolher a pergunta, enquanto essas opções estiverem disponíveis. Isso evita que o banco grande de comparações domine o início da partida. O reconhecimento visual só entra quando há um retrato validado; não há adivinhas de anime como substituto de uma imagem ausente.
+
+Perguntas de localização se limitam à evidência textual: Summon à esquerda do Leaderboard, Wis do lado de fora da área Evolve e acesso à Store pela área Shop. O exemplo de posição da Gold Shop da Bulma não foi adotado como fato do lançamento. Relíquias e Gold Shop pertencem à Update 7; materiais de evolução sem receita histórica autenticada continuam pendentes.
 
 ## O que continua em pesquisa
 

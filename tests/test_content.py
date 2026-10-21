@@ -15,7 +15,7 @@ QUESTIONS = {q.id: q for q in PACK.questions}
 class ContentTests(unittest.TestCase):
     def test_release_roster_and_coverage(self):
         self.assertEqual(Counter(u['rarity'] for u in PACK.units), {'Rare': 18, 'Epic': 10, 'Legendary': 9, 'Mythic': 7})
-        self.assertGreaterEqual(len(PACK.questions), 250)
+        self.assertGreaterEqual(len(PACK.questions), 2000)
         self.assertEqual(len({q.category for q in PACK.questions}), 14)
         self.assertEqual(len([q for q in PACK.questions if q.category == 'Evoluções']), 4)
         self.assertEqual(len([q for q in PACK.questions if q.category == 'Atos']), 24)
@@ -36,7 +36,10 @@ class ContentTests(unittest.TestCase):
 
     def test_exact_answers_and_documented_aliases(self):
         for unit in PACK.units:
-            q = QUESTIONS['unit:' + unit['id']]
+            q = QUESTIONS.get('unit:' + unit['id'])
+            if q is None:
+                self.assertIn('rarity:' + unit['id'], QUESTIONS)
+                continue
             for name in [unit['character'], unit['game_name'], unit.get('historical_name'), *unit['aliases']]:
                 if name:
                     self.assertTrue(q.accepts(name), (unit['id'], name))
@@ -69,6 +72,55 @@ class ContentTests(unittest.TestCase):
         self.assertTrue(final.accepts('Frieza (Final)'))
         self.assertFalse(final.accepts('Frieza'))
         self.assertFalse(QUESTIONS['boss:1:6'].accepts('Frieza (Final)'))
+
+    def test_every_choice_question_has_exactly_one_correct_option(self):
+        for q in PACK.questions:
+            if q.options:
+                self.assertEqual(len(q.options), 3, q.id)
+                self.assertEqual(len({normalize_answer(o) for o in q.options}), 3, q.id)
+                self.assertEqual(sum(q.accepts(o) for o in q.options), 1, q.id)
+                self.assertTrue(all(len(o) <= 80 for o in q.options), q.id)
+
+    def test_visual_identification_has_no_anime_biography_riddle(self):
+        raw = json.loads(DATA_FILE.read_text())
+        self.assertTrue(all('hint' not in unit for unit in raw['units']))
+        for q in PACK.questions:
+            if q.id.startswith('unit:'):
+                self.assertTrue(q.requires_image)
+                self.assertIn('Anime Adventures', q.prompt)
+            self.assertFalse(q.id.startswith('world:') and q.id.endswith(':anime'))
+
+    def test_release_resource_practice_calculations(self):
+        for key, answer in [('practice:food:Wisteria Flower:20', '2300 XP'),
+                             ('practice:food-mix:Senzu Beans:Ramen:2:3', '800 XP'),
+                             ('practice:summon:cost:10', '500 Gems'),
+                             ('practice:summon:vip:10', '400 Gems'),
+                             ('practice:summon:pity:49', '1'), ('practice:time:2', '6 Gems')]:
+            self.assertTrue(QUESTIONS[key].accepts(answer), key)
+        self.assertIn('5min', QUESTIONS['practice:time:2'].prompt)
+        self.assertIn('sem VIP nem Premium', QUESTIONS['practice:time:2'].prompt)
+
+    def test_comparison_questions_follow_the_sourced_rarity_order(self):
+        units = {u['id']: u for u in PACK.units}
+        ranks = {'Rare': 0, 'Epic': 1, 'Legendary': 2, 'Mythic': 3}
+        labels = {'Rare': 'Rara', 'Epic': 'Épica', 'Legendary': 'Lendária', 'Mythic': 'Mítica'}
+        for q in PACK.questions:
+            if q.id.startswith('compare:rarity:'):
+                a, b = [units[key] for key in q.id.split(':')[2:]]
+                expected = 'Mesma raridade' if a['rarity'] == b['rarity'] else max((a, b), key=lambda u: ranks[u['rarity']])['game_name']
+                self.assertTrue(q.accepts(expected), q.id)
+            if q.id.startswith('team:rarity:'):
+                group = [units[key] for key in q.id.split(':')[2:]]
+                self.assertEqual(len({u['id'] for u in group}), 3)
+                expected = max(group, key=lambda u: ranks[u['rarity']])['rarity']
+                self.assertTrue(q.accepts(labels[expected]), q.id)
+
+    def test_large_rarity_pool_does_not_dominate_the_first_rounds(self):
+        deck = QuestionDeck(PACK.questions, random.Random(2))
+        draws = [deck.draw() for _ in range(100)]
+        self.assertGreaterEqual(len({q.category for q in draws}), 12)
+        self.assertLess(sum(q.category == 'Raridades' for q in draws), 20)
+        self.assertEqual(len({q.id for q in draws}), 100)
 
     def test_normalization_keeps_exact_words(self):
         self.assertEqual(normalize_answer('  MÍTICA_ÉPICA-test! '), 'mitica epica test')
