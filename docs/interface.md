@@ -37,6 +37,18 @@ A interface usa **Discord Components V2**, disponíveis em discord.py 2.7.1. O q
 
 Textos curtos e naturais em português explicam o que fazer, sem forçar gírias. Títulos, subtítulos, negrito, texto secundário, separadores e imagens originais do jogo dão hierarquia. A interface não usa emojis Unicode. O placar usa posições numeradas; alternativas usam A/B/C. Pontos, perguntas e acertos respeitam singular e plural. Nomes de jogadores têm Markdown, menções, quebras de linha e controles direcionais tratados para não imitarem outras linhas de placar. A fonte, o fundo e as dimensões finais são definidos pelo cliente Discord e pelo tema do usuário; bots não aplicam CSS próprio às mensagens.
 
+### Hierarquia dos textos
+
+Preferência explícita do proprietário: explorar os recursos nativos de formatação do Discord conforme o contexto, mantendo leitura confortável no computador e no celular. A menção a negrito foi um exemplo de destaque visual.
+
+- `#` ou `##` para o título principal de um painel; `###` para suas seções. O enunciado deve continuar mais destacado que a categoria e os controles.
+- `**negrito**` para a resposta revelada, pontos, números importantes e nomes de ações. `*Itálico*` para observações breves quando melhorar a leitura; `__sublinhado__` fica reservado a destaques pontuais que precisem de uma distinção adicional.
+- `-#` para informações secundárias, com contraste e tamanho definidos pelo cliente. A instrução essencial e o resultado precisam continuar fáceis de encontrar.
+- Maiúsculas para estados curtos, como `EM PAUSA`; separadores e quebras de linha entre preparação, pergunta, relógio, resultado e ações.
+- Letras comuns nos enunciados, nomes e botões. Caracteres invisíveis e alfabetos Unicode decorativos não fazem parte do projeto visual; a referência a texto invisível foi apenas um exemplo de recurso do Discord.
+
+Escolher os recursos que combinem com cada tela. Botões e opções de menus usam rótulos legíveis, pois não renderizam o mesmo Markdown dos blocos de texto. Não é necessário usar todos os estilos em cada mensagem. A versão atual já aplica títulos, subtítulos, negrito, texto secundário e separadores; esta orientação vale também para os próximos comandos.
+
 O painel inicial identifica quem configura a partida. Textos de permissão acompanham o anfitrião atual após transferências. Placares com mais de cinco jogadores informam quantos estão representados, sem cortar a pontuação dos demais. O teste real de uso está reunido em [teste-discord.md](teste-discord.md).
 
 Dez imagens de interface vêm diretamente da wiki: mochila de Unit Storage, estrela colorida, Summon Ticket, Star Fruit, Star Remnant, ranking, Gems, dano, SPA e alcance. São usados como elementos de interface e não como prova de uma receita de evolução ou de uma mecânica histórica. Todas as imagens ativas são coloridas. A mochila vem de Unit Storage: o fundo foi removido por flood fill até o contorno escuro e recorte, preservando os valores RGB da arte; o arquivo original e seus hashes foram guardados. As demais artes já possuem transparência. Não houve recoloração, reconstrução ou geração por IA. Versões PNG RGBA de até 128px preservam o canal alfa para uso nos controles. Dentro de textos, botões e menus, o Discord exige o recurso técnico de ícone de aplicação/custom emoji. Os pixels são dos arquivos da wiki, com identificadores e nomes neutros registrados em `data/ui_icons.json`; a aplicação os usa sem criar emojis nos servidores. Controles mantêm seus rótulos e funcionam como texto quando um registro de ícone está ausente.
