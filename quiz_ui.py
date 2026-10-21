@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import logging
 import math
 import unicodedata
 
@@ -11,6 +10,7 @@ from discord import ui
 
 import quiz_media as media
 import quiz_icons as icons
+from interaction_errors import respond_to_error
 
 BRAND_COLOR = 0x8664E8
 GOLD = 0xF4C95D
@@ -29,7 +29,6 @@ GROUPS = {
     'worlds': ('Mundos e chefes', {'Mundos', 'Chefes', 'Atos'}, 'Explore os quatro mundos do lançamento'),
     'systems': ('Sistemas do jogo', {'Comida e XP', 'Traits', 'Summon', 'Economia', 'Modos', 'Missões', 'Loja e códigos'}, 'Comida, XP, traits, summon, missões e economia'),
 }
-log = logging.getLogger('adventures.ui')
 
 
 def safe_name(value):
@@ -109,12 +108,7 @@ class Panel(ui.LayoutView):
         self.stop()
 
     async def on_error(self, interaction, error, item):
-        log.error('Erro no controle %s: %s', getattr(item, 'custom_id', '?'), type(error).__name__, exc_info=error)
-        message = 'Não deu para atualizar o painel agora. Tente clicar de novo no painel mais recente.'
-        if not interaction.response.is_done():
-            await interaction.response.send_message(message, ephemeral=True)
-        else:
-            await interaction.followup.send(message, ephemeral=True)
+        await respond_to_error(interaction, error)
 
 
 def utilities(callback):
@@ -303,7 +297,8 @@ def help_panel():
         text('### 4 · Mantenha a partida rolando\nTentou e errou? Tudo bem, a partida continua. Ela termina ao chegar ao total escolhido, ao encerrar pelo botão ou na primeira rodada sem tentativa. Abrir ajuda ou placar não conta como resposta.'),
         text('### 5 · Pontuação\nTodo primeiro acerto vale **1 ponto na partida**. No **total global**, a mesma pergunta soma um ponto por pessoa a cada **24 horas**, mesmo mudando de canal ou abrindo outra partida.'),
         text('### Precisa de uma pausa?\nQuem abriu a partida e a moderação podem pausar e encerrar. Pausar trava o relógio e as respostas; retomar continua do mesmo ponto. Uma pausa de **10 minutos** encerra a partida. Ao encerrar com uma pergunta ativa, ela termina primeiro. Com a partida pausada, encerra na hora.'),
-        text('-# A ajuda e seus pontos aparecem só para você. A fonte de cada resposta fica no botão da wiki.'),
+        text('-# Se a conexão com o Discord cair, o relógio pausa e volta após reconectar. Uma pausa que já era sua continua pausada.\n'
+             '-# A ajuda e seus pontos aparecem só para você. A fonte de cada resposta fica no botão da wiki.'),
     )
 
 

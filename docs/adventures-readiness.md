@@ -28,6 +28,9 @@ Retratos ausentes não geram reconhecimento visual. Molduras de raridade e ícon
 - SQLite serializa a decisão de elegibilidade e escrita. Migrações preservam os totais e os registros legados.
 - Botões de painéis antigos, respostas tardias, webhooks, bots e mensagens editadas não dão pontos. Pausar não recupera tentativas.
 - Cooldowns limitados em memória protegem ajuda, consultas de pontos e abertura de lobbies. Atualizações repetidas com o mesmo estado são agrupadas.
+- Até três partidas por servidor e 50 no processo, com reserva de vaga antes de qualquer await. Remover threads/canais ou retirar o bot do servidor libera as sessões correspondentes.
+- Quedas do Gateway pausam o relógio e a reconexão retoma apenas as pausas automáticas, bloqueando respostas antigas recebidas depois. Pausas manuais e o limite de dez minutos são preservados. Quedas durante publicação de pergunta/resultado também são cobertas.
+- Erros de comando e interface recebem explicação privada, quando o Discord está disponível. SIGTERM inicia encerramento organizado, com tentativa de aviso nos painéis por até três segundos. Reinícios preservam pontos gravados, mas encerram partidas.
 - As proteções não estabelecem identidade única entre contas e não impedem consulta externa à wiki. O banco público também não deve ser apresentado como um segredo inacessível aos jogadores.
 
 ## Armazenamento
@@ -38,9 +41,15 @@ Recibos novos de disputa/antifarm são mantidos por **30 dias**. A limpeza é fe
 
 Uma medição local com 100 mil registros e mil jogadores ocupou aproximadamente **22,61 MB**. É uma referência sintética, não uma garantia de capacidade. Monitorar uso real do volume e manter margem para operações do banco.
 
+O banco passa por `quick_check` ao iniciar. Uma tarefa fora do loop de interações verifica espaço a cada hora e mantém uma cópia diária em `/data/backups/scores-latest.sqlite3`. Ela lê um snapshot consistente pela API do SQLite e verifica integridade/schema antes da troca atômica. Exige espaço para a cópia temporária mais 16 MiB de margem. Erro, demora ou falta de espaço preservam a cópia anterior, sem fechar o banco principal. Durante a troca coexistem banco, cópia anterior e temporário. Não há restauração automática.
+
+Essa cópia está no mesmo volume: exportação externa continua recomendada. O procedimento está em `docs/release-checklist.md`.
+
 ## Validação e próximos passos
 
 A suíte verifica limites nativos de todas as perguntas, inclusive com nomes longos e Markdown, rodadas fixas/contínuas, disputa simultânea, tentativa única, janela de 24h, reinício, duas conexões concorrentes, migração de schema, retenção sem perda de totais e cancelamento após acerto.
+
+Também cobre reconexão, publicação concorrente com queda, exclusão de threads, capacidade, erros privados, backups e encerramento organizado. Uma simulação com 50 salas e 2.000 respostas registrou exatamente 50 vencedores; não equivale a teste de carga real da rede do Discord.
 
 Antes de anunciar para mais servidores, recomenda-se uma partida real com um pequeno grupo para avaliar leitura das imagens, ritmo e dificuldade, além de conferir uma estratégia de backup do volume. Isso complementa os testes automatizados e as prévias simuladas; não houve envio de mensagens reais de teste pela máquina de desenvolvimento.
 

@@ -18,11 +18,15 @@ class AwardResult:
 class ScoreStore:
     def __init__(self, path: Path, legacy_path: Path | None = None, *, clock=None):
         path.parent.mkdir(parents=True, exist_ok=True)
+        self.path = path
         self.clock = clock or time.time
         self.last_cleanup = None
         self.connection = sqlite3.connect(path, timeout=1.0)
-        self.connection.execute("PRAGMA foreign_keys = ON")
-        self.connection.executescript("""
+        try:
+            if self.connection.execute('PRAGMA quick_check').fetchall() != [('ok',)]:
+                raise sqlite3.DatabaseError('O banco de pontos falhou na verificação de integridade.')
+            self.connection.execute("PRAGMA foreign_keys = ON")
+            self.connection.executescript("""
             CREATE TABLE IF NOT EXISTS scores (
                 user_id TEXT PRIMARY KEY, name TEXT NOT NULL, points INTEGER NOT NULL CHECK(points >= 0)
             );
@@ -30,8 +34,7 @@ class ScoreStore:
                 question_id TEXT PRIMARY KEY, user_id TEXT NOT NULL
             );
             CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);
-        """)
-        try:
+            """)
             with self.connection:
                 columns = {row[1] for row in self.connection.execute('PRAGMA table_info(awards)')}
                 for name, definition in [('content_id', 'TEXT'), ('awarded_at', 'REAL'),

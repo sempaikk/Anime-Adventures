@@ -7,6 +7,7 @@ import contextlib
 import logging
 import os
 import random
+import signal
 import sqlite3
 import time
 from datetime import datetime, timedelta, timezone
@@ -20,7 +21,9 @@ from dotenv import load_dotenv
 import quiz_ui as screen
 from quiz_content import QuestionDeck, load_pack, normalize_answer
 from quiz_guard import Cooldowns
+from interaction_errors import respond_to_error
 from scores import ScoreStore
+from storage_maintenance import maintain_storage
 from timing import PausableTimer
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -32,6 +35,9 @@ LOBBY_TIMEOUT = 120
 PAUSE_TIMEOUT = 600
 CHAT_ATTEMPTS = 3
 MAX_ANSWER_LENGTH = 160
+MAX_SESSIONS = 50
+MAX_GUILD_SESSIONS = 3
+SHUTDOWN_PANEL_TIMEOUT = 3
 PACK = load_pack()
 log = logging.getLogger('adventures')
 active_sessions: dict[int, QuizSession] = {}
@@ -41,6 +47,7 @@ click_limits = Cooldowns()
 class QuizSession:
     def __init__(self, channel, host, store, *, deck=None, clock=None):
         self.channel, self.host, self.store = channel, host, store
+        self.guild_id = getattr(getattr(channel, 'guild', None), 'id', None)
         self.pack = PACK
         self.group = 'all'
         self.round_limit = 10
@@ -81,6 +88,7 @@ class QuizSession:
         self.winner_recorded = False
         self.award_total = None
         self.control_lock = asyncio.Lock()
+        self.connection_paused = False
 
     @property
     def deadline(self):
@@ -131,6 +139,7 @@ class QuizSession:
         if not self.timer.resume():
             return False
         self.phase = 'question' if question else 'intermission'
+        self.connection_paused = False
         self.cancel_pause_expiry()
         if question:
             self.answer_min_id = max(self.answer_min_id, interaction_id)
@@ -139,6 +148,13 @@ class QuizSession:
             self.next_at = datetime.now(timezone.utc) + timedelta(seconds=self.timer.remaining)
         self.timing_updated()
         return True
+
+    def pause_for_connection(self):
+        # Publication resets its timer after send(); pause it only once visible.
+        if self.control_message is not None and self.pause():
+            self.connection_paused = True
+            return True
+        return False
 
     async def await_answer(self):
         while self.running:
@@ -364,6 +380,8 @@ class QuizSession:
         self.answer_min_id = self.question_message.id
         self.ends_at = datetime.now(timezone.utc) + timedelta(seconds=self.question_time)
         self.ticker = asyncio.create_task(self.update_clock(publish_lag >= 1), name=f'clock:{self.channel.id}')
+        if bot.connection_lost:
+            self.pause_for_connection()
         try:
             winner = await self.await_answer()
         finally:
@@ -390,6 +408,8 @@ class QuizSession:
             publish_lag = self.clock() - publishing_started
             self.timer = PausableTimer(self.between_questions, self.clock)
             self.next_at = datetime.now(timezone.utc) + timedelta(seconds=self.between_questions)
+            if bot.connection_lost:
+                self.pause_for_connection()
             if publish_lag >= 1:
                 await self.refresh_controls()
         return continuing
@@ -458,6 +478,10 @@ class AdventuresBot(commands.Bot):
         intents.message_content = True
         super().__init__(command_prefix=commands.when_mentioned, intents=intents, allowed_mentions=discord.AllowedMentions.none())
         self.scores = None
+        self.storage_task = None
+        self.connection_lost = False
+        self.shutdown_task = None
+        self.close_guard = asyncio.Lock()
 
     async def setup_hook(self):
         data_dir = Path(os.getenv('DATA_DIR') or os.getenv('RAILWAY_VOLUME_MOUNT_PATH') or BASE_DIR)
@@ -465,12 +489,39 @@ class AdventuresBot(commands.Bot):
         if not legacy.exists():
             legacy = BASE_DIR / 'scores.json'
         self.scores = ScoreStore(data_dir / 'scores.sqlite3', legacy)
+        try:
+            asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, self.request_shutdown)
+        except (NotImplementedError, RuntimeError, ValueError):
+            log.info('Encerramento por sinal não disponível nesta plataforma.')
         log.info('Banco de pontos: %s', data_dir / 'scores.sqlite3')
+        self.storage_task = asyncio.create_task(self.monitor_storage(), name='storage-maintenance')
         self.add_view(screen.PersistentControls(handle_control))
         synced = await self.tree.sync()
         log.info('%s comando(s) sincronizado(s); %s perguntas Release; interface Components V2', len(synced), len(PACK.questions))
 
+    async def monitor_storage(self):
+        while self.scores is not None:
+            try:
+                report = await asyncio.to_thread(maintain_storage, self.scores.path)
+                log.info('Armazenamento: banco=%s bytes, livre=%s bytes, backup=%s (%s bytes)',
+                         report['database_bytes'], report['free_bytes'], report['backup'], report['backup_bytes'])
+            except (OSError, sqlite3.Error, TimeoutError):
+                log.exception('A cópia local dos pontos não pôde ser atualizada; banco e cópia anterior preservados.')
+            await asyncio.sleep(3600)
+
+    def request_shutdown(self):
+        if self.shutdown_task is None:
+            self.shutdown_task = asyncio.create_task(self.close(), name='graceful-shutdown')
+
     async def close(self):
+        async with self.close_guard:
+            await self.close_resources()
+
+    async def close_resources(self):
+        if self.storage_task:
+            self.storage_task.cancel()
+            await asyncio.gather(self.storage_task, return_exceptions=True)
+            self.storage_task = None
         sessions = list(active_sessions.values())
         tasks = []
         for session in sessions:
@@ -484,6 +535,20 @@ class AdventuresBot(commands.Bot):
                     tasks.append(task)
             session.release_channel()
         await asyncio.gather(*tasks, return_exceptions=True)
+
+        async def finish_panel(session):
+            if session.control_message:
+                view = screen.ended_panel(session, 'O bot está reiniciando. Seus pontos salvos continuam no total. Use /adventures quando ele voltar.', handle_control)
+                try:
+                    with contextlib.suppress(discord.HTTPException):
+                        await session.control_message.edit(view=view)
+                finally:
+                    view.stop()
+        try:
+            async with asyncio.timeout(SHUTDOWN_PANEL_TIMEOUT):
+                await asyncio.gather(*(finish_panel(session) for session in sessions))
+        except TimeoutError:
+            log.warning('Alguns painéis não puderam receber o aviso de reinício a tempo.')
         if self.scores:
             self.scores.close()
             self.scores = None
@@ -512,10 +577,22 @@ async def begin_lobby(interaction):
     if existing and existing.running:
         await interaction.response.send_message('Já tem uma partida aberta neste canal. É só participar pelo painel mais recente.', ephemeral=True)
         return
+    if bot.connection_lost:
+        await interaction.response.send_message('A conexão com o Discord está voltando. Espere um momento para abrir a partida.', ephemeral=True)
+        return
+    running = [s for s in active_sessions.values() if s.running]
+    guild_id = getattr(interaction.guild, 'id', None)
+    if len(running) >= MAX_SESSIONS:
+        await interaction.response.send_message('Já tem bastante partida rolando agora. Tente novamente quando uma delas terminar.', ephemeral=True)
+        return
+    if guild_id is not None and sum(s.guild_id == guild_id for s in running) >= MAX_GUILD_SESSIONS:
+        await interaction.response.send_message(f'Este servidor já tem {MAX_GUILD_SESSIONS} partidas abertas. Entre em uma delas ou espere uma terminar.', ephemeral=True)
+        return
     if not click_limits.allow(('lobby', interaction.user.id), 3):
         await interaction.response.send_message('Espere 3 segundos antes de abrir outra partida.', ephemeral=True)
         return
     session = QuizSession(interaction.channel, interaction.user, bot.scores)
+    session.guild_id = guild_id
     session.running = True
     active_sessions[session.channel.id] = session
     try:
@@ -610,6 +687,7 @@ async def handle_control(interaction, action, value=None):
         return
     if action == 'pause':
         if session.is_paused:
+            session.connection_paused = False  # Keep an explicit manual pause after reconnect.
             # A repeated click can recover a panel whose previous edit failed.
             try:
                 await interaction.response.defer()
@@ -624,6 +702,9 @@ async def handle_control(interaction, action, value=None):
         finally:
             await session.refresh_controls()
     elif action == 'resume':
+        if bot.connection_lost:
+            await interaction.response.send_message('A conexão com o Discord ainda está voltando. O tempo continua pausado.', ephemeral=True)
+            return
         if not session.resume(getattr(interaction, 'id', 0)):
             if session.phase in ('question', 'intermission'):
                 try:
@@ -655,7 +736,35 @@ async def handle_control(interaction, action, value=None):
 
 @bot.event
 async def on_ready():
+    await restore_connection()
     log.info('Conectado como %s; %s sessões ativas', bot.user, len(active_sessions))
+
+
+@bot.event
+async def on_disconnect():
+    bot.connection_lost = True
+    paused = sum(session.pause_for_connection() for session in list(active_sessions.values()) if session.running)
+    log.warning('Conexão com o Discord interrompida; %s relógio(s) pausado(s).', paused)
+
+
+async def restore_connection():
+    bot.connection_lost = False
+    minimum_id = discord.utils.time_snowflake(datetime.now(timezone.utc), high=True)
+    resumed = []
+    for session in list(active_sessions.values()):
+        if session.connection_paused:
+            session.connection_paused = False
+            if session.running and session.resume(minimum_id):
+                resumed.append(session)
+    results = await asyncio.gather(*(session.refresh_controls() for session in resumed), return_exceptions=True)
+    for result in results:
+        if isinstance(result, Exception):
+            log.warning('O painel não pôde ser atualizado após reconectar: %s', type(result).__name__)
+
+
+@bot.event
+async def on_resumed():
+    await restore_connection()
 
 
 @bot.event
@@ -699,10 +808,26 @@ async def on_guild_channel_delete(channel):
         await session.stop_now('O canal da partida foi removido.')
 
 
+@bot.event
+async def on_thread_delete(thread):
+    await on_guild_channel_delete(thread)
+
+
+@bot.event
+async def on_guild_remove(guild):
+    sessions = [s for s in list(active_sessions.values()) if s.guild_id == guild.id]
+    await asyncio.gather(*(s.stop_now('O bot saiu deste servidor.') for s in sessions))
+
+
 @bot.tree.command(name='adventures', description='Responda desafios sobre o lançamento de Anime Adventures. Escolha os assuntos e jogue!')
 @app_commands.guild_only()
 async def adventures(interaction: discord.Interaction):
     await begin_lobby(interaction)
+
+
+@bot.tree.error
+async def on_command_error(interaction, error):
+    await respond_to_error(interaction, error)
 
 
 if __name__ == '__main__':
