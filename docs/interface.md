@@ -9,7 +9,9 @@ A interface usa **Discord Components V2**, disponíveis em discord.py 2.7.1. O q
 3. **Resultado:** vencedor ou fim do tempo, resposta comentada e imagem correspondente, total acumulado quando salvo, placar da sessão, próxima etapa e botão da revisão histórica usada como fonte.
 4. **Pausa:** congela imediatamente a pergunta ou o intervalo. Mostra os segundos restantes sem um prazo relativo que continue se movendo. **Retomar** usa o mesmo tempo restante, sem reiniciar a contagem. Respostas enviadas durante a pausa são rejeitadas, mesmo se entregues após a retomada. Um acerto recebido antes do pedido de pausa continua valendo. Após dez minutos de pausa, encerra e libera o canal; retomar cancela o encerramento agendado. Cliques repetidos não estendem essa pausa.
 5. **Encerramento:** banner de Summon enviado pelo usuário, resumo e **Jogar de novo**. Encerrar uma pergunta ativa aguarda seu desfecho para preservar o ponto em disputa; em pausa ou fora da pergunta, encerra imediatamente.
-6. **Ajuda e pontos:** cartões privados para quem clica. Não enviam novas mensagens públicas, não alteram o prazo e não contam como tentativa.
+6. **Consultas privadas:** ajuda, pontos, desempenho, transferência e estado do bot não geram mensagens públicas nem contam como tentativa. A fila de avisos só aparece para moderação do servidor.
+7. **Mais opções:** dificuldade e formato ficam em uma tela separada do painel inicial. O resumo mantém as seleções visíveis; combinações vazias desabilitam Começar e explicam o ajuste.
+8. **Recuperação:** após reinício, a partida salva oferece Retomar/Encerrar, com placar e configurações. Confirmação do anfitrião/moderação; uma rodada interrompida sem ponto é anulada. O painel expira em dez minutos.
 
 ## Escolhas de uso
 
@@ -18,13 +20,18 @@ A interface usa **Discord Components V2**, disponíveis em discord.py 2.7.1. O q
 - Alternativas: uma escolha por pessoa e rodada; o primeiro clique correto processado recebe o ponto. Escolhas erradas recebem feedback privado, sem revelar a resposta. Repetir o clique, pausar ou retomar não devolve a tentativa. Mensagens no chat não substituem um botão nesse formato.
 - Chat: até três respostas diferentes por pessoa e rodada, conforme informado na pergunta e na ajuda. Maiúsculas, pontuação e acentos não tornam uma resposta repetida em uma nova tentativa. Pausar não limpa o limite; a pergunta seguinte limpa. Mensagens vazias, só pontuação ou acima de 160 caracteres não contam como participação nem consomem tentativa.
 - A ordem das alternativas muda a cada rodada e fica estável durante atualizações do relógio e pausa/retomada. Botões ficam desabilitados durante a pausa; cliques atrasados da pausa não contam depois de retomar. IDs dos controles não indicam qual alternativa é correta.
-- Assuntos: **Tudo junto**, **Personagens**, **Mundos e chefes**, **Sistemas do jogo**. A escolha filtra somente o pacote Release antes de embaralhar.
+- Assuntos: quatro grupos e as **14 categorias individuais**. Em Mais opções: todos os níveis/fácil/médio/difícil e misto/alternativas/texto/imagens. A escolha filtra o pacote Release existente, sem gerar alternativas ou fatos novos.
 - O anfitrião escolhe opções e inicia. Anfitrião e moderadores com Administrador, Gerenciar Servidor ou Gerenciar Canais podem pausar, retomar e encerrar. Outros jogadores mantêm acesso a respostas, ajuda e placar.
 - Uma sessão por canal, inclusive durante a configuração. Dois cliques simultâneos em começar não criam duas partidas.
 - Abertura de painel: intervalo de três segundos por jogador, compartilhado entre canais. Ajuda e pontos têm intervalos independentes de 750ms por pessoa; repetições são reconhecidas silenciosamente. Esses limites não atrasam respostas do quiz nem consultas de outros jogadores. O registro de limites tem memória limitada a 4.096 chaves.
-- Controles antigos não podem modificar uma sessão nova nem uma pergunta ainda em publicação. Ajuda, pontos e revanche têm encaminhamento persistente após reinícios; sessões em andamento não sobrevivem a reinícios.
+- Controles antigos não podem modificar uma sessão nova nem uma pergunta ainda em publicação. Transferências usam a identidade da partida e conferem a autorização após consultar o membro. Partidas compatíveis salvas nas últimas 24h podem ser recuperadas; recibos impedem duplicar o ponto entre a gravação do crédito e o checkpoint.
 - Apagar o painel, inclusive em pausa, libera o canal. Se uma resposta correta já foi recebida, o crédito é concluído antes de encerrar. Apagar o canal também encerra sua sessão.
-- Botões de cada pergunta e resultado são aposentados quando o jogo avança. O aviso da próxima pergunta vira “Rodada concluída”, para não continuar exibindo um horário relativo no passado. Links das fontes continuam disponíveis.
+- Controles de jogo são aposentados quando o jogo avança. O aviso da próxima pergunta vira “Rodada concluída”. Fontes, desempenho e sinalização de resultados já resolvidos continuam acessíveis enquanto o histórico existir; controles persistentes leem seu contexto original e não alteram a partida nova.
+
+- A revisão é privada, com até três perguntas por página, imagens da forma correta, respostas/fontes e desempenho de cada assunto. Só apresenta rodadas encerradas em que o próprio jogador participou. O percentual mede primeiros acertos, incluindo velocidade, não apenas conhecimento.
+- O formulário de sinalização exige usuário/canal/servidor originais e pergunta resolvida. Até cinco avisos em 24h, um por pergunta. A fila de moderação tem três avisos por página, resposta cadastrada, imagem, fonte e marcação de revisão; nomes e texto externo são tratados.
+- Transferência usa seletor nativo de pessoas. Após saída confirmada do servidor, participante anterior ou moderador pode assumir; confirmar novamente impede tomar o controle de quem já voltou. Consultas antigas não sobrescrevem um novo anfitrião.
+- As telas privadas com controles têm timeout de cinco minutos para limitar retenção de views. Paginação e transferência têm encaminhamento dinâmico após reinícios, com escopo e permissões revalidados. A ajuda explica recuperação, limites e critérios.
 
 ## Escrita e aparência
 
@@ -56,6 +63,8 @@ As prévias abaixo foram renderizadas localmente a partir dos componentes serial
 
 - [Prévia em tela grande](interface-desktop.png)
 - [Prévia em celular](interface-mobile.png)
+- [Ferramentas privadas e recuperação em tela grande](interface-tools-desktop.png)
+- [Ferramentas privadas e recuperação em celular](interface-tools-mobile.png)
 
 ## Contratos verificados
 

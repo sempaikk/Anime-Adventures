@@ -7,6 +7,11 @@ Esta entrega fecha a interface, a duração das partidas e as regras de disputa 
 - Dez ícones coloridos da wiki, transparência e os dois banners autorizados. Sem arte gerada ou recoloração. O original da mochila foi preservado antes de remover seu fundo.
 - Nome público Anime Adventures, sem os símbolos decorativos anteriores. Painéis sem “Quiz” e sem cabeçalhos repetindo o nome do bot.
 - Três menus: assuntos, tempo e 10/20/30 perguntas ou partida contínua. Seleções iniciais: tudo junto, 45 segundos, dez perguntas.
+- Mais opções reúne dificuldade e formato, com resumo sempre visível. Assuntos oferecem quatro grupos e 14 categorias. Fácil/médio/difícil são curadoria editorial do esforço, não da raridade da unidade; o perfil inicial contém 98/1.297/804 perguntas. Formatos particionam o banco existente sem inventar alternativas.
+- Desempenho privado por assunto e revisão das últimas 50 rodadas, com respostas/fontes e primeiros acertos. O percentual inclui velocidade. Não se guardam as mensagens digitadas.
+- Formulário de sinalização após revelar a resposta, cinco avisos por pessoa/24h e um por pergunta. Fila privada da moderação do mesmo servidor; marcar revisado não altera dados do jogo ou pontos.
+- Transferência de anfitrião via seletor de pessoas. Assumir após saída exige participação anterior ou moderação, ausência confirmada por REST e nova checagem após a consulta. Reentrada e transferências concorrentes são protegidas. Conferência periódica sem novo intent privilegiado.
+- Recuperação de partidas salvas nas últimas 24h, com confirmação do anfitrião/moderação. Rodadas interrompidas sem acerto são anuladas; pontos gravados são reconciliados pelos recibos. Banco de perguntas incompatível encerra a partida antiga, preservando os totais.
 - Pergunta, alternativas A/B/C, relógio, controles e resultado separados. Avanço da partida e resumo final com reconhecimento de empates.
 - Chat e imagens com até três tentativas diferentes por pessoa; alternativas com uma tentativa. Primeiro acerto vale um ponto na partida. Maiúsculas, acentos e separadores são normalizados; nomes aproximados não são aceitos.
 - Anfitrião configura/inicia; anfitrião e moderação pausam/encerram. Uma rodada sem participação encerra a partida. Pausa máxima de dez minutos.
@@ -30,7 +35,7 @@ Retratos ausentes não geram reconhecimento visual. Molduras de raridade e ícon
 - Cooldowns limitados em memória protegem ajuda, consultas de pontos e abertura de lobbies. Atualizações repetidas com o mesmo estado são agrupadas.
 - Até três partidas por servidor e 50 no processo, com reserva de vaga antes de qualquer await. Remover threads/canais ou retirar o bot do servidor libera as sessões correspondentes.
 - Quedas do Gateway pausam o relógio e a reconexão retoma apenas as pausas automáticas, bloqueando respostas antigas recebidas depois. Pausas manuais e o limite de dez minutos são preservados. Quedas durante publicação de pergunta/resultado também são cobertas.
-- Erros de comando e interface recebem explicação privada, quando o Discord está disponível. SIGTERM inicia encerramento organizado, com tentativa de aviso nos painéis por até três segundos. Reinícios preservam pontos gravados, mas encerram partidas.
+- Erros de comando e interface recebem explicação privada, quando o Discord está disponível. SIGTERM inicia encerramento organizado, salva as partidas e tenta avisar os painéis por até três segundos. Novas partidas são bloqueadas durante o encerramento.
 - As proteções não estabelecem identidade única entre contas e não impedem consulta externa à wiki. O banco público também não deve ser apresentado como um segredo inacessível aos jogadores.
 
 ## Armazenamento
@@ -45,6 +50,12 @@ O banco passa por `quick_check` ao iniciar. Uma tarefa fora do loop de interaç�
 
 Essa cópia está no mesmo volume: exportação externa continua recomendada. O procedimento está em `docs/release-checklist.md`.
 
+Partidas/revisões ficam por até sete dias, limitadas a 500 registros/32 MiB de histórico encerrado; revisão conserva só 50 rodadas. Checkpoints têm limite de 512 KiB, 50 partidas abertas e 200 participantes cada. Contextos de mensagens são limitados após a limpeza a 20 mil; avisos ficam até 30 dias, no máximo cinco mil. Todos entram no backup SQLite. Os totais globais não são removidos por essas limpezas.
+
+## Monitoramento
+
+O painel privado mostra disponibilidade e, para moderação, armazenamento/backup. Alertas mudam em 70%/90% do filesystem ou menos de 16 MiB livres. `/health` e `/ready` escutam em PORT/8080, sem detalhes internos; readiness falha também com armazenamento crítico. O workflow de disponibilidade no GitHub consulta a cada 15min quando `BOT_HEALTH_URL` está configurada. A URL pública e a ativação externa ainda dependem do Railway.
+
 ## Validação e próximos passos
 
 A suíte verifica limites nativos de todas as perguntas, inclusive com nomes longos e Markdown, rodadas fixas/contínuas, disputa simultânea, tentativa única, janela de 24h, reinício, duas conexões concorrentes, migração de schema, retenção sem perda de totais e cancelamento após acerto.
@@ -53,4 +64,4 @@ Também cobre reconexão, publicação concorrente com queda, exclusão de threa
 
 Antes de anunciar para mais servidores, recomenda-se uma partida real com um pequeno grupo para avaliar leitura das imagens, ritmo e dificuldade, além de conferir uma estratégia de backup do volume. Isso complementa os testes automatizados e as prévias simuladas; não houve envio de mensagens reais de teste pela máquina de desenvolvimento.
 
-Novos dados históricos devem continuar exigindo fontes e tratamento de conflitos. Funcionalidades como dificuldade ajustável e revisão de erros são opcionais; não precisam bloquear o próximo projeto.
+Novos dados históricos continuam exigindo fontes e tratamento de conflitos. As melhorias de dificuldade, revisão, sinalização, anfitrião, retomada e monitoramento já estão implementadas; a validação real e a ativação externa da URL permanecem pendentes.

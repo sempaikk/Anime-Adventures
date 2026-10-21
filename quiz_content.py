@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import random
 import re
 import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlparse
+from difficulty import classify, load_profile
 
 
 DATA_FILE = Path(__file__).resolve().parent / "data" / "release.json"
@@ -43,6 +45,7 @@ class Question:
     requires_image: bool = False
     media_key: str | None = None
     image_after_answer: bool = False
+    difficulty: str = 'medium'
 
     def accepts(self, answer: str) -> bool:
         return normalize_answer(answer) in self.accepted
@@ -54,6 +57,7 @@ class ContentPack:
     questions: tuple[Question, ...]
     sources: dict
     units: tuple[dict, ...]
+    fingerprint: str = ''
 
 
 def load_pack(path: Path = DATA_FILE) -> ContentPack:
@@ -67,6 +71,7 @@ def load_pack(path: Path = DATA_FILE) -> ContentPack:
             raise ValueError("Fonte de conteúdo inválida.")
     from question_factory import build_questions
     raw_questions = build_questions(data, normalize_answer)
+    profile = load_profile()
     questions = []
     identifiers = set()
     for raw in raw_questions:
@@ -103,10 +108,12 @@ def load_pack(path: Path = DATA_FILE) -> ContentPack:
             options=tuple(options), family=raw.get('family', raw['id'].split(':')[0]),
             requires_image=raw.get('requires_image', False),
             media_key=raw.get('media_key'), image_after_answer=raw.get('image_after_answer', False),
+            difficulty=classify(raw, profile),
         ))
     if not questions:
         raise ValueError("O pacote não tem perguntas.")
-    return ContentPack(data["stage"], tuple(questions), sources, tuple(data["units"]))
+    fingerprint = hashlib.sha256(json.dumps([(q.id,q.prompt,q.accepted,q.options) for q in questions], ensure_ascii=False).encode()).hexdigest()
+    return ContentPack(data["stage"], tuple(questions), sources, tuple(data["units"]), fingerprint)
 
 
 class QuestionDeck:
@@ -145,3 +152,18 @@ class QuestionDeck:
             del self.buckets[key]
         self.last = chosen
         return chosen
+
+    def snapshot(self):
+        return {'remaining': list(self.remaining), 'last': self.last.id if self.last else None}
+
+    def restore(self, state):
+        by_id = {q.id: q for q in self.questions}
+        remaining = state.get('remaining', [])
+        if (not isinstance(remaining, list) or len(set(remaining)) != len(remaining)
+                or not set(remaining) <= by_id.keys() or state.get('last') not in (None, *by_id.keys())):
+            raise ValueError('Baralho salvo incompatível.')
+        self.remaining = {key: by_id[key] for key in remaining}
+        self.buckets = {}
+        for q in self.remaining.values():
+            self.buckets.setdefault((q.category, q.family), {})[q.id] = q
+        self.last = by_id.get(state.get('last'))

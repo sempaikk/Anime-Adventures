@@ -9,13 +9,18 @@ Bot de perguntas sobre o jogo no Discord, com respostas no chat, reconhecimento 
 - **Interface Components V2:** os dois banners fornecidos pelo usuário, identidade roxa/dourada e cartões separados para pergunta, relógio e resultado. Dez ícones coloridos da wiki, com transparência, aparecem nos títulos, botões e menus: mochila, Summon, unidades, evolução, traits, placar e outros sistemas. Sem emojis Unicode na interface nem imagens geradas por IA. Ajuda e placar são consultas privadas.
 - **Duração configurável:** 10, 20 ou 30 perguntas, ou partida contínua; a seleção inicial é de 10 perguntas. A primeira rodada sem participação encerra qualquer formato. O painel mostra o avanço e o resultado final reconhece empates.
 - **Tempo configurável:** 30, 45 (padrão) ou 60 segundos por pergunta; intervalo de 8 segundos. Edições do relógio a cada 10 segundos; uma edição lenta não aumenta o prazo.
-- **Assuntos configuráveis:** tudo junto, personagens, mundos e chefes, ou sistemas do jogo. A escolha filtra o banco Release antes de embaralhar, sem introduzir outros updates.
+- **Assuntos configuráveis:** quatro grupos e as 14 categorias individuais. A escolha filtra o banco Release antes de embaralhar, sem introduzir outros updates.
+- **Mais opções:** dificuldade fácil/média/difícil e formato misto/alternativas/texto/imagens. A classificação considera o esforço da pergunta, sem depender da raridade do personagem. Combinações sem perguntas desabilitam Começar e explicam como ajustar.
+- **Desempenho privado:** participação, primeiros acertos e resumo por assunto, com respostas e fontes das últimas 50 rodadas. O percentual inclui velocidade; não mede sozinho conhecimento. Respostas digitadas não são guardadas no histórico.
+- **Avisos de perguntas:** formulário após a resposta, até cinco envios por pessoa em 24h e um por pergunta. A moderação revisa a fila do próprio servidor; um aviso não altera perguntas ou pontos automaticamente.
+- **Anfitrião:** transferência por seleção de membro. Se ele sair do servidor, a saída é confirmada antes de permitir que um participante ou moderador assuma. Consultas não sobrescrevem transferências mais recentes. Não exige novo intent privilegiado.
 - **Variedade:** o sorteio alterna categorias e famílias de perguntas enquanto houver opções disponíveis, para o volume de comparações de raridade não dominar o início da partida. Nenhuma pergunta se repete até o esgotamento do banco escolhido.
 - **Pausa imediata:** congela o relógio da pergunta ou do intervalo; retomar preserva exatamente o tempo restante. Respostas enviadas em pausa não contam, inclusive se chegarem depois da retomada. Só o anfitrião escolhe opções/inicia; anfitrião e moderadores com Administrador, Gerenciar Servidor ou Gerenciar Canais controlam pausa/fim.
 - **Proteção contra abuso:** no chat, até três respostas diferentes por pessoa/rodada; repetir a mesma resposta normalizada não gasta outra tentativa. Mensagens vazias, maiores que 160 caracteres ou de webhooks não contam. Pausar não devolve tentativas. Abrir partida tem intervalo de 3 segundos por jogador, e consultas repetidas de ajuda/pontos são reconhecidas sem refazer a consulta. Pausas de 10 minutos encerram a sessão e liberam o canal. Atualizações idênticas de painel não geram edições repetidas.
 - **Antifarm global:** a mesma pergunta soma no total de cada jogador uma vez a cada 24 horas, entre canais e partidas. O placar da partida continua recebendo um ponto por primeiro acerto. A resposta aceita é gravada antes da confirmação visual; o crédito é único e transacional.
-- **Quedas de conexão:** o relógio pausa durante uma desconexão do Gateway e retoma após reconectar, sem aceitar o lote antigo de respostas. Pausas manuais continuam pausadas. O limite de dez minutos também vale nesses casos; partidas não são restauradas depois de reiniciar o processo.
-- **Capacidade:** até três partidas abertas por servidor e 50 no processo. Vagas são reservadas antes de operações de rede. Remover threads/canais ou retirar o bot de um servidor libera suas partidas.
+- **Quedas de conexão:** o relógio pausa durante uma desconexão do Gateway e retoma após reconectar, sem aceitar o lote antigo de respostas. Pausas manuais continuam pausadas. O limite de dez minutos também vale nesses casos.
+- **Retomada após reinício:** partidas salvas nas últimas 24h oferecem um painel de recuperação com placar e opções. Anfitrião/moderação confirma a retomada; uma rodada interrompida sem acerto é anulada. Recibos reconciliam um ponto gravado antes da última cópia da partida, sem crédito duplicado. Uma alteração incompatível do banco de perguntas invalida a partida antiga e preserva os pontos.
+- **Capacidade:** até três partidas abertas por servidor, 50 no processo e 200 participantes por partida. Vagas são reservadas antes de operações de rede. Remover threads/canais ou retirar o bot de um servidor libera suas partidas.
 - **Falhas e reinício:** erros de comando e de botões recebem explicação privada, quando o Discord permite responder. SIGTERM inicia encerramento organizado; a tentativa de avisar os painéis tem prazo de três segundos.
 - **Encerrar e jogar novamente**, sem comandos adicionais. Encerrar uma pergunta ativa aguarda seu desfecho; em pausa, encerra imediatamente. Apagar o painel libera o canal; um acerto já registrado continua pontuando.
 - Um resultado por pergunta, explicação, link da fonte e placar da sessão. Qualquer tentativa válida de um jogador conta como participação; sem participação, a sessão termina.
@@ -48,9 +53,19 @@ Os registros novos de disputa/antifarm têm retenção de 30 dias, com limpeza e
 
 O início verifica a integridade do SQLite sem apagar bancos danificados. Uma tarefa em segundo plano confere o armazenamento a cada hora e mantém **uma cópia local diária**, em `backups/scores-latest.sqlite3`. Ela usa a API de backup do SQLite em outra thread, valida o resultado e só então substitui a cópia anterior. Exige espaço para o temporário e mais 16 MiB livres; falha preserva o banco e a cópia anterior e gera aviso nos logs. Banco, cópia e temporário ocupam o volume; código e imagens ficam fora dele.
 
-A cópia local não protege contra a perda do volume. O roteiro de validação, exportação e recuperação está em [`docs/release-checklist.md`](docs/release-checklist.md). Não há restauração automática nem troca silenciosa por um banco vazio.
+A cópia local não protege contra a perda do volume. O roteiro de validação, exportação e recuperação está em [`docs/release-checklist.md`](docs/release-checklist.md). Não há restauração automática de um banco danificado nem troca silenciosa por um banco vazio.
 
-Sem volume, o disco do container é temporário e os totais podem ser perdidos em um redeploy, assim como no bot anterior. A sessão em andamento e seu placar não atravessam reinícios. Nunca versione o token, o banco nem o arquivo de pontuação.
+Checkpoints, revisão e avisos ficam no mesmo SQLite e entram no backup. Históricos ficam por até sete dias, com limites de 500 partidas/32 MiB; só as últimas 50 rodadas entram na revisão. Contextos de mensagens têm retenção e limite de 20 mil após limpeza. Avisos ficam por até 30 dias, no máximo cinco mil. Limpeza desses dados não apaga os totais globais.
+
+Sem volume, o disco do container é temporário e os totais podem ser perdidos em um redeploy. Nunca versione o token, o banco nem o arquivo de pontuação.
+
+## Disponibilidade
+
+**Controles → Estado do bot** oferece uma consulta privada. A moderação também vê o último backup e alertas de armazenamento, com aviso em 70% e crítico em 90% de uso do filesystem ou menos de 16 MiB livres. Consultas de presença de anfitrião e backups não bloqueiam a rotina de checkpoints.
+
+O processo escuta em `PORT` (8080 por padrão): **`/health`** indica processo vivo e **`/ready`** retorna 200 somente com Gateway/banco disponíveis e armazenamento fora do estado crítico; caso contrário retorna 503. As respostas são mínimas e não incluem dados de jogadores, caminhos ou credenciais.
+
+O workflow **Bot availability** está preparado para consultar a produção a cada 15 minutos, quando a variável do repositório **`BOT_HEALTH_URL`** contiver a URL HTTPS pública terminada em `/ready`. Sem essa URL, o job não roda. Ativar o domínio/variável depende de o Railway voltar. Notificações de falha seguem as preferências do GitHub; não há envio automático de DMs pelo bot. Veja o procedimento em [`docs/release-checklist.md`](docs/release-checklist.md).
 
 ## Conteúdo e próximas etapas
 

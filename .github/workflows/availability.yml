@@ -1,0 +1,21 @@
+name: Bot availability
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  readiness:
+    if: ${{ vars.BOT_HEALTH_URL != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check production readiness
+        env:
+          BOT_HEALTH_URL: ${{ vars.BOT_HEALTH_URL }}
+        run: python scripts/check_health.py

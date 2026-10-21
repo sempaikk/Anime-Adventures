@@ -12,6 +12,7 @@ O código está preparado para validação em produção. Testes automatizados n
 - Limpeza ao excluir canal/thread ou retirar o bot de um servidor. Expiração de lobbies e pausas abandonadas.
 - Verificação de integridade ao iniciar, backup local diário, margem de espaço e retenção limitada de recibos. Falhas de backup não fecham o banco de pontos.
 - Explicação privada para falhas de interação e tentativa de aviso de reinício com prazo limitado durante encerramento organizado.
+- Dificuldade, formatos e categorias específicas; resumo por assunto e revisão privada; formulário com fila de moderação; transferência de anfitrião; recuperação após reinício; painel de estado, alertas e monitor externo preparado.
 
 ## Ao voltar o Railway
 
@@ -21,7 +22,8 @@ O código está preparado para validação em produção. Testes automatizados n
 4. Abrir novo `/adventures`. Jogar uma partida curta com um pequeno grupo em computador e celular, incluindo imagem, chat e alternativas. Conferir ritmo, leitura e cliques concorrentes.
 5. Testar pausa/retomada, encerramento, falta de participação e jogar novamente. Depois testar 20/30 perguntas e contínua. Os testes offline cobrem essas durações; o teste real confirma o cliente e as permissões do servidor.
 6. Ganhar um ponto, consultar o total, reiniciar e consultar novamente. Repetir após um novo deploy. O total deve continuar igual; repetir a mesma pergunta dentro de 24h só soma na partida.
-7. Conferir uso real do volume após criar a cópia de segurança e manter uma exportação fora do Railway.
+7. Conferir uso real do volume após criar a cópia de segurança e manter uma exportação fora do Railway. Testar Retomar após reinício: placar/opções preservados, rodada interrompida sem acerto anulada e nenhum ponto duplicado.
+8. Exercitar transferência de anfitrião e sinalização/revisão de um aviso com as permissões corretas. Configurar a URL pública do monitor externo conforme abaixo.
 
 Essas etapas dependem do serviço voltar. Não foram executadas pela máquina de desenvolvimento durante a indisponibilidade; nenhuma mensagem de teste foi enviada ao Discord por ela.
 
@@ -53,17 +55,33 @@ Continuar a confirmação histórica de personagens sem data inicial corroborada
 
 Ampliar retratos somente com imagens reais da forma correta, disponíveis e revisadas. Novas mídias não devem revelar a resposta por moldura, nome ou contexto. Vídeos/animações só entram quando forem úteis para uma pergunta e tiverem origem/compatibilidade verificadas.
 
-## Melhorias opcionais para decidir depois
+## Recursos incluídos
 
-- Dificuldade escolhida por curadoria, sem chamar uma unidade mítica de pergunta difícil automaticamente.
-- Seleção mais específica de assuntos ou preferência por alternativas, mantendo o modo misto como padrão.
-- Resumo de desempenho por assunto e revisão de erros no final, com critérios claros sobre quais tentativas contam.
-- Botão para sinalizar pergunta ambígua/incorreta, com limite e fila de revisão; não apagar uma pergunta com base numa denúncia isolada.
-- Definir controles quando o anfitrião sai, aviso de manutenção e eventual retomada de partidas após reinício. Hoje os pontos persistem; a partida encerra.
-- Monitoramento externo de disponibilidade e alertas de armazenamento, com política de exportação de backups.
+- **Dificuldade:** 98 fáceis, 1.297 médias e 804 difíceis. `data/difficulty.json` documenta as perguntas manuais; famílias derivadas usam esforço de recordação/cálculo. Não é uma medição científica de dificuldade; pode ser ajustada por feedback sem inventar fatos.
+- **Filtros:** quatro grupos/14 categorias, mais misto/alternativas/texto/imagens. Seleções vazias não iniciam.
+- **Desempenho:** contagem por assunto, primeiros acertos e revisão com imagem/resposta/fonte. Texto digitado não é armazenado. Só rodadas concluídas e próprias, sem revelar a pergunta ativa.
+- **Avisos:** formulário após a resposta, cinco por pessoa/24h e um por pergunta. Fila privada de cada servidor; até cinco mil registros por 30 dias. Marcar revisado não modifica o banco de conteúdo ou a pontuação.
+- **Anfitrião:** transferência para membro humano do mesmo servidor; assumir após saída confirmada. A consulta é periódica e por REST, sem exigir intent privilegiado. Fechar o aplicativo ou ficar invisível não significa sair do servidor.
+- **Recuperação:** checkpoint após transições/pontos e a cada cinco segundos se houver dados novos. Confirmação para retomar em até 24h, baralho/placar/opções preservados e rodada sem acerto anulada. Recibos reconciliam um acerto cuja partida ainda não tinha sido salva. Dados incompatíveis/corrompidos são isolados; pontos não são zerados.
+- **Armazenamento limitado:** revisão de até 50 rodadas, histórico de até sete dias/500 partidas/32 MiB, checkpoints até 512 KiB, 200 participantes e 50 partidas abertas. Contextos de mensagem ficam até sete dias e são limitados a 20 mil após a limpeza. Os totais globais permanecem.
+
+## Ativar monitoramento externo quando o Railway voltar
+
+O painel **Controles → Estado do bot** já está no código. Moderadores veem backup/armazenamento; os logs avisam ao atingir 70% e 90% de uso do filesystem, ou menos de 16 MiB livres. O servidor HTTP usa `PORT`, com 8080 como padrão. `/health` indica vida do processo; `/ready` retorna 200 quando Gateway/banco estão disponíveis e o armazenamento não está crítico, ou 503 caso contrário. Nenhum endpoint expõe jogadores, token ou caminhos.
+
+Para uma verificação de fora da hospedagem:
+
+1. No serviço Railway, habilitar um domínio público em Networking apontando para PORT/8080. Isso ainda não pôde ser feito pela máquina de desenvolvimento: a plataforma está indisponível e não há acesso administrativo via API aqui.
+2. Abrir `https://SEU_DOMINIO/ready` e confirmar `{"status":"ready"}` depois do bot conectar.
+3. No GitHub do repositório, em **Settings → Secrets and variables → Actions → Variables**, criar **`BOT_HEALTH_URL`** com essa URL HTTPS completa. É uma URL pública, não o token do bot.
+4. Executar uma vez o workflow **Bot availability** por **Run workflow**. Depois ele é agendado a cada 15 minutos (agendamento de melhor esforço do GitHub), com três tentativas antes de falhar.
+
+O workflow fica sem executar o job enquanto a variável não existir. Notificações de falhas dependem das preferências de Actions do proprietário; não há DMs automáticas. Essa ativação e a primeira consulta externa bem-sucedida continuam pendentes da URL pública. O código e os testes do monitor já estão preparados.
+
+A consulta de variáveis de Actions pela integração disponível retornou HTTP 403 (`Resource not accessible by integration`). A variável não foi configurada por esta entrega; o procedimento acima usa a interface do proprietário no GitHub.
 
 Novos comandos, site/leaderboard, idiomas, configurações gerais, updates logs e integração entre comunidades seguem no planejamento de `docs/roadmap.md`. Não precisam entrar para concluir a versão atual.
 
 ## Limites conhecidos
 
-Primeiro significa o primeiro acerto válido processado pelo bot; a rede pode afetar a ordem. Antifarm não impede consulta à wiki, automação externa ou várias contas. A máquina de desenvolvimento não tem acesso ao computador do proprietário nem acesso administrativo ao Railway. Queda total do processo difere de desconexão: a partida encerra, embora os pontos já gravados permaneçam.
+Primeiro significa o primeiro acerto válido processado pelo bot; a rede pode afetar a ordem. Antifarm não impede consulta à wiki, automação externa ou várias contas. A máquina de desenvolvimento não tem acesso ao computador do proprietário nem acesso administrativo ao Railway. Queda de conexão preserva o relógio; reinício recupera a partida mediante confirmação e anula rodada sem vencedor. Uma restauração do arquivo inteiro de backup volta ao instante daquele snapshot.

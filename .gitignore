@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .scores.json
 scores.json
-scores.sqlite3*
+*.sqlite3*
+backups/
 .venv/
 .DS_Store

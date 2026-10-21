@@ -58,11 +58,13 @@ def maintain_storage(database: Path, *, now=None):
     """Called in a worker thread; at most one daily snapshot is retained."""
     now = time.time() if now is None else now
     backup = database.parent / 'backups' / 'scores-latest.sqlite3'
-    free = shutil.disk_usage(database.parent).free
+    usage = shutil.disk_usage(database.parent)
+    free = usage.free
     size = database.stat().st_size
-    report = {'database_bytes': size, 'free_bytes': free, 'backup': 'fresh'}
+    report = {'database_bytes': size, 'free_bytes': free, 'total_bytes': usage.total, 'backup': 'fresh'}
     if not backup.exists() or now - backup.stat().st_mtime >= BACKUP_INTERVAL:
         snapshot_database(database, backup)
         report['backup'] = 'created'
     report['backup_bytes'] = backup.stat().st_size
+    report['backup_modified'] = backup.stat().st_mtime
     return report

@@ -8,10 +8,12 @@ import logging
 import os
 import random
 import signal
+import shutil
 import sqlite3
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 import discord
 from discord import app_commands
@@ -19,12 +21,17 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 import quiz_ui as screen
+import adventure_views as extra_screen
 from quiz_content import QuestionDeck, load_pack, normalize_answer
 from quiz_guard import Cooldowns
 from interaction_errors import respond_to_error
 from scores import ScoreStore
 from storage_maintenance import maintain_storage
 from timing import PausableTimer
+from difficulty import LABELS, FORMATS, matches
+from adventure_repository import AdventureRepository
+from adventure_state import AdventureState
+from runtime_health import RuntimeHealth
 
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / '.env')
@@ -44,7 +51,7 @@ active_sessions: dict[int, QuizSession] = {}
 click_limits = Cooldowns()
 
 
-class QuizSession:
+class QuizSession(AdventureState):
     def __init__(self, channel, host, store, *, deck=None, clock=None):
         self.channel, self.host, self.store = channel, host, store
         self.guild_id = getattr(getattr(channel, 'guild', None), 'id', None)
@@ -53,6 +60,7 @@ class QuizSession:
         self.round_limit = 10
         self.question_time = QUESTION_TIME
         self.between_questions = BETWEEN_QUESTIONS
+        self.init_adventure(getattr(bot, 'adventures', None))
         self.deck = deck or QuestionDeck(self.selected_questions())
         self.clock = clock or time.monotonic
         self.running = False
@@ -178,7 +186,8 @@ class QuizSession:
 
     def selected_questions(self):
         categories = screen.GROUPS[self.group][1]
-        return tuple(q for q in self.pack.questions if categories is None or q.category in categories)
+        return tuple(q for q in self.pack.questions if (categories is None or q.category in categories)
+                     and matches(q,self.difficulty,self.answer_mode))
 
     def release_channel(self):
         if active_sessions.get(self.channel.id) is self:
@@ -189,6 +198,7 @@ class QuizSession:
         self.control_view = screen.lobby_panel(self, handle_control)
         self.control_message = await self.channel.send(view=self.control_view)
         self.rendered_state = self.control_state()
+        self.remember_panel()
         self.lobby_timer = asyncio.create_task(self.expire_lobby(), name=f'lobby:{self.channel.id}')
 
     async def expire_lobby(self):
@@ -199,6 +209,7 @@ class QuizSession:
     def launch(self):
         self.running = True
         self.phase = 'starting'
+        self.checkpoint()
         if self.lobby_timer:
             self.lobby_timer.cancel()
         self.runner = asyncio.create_task(self.run(), name=f'quiz:{self.channel.id}')
@@ -215,7 +226,8 @@ class QuizSession:
 
     def control_state(self):
         return (getattr(self.control_message, 'id', None), self.phase, self.group,
-                self.question_time, self.round_limit, self.stop_requested, self.question_number, self.ends_at, self.next_at)
+                self.question_time, self.round_limit, self.stop_requested, self.question_number, self.ends_at, self.next_at,
+                self.difficulty,self.answer_mode,self.lobby_page,self.host.id,self.host_missing)
 
     def finish_reason(self):
         if self.stop_requested:
@@ -233,6 +245,8 @@ class QuizSession:
                 return
             if self.phase == 'lobby':
                 view = screen.lobby_panel(self, handle_control)
+            elif self.phase == 'recovery':
+                view = extra_screen.recovery_panel(self,handle_control)
             elif self.phase in ('question', 'paused_question'):
                 view = screen.question_panel(self, handle_control, self.remaining_seconds)
             elif self.phase in ('paused_intermission', 'intermission') and self.last_result:
@@ -247,6 +261,7 @@ class QuizSession:
             if self.phase in ('question', 'paused_question'):
                 self.question_view = view
             self.rendered_state = state
+            self.checkpoint()
 
     def submit(self, message):
         """Claim synchronously so two correct messages cannot both win."""
@@ -264,6 +279,8 @@ class QuizSession:
             return False
         attempts = self.chat_attempts.setdefault(message.author.id, set())
         if answer in attempts or len(attempts) >= self.chat_attempt_limit:
+            return False
+        if not self.track_attempt(message.author):
             return False
         attempts.add(answer)
         self.had_participation = True
@@ -286,6 +303,8 @@ class QuizSession:
             return 'invalid'
         if user.id in self.choice_attempts:
             return 'duplicate'
+        if not self.track_attempt(user):
+            return 'full'
         self.choice_attempts.add(user.id)
         self.had_participation = True
         if self.current_question.accepts(self.choice_order[index]):
@@ -299,6 +318,9 @@ class QuizSession:
         if self.winner_recorded:
             return self.award_total
         self.winner_recorded = True
+        self.round_winner_id = winner.id
+        if winner.id not in self.round_people:
+            self.track_attempt(winner)
         entry = self.session_scores.setdefault(winner.id, {'name': winner.display_name, 'points': 0, 'first': self.question_number})
         entry['name'] = winner.display_name
         entry['points'] += 1
@@ -309,6 +331,7 @@ class QuizSession:
             self.award_total, self.global_credited = credit.total, credit.credited
         except (OSError, sqlite3.Error, ValueError):
             log.exception('Falha ao salvar pontuação da pergunta %s', self.question_message.id)
+        self.checkpoint()
         return self.award_total
 
     async def update_clock(self, refresh_immediately=False):
@@ -353,6 +376,7 @@ class QuizSession:
             self.ticker = None
 
     async def play_question(self):
+        await check_host_presence(self)
         await self.retire_controls()
         self.question_number += 1
         self.question_message = None
@@ -365,6 +389,9 @@ class QuizSession:
         self.global_credited = None
         self.winner_recorded = False
         self.award_total = None
+        self.round_people = {}
+        self.round_winner_id = None
+        self.round_complete = self.round_reviewed = False
         self.answer_future = asyncio.get_running_loop().create_future()
         self.phase = 'question'
         publishing_started = self.clock()
@@ -382,12 +409,15 @@ class QuizSession:
         self.ticker = asyncio.create_task(self.update_clock(publish_lag >= 1), name=f'clock:{self.channel.id}')
         if bot.connection_lost:
             self.pause_for_connection()
+        self.remember_panel()
         try:
             winner = await self.await_answer()
         finally:
             self.phase = 'resolving'
             await self.stop_ticker()
         total = self.record_winner(winner) if winner else None
+        self.finish_round_review(winner.id if winner else None)
+        self.checkpoint()
         async with self.control_lock:
             self.question_view.stop()
             with contextlib.suppress(discord.HTTPException):
@@ -403,6 +433,7 @@ class QuizSession:
         self.control_view = screen.result_panel(self, winner, total, continuing, handle_control)
         publishing_started = self.clock()
         self.control_message = await self.channel.send(view=self.control_view)
+        self.remember_panel(resolved=True)
         if continuing:
             # Give players the full reading interval after the result becomes visible.
             publish_lag = self.clock() - publishing_started
@@ -443,6 +474,8 @@ class QuizSession:
                     await self.control_message.edit(view=self.control_view)
                 # Persistent fallback handles replay and score buttons after cleanup.
                 self.control_view.stop()
+            self.remember_panel(resolved=self.round_complete)
+        self.checkpoint('finished')
 
     async def run(self):
         try:
@@ -470,6 +503,8 @@ class QuizSession:
             if self.control_view:
                 self.control_view.stop()
             self.release_channel()
+            if not self.suspending:
+                self.checkpoint('finished')
 
 
 class AdventuresBot(commands.Bot):
@@ -482,6 +517,14 @@ class AdventuresBot(commands.Bot):
         self.connection_lost = False
         self.shutdown_task = None
         self.close_guard = asyncio.Lock()
+        self.adventures = None
+        self.session_task = None
+        self.host_task = None
+        self.restored_sessions = False
+        self.shutting_down = False
+        self.health = RuntimeHealth(lambda: self.is_ready() and not self.connection_lost and not self.shutting_down,
+                                    lambda: self.scores.connection if self.scores else None)
+        self.pack = PACK
 
     async def setup_hook(self):
         data_dir = Path(os.getenv('DATA_DIR') or os.getenv('RAILWAY_VOLUME_MOUNT_PATH') or BASE_DIR)
@@ -489,13 +532,21 @@ class AdventuresBot(commands.Bot):
         if not legacy.exists():
             legacy = BASE_DIR / 'scores.json'
         self.scores = ScoreStore(data_dir / 'scores.sqlite3', legacy)
+        self.adventures = AdventureRepository(self.scores.connection)
         try:
             asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, self.request_shutdown)
         except (NotImplementedError, RuntimeError, ValueError):
             log.info('Encerramento por sinal não disponível nesta plataforma.')
         log.info('Banco de pontos: %s', data_dir / 'scores.sqlite3')
         self.storage_task = asyncio.create_task(self.monitor_storage(), name='storage-maintenance')
+        self.session_task = asyncio.create_task(self.monitor_sessions(),name='match-checkpoints')
+        self.host_task = asyncio.create_task(self.monitor_hosts(),name='host-presence')
         self.add_view(screen.PersistentControls(handle_control))
+        self.add_view(extra_screen.PersistentExtras(handle_control))
+        extra_screen.DynamicControls.dispatch = handle_control
+        extra_screen.DynamicTransfer.dispatch = handle_control
+        self.add_dynamic_items(extra_screen.DynamicControls,extra_screen.DynamicTransfer)
+        await self.health.start(int(os.getenv('PORT','8080')))
         synced = await self.tree.sync()
         log.info('%s comando(s) sincronizado(s); %s perguntas Release; interface Components V2', len(synced), len(PACK.questions))
 
@@ -503,11 +554,37 @@ class AdventuresBot(commands.Bot):
         while self.scores is not None:
             try:
                 report = await asyncio.to_thread(maintain_storage, self.scores.path)
+                self.health.update_storage(report)
+                if self.adventures:
+                    self.adventures.cleanup()
                 log.info('Armazenamento: banco=%s bytes, livre=%s bytes, backup=%s (%s bytes)',
                          report['database_bytes'], report['free_bytes'], report['backup'], report['backup_bytes'])
             except (OSError, sqlite3.Error, TimeoutError):
+                with contextlib.suppress(OSError):
+                    usage = await asyncio.to_thread(shutil.disk_usage,self.scores.path.parent)
+                    self.health.update_storage({'backup':'failed','free_bytes':usage.free,'total_bytes':usage.total})
+                self.health.backup_error = True
                 log.exception('A cópia local dos pontos não pôde ser atualizada; banco e cópia anterior preservados.')
             await asyncio.sleep(3600)
+
+    async def monitor_sessions(self):
+        while True:
+            await asyncio.sleep(5)
+            for session in list(active_sessions.values()):
+                if session.running and session.dirty:
+                    session.checkpoint()
+
+    async def monitor_hosts(self):
+        async def check(session):
+            missing = session.host_missing
+            await check_host_presence(session)
+            if session.running and missing != session.host_missing:
+                await session.refresh_controls()
+        while True:
+            await asyncio.sleep(15)
+            results = await asyncio.gather(*(check(s) for s in list(active_sessions.values()) if s.running),return_exceptions=True)
+            if any(isinstance(result,Exception) for result in results):
+                log.warning('Alguns controles de anfitrião não puderam ser atualizados.')
 
     def request_shutdown(self):
         if self.shutdown_task is None:
@@ -518,6 +595,15 @@ class AdventuresBot(commands.Bot):
             await self.close_resources()
 
     async def close_resources(self):
+        self.shutting_down = True
+        if self.host_task:
+            self.host_task.cancel()
+            await asyncio.gather(self.host_task,return_exceptions=True)
+            self.host_task = None
+        if self.session_task:
+            self.session_task.cancel()
+            await asyncio.gather(self.session_task,return_exceptions=True)
+            self.session_task = None
         if self.storage_task:
             self.storage_task.cancel()
             await asyncio.gather(self.storage_task, return_exceptions=True)
@@ -525,6 +611,14 @@ class AdventuresBot(commands.Bot):
         sessions = list(active_sessions.values())
         tasks = []
         for session in sessions:
+            if (session.repository is not None and session.running and session.phase!='ended'
+                    and not session.stop_requested):
+                session.suspending = True
+                session.checkpoint('suspended')
+            elif session.repository is not None:
+                if session.winner_recorded and not session.round_reviewed:
+                    session.finish_round_review(session.round_winner_id)
+                session.checkpoint('finished')
             session.running = False
             session.cancel_pause_expiry()
             if session.control_view:
@@ -538,7 +632,8 @@ class AdventuresBot(commands.Bot):
 
         async def finish_panel(session):
             if session.control_message:
-                view = screen.ended_panel(session, 'O bot está reiniciando. Seus pontos salvos continuam no total. Use /adventures quando ele voltar.', handle_control)
+                view = (extra_screen.recovery_panel(session,handle_control,restarting=True) if session.suspending else
+                        screen.ended_panel(session, 'O bot está reiniciando. Seus pontos salvos continuam no total. Use /adventures quando ele voltar.', handle_control))
                 try:
                     with contextlib.suppress(discord.HTTPException):
                         await session.control_message.edit(view=view)
@@ -549,9 +644,11 @@ class AdventuresBot(commands.Bot):
                 await asyncio.gather(*(finish_panel(session) for session in sessions))
         except TimeoutError:
             log.warning('Alguns painéis não puderam receber o aviso de reinício a tempo.')
+        await self.health.close()
         if self.scores:
             self.scores.close()
             self.scores = None
+        self.adventures = None
         await super().close()
 
 
@@ -573,10 +670,21 @@ async def begin_lobby(interaction):
     if problem:
         await interaction.response.send_message(problem, ephemeral=True)
         return
+    if bot.shutting_down:
+        await interaction.response.send_message('O bot está reiniciando. Tente abrir a partida quando ele voltar.',ephemeral=True)
+        return
     existing = active_sessions.get(interaction.channel.id)
     if existing and existing.running:
         await interaction.response.send_message('Já tem uma partida aberta neste canal. É só participar pelo painel mais recente.', ephemeral=True)
         return
+    if bot.adventures:
+        saved = bot.adventures.open_channel(interaction.channel.id)
+        if saved:
+            await interaction.response.defer(ephemeral=True)
+            recovered = await restore_one_session(interaction.channel,saved)
+            await interaction.followup.send('Encontrei uma partida salva. Use o painel de recuperação neste canal.' if recovered else
+                'Não consegui retomar a partida salva agora. Seus pontos foram preservados. Tente /adventures novamente.',ephemeral=True)
+            return
     if bot.connection_lost:
         await interaction.response.send_message('A conexão com o Discord está voltando. Espere um momento para abrir a partida.', ephemeral=True)
         return
@@ -613,6 +721,13 @@ def is_moderator(user):
 
 async def handle_control(interaction, action, value=None):
     session = active_sessions.get(interaction.channel_id)
+    root_action = action.split(':',1)[0]
+    if root_action in ('review','review_page','report','reports','report_page','report_done','status','manage') and not click_limits.allow(('extra',root_action,interaction.user.id),.75):
+        await interaction.response.defer()
+        return
+    from adventure_controls import handle_feature
+    if await handle_feature(interaction,action,value,session=session,client=bot,callback=handle_control,is_moderator=is_moderator):
+        return
     if action in ('help', 'scores') and not click_limits.allow(('private', action, interaction.user.id), .75):
         await interaction.response.defer()
         return
@@ -649,18 +764,31 @@ async def handle_control(interaction, action, value=None):
             'stale': 'Esse clique é de antes da retomada. Escolha de novo no painel atual.',
             'closed': 'Essa rodada já fechou ou o ponto já foi marcado. Espere a próxima!',
             'invalid': 'Essa alternativa não está disponível. Use os botões da pergunta atual.',
+            'full': 'Esta partida atingiu o limite de 200 participantes.',
         }
         await interaction.response.send_message(responses[result], ephemeral=True)
         return
     owner = interaction.user.id == session.host.id
-    if action in ('start', 'category', 'time', 'rounds'):
+    if action in ('start', 'category', 'time', 'rounds','difficulty','format','advanced'):
         if not owner:
             await interaction.response.send_message('Só quem abriu a partida pode ajustar as opções e começar. Quando a pergunta aparecer, todo mundo pode responder!', ephemeral=True)
             return
         if session.phase != 'lobby':
             await interaction.response.send_message('Essas opções só podem mudar antes da partida começar.', ephemeral=True)
             return
-        if action == 'category':
+        if action == 'advanced':
+            session.lobby_page = 'main' if session.lobby_page == 'advanced' else 'advanced'
+        elif action == 'difficulty':
+            if value not in LABELS:
+                await interaction.response.send_message('Escolha um nível de dificuldade do menu.',ephemeral=True)
+                return
+            session.difficulty = value
+        elif action == 'format':
+            if value not in FORMATS:
+                await interaction.response.send_message('Escolha um formato do menu.',ephemeral=True)
+                return
+            session.answer_mode = value
+        elif action == 'category':
             if value not in screen.GROUPS:
                 await interaction.response.send_message('Escolha uma das categorias do menu.', ephemeral=True)
                 return
@@ -676,6 +804,9 @@ async def handle_control(interaction, action, value=None):
                 return
             session.round_limit = None if value == 'continuous' else int(value)
         else:
+            if not session.selected_questions():
+                await interaction.response.send_message('Essa combinação não tem perguntas. Ajuste o assunto, nível ou formato.',ephemeral=True)
+                return
             session.deck = QuestionDeck(session.selected_questions())
             session.launch()  # Claims starting state before the first await.
         await interaction.response.defer()
@@ -737,6 +868,9 @@ async def handle_control(interaction, action, value=None):
 @bot.event
 async def on_ready():
     await restore_connection()
+    if not bot.restored_sessions and bot.adventures:
+        bot.restored_sessions = True
+        await restore_saved_sessions()
     log.info('Conectado como %s; %s sessões ativas', bot.user, len(active_sessions))
 
 
@@ -765,6 +899,107 @@ async def restore_connection():
 @bot.event
 async def on_resumed():
     await restore_connection()
+
+
+async def check_host_presence(session):
+    guild = getattr(session.channel,'guild',None)
+    if guild is None or not hasattr(guild,'fetch_member'):
+        return
+    last = getattr(session,'last_host_check',0)
+    if time.monotonic() - last < 60:
+        return
+    session.last_host_check = time.monotonic()
+    expected_host = session.host.id
+    try:
+        member = await guild.fetch_member(expected_host)
+        if session.host.id==expected_host:
+            session.host,session.host_missing = member,False
+    except discord.NotFound:
+        if session.host.id==expected_host:
+            session.host_missing = True
+            session.checkpoint()
+    except discord.HTTPException:
+        log.warning('Não foi possível conferir a presença do anfitrião no servidor %s.',session.guild_id)
+
+
+async def expire_recovery(session):
+    await asyncio.sleep(PAUSE_TIMEOUT)
+    if session.running and session.phase=='recovery':
+        await session.stop_now('Ninguém retomou a partida salva. Use /adventures quando quiser jogar.')
+
+
+async def restore_one_session(channel,state):
+    existing = active_sessions.get(channel.id)
+    if existing and existing.running:
+        return existing
+    running = [s for s in active_sessions.values() if s.running]
+    guild = getattr(channel,'guild',None)
+    if (guild is None or str(guild.id)!=str(state['guild_id']) or len(running)>=MAX_SESSIONS
+            or sum(s.guild_id==guild.id for s in running)>=MAX_GUILD_SESSIONS):
+        return None
+    host = SimpleNamespace(id=int(state['host']['id']),display_name=state['host']['name'],bot=False)
+    session = QuizSession(channel,host,bot.scores)
+    try:
+        session.load_saved(state,screen.GROUPS)
+    except (ValueError,KeyError,TypeError):
+        bot.adventures.save(state,'finished')
+        log.warning('Partida salva incompatível no canal %s; pontos preservados.',channel.id)
+        return None
+    active_sessions[channel.id] = session  # Reserve before any REST lookup or publication.
+    try:
+        await check_host_presence(session)
+        if session.phase=='lobby':
+            await session.open_lobby()
+        else:
+            view = extra_screen.recovery_panel(session,handle_control)
+            old_id = state.get('control_message_id')
+            message = None
+            if old_id and hasattr(channel,'fetch_message'):
+                with contextlib.suppress(discord.NotFound):
+                    message = await channel.fetch_message(int(old_id))
+            if message:
+                await message.edit(view=view)
+            else:
+                message = await channel.send(view=view)
+            session.control_message,session.control_view = message,view
+            session.remember_panel(resolved=False)
+            session.lobby_timer = asyncio.create_task(expire_recovery(session),name=f'recover:{channel.id}')
+        return session
+    except discord.HTTPException:
+        session.running = False
+        session.suspending = True
+        session.checkpoint('suspended')
+        session.release_channel()
+        log.exception('Não foi possível apresentar a partida salva no canal %s.',channel.id)
+        return None
+
+
+async def restore_saved_sessions():
+    for state in bot.adventures.recoverable():
+        if not state:
+            continue
+        try:
+            channel_id = int(state['channel_id'])
+            channel = bot.get_channel(channel_id) or await bot.fetch_channel(channel_id)
+            await restore_one_session(channel,state)
+        except (discord.NotFound,discord.Forbidden):
+            bot.adventures.save(state,'finished')
+            log.warning('Canal de uma partida salva não está mais acessível: %s.',channel_id)
+        except discord.HTTPException:
+            log.warning('Recuperação adiada no canal %s por falha do Discord.',channel_id)
+        except (ValueError,KeyError,TypeError):
+            with bot.adventures.connection:
+                bot.adventures.connection.execute("UPDATE adventure_sessions SET status='invalid' WHERE id=?",(state['id'],))
+            log.warning('Uma partida salva inválida foi isolada; os pontos foram preservados.')
+
+
+@bot.event
+async def on_raw_member_remove(payload):
+    for session in list(active_sessions.values()):
+        if session.guild_id==payload.guild_id and session.host.id==payload.user.id:
+            session.host_missing = True
+            session.checkpoint()
+            await session.refresh_controls()
 
 
 @bot.event

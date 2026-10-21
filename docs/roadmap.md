@@ -2,7 +2,7 @@
 
 Estas ideias foram sugeridas pelo usuário e ficam registradas para planejamento. Ainda não foram implementadas; o bot mantém o comando `/adventures` e a interface em português.
 
-Melhorias opcionais seguintes para o próprio comando: dificuldade ajustável, um resumo dos assuntos em que o jogador mais errou. Definir a experiência e os critérios antes de acrescentar esses controles. Partidas de 10/20/30 perguntas já foram implementadas, além da opção contínua.
+O `/adventures` já inclui dificuldade, filtros individuais, formatos, resumo/revisão, avisos para moderação, transferência de anfitrião, recuperação após reinício e monitoramento preparado. Partidas de 10/20/30 perguntas e a opção contínua estão implementadas. A ativação do monitor externo aguarda uma URL pública da hospedagem.
 
 - **Configurações e idiomas:** permitir escolher idioma no futuro, com português como padrão. Definir antes se a escolha será por servidor ou por jogador.
 - **Updates logs:** mostrar o que mudou no bot em um painel organizado, separado das perguntas. Não criar um comando ou aba nesta etapa.

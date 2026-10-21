@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import unicodedata
+import re
 
 import discord
 from discord import ui
@@ -11,6 +12,7 @@ from discord import ui
 import quiz_media as media
 import quiz_icons as icons
 from interaction_errors import respond_to_error
+from difficulty import LABELS, FORMATS
 
 BRAND_COLOR = 0x8664E8
 GOLD = 0xF4C95D
@@ -29,6 +31,9 @@ GROUPS = {
     'worlds': ('Mundos e chefes', {'Mundos', 'Chefes', 'Atos'}, 'Explore os quatro mundos do lançamento'),
     'systems': ('Sistemas do jogo', {'Comida e XP', 'Traits', 'Summon', 'Economia', 'Modos', 'Missões', 'Loja e códigos'}, 'Comida, XP, traits, summon, missões e economia'),
 }
+for _category in CATEGORY_ICONS:
+    _slug = ''.join(c for c in unicodedata.normalize('NFKD',_category.casefold()) if not unicodedata.combining(c)).replace(' ','-')
+    GROUPS['topic:' + _slug] = (_category,{_category},'Só perguntas de ' + _category)
 
 
 def safe_name(value):
@@ -90,8 +95,8 @@ class ChoiceSelect(ui.Select):
 
 
 class Panel(ui.LayoutView):
-    def __init__(self, *children, color=BRAND_COLOR, header=None, footer=()):
-        super().__init__(timeout=None)
+    def __init__(self, *children, color=BRAND_COLOR, header=None, footer=(),timeout=None):
+        super().__init__(timeout=timeout)
         if header:
             self.add_item(ui.Container(*header, accent_color=color))
         self.card = ui.Container(*children, accent_color=color)
@@ -103,7 +108,8 @@ class Panel(ui.LayoutView):
         if getattr(self, 'next_text', None):
             self.next_text.content = '### Rodada concluída\n-# Acompanhe a próxima pergunta abaixo.'
         for item in self.walk_children():
-            if isinstance(item, (ui.Button, ui.Select)) and not getattr(item, 'url', None):
+            if (isinstance(item, (ui.Button, ui.Select)) and not getattr(item, 'url', None)
+                    and getattr(item,'custom_id',None) not in ('aa:review','aa:report')):
                 item.disabled = True
         self.stop()
 
@@ -115,18 +121,22 @@ def utilities(callback):
     return ui.ActionRow(
         ActionButton('scores', callback, label='Placar', emoji=icons.component('rank')),
         ActionButton('help', callback, label='Como jogar'),
+        ActionButton('manage',callback,label='Controles',emoji=icons.component('items')),
     )
 
 
 def session_controls(session, callback):
     paused = session.is_paused
-    return ui.ActionRow(
+    row = ui.ActionRow(
         ActionButton('resume' if paused else 'pause', callback,
                      label='Retomar' if paused else 'Pausar',
                      style=discord.ButtonStyle.success if paused else discord.ButtonStyle.secondary),
         ActionButton('stop', callback, label='Fim marcado' if session.stop_requested else 'Encerrar',
                      style=discord.ButtonStyle.danger, disabled=session.stop_requested),
     )
+    if session.host_missing:
+        row.add_item(ActionButton('claim',callback,label='Assumir controle'))
+    return row
 
 
 def artwork(index=0):
@@ -150,8 +160,9 @@ def lobby_panel(session, callback):
     categories = len({q.category for q in selected})
     category_menu = ChoiceSelect('category', callback, [
         discord.SelectOption(label=label, value=key, description=description, default=key == session.group,
-                             emoji=icons.component({'all': 'summon', 'characters': 'units', 'worlds': 'damage', 'systems': 'items'}[key]))
-        for key, (label, _, description) in GROUPS.items()
+                             emoji=icons.component({'all': 'summon', 'characters': 'units', 'worlds': 'damage', 'systems': 'items'}.get(key,
+                                 CATEGORY_ICONS.get(next(iter(categories)) if categories else '', 'items'))))
+        for key, (label, categories, description) in GROUPS.items()
     ], 'Escolha os assuntos')
     time_menu = ChoiceSelect('time', callback, [
         discord.SelectOption(label=f'{seconds} segundos', value=str(seconds), description=description, default=seconds == session.question_time)
@@ -163,14 +174,26 @@ def lobby_panel(session, callback):
     ] + [discord.SelectOption(label='Partida contínua', value='continuous',
                              description='Continue até encerrar ou ficar sem participação', default=session.round_limit is None)],
                               'Escolha a duração da partida')
+    difficulty_menu = ChoiceSelect('difficulty',callback,[discord.SelectOption(label=label,value=key,default=key==session.difficulty)
+                    for key,label in LABELS.items()],'Escolha a dificuldade')
+    format_menu = ChoiceSelect('format',callback,[discord.SelectOption(label=label,value=key,default=key==session.answer_mode)
+                    for key,label in FORMATS.items()],'Escolha como responder')
+    advanced = session.lobby_page == 'advanced'
+    options = ([text(f'### {icons.markup("units")}Nível das perguntas'),ui.ActionRow(difficulty_menu),
+                text(f'### {icons.markup("items")}Formato de resposta'),ui.ActionRow(format_menu),
+                text('-# O nível considera o esforço da pergunta. Misto reúne texto, imagens e alternativas.')] if advanced else
+               [text(f'### {icons.markup("units")}01 · Assuntos'),ui.ActionRow(category_menu),
+                text(f'### {icons.markup("clock")}02 · Tempo por pergunta'),ui.ActionRow(time_menu),
+                text(f'### {icons.markup("rank")}03 · Duração da partida'),ui.ActionRow(round_menu)])
     return Panel(
         *illustrated('## Preparar partida\nEscolha como jogar. Todo mundo no canal pode participar.', icons.asset('items')),
-        text(f'**{group}** · **{round_label(session)}**\n**{session.question_time:g}s** por pergunta · primeiro acerto vale **1 ponto**\n-# {count:,} perguntas disponíveis em {categories} categorias'.replace(',', '.')),
-        divider(), text(f'### {icons.markup("units")}01 · Assuntos'), ui.ActionRow(category_menu),
-        text(f'### {icons.markup("clock")}02 · Tempo por pergunta'), ui.ActionRow(time_menu),
-        text(f'### {icons.markup("rank")}03 · Duração da partida'), ui.ActionRow(round_menu),
+        text(f'**{group}** · **{round_label(session)}**\n**{session.question_time:g}s** por pergunta · primeiro acerto vale **1 ponto**\n'
+             f'{LABELS[session.difficulty]} · {FORMATS[session.answer_mode]}\n-# {count:,} perguntas disponíveis em {categories} categorias'.replace(',', '.')),
+        divider(),*options,
+        *([text('**Nenhuma pergunta nessa combinação.** Ajuste o assunto, nível ou formato.')] if not count else []),
         divider(),
-        ui.ActionRow(ActionButton('start', callback, label='Começar', emoji=icons.component('summon'), style=discord.ButtonStyle.success),
+        ui.ActionRow(ActionButton('start', callback, label='Começar', emoji=icons.component('summon'), style=discord.ButtonStyle.success,disabled=not count),
+                     ActionButton('advanced',callback,label='Voltar' if advanced else 'Mais opções'),
                      ActionButton('stop', callback, label='Fechar painel')),
         text(f'-# Criado por {safe_name(session.host.display_name)} · respostas no chat ou nos botões, conforme a pergunta.\n'
              '-# Cada pergunta soma no total global uma vez a cada 24h. O painel fecha após 2 minutos sem iniciar.'),
@@ -203,7 +226,7 @@ def question_panel(session, callback, remaining):
         *illustrated(f'## {question.prompt}', asset, focus=identification),
         text(f'-# {instruction}{badge}{identity_note}'),
         color=RARITY_COLORS.get(question.rarity, BRAND_COLOR),
-        header=[text(f'### {icon}{question.category} · Pergunta {question_number(session)}{paused}')],
+        header=[text(f'### {icon}{question.category} · Pergunta {question_number(session)}{paused}\n-# {LABELS[question.difficulty]}')],
     )
     if question.options:
         for index, label in enumerate(session.choice_order or question.options):
@@ -269,6 +292,8 @@ def result_panel(session, winner, total_points, continuing, callback):
         children.extend([text(f'### Fim de jogo\n{reason}\n{session_summary(session)}\n{match_leaders(session)}'),
                          ui.ActionRow(ActionButton('replay', callback, label='Jogar de novo', emoji=icons.component('summon'), style=discord.ButtonStyle.success),
                                       ActionButton('scores', callback, label='Meus pontos', emoji=icons.component('rank')))])
+    children.append(ui.ActionRow(ActionButton('review',callback,label='Meu desempenho',emoji=icons.component('rank')),
+                                ActionButton('report',callback,label='Sinalizar pergunta')))
     children.append(ui.ActionRow(ui.Button(label='Conferir na wiki', url=session.pack.sources[question.sources[0]]['url'])))
     panel = Panel(*children, color=SUCCESS if winner else GOLD,
                   header=[*(artwork(1) if not continuing else []), text(header)])
@@ -282,7 +307,8 @@ def ended_panel(session, reason, callback):
         text(session_summary(session) + '\n' + match_leaders(session)),
         divider(), text(f'### {icons.markup("rank")}Placar da partida\n{standings(session)}'),
         ui.ActionRow(ActionButton('replay', callback, label='Jogar de novo', emoji=icons.component('summon'), style=discord.ButtonStyle.success),
-                     ActionButton('scores', callback, label='Meus pontos', emoji=icons.component('rank'))),
+                     ActionButton('scores', callback, label='Meus pontos', emoji=icons.component('rank')),
+                     ActionButton('review',callback,label='Meu desempenho')),
         color=GOLD,
         header=artwork(1),
     )
@@ -291,14 +317,16 @@ def ended_panel(session, reason, callback):
 def help_panel():
     return Panel(
         *illustrated('## Como jogar', icons.asset('items')), divider(),
-        text('### 1 · Comece uma partida\nUse **/adventures**, escolha os assuntos, o tempo e 10, 20 ou 30 perguntas. Se quiser jogar sem limite de rodadas, escolha **Partida contínua**. Toque em **Começar**. Só quem abriu o painel ajusta essas opções.'),
+        text('### 1 · Monte a partida\nUse **/adventures**, escolha um grupo ou assunto específico, o tempo e 10, 20 ou 30 perguntas. **Partida contínua** não tem limite de rodadas. Em **Mais opções**, escolha dificuldade e formato. Só quem abriu o painel ajusta as opções.'),
         text('### 2 · Veja como responder\n**O primeiro acerto vale 1 ponto.** Algumas perguntas pedem resposta no chat, outras mostram uma imagem ou três alternativas. No chat, cada pessoa pode enviar **até três respostas diferentes** por pergunta; repetir a mesma não gasta outra tentativa. Nas alternativas, vale **uma tentativa** por pessoa. Quem acertar primeiro leva o ponto.'),
         text('### 3 · Qual nome vale?\nAceitamos os nomes cadastrados do jogo (atuais e antigos) e do anime. Maiúsculas e acentos não fazem diferença. Confira a digitação: nomes parecidos não contam. Se a pergunta pedir uma evolução, responda a forma evoluída.'),
         text('### 4 · Mantenha a partida rolando\nTentou e errou? Tudo bem, a partida continua. Ela termina ao chegar ao total escolhido, ao encerrar pelo botão ou na primeira rodada sem tentativa. Abrir ajuda ou placar não conta como resposta.'),
         text('### 5 · Pontuação\nTodo primeiro acerto vale **1 ponto na partida**. No **total global**, a mesma pergunta soma um ponto por pessoa a cada **24 horas**, mesmo mudando de canal ou abrindo outra partida.'),
         text('### Precisa de uma pausa?\nQuem abriu a partida e a moderação podem pausar e encerrar. Pausar trava o relógio e as respostas; retomar continua do mesmo ponto. Uma pausa de **10 minutos** encerra a partida. Ao encerrar com uma pergunta ativa, ela termina primeiro. Com a partida pausada, encerra na hora.'),
+        text('### Veja seu desempenho\nO resultado oferece uma revisão privada das últimas 50 rodadas, com respostas e primeiros acertos por assunto. O percentual também depende da velocidade. **Sinalizar pergunta** envia um aviso privado para revisão: até cinco avisos por pessoa em 24h.'),
+        text('### Controle e recuperação\nEm **Controles**, o anfitrião e a moderação podem transferir a partida. Se ele sair do servidor, alguém que já participou pode assumir após a confirmação da saída. Após um reinício, partidas salvas por até 24h oferecem **Retomar partida**. Uma rodada interrompida sem acerto é anulada; pontos gravados são preservados.'),
         text('-# Se a conexão com o Discord cair, o relógio pausa e volta após reconectar. Uma pausa que já era sua continua pausada.\n'
-             '-# A ajuda e seus pontos aparecem só para você. A fonte de cada resposta fica no botão da wiki.'),
+             '-# Até 200 participantes por partida. A ajuda e seus pontos aparecem só para você. A fonte de cada resposta fica no botão da wiki.'),
     )
 
 
@@ -324,3 +352,6 @@ class PersistentControls(ui.View):
         self.add_item(ChoiceSelect('category', callback, [discord.SelectOption(label='Tudo junto', value='all')], 'Assuntos'))
         self.add_item(ChoiceSelect('time', callback, [discord.SelectOption(label='45 segundos', value='45')], 'Tempo'))
         self.add_item(ChoiceSelect('rounds', callback, [discord.SelectOption(label='10 perguntas', value='10')], 'Duração'))
+
+    async def on_error(self,interaction,error,item):
+        await respond_to_error(interaction,error)
