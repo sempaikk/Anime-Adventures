@@ -94,7 +94,8 @@ class ChoiceTests(unittest.IsolatedAsyncioTestCase):
         order = list(s.choice_order)
         buttons = [i for i in s.control_view.walk_children() if getattr(i, 'custom_id', '').startswith('aa:answer:')]
         self.assertEqual(len(buttons), 3)
-        self.assertEqual({b.label for b in buttons}, set(QUESTION.options))
+        self.assertEqual([b.label for b in buttons], [f'{"ABC"[i]} · {label}' for i, label in enumerate(order)])
+        self.assertTrue(all(b.emoji is None for b in buttons))
         self.assertTrue(all(b.style == discord.ButtonStyle.secondary for b in buttons))
         await app.handle_control(interaction(s), 'pause')
         buttons = [i for i in s.control_view.walk_children() if getattr(i, 'custom_id', '').startswith('aa:answer:')]

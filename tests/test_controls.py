@@ -20,6 +20,7 @@ def interaction(session, actor=None, message=None):
 
 class ControlTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
+        app.click_limits.clear()
         self.patches = [patch.object(app, 'QUESTION_TIME', .15), patch.object(app, 'BETWEEN_QUESTIONS', .02),
                         patch.object(app, 'COUNTDOWN_INTERVAL', .04), patch.object(app, 'LOBBY_TIMEOUT', 60),
                         patch.object(app.bot, 'scores', Mock(points=Mock(return_value=17), award=Mock(return_value=18)))]
@@ -39,6 +40,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
                 session.control_view.stop()
         await asyncio.gather(*tasks, return_exceptions=True)
         app.active_sessions.clear()
+        app.click_limits.clear()
         for p in self.patches:
             p.stop()
 

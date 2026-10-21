@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import logging
 import math
+import unicodedata
 
 import discord
 from discord import ui
 
 import quiz_media as media
+import quiz_icons as icons
 
 BRAND_COLOR = 0x8664E8
 GOLD = 0xF4C95D
@@ -16,10 +18,10 @@ SUCCESS = 0x50D6A0
 RARITY_COLORS = {'Rare': 0x4CA9F5, 'Epic': 0xAE70ED, 'Legendary': GOLD, 'Mythic': 0xF05C75}
 RARITY_LABELS = {'Rare': 'Rara', 'Epic': 'Épica', 'Legendary': 'Lendária', 'Mythic': 'Mítica'}
 CATEGORY_ICONS = {
-    'Unidades': '⚔️', 'Raridades': '✦', 'Evoluções': '🌟', 'Mundos': '🌏',
-    'Chefes': '👑', 'Atos': '📜', 'Comida e XP': '🍜', 'Traits': '💠',
-    'Summon': '💎', 'Economia': '🪙', 'Modos': '🎮', 'Missões': '🎯',
-    'Loja e códigos': '🎟️', 'Upgrades': '⬆️',
+    'Unidades': 'units', 'Raridades': 'units', 'Evoluções': 'evolution', 'Mundos': 'summon',
+    'Chefes': 'damage', 'Atos': 'summon', 'Comida e XP': 'items', 'Traits': 'traits',
+    'Summon': 'summon', 'Economia': 'items', 'Modos': 'power', 'Missões': 'items',
+    'Loja e códigos': 'items', 'Upgrades': 'range',
 }
 GROUPS = {
     'all': ('Tudo junto', None, 'Todas as categorias do quiz'),
@@ -27,13 +29,15 @@ GROUPS = {
     'worlds': ('Mundos e chefes', {'Mundos', 'Chefes', 'Atos'}, 'Explore os quatro mundos do lançamento'),
     'systems': ('Sistemas do jogo', {'Comida e XP', 'Traits', 'Summon', 'Economia', 'Modos', 'Missões', 'Loja e códigos'}, 'Comida, XP, traits, summon, missões e economia'),
 }
-BRAND = '-# ANIME ADVENTURES  ✦  QUIZ'
+BRAND = '-# ANIME ADVENTURES / QUIZ'
 log = logging.getLogger('adventures.ui')
 
 
 def safe_name(value):
     # Directional controls can visually reorder a score row; preserve normal Unicode names.
     value = ''.join(c for c in value if c not in '\u202a\u202b\u202c\u202d\u202e\u2066\u2067\u2068\u2069')
+    value = ''.join(' ' if unicodedata.category(c) == 'Cc' else c for c in value).strip()
+    value = ' '.join(value.split())
     return discord.utils.escape_markdown(discord.utils.escape_mentions(value[:80]))
 
 
@@ -102,8 +106,8 @@ class Panel(ui.LayoutView):
 
 def utilities(callback):
     return ui.ActionRow(
-        ActionButton('scores', callback, label='Placar', emoji='🏆'),
-        ActionButton('help', callback, label='Como jogar', emoji='📖'),
+        ActionButton('scores', callback, label='Placar', emoji=icons.component('rank')),
+        ActionButton('help', callback, label='Como jogar'),
     )
 
 
@@ -112,9 +116,9 @@ def session_controls(session, callback):
     return ui.ActionRow(
         ActionButton('resume' if paused else 'pause', callback,
                      label='Retomar' if paused else 'Pausar',
-                     emoji='▶️' if paused else '⏸️', style=discord.ButtonStyle.success if paused else discord.ButtonStyle.secondary),
+                     style=discord.ButtonStyle.success if paused else discord.ButtonStyle.secondary),
         ActionButton('stop', callback, label='Fim marcado' if session.stop_requested else 'Encerrar',
-                     emoji='⏹️', style=discord.ButtonStyle.danger, disabled=session.stop_requested),
+                     style=discord.ButtonStyle.danger, disabled=session.stop_requested),
     )
 
 
@@ -138,7 +142,8 @@ def lobby_panel(session, callback):
     group = GROUPS[session.group][0]
     categories = len({q.category for q in selected})
     category_menu = ChoiceSelect('category', callback, [
-        discord.SelectOption(label=label, value=key, description=description, default=key == session.group)
+        discord.SelectOption(label=label, value=key, description=description, default=key == session.group,
+                             emoji=icons.component({'all': 'summon', 'characters': 'units', 'worlds': 'damage', 'systems': 'items'}[key]))
         for key, (label, _, description) in GROUPS.items()
     ], 'Escolha os assuntos do quiz')
     time_menu = ChoiceSelect('time', callback, [
@@ -146,13 +151,13 @@ def lobby_panel(session, callback):
         for seconds, description in [(30, 'Partida rápida'), (45, 'Tempo padrão · recomendado'), (60, 'Mais tempo para pensar')]
     ], 'Escolha o tempo de resposta')
     return Panel(
-        text('## Bora jogar?\nEscolha os assuntos e o tempo. Depois é só começar.'),
+        *illustrated('## Bora jogar?\nEscolha os assuntos e o tempo. Depois é só começar.', icons.asset('items')),
         text(f'**{group}**\n{count} perguntas · {categories} categorias · **{session.question_time:g}s** por pergunta\nPrimeiro acerto vale **1 ponto**'),
-        divider(), text('### 01 · Assuntos'), ui.ActionRow(category_menu),
-        text('### 02 · Tempo por pergunta'), ui.ActionRow(time_menu),
+        divider(), text(f'### {icons.markup("units")}01 · Assuntos'), ui.ActionRow(category_menu),
+        text(f'### {icons.markup("clock")}02 · Tempo por pergunta'), ui.ActionRow(time_menu),
         divider(),
-        ui.ActionRow(ActionButton('start', callback, label='Começar quiz', emoji='⚔️', style=discord.ButtonStyle.success),
-                     ActionButton('stop', callback, label='Fechar painel', emoji='✖️')),
+        ui.ActionRow(ActionButton('start', callback, label='Começar quiz', emoji=icons.component('summon'), style=discord.ButtonStyle.success),
+                     ActionButton('stop', callback, label='Fechar painel')),
         text(f'-# Criado por {safe_name(session.host.display_name)} · respostas no chat ou nos botões, conforme a pergunta.\n'
              '-# O painel fecha após 2 minutos sem iniciar.'),
         header=[*artwork(0), text(f'{BRAND}\n# Anime Adventures Quiz\nConhece o jogo? Mostra no quiz.')],
@@ -165,30 +170,31 @@ def clock_label(session, remaining):
     filled = max(0, min(12, math.ceil(remaining / session.question_time * 12)))
     bar = f'`{"▰" * filled}{"▱" * (12-filled)}` **{math.ceil(remaining)}s**'
     if session.is_paused:
-        return f'### ⏸️ Tempo congelado\n{bar}\n-# Ao retomar, o relógio continua de onde parou.'
+        return f'### {icons.markup("clock")}Tempo congelado\n{bar}\n-# Ao retomar, o relógio continua de onde parou. Pausa máxima de 10 minutos.'
     urgency = 'Últimos segundos' if remaining <= 10 else 'Tempo para responder'
-    return f'### ⏳ {urgency}\n{bar} · encerra <t:{int(session.ends_at.timestamp())}:R>'
+    return f'### {icons.markup("clock")}{urgency}\n{bar} · encerra <t:{int(session.ends_at.timestamp())}:R>'
 
 
 def question_panel(session, callback, remaining):
     question = session.current_question
-    icon = CATEGORY_ICONS.get(question.category, '✦')
-    badge = f' · ✦ **{RARITY_LABELS[question.rarity]}**' if question.rarity else ''
+    icon = icons.markup(CATEGORY_ICONS.get(question.category))
+    badge = f' · **{RARITY_LABELS[question.rarity]}**' if question.rarity else ''
     paused = ' · EM PAUSA' if session.is_paused else ''
     asset = media.for_question(question)
     identification = question.id.startswith('unit:')
     identity_note = '\n-# Reconheça a unidade pela imagem. Vale nome atual, antigo ou do anime.' if identification else ''
-    instruction = 'Escolha abaixo · 1 tentativa por pessoa · primeiro acerto vale +1 ponto' if question.options else 'Responda no chat · primeiro acerto vale +1 ponto'
+    instruction = ('Escolha abaixo · 1 tentativa por pessoa · primeiro acerto vale +1 ponto' if question.options else
+                   f'Responda no chat · até {session.chat_attempt_limit} tentativas por pessoa · primeiro acerto vale +1 ponto')
     panel = Panel(
         *illustrated(f'## {question.prompt}', asset, focus=identification),
         text(f'-# {instruction}{badge}{identity_note}'),
         color=RARITY_COLORS.get(question.rarity, BRAND_COLOR),
-        header=[text(f'{BRAND}\n### {icon} {question.category} · Pergunta {session.question_number:02d}{paused}')],
+        header=[text(f'{BRAND}\n### {icon}{question.category} · Pergunta {session.question_number:02d}{paused}')],
     )
     if question.options:
         for index, label in enumerate(session.choice_order or question.options):
-            panel.card.add_item(ui.ActionRow(ActionButton(f'answer:{index}', callback, label=label,
-                                emoji=('1️⃣', '2️⃣', '3️⃣')[index], disabled=session.is_paused)))
+            panel.card.add_item(ui.ActionRow(ActionButton(f'answer:{index}', callback, label=f'{"ABC"[index]} · {label}',
+                                disabled=session.is_paused)))
     panel.clock_text = text(clock_label(session, remaining))
     panel.add_item(ui.Container(panel.clock_text, session_controls(session, callback), accent_color=GOLD if session.is_paused else BRAND_COLOR))
     panel.add_item(utilities(callback))
@@ -199,7 +205,7 @@ def question_panel(session, callback, remaining):
 
 def closed_question_panel(session):
     return Panel(
-        text(f'{CATEGORY_ICONS.get(session.current_question.category, "✦")} **Pergunta {session.question_number:02d} encerrada**'),
+        text(f'{icons.markup(CATEGORY_ICONS.get(session.current_question.category))}**Pergunta {session.question_number:02d} encerrada**'),
         text(session.current_question.prompt),
         text('-# A resposta e o placar estão logo abaixo.'),
         color=RARITY_COLORS.get(session.current_question.rarity, BRAND_COLOR),
@@ -208,36 +214,35 @@ def closed_question_panel(session):
 
 def standings(session):
     entries = sorted(session.session_scores.values(), key=lambda row: (-row['points'], row['first']))[:5]
-    medals = ['🥇', '🥈', '🥉', '④', '⑤']
-    return '\n'.join(f"{medals[i]} **{safe_name(row['name'])}** — **{row['points']}** {'ponto' if row['points'] == 1 else 'pontos'}" for i, row in enumerate(entries)) or 'O primeiro ponto ainda está em jogo.'
+    return '\n'.join(f"{i + 1}. **{safe_name(row['name'])}** · **{quantity(row['points'], 'ponto')}**" for i, row in enumerate(entries)) or 'O primeiro ponto ainda está em jogo.'
 
 
 def result_panel(session, winner, total_points, continuing, callback):
     question = session.current_question
     if winner:
-        header = f'## ✨ Resposta certa!\n**{safe_name(winner.display_name)}** chegou primeiro. **+1 ponto!**'
-        total = f'💎 Total acumulado: **{quantity(total_points, "ponto")}**' if total_points is not None else '⚠️ Você ganhou +1 nesta partida, mas não deu para salvar no total agora.'
+        header = f'## {icons.markup("power")}Resposta certa!\n**{safe_name(winner.display_name)}** chegou primeiro. **+1 ponto!**'
+        total = f'Total acumulado: **{quantity(total_points, "ponto")}**' if total_points is not None else 'Você ganhou +1 nesta partida, mas não deu para salvar no total agora.'
     else:
-        header = '## ⌛ Tempo esgotado\nEssa passou! Confira a resposta abaixo.'
+        header = f'## {icons.markup("clock")}Tempo esgotado\nEssa passou! Confira a resposta abaixo.'
         total = ''
     children = [*illustrated(f'### {question.answer}\n{question.explanation}', media.for_question(question, revealed=True))]
     if total:
         children.append(text(total))
-    children.extend([divider(), text(f'### 🏆 Placar da partida\n{standings(session)}')])
+    children.extend([divider(), text(f'### {icons.markup("rank")}Placar da partida\n{standings(session)}')])
     next_text = None
     if continuing:
         if session.is_paused:
-            next_text = text('### ⏸️ Partida pausada\nIntervalo congelado. Ao retomar, continua de onde parou.')
+            next_text = text(f'### {icons.markup("clock")}Partida pausada\nIntervalo congelado. Ao retomar, continua de onde parou. Pausa máxima de 10 minutos.')
         else:
             next_text = text(f'### Próxima pergunta <t:{int(session.next_at.timestamp())}:R>\n-# {session.between_questions:g}s para conferir a resposta e se preparar.')
         children.append(next_text)
         children.extend([utilities(callback), session_controls(session, callback)])
     else:
         reason = 'Partida encerrada por quem criou o quiz ou pela moderação.' if session.stop_requested else 'Ninguém tentou responder essa rodada. Quer jogar de novo?'
-        children.extend([text(f'### ✦ Fim de jogo\n{reason}\n{session_summary(session)}'),
-                         ui.ActionRow(ActionButton('replay', callback, label='Jogar de novo', emoji='⚔️', style=discord.ButtonStyle.success),
-                                      ActionButton('scores', callback, label='Meus pontos', emoji='💎'))])
-    children.append(ui.ActionRow(ui.Button(label='Conferir na wiki', emoji='📚', url=session.pack.sources[question.sources[0]]['url'])))
+        children.extend([text(f'### Fim de jogo\n{reason}\n{session_summary(session)}'),
+                         ui.ActionRow(ActionButton('replay', callback, label='Jogar de novo', emoji=icons.component('summon'), style=discord.ButtonStyle.success),
+                                      ActionButton('scores', callback, label='Meus pontos', emoji=icons.component('rank')))])
+    children.append(ui.ActionRow(ui.Button(label='Conferir na wiki', url=session.pack.sources[question.sources[0]]['url'])))
     panel = Panel(*children, color=SUCCESS if winner else GOLD,
                   header=[*(artwork(1) if not continuing else []), text(f'{BRAND}\n{header}')])
     panel.next_text = next_text
@@ -246,11 +251,11 @@ def result_panel(session, winner, total_points, continuing, callback):
 
 def ended_panel(session, reason, callback):
     return Panel(
-        text(f'{BRAND}\n## ✦ Fim de jogo\n{reason}'),
+        text(f'{BRAND}\n## Fim de jogo\n{reason}'),
         text(session_summary(session)),
-        divider(), text(f'### 🏆 Placar da partida\n{standings(session)}'),
-        ui.ActionRow(ActionButton('replay', callback, label='Jogar de novo', emoji='⚔️', style=discord.ButtonStyle.success),
-                     ActionButton('scores', callback, label='Meus pontos', emoji='💎')),
+        divider(), text(f'### {icons.markup("rank")}Placar da partida\n{standings(session)}'),
+        ui.ActionRow(ActionButton('replay', callback, label='Jogar de novo', emoji=icons.component('summon'), style=discord.ButtonStyle.success),
+                     ActionButton('scores', callback, label='Meus pontos', emoji=icons.component('rank'))),
         color=GOLD,
         header=artwork(1),
     )
@@ -258,12 +263,12 @@ def ended_panel(session, reason, callback):
 
 def help_panel():
     return Panel(
-        text(f'{BRAND}\n## 📖 Como jogar'), divider(),
+        *illustrated(f'{BRAND}\n## Como jogar', icons.asset('items')), divider(),
         text('### 1 · Comece uma partida\nUse **/adventures**, escolha os assuntos e o tempo, e toque em **Começar quiz**. Só quem abriu o painel ajusta essas opções.'),
-        text('### 2 · Veja como responder\n**O primeiro acerto vale 1 ponto.** Algumas perguntas pedem resposta no chat, outras mostram uma imagem ou três alternativas. Nas alternativas, cada pessoa tem **uma tentativa**; quem acertar primeiro leva o ponto. A pergunta sempre indica o formato.'),
+        text('### 2 · Veja como responder\n**O primeiro acerto vale 1 ponto.** Algumas perguntas pedem resposta no chat, outras mostram uma imagem ou três alternativas. No chat, cada pessoa pode enviar **até três respostas diferentes** por pergunta; repetir a mesma não gasta outra tentativa. Nas alternativas, vale **uma tentativa** por pessoa. Quem acertar primeiro leva o ponto.'),
         text('### 3 · Qual nome vale?\nAceitamos os nomes cadastrados do jogo (atuais e antigos) e do anime. Maiúsculas e acentos não fazem diferença. Confira a digitação: nomes parecidos não contam. Se a pergunta pedir uma evolução, responda a forma evoluída.'),
         text('### 4 · Mantenha o quiz rolando\nTentou e errou? Tudo bem, a partida continua. Se ninguém tentar responder uma rodada, o quiz termina. Abrir ajuda ou placar não conta como resposta.'),
-        text('### ⏸️ Precisa de uma pausa?\nQuem criou a partida e a moderação podem pausar e encerrar. Pausar trava o relógio e as respostas; retomar continua do mesmo ponto. Ao encerrar com uma pergunta ativa, ela termina primeiro. Com o quiz pausado, encerra na hora.'),
+        text('### Precisa de uma pausa?\nQuem criou a partida e a moderação podem pausar e encerrar. Pausar trava o relógio e as respostas; retomar continua do mesmo ponto. Uma pausa de **10 minutos** encerra a partida. Ao encerrar com uma pergunta ativa, ela termina primeiro. Com o quiz pausado, encerra na hora.'),
         text('-# A ajuda e seus pontos aparecem só para você. A fonte de cada resposta fica no botão da wiki.'),
     )
 
@@ -272,9 +277,9 @@ def score_panel(session, user, total):
     personal = f'**Total: {quantity(total, "ponto")}**' if total is not None else 'Não deu para consultar seu total agora. Tente de novo daqui a pouco.'
     current = session.session_scores.get(user.id, {}).get('points', 0) if session else None
     session_line = f'\n**Nesta partida: {quantity(current, "ponto")}**' if current is not None else ''
-    children = [text(f'{BRAND}\n## 💎 Seus pontos\n**{safe_name(user.display_name)}**\n{personal}{session_line}')]
+    children = [*illustrated(f'{BRAND}\n## Seus pontos\n**{safe_name(user.display_name)}**\n{personal}{session_line}', icons.asset('rank'))]
     if session:
-        children.extend([divider(), text(f'### 🏆 Placar da partida\n{standings(session)}')])
+        children.extend([divider(), text(f'### {icons.markup("rank")}Placar da partida\n{standings(session)}')])
     children.append(text('-# Só você vê essa consulta. O relógio da partida continua rodando.'))
     return Panel(*children)
 

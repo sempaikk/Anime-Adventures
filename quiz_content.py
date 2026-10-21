@@ -116,7 +116,7 @@ class QuestionDeck:
         if not questions:
             raise ValueError("O baralho não pode ser vazio.")
         self.questions = questions
-        self.rng = rng or random.Random()
+        self.rng = rng or random.SystemRandom()
         self.remaining: dict[str, Question] = {}
         self.buckets: dict[tuple[str, str], dict[str, Question]] = {}
         self.last: Question | None = None

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "policy": "Only user-supplied banners or Anime Adventures wiki media. No generated images. Current wiki visuals are permitted; gameplay data remains restricted to Release. Crops are deterministic and only remove unrelated text/UI. Rarity questions only show portraits explicitly reviewed as rarity_safe. Character identification uses neutral ALT text and opaque filenames; its images are original copies. All displayed image descriptions are a single period. Deferred assets are archived for future stages and cannot be shown by the active quiz.",
+  "policy": "Only user-supplied banners or Anime Adventures wiki media. No generated images. Current wiki visuals are permitted; gameplay data remains restricted to Release. Crops are deterministic and only remove unrelated text/UI. Rarity questions only show portraits explicitly reviewed as rarity_safe. Character identification uses neutral ALT text and opaque filenames; its images are original copies. All displayed image descriptions are a single period. Deferred assets are archived for future stages and cannot be shown by the active quiz. Interface icons use original transparent wiki images and never imply availability of later gameplay content.",
   "assets": {
     "banner-summon": {
       "kind": "user_provided",
@@ -1382,6 +1382,216 @@
       "concept_source": null,
       "review": "Visually reviewed wiki game media. Current artwork is illustrative; it is not evidence of the 2022 appearance.",
       "defer_reason": "Current wiki media archived only; Release availability/recipe has not been authenticated."
+    },
+    "ui-units": {
+      "kind": "wiki",
+      "path": "assets/wiki/ui-units.webp",
+      "display": "portrait",
+      "alt": ".",
+      "form": null,
+      "source_file": "GUI_Units_icon.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/7/7a/GUI_Units_icon.png/revision/latest?cb=20220826202115",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:GUI_Units_icon.png",
+      "original_sha256": "fe195e00b01f90264696f8f2d22d12ea6e5360b5188fab65b1dc6b20a6fc5913",
+      "sha256": "fe195e00b01f90264696f8f2d22d12ea6e5360b5188fab65b1dc6b20a6fc5913",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: original transparent Anime Adventures wiki interface icon; interface decoration only, not evidence of Release content.",
+      "width": 512,
+      "height": 512,
+      "stage": "interface",
+      "transparent": true
+    },
+    "ui-items": {
+      "kind": "wiki",
+      "path": "assets/wiki/ui-items.webp",
+      "display": "portrait",
+      "alt": ".",
+      "form": null,
+      "source_file": "GUI_Items_icon.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/3/3a/GUI_Items_icon.png/revision/latest?cb=20220826202046",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:GUI_Items_icon.png",
+      "original_sha256": "75afe308f6fb84da4d129216ed0c17676d13f6b810971f892baed3fff3095c30",
+      "sha256": "75afe308f6fb84da4d129216ed0c17676d13f6b810971f892baed3fff3095c30",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: original transparent Anime Adventures wiki interface icon; interface decoration only, not evidence of Release content.",
+      "width": 512,
+      "height": 512,
+      "stage": "interface",
+      "transparent": true
+    },
+    "ui-summon": {
+      "kind": "wiki",
+      "path": "assets/wiki/ui-summon.webp",
+      "display": "portrait",
+      "alt": ".",
+      "form": null,
+      "source_file": "GUI_Summon_icon.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/8/85/GUI_Summon_icon.png/revision/latest?cb=20220828113005",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:GUI_Summon_icon.png",
+      "original_sha256": "09730590aa5c7a5a4dc4bd173271fc39fecfde1393d176ddc24ffcbae619939c",
+      "sha256": "09730590aa5c7a5a4dc4bd173271fc39fecfde1393d176ddc24ffcbae619939c",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: original transparent Anime Adventures wiki interface icon; interface decoration only, not evidence of Release content.",
+      "width": 512,
+      "height": 512,
+      "stage": "interface",
+      "transparent": true
+    },
+    "ui-rank": {
+      "kind": "wiki",
+      "path": "assets/wiki/ui-rank.webp",
+      "display": "portrait",
+      "alt": ".",
+      "form": null,
+      "source_file": "GUI_Tier-List_icon.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/c/ce/GUI_Tier-List_icon.png/revision/latest?cb=20220828191650",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:GUI_Tier-List_icon.png",
+      "original_sha256": "39cee3bd3c71367c040d48ad0ebf0d95fdf8de91bb56bcd843f117426a1d410c",
+      "sha256": "39cee3bd3c71367c040d48ad0ebf0d95fdf8de91bb56bcd843f117426a1d410c",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: original transparent Anime Adventures wiki interface icon; interface decoration only, not evidence of Release content.",
+      "width": 980,
+      "height": 980,
+      "stage": "interface",
+      "transparent": true
+    },
+    "ui-evolution": {
+      "kind": "wiki",
+      "path": "assets/wiki/ui-evolution.webp",
+      "display": "portrait",
+      "alt": ".",
+      "form": null,
+      "source_file": "GUI_Evolution_icon.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/3/39/GUI_Evolution_icon.png/revision/latest?cb=20230729075519",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:GUI_Evolution_icon.png",
+      "original_sha256": "edd65da8cb00d65149a1b81e58758a117dfd50fb9d6dc52c6c67574578a59360",
+      "sha256": "edd65da8cb00d65149a1b81e58758a117dfd50fb9d6dc52c6c67574578a59360",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: original transparent Anime Adventures wiki interface icon; interface decoration only, not evidence of Release content.",
+      "width": 512,
+      "height": 512,
+      "stage": "interface",
+      "transparent": true
+    },
+    "ui-traits": {
+      "kind": "wiki",
+      "path": "assets/wiki/ui-traits.webp",
+      "display": "portrait",
+      "alt": ".",
+      "form": null,
+      "source_file": "GUI_Trait_icon.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/b/b5/GUI_Trait_icon.png/revision/latest?cb=20220828192133",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:GUI_Trait_icon.png",
+      "original_sha256": "36adee2876b66dd464a28a48f83d4fae75ce022b02986afadad718e5e8836971",
+      "sha256": "36adee2876b66dd464a28a48f83d4fae75ce022b02986afadad718e5e8836971",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: original transparent Anime Adventures wiki interface icon; interface decoration only, not evidence of Release content.",
+      "width": 1000,
+      "height": 1000,
+      "stage": "interface",
+      "transparent": true
+    },
+    "ui-power": {
+      "kind": "wiki",
+      "path": "assets/wiki/ui-power.webp",
+      "display": "portrait",
+      "alt": ".",
+      "form": null,
+      "source_file": "GUI_Power_Icon.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/4/48/GUI_Power_Icon.png/revision/latest?cb=20230206050722",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:GUI_Power_Icon.png",
+      "original_sha256": "797eb14fd8f355d8fd47244005040b1c1b496363c0db9aeca8c95e37cb40b613",
+      "sha256": "797eb14fd8f355d8fd47244005040b1c1b496363c0db9aeca8c95e37cb40b613",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: original transparent Anime Adventures wiki interface icon; interface decoration only, not evidence of Release content.",
+      "width": 500,
+      "height": 500,
+      "stage": "interface",
+      "transparent": true
+    },
+    "ui-damage": {
+      "kind": "wiki",
+      "path": "assets/wiki/ui-damage.webp",
+      "display": "portrait",
+      "alt": ".",
+      "form": null,
+      "source_file": "Damage_icon.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/e/e2/Damage_icon.png/revision/latest?cb=20220824022130",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Damage_icon.png",
+      "original_sha256": "f1d89db87f067e05cec49a3fe7b0ec1ad863f3a498c2ab45672d7d0ba154246c",
+      "sha256": "f1d89db87f067e05cec49a3fe7b0ec1ad863f3a498c2ab45672d7d0ba154246c",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: original transparent Anime Adventures wiki interface icon; interface decoration only, not evidence of Release content.",
+      "width": 461,
+      "height": 461,
+      "stage": "interface",
+      "transparent": true
+    },
+    "ui-clock": {
+      "kind": "wiki",
+      "path": "assets/wiki/ui-clock.webp",
+      "display": "portrait",
+      "alt": ".",
+      "form": null,
+      "source_file": "SPA_icon.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/8/84/SPA_icon.png/revision/latest?cb=20220824022220",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:SPA_icon.png",
+      "original_sha256": "80599f8b4dc77f58711b33b1b0fd6f06119d9c1acdbb3218642bd82fa94ba687",
+      "sha256": "80599f8b4dc77f58711b33b1b0fd6f06119d9c1acdbb3218642bd82fa94ba687",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: original transparent Anime Adventures wiki interface icon; interface decoration only, not evidence of Release content.",
+      "width": 461,
+      "height": 461,
+      "stage": "interface",
+      "transparent": true
+    },
+    "ui-range": {
+      "kind": "wiki",
+      "path": "assets/wiki/ui-range.webp",
+      "display": "portrait",
+      "alt": ".",
+      "form": null,
+      "source_file": "Range_icon.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/1/13/Range_icon.png/revision/latest?cb=20220824022151",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Range_icon.png",
+      "original_sha256": "6111ae5861812de10c7e4c5c89500d0714870cd4f2f77f943be88403c7bc8be6",
+      "sha256": "6111ae5861812de10c7e4c5c89500d0714870cd4f2f77f943be88403c7bc8be6",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: original transparent Anime Adventures wiki interface icon; interface decoration only, not evidence of Release content.",
+      "width": 461,
+      "height": 461,
+      "stage": "interface",
+      "transparent": true
     }
   },
   "units": {

@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "icons": {
+    "units": {
+      "asset": "ui-units",
+      "name": "aa015fdffe",
+      "id": "1562349902787514449",
+      "upload_path": "assets/ui/units.png",
+      "upload_sha256": "5fdffe30ba790026ff5dfbb1740230cc1969552488ca6f2262cf327c4c837926",
+      "processing": {
+        "type": "resize",
+        "maximum_dimensions": [
+          128,
+          128
+        ],
+        "preserves_transparency": true,
+        "generation": false
+      }
+    },
+    "items": {
+      "asset": "ui-items",
+      "name": "aa020c9ef5",
+      "id": "1562349903785631794",
+      "upload_path": "assets/ui/items.png",
+      "upload_sha256": "0c9ef58490463ba66836af2cfc114461de15cbc099f641a8c19f3eb606e3727f",
+      "processing": {
+        "type": "resize",
+        "maximum_dimensions": [
+          128,
+          128
+        ],
+        "preserves_transparency": true,
+        "generation": false
+      }
+    },
+    "summon": {
+      "asset": "ui-summon",
+      "name": "aa033ce027",
+      "id": "1562349905094254592",
+      "upload_path": "assets/ui/summon.png",
+      "upload_sha256": "3ce0274ee44f36335f21895524c12f69e627ff1bba31453293cb6975d4af27d9",
+      "processing": {
+        "type": "resize",
+        "maximum_dimensions": [
+          128,
+          128
+        ],
+        "preserves_transparency": true,
+        "generation": false
+      }
+    },
+    "rank": {
+      "asset": "ui-rank",
+      "name": "aa04c2abea",
+      "id": "1562349906100887555",
+      "upload_path": "assets/ui/rank.png",
+      "upload_sha256": "c2abead345063d6e9ba7ef8e08042fa7312661f0f89400644fa5443ccf53924b",
+      "processing": {
+        "type": "resize",
+        "maximum_dimensions": [
+          128,
+          128
+        ],
+        "preserves_transparency": true,
+        "generation": false
+      }
+    },
+    "evolution": {
+      "asset": "ui-evolution",
+      "name": "aa058cc6c2",
+      "id": "1562349906935676961",
+      "upload_path": "assets/ui/evolution.png",
+      "upload_sha256": "8cc6c2f24b558a404552136492d5b9408608b37c428003ef863fbd6a14f658db",
+      "processing": {
+        "type": "resize",
+        "maximum_dimensions": [
+          128,
+          128
+        ],
+        "preserves_transparency": true,
+        "generation": false
+      }
+    },
+    "traits": {
+      "asset": "ui-traits",
+      "name": "aa0622b3d9",
+      "id": "1562349908261077075",
+      "upload_path": "assets/ui/traits.png",
+      "upload_sha256": "22b3d9106c7a4650160364fca6f9a3ded75555f87cdbace527c434089b1c259c",
+      "processing": {
+        "type": "resize",
+        "maximum_dimensions": [
+          128,
+          128
+        ],
+        "preserves_transparency": true,
+        "generation": false
+      }
+    },
+    "power": {
+      "asset": "ui-power",
+      "name": "aa071f2323",
+      "id": "1562349909468782632",
+      "upload_path": "assets/ui/power.png",
+      "upload_sha256": "1f2323ad5a13d0bd85158705295eb9d47a2ef59ec03cdd0bcb8ea695012a0abb",
+      "processing": {
+        "type": "resize",
+        "maximum_dimensions": [
+          128,
+          128
+        ],
+        "preserves_transparency": true,
+        "generation": false
+      }
+    },
+    "damage": {
+      "asset": "ui-damage",
+      "name": "aa08a2ed86",
+      "id": "1562349910408433774",
+      "upload_path": "assets/ui/damage.png",
+      "upload_sha256": "a2ed865846f645ca07cf6f98be1effd5429bb51566d26edc01a92dda3c551086",
+      "processing": {
+        "type": "resize",
+        "maximum_dimensions": [
+          128,
+          128
+        ],
+        "preserves_transparency": true,
+        "generation": false
+      }
+    },
+    "clock": {
+      "asset": "ui-clock",
+      "name": "aa09489b4a",
+      "id": "1562349910752231467",
+      "upload_path": "assets/ui/clock.png",
+      "upload_sha256": "489b4a513192fd4bd38f1df33ee105a2d947e4fdbb0b592863dcdb181882a836",
+      "processing": {
+        "type": "resize",
+        "maximum_dimensions": [
+          128,
+          128
+        ],
+        "preserves_transparency": true,
+        "generation": false
+      }
+    },
+    "range": {
+      "asset": "ui-range",
+      "name": "aa10131833",
+      "id": "1562349912065314816",
+      "upload_path": "assets/ui/range.png",
+      "upload_sha256": "131833d7f858ed7b10e77ec245c6ae76328154d3aace6d354d580dd5a2599858",
+      "processing": {
+        "type": "resize",
+        "maximum_dimensions": [
+          128,
+          128
+        ],
+        "preserves_transparency": true,
+        "generation": false
+      }
+    }
+  }
+}

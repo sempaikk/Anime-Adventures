@@ -1,4 +1,4 @@
-"""Release trivia with native Discord screens and a single open-answer command."""
+"""Game trivia with native Discord screens, chat and three-choice rounds."""
 
 from __future__ import annotations
 
@@ -18,7 +18,8 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 import quiz_ui as screen
-from quiz_content import QuestionDeck, load_pack
+from quiz_content import QuestionDeck, load_pack, normalize_answer
+from quiz_guard import Cooldowns
 from scores import ScoreStore
 from timing import PausableTimer
 
@@ -28,9 +29,13 @@ QUESTION_TIME = 45
 COUNTDOWN_INTERVAL = 10
 BETWEEN_QUESTIONS = 8
 LOBBY_TIMEOUT = 120
+PAUSE_TIMEOUT = 600
+CHAT_ATTEMPTS = 3
+MAX_ANSWER_LENGTH = 160
 PACK = load_pack()
 log = logging.getLogger('adventures')
 active_sessions: dict[int, QuizSession] = {}
+click_limits = Cooldowns()
 
 
 class QuizSession:
@@ -52,6 +57,11 @@ class QuizSession:
         self.answer_min_id = 0
         self.choice_order = []
         self.choice_attempts = set()
+        self.chat_attempts = {}
+        self.chat_attempt_limit = CHAT_ATTEMPTS
+        self.pause_timeout = PAUSE_TIMEOUT
+        self.pause_expiry = None
+        self.rendered_state = None
         self.ends_at = None
         self.next_at = None
         self.answer_future = None
@@ -94,8 +104,21 @@ class QuizSession:
         if not self.timer.pause():
             return False
         self.phase = 'paused_question' if self.phase == 'question' else 'paused_intermission'
+        self.pause_expiry = asyncio.create_task(self.expire_pause(), name=f'pause:{self.channel.id}')
         self.timing_updated()
         return True
+
+    def cancel_pause_expiry(self):
+        task, self.pause_expiry = self.pause_expiry, None
+        if task and task is not asyncio.current_task():
+            task.cancel()
+
+    async def expire_pause(self):
+        await asyncio.sleep(self.pause_timeout)
+        if self.running and self.is_paused:
+            self.pause_expiry = None  # The runner can finish without cancelling this task.
+            minutes = max(1, round(self.pause_timeout / 60))
+            await self.stop_now(f'A pausa chegou a {minutes} minutos. Abra outra partida quando quiser jogar.')
 
     def resume(self, interaction_id=0):
         if self.phase not in ('paused_question', 'paused_intermission') or not self.timer:
@@ -104,6 +127,7 @@ class QuizSession:
         if not self.timer.resume():
             return False
         self.phase = 'question' if question else 'intermission'
+        self.cancel_pause_expiry()
         if question:
             self.answer_min_id = max(self.answer_min_id, interaction_id)
             self.ends_at = datetime.now(timezone.utc) + timedelta(seconds=self.timer.remaining)
@@ -144,6 +168,7 @@ class QuizSession:
         self.running = True
         self.control_view = screen.lobby_panel(self, handle_control)
         self.control_message = await self.channel.send(view=self.control_view)
+        self.rendered_state = self.control_state()
         self.lobby_timer = asyncio.create_task(self.expire_lobby(), name=f'lobby:{self.channel.id}')
 
     async def expire_lobby(self):
@@ -168,24 +193,33 @@ class QuizSession:
                 self.control_view = None
             self.control_message = None
 
+    def control_state(self):
+        return (getattr(self.control_message, 'id', None), self.phase, self.group,
+                self.question_time, self.stop_requested, self.question_number, self.ends_at, self.next_at)
+
     async def refresh_controls(self):
         async with self.control_lock:
             if not self.running or not self.control_message:
+                return
+            state = self.control_state()
+            if state == self.rendered_state:
                 return
             if self.phase == 'lobby':
                 view = screen.lobby_panel(self, handle_control)
             elif self.phase in ('question', 'paused_question'):
                 view = screen.question_panel(self, handle_control, self.remaining_seconds)
-                self.question_view = view
             elif self.phase in ('paused_intermission', 'intermission') and self.last_result:
                 winner, total = self.last_result
                 view = screen.result_panel(self, winner, total, True, handle_control)
             else:
                 return
+            await self.control_message.edit(view=view)
             if self.control_view:
                 self.control_view.stop()
             self.control_view = view
-            await self.control_message.edit(view=view)
+            if self.phase in ('question', 'paused_question'):
+                self.question_view = view
+            self.rendered_state = state
 
     def submit(self, message):
         """Claim synchronously so two correct messages cannot both win."""
@@ -196,8 +230,17 @@ class QuizSession:
             return False
         if message.author.bot or message.webhook_id is not None or message.id <= self.answer_min_id:
             return False
+        if len(message.content) > MAX_ANSWER_LENGTH:
+            return False
+        answer = normalize_answer(message.content)
+        if not answer:
+            return False
+        attempts = self.chat_attempts.setdefault(message.author.id, set())
+        if answer in attempts or len(attempts) >= self.chat_attempt_limit:
+            return False
+        attempts.add(answer)
         self.had_participation = True
-        if self.current_question.accepts(message.content):
+        if answer in self.current_question.accepted:
             self.answer_future.set_result(message.author)
             return True
         return False
@@ -272,6 +315,7 @@ class QuizSession:
         self.choice_order = list(self.current_question.options)
         random.SystemRandom().shuffle(self.choice_order)
         self.choice_attempts.clear()
+        self.chat_attempts.clear()
         self.answer_future = asyncio.get_running_loop().create_future()
         self.phase = 'question'
         publishing_started = self.clock()
@@ -338,6 +382,7 @@ class QuizSession:
     async def stop_now(self, reason):
         self.running = False
         self.phase = 'ended'
+        self.cancel_pause_expiry()
         current = asyncio.current_task()
         tasks = [task for task in (self.runner, self.lobby_timer) if task and task is not current]
         for task in tasks:
@@ -373,6 +418,7 @@ class QuizSession:
         finally:
             self.running = False
             self.phase = 'ended'
+            self.cancel_pause_expiry()
             if self.answer_future and not self.answer_future.done():
                 self.answer_future.cancel()
             await self.stop_ticker()
@@ -403,6 +449,7 @@ class AdventuresBot(commands.Bot):
         tasks = []
         for session in sessions:
             session.running = False
+            session.cancel_pause_expiry()
             if session.control_view:
                 session.control_view.retire()
             for task in (session.runner, session.lobby_timer):
@@ -439,11 +486,14 @@ async def begin_lobby(interaction):
     if existing and existing.running:
         await interaction.response.send_message('Já tem um quiz aberto neste canal. É só participar pelo painel mais recente.', ephemeral=True)
         return
+    if not click_limits.allow(('lobby', interaction.user.id), 3):
+        await interaction.response.send_message('Espere 3 segundos antes de abrir outro quiz.', ephemeral=True)
+        return
     session = QuizSession(interaction.channel, interaction.user, bot.scores)
     session.running = True
     active_sessions[session.channel.id] = session
     try:
-        await interaction.response.send_message('✦ Painel aberto! Escolha os assuntos e toque em **Começar quiz**.', ephemeral=True)
+        await interaction.response.send_message('Painel aberto! Escolha os assuntos e toque em **Começar quiz**.', ephemeral=True)
         await session.open_lobby()
     except BaseException:
         session.running = False
@@ -460,6 +510,9 @@ def is_moderator(user):
 
 async def handle_control(interaction, action, value=None):
     session = active_sessions.get(interaction.channel_id)
+    if action in ('help', 'scores') and not click_limits.allow(('private', action, interaction.user.id), .75):
+        await interaction.response.defer()
+        return
     if action == 'help':
         await interaction.response.send_message(view=screen.help_panel(), ephemeral=True)
         return
@@ -615,7 +668,7 @@ async def on_guild_channel_delete(channel):
         await session.stop_now('O canal da partida foi removido.')
 
 
-@bot.tree.command(name='adventures', description='Jogue o quiz de Anime Adventures: chat, imagens e três alternativas.')
+@bot.tree.command(name='adventures', description='Abra o quiz de Anime Adventures com ícones do jogo, imagens e alternativas.')
 @app_commands.guild_only()
 async def adventures(interaction: discord.Interaction):
     await begin_lobby(interaction)

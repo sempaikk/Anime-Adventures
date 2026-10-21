@@ -302,6 +302,10 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
                 ids = [item.custom_id for item in panel.walk_children() if getattr(item, 'custom_id', None)]
                 self.assertEqual(len(ids), len(set(ids)), q.id)
                 for item in panel.walk_children():
+                    if isinstance(item, discord.ui.TextDisplay):
+                        self.assertNotRegex(item.content, r'[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F\u20E3]', q.id)
+                    if isinstance(item, discord.ui.Button) and item.emoji:
+                        self.assertIsNotNone(item.emoji.id, q.id)
                     if isinstance(item, discord.ui.Thumbnail):
                         self.assertEqual(item.description, '.', q.id)
                     if isinstance(item, discord.ui.MediaGallery):
@@ -313,11 +317,15 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
 
 
 class CommandTests(unittest.IsolatedAsyncioTestCase):
+    async def asyncSetUp(self):
+        app.click_limits.clear()
+
     def interaction(self, **permissions):
         return SimpleNamespace(channel=Channel(), guild=object(), user=user(), app_permissions=SimpleNamespace(view_channel=True, send_messages=True, embed_links=True, **permissions), response=SimpleNamespace(send_message=AsyncMock()))
 
     async def asyncTearDown(self):
         app.active_sessions.clear()
+        app.click_limits.clear()
 
     async def test_one_command_and_duplicate_invocations_do_not_launch_two_sessions(self):
         self.assertEqual([c.name for c in app.bot.tree.get_commands()], ['adventures'])
