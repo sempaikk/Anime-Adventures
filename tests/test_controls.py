@@ -63,7 +63,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         self.sessions.append(session)
         self.assertEqual(session.phase, 'lobby')
         self.assertIsNone(session.question_message)
-        self.assertIn('Prepare sua aventura', view_text(session.control_view))
+        self.assertIn('Bora jogar?', view_text(session.control_view))
         start = next(item for item in session.control_view.walk_children() if getattr(item, 'custom_id', '') == 'aa:start')
         await start.callback(interaction(session))
         await until(lambda: session.question_message is not None)
@@ -301,7 +301,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(session.correct_count, 1)
         self.assertEqual(session.question_number, 1)
         app.bot.scores.award.assert_called_once()
-        self.assertIn('Encerrada pelo anfitrião', view_text(session.control_view))
+        self.assertIn('Partida encerrada por quem criou', view_text(session.control_view))
         self.assertNotIn(session.channel.id, app.active_sessions)
 
     async def test_paused_session_can_be_ended_without_starting_another_round(self):
@@ -355,16 +355,16 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
             await session.lobby_timer
         self.assertEqual(len(session.channel.sent), 1)
         self.assertFalse(session.running)
-        self.assertIn('não foi iniciada', view_text(session.control_view))
+        self.assertIn('Ninguém iniciou', view_text(session.control_view))
         self.assertNotIn(session.channel.id, app.active_sessions)
 
     async def test_panel_from_before_restart_offers_help_and_explains_stale_actions(self):
         seed = app.QuizSession(Channel(), user(), app.bot.scores)
         event = interaction(seed)
         await app.handle_control(event, 'start')
-        self.assertIn('concluído', event.response.send_message.call_args.args[0])
+        self.assertIn('encerrado', event.response.send_message.call_args.args[0])
         await app.handle_control(event, 'help')
-        self.assertIn('Seu guia', view_text(event.response.send_message.call_args.kwargs['view']))
+        self.assertIn('Como jogar', view_text(event.response.send_message.call_args.kwargs['view']))
         controls = screen.PersistentControls(app.handle_control)
         self.assertTrue(controls.is_persistent())
 
@@ -373,7 +373,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         event = interaction(session)
         await app.handle_control(event, 'replay')
         self.assertIs(app.active_sessions[session.channel.id], session)
-        self.assertIn('Já existe', event.response.send_message.call_args.args[0])
+        self.assertIn('Já tem', event.response.send_message.call_args.args[0])
 
     async def test_replay_opens_a_new_lobby_when_channel_is_free(self):
         seed = app.QuizSession(Channel(), user(), app.bot.scores)
@@ -389,8 +389,8 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         event = interaction(seed)
         await app.handle_control(event, 'scores')
         content = view_text(event.response.send_message.call_args.kwargs['view'])
-        self.assertIn('17 pontos acumulados', content)
-        self.assertNotIn('pontos nesta sessão', content)
+        self.assertIn('Total: 17 pontos', content)
+        self.assertNotIn('Nesta partida:', content)
 
     async def test_pause_during_intermission_does_not_lose_resume_signal(self):
         session = await self.playing()
@@ -410,6 +410,8 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
                 session.question_time = seconds
                 panels.append(screen.lobby_panel(session, app.handle_control))
         for panel in panels:
+            self.assertNotIn('2022', view_text(panel))
+            self.assertNotIn('RELEASE', view_text(panel))
             self.assertLessEqual(panel.total_children_count, 40)
             self.assertLessEqual(panel.content_length(), 4000)
             self.assertTrue(panel.has_components_v2())
@@ -424,3 +426,35 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
             formatted = screen.safe_name(name)
             self.assertNotIn('\u202e', formatted)
             self.assertNotIn('@everyone', formatted)
+
+    async def test_identification_shows_the_image_without_names_in_image_metadata(self):
+        session = await self.lobby()
+        session.current_question = next(q for q in app.PACK.questions if q.id == 'unit:uraraka')
+        session.ends_at = app.datetime.now(app.timezone.utc)
+        panel = screen.question_panel(session, app.handle_control, 45)
+        self.assertIn('Veja a imagem e a dica', view_text(panel))
+        image = next(item for item in panel.walk_children() if isinstance(item, (discord.ui.MediaGallery, discord.ui.Thumbnail)))
+        payload = str(image.to_component_dict()).lower()
+        for name in ('uraraka', 'gravity hero', 'ochaco', 'ochako'):
+            self.assertNotIn(name, payload)
+
+    async def test_missing_portrait_clearly_uses_a_text_clue(self):
+        session = await self.lobby()
+        session.current_question = next(q for q in app.PACK.questions if q.id == 'unit:deku')
+        session.ends_at = app.datetime.now(app.timezone.utc)
+        panel = screen.question_panel(session, app.handle_control, 45)
+        self.assertIn('Essa vai pela dica acima', view_text(panel))
+        self.assertFalse(any(isinstance(item, discord.ui.MediaGallery) for item in panel.walk_children()))
+
+    async def test_previous_result_does_not_keep_a_past_next_question_timestamp(self):
+        session = await self.playing()
+        session.between_questions = .05
+        session.submit(Message(session.channel, content='50'))
+        await until(lambda: session.phase == 'intermission' and session.control_message is not session.question_message)
+        result = session.control_view
+        message = session.control_message
+        self.assertIn('Próxima pergunta <t:', view_text(result))
+        await until(lambda: session.question_number == 2)
+        self.assertIn('Rodada concluída', view_text(result))
+        self.assertNotIn('Próxima pergunta <t:', view_text(result))
+        self.assertIs(message.edits[-1]['view'], result)

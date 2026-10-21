@@ -18,18 +18,40 @@ class MediaTests(unittest.TestCase):
             self.assertIn(asset['kind'], ('wiki', 'user_provided'))
             self.assertFalse(asset['processing']['generation'])
             self.assertNotIn('quiz-portal', asset['path'])
+            if asset.get('quiz_path'):
+                quiz_image = media.ROOT / asset['quiz_path']
+                self.assertEqual(hashlib.sha256(quiz_image.read_bytes()).hexdigest(), asset['sha256'])
             if asset['kind'] == 'wiki':
                 self.assertTrue(asset['source_page'].startswith('https://animeadventures.fandom.com/wiki/'))
             else:
                 self.assertIn('approval', asset)
 
-    def test_identity_question_never_shows_unit_image_until_answer(self):
+    def test_identity_images_have_neutral_alt_text_and_filenames(self):
         for q in PACK.questions:
             if q.id.startswith('unit:'):
-                self.assertIsNone(media.for_question(q), q.id)
+                before = media.for_question(q)
+                if q.subject not in media.MEDIA['units']:
+                    self.assertIsNone(before, q.id)
+                    continue
+                self.assertEqual(before['form'], 'base', q.id)
+                self.assertEqual(before['alt'], 'Personagem de Anime Adventures. Use a imagem e a dica para responder.')
+                self.assertEqual(len(Path(before['url']).stem), 24)
+                self.assertTrue(all(c in '0123456789abcdef' for c in Path(before['url']).stem))
         revealed = media.for_question(QUESTIONS['unit:broly'], revealed=True)
         self.assertIsNotNone(revealed)
         self.assertEqual(revealed['form'], 'base')
+
+    def test_framed_portraits_cannot_reveal_rarity_before_the_answer(self):
+        for q in PACK.questions:
+            if q.category != 'Raridades':
+                continue
+            revealed = media.for_question(q, revealed=True)
+            if revealed and revealed.get('rarity_safe') is not True:
+                self.assertIsNone(media.for_question(q), q.id)
+        self.assertIsNone(media.for_question(QUESTIONS['rarity:tanjiro']))
+        self.assertIsNotNone(media.for_question(QUESTIONS['rarity:tanjiro'], revealed=True))
+        self.assertIsNone(media.for_question(QUESTIONS['rarity:uraraka']))
+        self.assertIsNotNone(media.for_question(QUESTIONS['rarity:broly']))
 
     def test_evolution_shows_named_base_before_and_correct_evolved_form_after(self):
         q = QUESTIONS['evolution:broly_evolved']

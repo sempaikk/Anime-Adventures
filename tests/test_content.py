@@ -35,6 +35,11 @@ class ContentTests(unittest.TestCase):
         self.assertFalse(QUESTIONS['rarity:speedwagon'].accepts('Secret'))
 
     def test_exact_answers_and_documented_aliases(self):
+        for unit in PACK.units:
+            q = QUESTIONS['unit:' + unit['id']]
+            for name in [unit['character'], unit['game_name'], unit.get('historical_name'), *unit['aliases']]:
+                if name:
+                    self.assertTrue(q.accepts(name), (unit['id'], name))
         self.assertTrue(QUESTIONS['unit:armin'].accepts('ARMEIN'))
         self.assertTrue(QUESTIONS['unit:armin'].accepts('Arlem'))
         self.assertTrue(QUESTIONS['unit:armin'].accepts('Armin Arlert'))
@@ -50,6 +55,20 @@ class ContentTests(unittest.TestCase):
         self.assertTrue(q.accepts('Super Bro'))
         self.assertFalse(q.accepts('Broly'))
         self.assertFalse(q.accepts('Brulo'))
+
+    def test_boss_aliases_accept_game_and_anime_names_without_merging_forms(self):
+        for key, old, anime in [('boss:1:1', 'Zarbo', 'Zarbon'), ('boss:1:6', 'Freezo', 'Frieza'),
+                                ('boss:3:2', 'Zui', 'Rui'), ('boss:4:2', 'Kizume', 'Kisame')]:
+            q = QUESTIONS[key]
+            self.assertTrue(q.accepts(old))
+            self.assertTrue(q.accepts(anime))
+            self.assertIn('boss_names', q.alias_sources)
+            self.assertNotIn('boss_names', q.sources)
+        final = QUESTIONS['boss:1:6:form']
+        self.assertTrue(final.accepts('Freezo (Final)'))
+        self.assertTrue(final.accepts('Frieza (Final)'))
+        self.assertFalse(final.accepts('Frieza'))
+        self.assertFalse(QUESTIONS['boss:1:6'].accepts('Frieza (Final)'))
 
     def test_normalization_keeps_exact_words(self):
         self.assertEqual(normalize_answer('  MÍTICA_ÉPICA-test! '), 'mitica epica test')
@@ -93,7 +112,7 @@ class ContentTests(unittest.TestCase):
         data = json.loads(DATA_FILE.read_text())
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'bad.json'
-            for mutate in [lambda d: d.update(stage='update_1'), lambda d: d['questions'][0].update(sources=['missing']), lambda d: d['questions'].append(d['questions'][0]), lambda d: d['sources']['roster'].update(url='http://bad.example/')]:
+            for mutate in [lambda d: d.update(stage='update_1'), lambda d: d['questions'][0].update(sources=['missing']), lambda d: d['questions'].append(d['questions'][0]), lambda d: d['sources']['roster'].update(url='http://bad.example/'), lambda d: d['questions'][0].update(alias_sources=['missing'])]:
                 candidate = json.loads(json.dumps(data))
                 mutate(candidate)
                 path.write_text(json.dumps(candidate))

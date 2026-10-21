@@ -123,7 +123,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(await task)
         self.store.award.assert_not_called()
         self.assertEqual(len(self.channel.sent), 2)
-        self.assertIn('O tempo acabou', view_text(self.channel.sent[-1]['view']))
+        self.assertIn('Tempo esgotado', view_text(self.channel.sent[-1]['view']))
         self.assertIn('Próxima pergunta', view_text(self.channel.sent[-1]['view']))
 
     async def test_silent_round_stops_and_releases_channel(self):
@@ -135,7 +135,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn(self.channel.id, app.active_sessions)
         self.assertEqual(session.question_number, 1)
         self.assertEqual(len(self.channel.sent), 2)
-        self.assertIn('Fim da aventura', view_text(self.channel.sent[-1]['view']))
+        self.assertIn('Fim de jogo', view_text(self.channel.sent[-1]['view']))
 
     async def test_winner_continues_then_silence_ends_next_question(self):
         session = self.session()
@@ -221,7 +221,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         session.question_message.edit_error = discord.HTTPException(SimpleNamespace(status=500, reason='error'), 'temporary')
         with self.assertLogs('adventures', level='WARNING'):
             self.assertFalse(await task)
-        self.assertIn('O tempo acabou', view_text(self.channel.sent[-1]['view']))
+        self.assertIn('Tempo esgotado', view_text(self.channel.sent[-1]['view']))
 
     async def test_deleted_question_releases_session(self):
         session = self.session()
@@ -252,7 +252,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
             session.submit(Message(self.channel, content='50'))
             self.assertTrue(await task)
         self.assertEqual(session.correct_count, 1)
-        self.assertIn('não pôde ser salvo', view_text(self.channel.sent[-1]['view']))
+        self.assertIn('não deu para salvar', view_text(self.channel.sent[-1]['view']))
 
     async def test_cancellation_releases_session_and_clock(self):
         session = self.session()

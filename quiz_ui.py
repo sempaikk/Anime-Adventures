@@ -22,12 +22,12 @@ CATEGORY_ICONS = {
     'Loja e códigos': '🎟️', 'Upgrades': '⬆️',
 }
 GROUPS = {
-    'all': ('Aventura completa', None, 'Todas as categorias do Release'),
+    'all': ('Tudo junto', None, 'Todas as categorias do quiz'),
     'characters': ('Personagens', {'Unidades', 'Raridades', 'Evoluções', 'Upgrades'}, 'Identidade, raridades, evoluções e upgrades'),
     'worlds': ('Mundos e chefes', {'Mundos', 'Chefes', 'Atos'}, 'Explore os quatro mundos do lançamento'),
     'systems': ('Sistemas do jogo', {'Comida e XP', 'Traits', 'Summon', 'Economia', 'Modos', 'Missões', 'Loja e códigos'}, 'Comida, XP, traits, summon, missões e economia'),
 }
-BRAND = '-# ANIME ADVENTURES  ✦  RELEASE · JULHO DE 2022'
+BRAND = '-# ANIME ADVENTURES  ✦  QUIZ'
 log = logging.getLogger('adventures.ui')
 
 
@@ -39,6 +39,14 @@ def safe_name(value):
 
 def text(value):
     return ui.TextDisplay(value)
+
+
+def quantity(value, singular, plural=None):
+    return f'{value} {singular if value == 1 else plural or singular + "s"}'
+
+
+def session_summary(session):
+    return f'**{quantity(session.question_number, "pergunta")}** · **{quantity(session.correct_count, "acerto")}**'
 
 
 def divider():
@@ -76,6 +84,8 @@ class Panel(ui.LayoutView):
             self.add_item(item)
 
     def retire(self):
+        if getattr(self, 'next_text', None):
+            self.next_text.content = '### Rodada concluída\n-# Acompanhe a próxima pergunta abaixo.'
         for item in self.walk_children():
             if isinstance(item, (ui.Button, ui.Select)) and not getattr(item, 'url', None):
                 item.disabled = True
@@ -83,7 +93,7 @@ class Panel(ui.LayoutView):
 
     async def on_error(self, interaction, error, item):
         log.error('Erro no controle %s: %s', getattr(item, 'custom_id', '?'), type(error).__name__, exc_info=error)
-        message = 'Não consegui concluir esse comando. Tente novamente no painel mais recente.'
+        message = 'Não deu para atualizar o painel agora. Tente clicar de novo no painel mais recente.'
         if not interaction.response.is_done():
             await interaction.response.send_message(message, ephemeral=True)
         else:
@@ -113,8 +123,9 @@ def artwork(index=0):
     return [ui.MediaGallery(discord.MediaGalleryItem(asset['url'], description=asset['alt']))] if asset else []
 
 
-def illustrated(content, asset):
-    if asset and asset['display'] == 'portrait':
+def illustrated(content, asset, *, focus=False):
+    large_portrait = focus and asset and min(asset.get('width', 0), asset.get('height', 0)) >= 200
+    if asset and asset['display'] == 'portrait' and not large_portrait:
         return [ui.Section(text(content), accessory=ui.Thumbnail(asset['url'], description=asset['alt']))]
     if asset:
         return [text(content), ui.MediaGallery(discord.MediaGalleryItem(asset['url'], description=asset['alt']))]
@@ -129,22 +140,22 @@ def lobby_panel(session, callback):
     category_menu = ChoiceSelect('category', callback, [
         discord.SelectOption(label=label, value=key, description=description, default=key == session.group)
         for key, (label, _, description) in GROUPS.items()
-    ], 'Escolha os assuntos da aventura')
+    ], 'Escolha os assuntos do quiz')
     time_menu = ChoiceSelect('time', callback, [
         discord.SelectOption(label=f'{seconds} segundos', value=str(seconds), description=description, default=seconds == session.question_time)
-        for seconds, description in [(30, 'Ritmo rápido'), (45, 'Ritmo clássico · recomendado'), (60, 'Mais tempo para pensar')]
+        for seconds, description in [(30, 'Partida rápida'), (45, 'Tempo padrão · recomendado'), (60, 'Mais tempo para pensar')]
     ], 'Escolha o tempo de resposta')
     return Panel(
-        text('## Prepare sua aventura\nEscolha os assuntos, ajuste o tempo e reúna o canal.'),
+        text('## Bora jogar?\nEscolha os assuntos e o tempo. Depois é só começar.'),
         text(f'**{group}**\n{count} perguntas · {categories} categorias · **{session.question_time:g}s** por pergunta\nPrimeiro acerto vale **1 ponto**'),
         divider(), text('### 01 · Assuntos'), ui.ActionRow(category_menu),
         text('### 02 · Tempo por pergunta'), ui.ActionRow(time_menu),
         divider(),
-        ui.ActionRow(ActionButton('start', callback, label='Começar aventura', emoji='⚔️', style=discord.ButtonStyle.success),
+        ui.ActionRow(ActionButton('start', callback, label='Começar quiz', emoji='⚔️', style=discord.ButtonStyle.success),
                      ActionButton('stop', callback, label='Fechar painel', emoji='✖️')),
-        text(f'-# Anfitrião: {safe_name(session.host.display_name)} · todos respondem no chat.\n'
+        text(f'-# Criado por {safe_name(session.host.display_name)} · todo mundo pode responder no chat.\n'
              '-# O painel fecha após 2 minutos sem iniciar.'),
-        header=[*artwork(0), text(f'{BRAND}\n# Anime Adventures Quiz\nDos primeiros mundos às primeiras unidades.')],
+        header=[*artwork(0), text(f'{BRAND}\n# Anime Adventures Quiz\nConhece o jogo? Mostra no quiz.')],
         footer=[utilities(callback)],
     )
 
@@ -154,7 +165,7 @@ def clock_label(session, remaining):
     filled = max(0, min(12, math.ceil(remaining / session.question_time * 12)))
     bar = f'`{"▰" * filled}{"▱" * (12-filled)}` **{math.ceil(remaining)}s**'
     if session.is_paused:
-        return f'### ⏸️ Tempo congelado\n{bar}\n-# Retomar continua esta pergunta com o mesmo tempo restante.'
+        return f'### ⏸️ Tempo congelado\n{bar}\n-# Ao retomar, o relógio continua de onde parou.'
     urgency = 'Últimos segundos' if remaining <= 10 else 'Tempo para responder'
     return f'### ⏳ {urgency}\n{bar} · encerra <t:{int(session.ends_at.timestamp())}:R>'
 
@@ -164,9 +175,13 @@ def question_panel(session, callback, remaining):
     icon = CATEGORY_ICONS.get(question.category, '✦')
     badge = f' · ✦ **{RARITY_LABELS[question.rarity]}**' if question.rarity else ''
     paused = ' · EM PAUSA' if session.is_paused else ''
+    asset = media.for_question(question)
+    identification = question.id.startswith('unit:')
+    clue = '-# Veja a imagem e a dica.' if asset else '-# Essa vai pela dica acima.'
+    identity_note = '\n' + clue + ' Vale o nome do jogo ou do anime.' if identification else ''
     panel = Panel(
-        *illustrated(f'## {question.prompt}', media.for_question(question)),
-        text(f'-# Responda no chat · primeiro acerto vale +1 ponto{badge}'),
+        *illustrated(f'## {question.prompt}', asset, focus=identification),
+        text(f'-# Responda no chat · primeiro acerto vale +1 ponto{badge}{identity_note}'),
         color=RARITY_COLORS.get(question.rarity, BRAND_COLOR),
         header=[text(f'{BRAND}\n### {icon} {question.category} · Pergunta {session.question_number:02d}{paused}')],
     )
@@ -182,7 +197,7 @@ def closed_question_panel(session):
     return Panel(
         text(f'{CATEGORY_ICONS.get(session.current_question.category, "✦")} **Pergunta {session.question_number:02d} encerrada**'),
         text(session.current_question.prompt),
-        text('-# Confira a resposta e o resultado abaixo.'),
+        text('-# A resposta e o placar estão logo abaixo.'),
         color=RARITY_COLORS.get(session.current_question.rarity, BRAND_COLOR),
     )
 
@@ -197,36 +212,40 @@ def result_panel(session, winner, total_points, continuing, callback):
     question = session.current_question
     if winner:
         header = f'## ✨ Resposta certa!\n**{safe_name(winner.display_name)}** chegou primeiro. **+1 ponto!**'
-        total = f'💎 Total acumulado: **{total_points} pontos**' if total_points is not None else '⚠️ +1 nesta sessão. O total acumulado não pôde ser salvo agora.'
+        total = f'💎 Total acumulado: **{quantity(total_points, "ponto")}**' if total_points is not None else '⚠️ Você ganhou +1 nesta partida, mas não deu para salvar no total agora.'
     else:
-        header = '## ⌛ O tempo acabou\nNinguém acertou esta pergunta a tempo.'
+        header = '## ⌛ Tempo esgotado\nEssa passou! Confira a resposta abaixo.'
         total = ''
     children = [*illustrated(f'### {question.answer}\n{question.explanation}', media.for_question(question, revealed=True))]
     if total:
         children.append(text(total))
-    children.extend([divider(), text(f'### 🏆 Placar da sessão\n{standings(session)}')])
+    children.extend([divider(), text(f'### 🏆 Placar da partida\n{standings(session)}')])
+    next_text = None
     if continuing:
         if session.is_paused:
-            children.append(text('### ⏸️ Aventura em pausa\nIntervalo congelado. Retomar preserva o tempo que faltava.'))
+            next_text = text('### ⏸️ Partida pausada\nIntervalo congelado. Ao retomar, continua de onde parou.')
         else:
-            children.append(text(f'### Próxima pergunta <t:{int(session.next_at.timestamp())}:R>\n-# Um intervalo de {session.between_questions:g}s antes do próximo desafio.'))
+            next_text = text(f'### Próxima pergunta <t:{int(session.next_at.timestamp())}:R>\n-# {session.between_questions:g}s para conferir a resposta e se preparar.')
+        children.append(next_text)
         children.extend([utilities(callback), session_controls(session, callback)])
     else:
-        reason = 'Encerrada pelo anfitrião ou pela moderação.' if session.stop_requested else 'Sem tentativas nesta pergunta, a aventura terminou automaticamente.'
-        children.extend([text(f'### ✦ Fim da aventura\n{reason}\n**{session.question_number} perguntas** · **{session.correct_count} acertos**'),
-                         ui.ActionRow(ActionButton('replay', callback, label='Jogar novamente', emoji='⚔️', style=discord.ButtonStyle.success),
+        reason = 'Partida encerrada por quem criou o quiz ou pela moderação.' if session.stop_requested else 'Ninguém tentou responder essa rodada. Quer jogar de novo?'
+        children.extend([text(f'### ✦ Fim de jogo\n{reason}\n{session_summary(session)}'),
+                         ui.ActionRow(ActionButton('replay', callback, label='Jogar de novo', emoji='⚔️', style=discord.ButtonStyle.success),
                                       ActionButton('scores', callback, label='Meus pontos', emoji='💎'))])
-    children.append(ui.ActionRow(ui.Button(label='Ver esta resposta na wiki', emoji='📚', url=session.pack.sources[question.sources[0]]['url'])))
-    return Panel(*children, color=SUCCESS if winner else GOLD,
-                 header=[*(artwork(1) if not continuing else []), text(f'{BRAND}\n{header}')])
+    children.append(ui.ActionRow(ui.Button(label='Conferir na wiki', emoji='📚', url=session.pack.sources[question.sources[0]]['url'])))
+    panel = Panel(*children, color=SUCCESS if winner else GOLD,
+                  header=[*(artwork(1) if not continuing else []), text(f'{BRAND}\n{header}')])
+    panel.next_text = next_text
+    return panel
 
 
 def ended_panel(session, reason, callback):
     return Panel(
-        text(f'{BRAND}\n## ✦ Aventura encerrada\n{reason}'),
-        text(f'**{session.question_number} perguntas** · **{session.correct_count} acertos**'),
-        divider(), text(f'### 🏆 Placar da sessão\n{standings(session)}'),
-        ui.ActionRow(ActionButton('replay', callback, label='Jogar novamente', emoji='⚔️', style=discord.ButtonStyle.success),
+        text(f'{BRAND}\n## ✦ Fim de jogo\n{reason}'),
+        text(session_summary(session)),
+        divider(), text(f'### 🏆 Placar da partida\n{standings(session)}'),
+        ui.ActionRow(ActionButton('replay', callback, label='Jogar de novo', emoji='⚔️', style=discord.ButtonStyle.success),
                      ActionButton('scores', callback, label='Meus pontos', emoji='💎')),
         color=GOLD,
         header=artwork(1),
@@ -235,24 +254,24 @@ def ended_panel(session, reason, callback):
 
 def help_panel():
     return Panel(
-        text(f'{BRAND}\n## 📖 Seu guia de aventura'), divider(),
-        text('### 1 · Entre no desafio\nUse **/adventures** e toque em **Começar aventura**. O anfitrião pode escolher os assuntos e o tempo antes de começar.'),
-        text('### 2 · Responda no chat\nNão precisa entrar em equipe nem escolher alternativas. **A primeira resposta correta vale 1 ponto.** Você pode jogar sozinho ou com todo o canal.'),
-        text('### 3 · Use o nome certo\nNas perguntas de personagem, valem os nomes documentados do anime e do jogo. Maiúsculas, acentos e pontuação são ignorados; erros de digitação não são corrigidos. Evoluções pedem o nome da forma evoluída.'),
-        text('### 4 · Continue a aventura\nUma tentativa errada também mantém o jogo seguindo. Sem tentativas em uma pergunta, a sessão termina. Consultar ajuda ou placar não conta como tentativa.'),
-        text('### ⏸️ Pausa de verdade\nPausar congela o relógio imediatamente e bloqueia respostas. Retomar continua a mesma pergunta com o tempo restante. Só o anfitrião e a moderação controlam pausa e fim. Encerrar durante uma pergunta ativa aguarda seu desfecho; em pausa, encerra na hora.'),
-        text('-# Conteúdo do Release · fontes disponíveis após cada resposta · totais acumulados dependem da persistência do serviço.'),
+        text(f'{BRAND}\n## 📖 Como jogar'), divider(),
+        text('### 1 · Comece uma partida\nUse **/adventures**, escolha os assuntos e o tempo, e toque em **Começar quiz**. Só quem abriu o painel ajusta essas opções.'),
+        text('### 2 · Mande sua resposta no chat\n**O primeiro acerto vale 1 ponto.** Dá para jogar sozinho ou com todo o canal. Nas perguntas de personagem, use a imagem e a dica; se não tiver imagem, vale a dica em texto.'),
+        text('### 3 · Qual nome vale?\nAceitamos os nomes cadastrados do jogo (atuais e antigos) e do anime. Maiúsculas e acentos não fazem diferença. Confira a digitação: nomes parecidos não contam. Se a pergunta pedir uma evolução, responda a forma evoluída.'),
+        text('### 4 · Mantenha o quiz rolando\nTentou e errou? Tudo bem, a partida continua. Se ninguém tentar responder uma rodada, o quiz termina. Abrir ajuda ou placar não conta como resposta.'),
+        text('### ⏸️ Precisa de uma pausa?\nQuem criou a partida e a moderação podem pausar e encerrar. Pausar trava o relógio e as respostas; retomar continua do mesmo ponto. Ao encerrar com uma pergunta ativa, ela termina primeiro. Com o quiz pausado, encerra na hora.'),
+        text('-# A ajuda e seus pontos aparecem só para você. A fonte de cada resposta fica no botão da wiki.'),
     )
 
 
 def score_panel(session, user, total):
-    personal = f'**{total} pontos acumulados**' if total is not None else 'O total acumulado está indisponível no momento.'
+    personal = f'**Total: {quantity(total, "ponto")}**' if total is not None else 'Não deu para consultar seu total agora. Tente de novo daqui a pouco.'
     current = session.session_scores.get(user.id, {}).get('points', 0) if session else None
-    session_line = f'\n**{current} pontos nesta sessão**' if current is not None else ''
+    session_line = f'\n**Nesta partida: {quantity(current, "ponto")}**' if current is not None else ''
     children = [text(f'{BRAND}\n## 💎 Seus pontos\n**{safe_name(user.display_name)}**\n{personal}{session_line}')]
     if session:
-        children.extend([divider(), text(f'### 🏆 Placar da sessão\n{standings(session)}')])
-    children.append(text('-# Esta consulta aparece apenas para você e não interrompe o relógio.'))
+        children.extend([divider(), text(f'### 🏆 Placar da partida\n{standings(session)}')])
+    children.append(text('-# Só você vê essa consulta. O relógio da partida continua rodando.'))
     return Panel(*children)
 
 
@@ -264,5 +283,5 @@ class PersistentControls(ui.View):
             button = ActionButton(action, callback, label=action)
             button.row = index // 5
             self.add_item(button)
-        self.add_item(ChoiceSelect('category', callback, [discord.SelectOption(label='Aventura completa', value='all')], 'Assuntos'))
+        self.add_item(ChoiceSelect('category', callback, [discord.SelectOption(label='Tudo junto', value='all')], 'Assuntos'))
         self.add_item(ChoiceSelect('time', callback, [discord.SelectOption(label='45 segundos', value='45')], 'Tempo'))

@@ -421,6 +421,16 @@
       "revision": 46462,
       "url": "https://animeadventures.fandom.com/wiki/Devil_Boss?oldid=46462",
       "kind": "identity_only"
+    },
+    "boss_names": {
+      "title": "Module:UnitData-Test/Data2",
+      "revision": 20827,
+      "url": "https://animeadventures.fandom.com/wiki/Module:UnitData-Test/Data2?oldid=20827",
+      "kind": "identity_only",
+      "snapshot": "docs/sources/boss-names-20827.json",
+      "sha256": "e00f62562d31f44a30da0a905001488055fca8cb0c2e6b017a79901ca9abd209",
+      "snapshot_scope": "Selected name/id fields, with module keys and source line numbers.",
+      "original_content_sha256": "c0a6064eb308ee13fbd303d57323e6aef7658dcb66a76bf0a4146e16f3b31d62"
     }
   },
   "units": [
@@ -1197,7 +1207,7 @@
       "id": "evolution:all_might_evolved",
       "category": "Evoluções",
       "subject": "all_might",
-      "prompt": "Qual é a **evolução de All Might** documentada no Release? Responda com o nome da forma no jogo.",
+      "prompt": "Qual é a **evolução de All Might** no lançamento? Responda com o nome da forma no jogo.",
       "answer": "All Force (Symbol of Peace) · Prime Force (Peace)",
       "answers": [
         "All Force (Symbol of Peace)",
@@ -1214,7 +1224,7 @@
       "id": "evolution:madara_evolved",
       "category": "Evoluções",
       "subject": "madara",
-      "prompt": "Qual é a **evolução de Madara** documentada no Release? Responda com o nome da forma no jogo.",
+      "prompt": "Qual é a **evolução de Madara** no lançamento? Responda com o nome da forma no jogo.",
       "answer": "Marada (Founder) · Mazara (Founder)",
       "answers": [
         "Marada (Founder)",
@@ -1231,7 +1241,7 @@
       "id": "evolution:broly_evolved",
       "category": "Evoluções",
       "subject": "broly",
-      "prompt": "Qual é a **evolução de Broly** documentada no Release? Responda com o nome da forma no jogo.",
+      "prompt": "Qual é a **evolução de Broly** no lançamento? Responda com o nome da forma no jogo.",
       "answer": "Legendary Brulo · Super Bro",
       "answers": [
         "Legendary Brulo",
@@ -1248,7 +1258,7 @@
       "id": "evolution:levi_evolved",
       "category": "Evoluções",
       "subject": "levi",
-      "prompt": "Qual é a **evolução de Levi** documentada no Release? Responda com o nome da forma no jogo.",
+      "prompt": "Qual é a **evolução de Levi** no lançamento? Responda com o nome da forma no jogo.",
       "answer": "Levy Ackman · Lex Akoman",
       "answers": [
         "Levy Ackman",
@@ -1265,7 +1275,7 @@
       "id": "world:1:order",
       "category": "Mundos",
       "subject": "world:1",
-      "prompt": "Qual é o **1º mundo do Story** no Release?",
+      "prompt": "Qual é o **1º mundo do Story** no lançamento?",
       "answer": "Planet Namak",
       "answers": [
         "Planet Namak",
@@ -1299,7 +1309,7 @@
       "id": "world:1:acts",
       "category": "Mundos",
       "subject": "world:1",
-      "prompt": "Quantos **atos de Story** tem Planet Namak no Release?",
+      "prompt": "Quantos **atos de Story** tem Planet Namak no lançamento?",
       "answer": "6 atos",
       "answers": [
         "6",
@@ -1316,14 +1326,18 @@
       "id": "boss:1:1",
       "category": "Chefes",
       "subject": "world:1",
-      "prompt": "Qual é o **chefe inicial do ato 1 de Planet Namak**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 1 de Planet Namak**? Vale o nome do jogo ou do anime.",
       "answer": "Zarbo",
       "answers": [
-        "Zarbo"
+        "Zarbo",
+        "Zarbon"
       ],
-      "explanation": "O ato 1, Evil Elegeance, apresenta Zarbo → Zarbo (Evolved).",
+      "explanation": "O ato 1, Evil Elegeance, apresenta Zarbo → Zarbo (Evolved). No anime: Zarbon.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1333,11 +1347,15 @@
       "prompt": "Em qual **forma Zarbo se transforma** no ato 1 de Planet Namak?",
       "answer": "Zarbo (Evolved)",
       "answers": [
-        "Zarbo (Evolved)"
+        "Zarbo (Evolved)",
+        "Zarbon (Evolved)"
       ],
-      "explanation": "Neste ato, Zarbo se transforma em Zarbo (Evolved).",
+      "explanation": "Neste ato, Zarbo se transforma em Zarbo (Evolved). Também vale: Zarbon (Evolved).",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1358,14 +1376,18 @@
       "id": "boss:1:2",
       "category": "Chefes",
       "subject": "world:1",
-      "prompt": "Qual é o **chefe inicial do ato 2 de Planet Namak**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 2 de Planet Namak**? Vale o nome do jogo ou do anime.",
       "answer": "Goldeo",
       "answers": [
-        "Goldeo"
+        "Goldeo",
+        "Guldo"
       ],
-      "explanation": "O ato 2, Technician of Time, apresenta Goldeo.",
+      "explanation": "O ato 2, Technician of Time, apresenta Goldeo. No anime: Guldo.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1386,14 +1408,18 @@
       "id": "boss:1:3",
       "category": "Chefes",
       "subject": "world:1",
-      "prompt": "Qual é o **chefe inicial do ato 3 de Planet Namak**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 3 de Planet Namak**? Vale o nome do jogo ou do anime.",
       "answer": "Zezoom",
       "answers": [
-        "Zezoom"
+        "Zezoom",
+        "Recoome"
       ],
-      "explanation": "O ato 3, Dazzling Destruction, apresenta Zezoom.",
+      "explanation": "O ato 3, Dazzling Destruction, apresenta Zezoom. No anime: Recoome.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1417,11 +1443,15 @@
       "prompt": "Em Planet Namak, **quem enfrenta os jogadores ao lado de Vurtor no ato 4**? Responda com o nome usado no jogo.",
       "answer": "Jayce",
       "answers": [
-        "Jayce"
+        "Jayce",
+        "Jeice"
       ],
-      "explanation": "O ato 4, The Blue Hurricane, tem dois chefes: Jayce e Vurtor. Não é uma transformação.",
+      "explanation": "O ato 4, The Blue Hurricane, tem dois chefes: Jayce e Vurtor. Não é uma transformação. No anime: Jeice.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1431,11 +1461,15 @@
       "prompt": "Em Planet Namak, **quem enfrenta os jogadores ao lado de Jayce no ato 4**? Responda com o nome usado no jogo.",
       "answer": "Vurtor",
       "answers": [
-        "Vurtor"
+        "Vurtor",
+        "Burter"
       ],
-      "explanation": "O ato 4, The Blue Hurricane, tem dois chefes: Jayce e Vurtor. Não é uma transformação.",
+      "explanation": "O ato 4, The Blue Hurricane, tem dois chefes: Jayce e Vurtor. Não é uma transformação. No anime: Burter.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1456,14 +1490,18 @@
       "id": "boss:1:5",
       "category": "Chefes",
       "subject": "world:1",
-      "prompt": "Qual é o **chefe inicial do ato 5 de Planet Namak**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 5 de Planet Namak**? Vale o nome do jogo ou do anime.",
       "answer": "Gunyu",
       "answers": [
-        "Gunyu"
+        "Gunyu",
+        "Ginyu"
       ],
-      "explanation": "O ato 5, The Ultimate Squadron, apresenta Gunyu.",
+      "explanation": "O ato 5, The Ultimate Squadron, apresenta Gunyu. No anime: Ginyu.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1484,14 +1522,18 @@
       "id": "boss:1:6",
       "category": "Chefes",
       "subject": "world:1",
-      "prompt": "Qual é o **chefe inicial do ato 6 de Planet Namak**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 6 de Planet Namak**? Vale o nome do jogo ou do anime.",
       "answer": "Freezo",
       "answers": [
-        "Freezo"
+        "Freezo",
+        "Frieza"
       ],
-      "explanation": "O ato 6, The Purple Tyrant, apresenta Freezo → Freezo (Final).",
+      "explanation": "O ato 6, The Purple Tyrant, apresenta Freezo → Freezo (Final). No anime: Frieza.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1501,11 +1543,15 @@
       "prompt": "Em qual **forma Freezo se transforma** no ato 6 de Planet Namak?",
       "answer": "Freezo (Final)",
       "answers": [
-        "Freezo (Final)"
+        "Freezo (Final)",
+        "Frieza (Final)"
       ],
-      "explanation": "Neste ato, Freezo se transforma em Freezo (Final).",
+      "explanation": "Neste ato, Freezo se transforma em Freezo (Final). Também vale: Frieza (Final).",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1526,7 +1572,7 @@
       "id": "world:2:order",
       "category": "Mundos",
       "subject": "world:2",
-      "prompt": "Qual é o **2º mundo do Story** no Release?",
+      "prompt": "Qual é o **2º mundo do Story** no lançamento?",
       "answer": "Shiganshinu District",
       "answers": [
         "Shiganshinu District",
@@ -1560,7 +1606,7 @@
       "id": "world:2:acts",
       "category": "Mundos",
       "subject": "world:2",
-      "prompt": "Quantos **atos de Story** tem Shiganshinu District no Release?",
+      "prompt": "Quantos **atos de Story** tem Shiganshinu District no lançamento?",
       "answer": "6 atos",
       "answers": [
         "6",
@@ -1751,7 +1797,7 @@
       "id": "world:3:order",
       "category": "Mundos",
       "subject": "world:3",
-      "prompt": "Qual é o **3º mundo do Story** no Release?",
+      "prompt": "Qual é o **3º mundo do Story** no lançamento?",
       "answer": "Snowy Town",
       "answers": [
         "Snowy Town"
@@ -1780,7 +1826,7 @@
       "id": "world:3:acts",
       "category": "Mundos",
       "subject": "world:3",
-      "prompt": "Quantos **atos de Story** tem Snowy Town no Release?",
+      "prompt": "Quantos **atos de Story** tem Snowy Town no lançamento?",
       "answer": "6 atos",
       "answers": [
         "6",
@@ -1797,14 +1843,18 @@
       "id": "boss:3:1",
       "category": "Chefes",
       "subject": "world:3",
-      "prompt": "Qual é o **chefe inicial do ato 1 de Snowy Town**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 1 de Snowy Town**? Vale o nome do jogo ou do anime.",
       "answer": "Yahobu",
       "answers": [
-        "Yahobu"
+        "Yahobu",
+        "Yahaba"
       ],
-      "explanation": "O ato 1, The Arrow Demon, apresenta Yahobu.",
+      "explanation": "O ato 1, The Arrow Demon, apresenta Yahobu. No anime: Yahaba.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1825,14 +1875,18 @@
       "id": "boss:3:2",
       "category": "Chefes",
       "subject": "world:3",
-      "prompt": "Qual é o **chefe inicial do ato 2 de Snowy Town**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 2 de Snowy Town**? Vale o nome do jogo ou do anime.",
       "answer": "Zui",
       "answers": [
-        "Zui"
+        "Zui",
+        "Rui"
       ],
-      "explanation": "O ato 2, The Spider Demon, apresenta Zui.",
+      "explanation": "O ato 2, The Spider Demon, apresenta Zui. No anime: Rui.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1853,14 +1907,18 @@
       "id": "boss:3:3",
       "category": "Chefes",
       "subject": "world:3",
-      "prompt": "Qual é o **chefe inicial do ato 3 de Snowy Town**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 3 de Snowy Town**? Vale o nome do jogo ou do anime.",
       "answer": "Daka",
       "answers": [
-        "Daka"
+        "Daka",
+        "Daki"
       ],
-      "explanation": "O ato 3, Upper Moon, apresenta Daka.",
+      "explanation": "O ato 3, Upper Moon, apresenta Daka. No anime: Daki.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1881,14 +1939,18 @@
       "id": "boss:3:4",
       "category": "Chefes",
       "subject": "world:3",
-      "prompt": "Qual é o **chefe inicial do ato 4 de Snowy Town**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 4 de Snowy Town**? Vale o nome do jogo ou do anime.",
       "answer": "Akoku",
       "answers": [
-        "Akoku"
+        "Akoku",
+        "Akaza"
       ],
-      "explanation": "O ato 4, The Ice Demon, apresenta Akoku.",
+      "explanation": "O ato 4, The Ice Demon, apresenta Akoku. No anime: Akaza.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1909,14 +1971,18 @@
       "id": "boss:3:5",
       "category": "Chefes",
       "subject": "world:3",
-      "prompt": "Qual é o **chefe inicial do ato 5 de Snowy Town**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 5 de Snowy Town**? Vale o nome do jogo ou do anime.",
       "answer": "Kokoshibon",
       "answers": [
-        "Kokoshibon"
+        "Kokoshibon",
+        "Kokushibo"
       ],
-      "explanation": "O ato 5, The Moon Demon, apresenta Kokoshibon.",
+      "explanation": "O ato 5, The Moon Demon, apresenta Kokoshibon. No anime: Kokushibo.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1937,14 +2003,18 @@
       "id": "boss:3:6",
       "category": "Chefes",
       "subject": "world:3",
-      "prompt": "Qual é o **chefe inicial do ato 6 de Snowy Town**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 6 de Snowy Town**? Vale o nome do jogo ou do anime.",
       "answer": "Muzo",
       "answers": [
-        "Muzo"
+        "Muzo",
+        "Muzan"
       ],
-      "explanation": "O ato 6, The Demon King, apresenta Muzo.",
+      "explanation": "O ato 6, The Demon King, apresenta Muzo. No anime: Muzan.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -1965,7 +2035,7 @@
       "id": "world:4:order",
       "category": "Mundos",
       "subject": "world:4",
-      "prompt": "Qual é o **4º mundo do Story** no Release?",
+      "prompt": "Qual é o **4º mundo do Story** no lançamento?",
       "answer": "Hidden Sand Village",
       "answers": [
         "Hidden Sand Village",
@@ -1996,7 +2066,7 @@
       "id": "world:4:acts",
       "category": "Mundos",
       "subject": "world:4",
-      "prompt": "Quantos **atos de Story** tem Hidden Sand Village no Release?",
+      "prompt": "Quantos **atos de Story** tem Hidden Sand Village no lançamento?",
       "answer": "6 atos",
       "answers": [
         "6",
@@ -2013,14 +2083,18 @@
       "id": "boss:4:1",
       "category": "Chefes",
       "subject": "world:4",
-      "prompt": "Qual é o **chefe inicial do ato 1 de Hidden Sand Village**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 1 de Hidden Sand Village**? Vale o nome do jogo ou do anime.",
       "answer": "Hido",
       "answers": [
-        "Hido"
+        "Hido",
+        "Hidan"
       ],
-      "explanation": "O ato 1, The Immortal Ninja, apresenta Hido.",
+      "explanation": "O ato 1, The Immortal Ninja, apresenta Hido. No anime: Hidan.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -2041,14 +2115,18 @@
       "id": "boss:4:2",
       "category": "Chefes",
       "subject": "world:4",
-      "prompt": "Qual é o **chefe inicial do ato 2 de Hidden Sand Village**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 2 de Hidden Sand Village**? Vale o nome do jogo ou do anime.",
       "answer": "Kizume",
       "answers": [
-        "Kizume"
+        "Kizume",
+        "Kisame"
       ],
-      "explanation": "O ato 2, The Monster of the Hidden Mist, apresenta Kizume.",
+      "explanation": "O ato 2, The Monster of the Hidden Mist, apresenta Kizume. No anime: Kisame.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -2069,14 +2147,18 @@
       "id": "boss:4:3",
       "category": "Chefes",
       "subject": "world:4",
-      "prompt": "Qual é o **chefe inicial do ato 3 de Hidden Sand Village**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 3 de Hidden Sand Village**? Vale o nome do jogo ou do anime.",
       "answer": "Zezsuo",
       "answers": [
-        "Zezsuo"
+        "Zezsuo",
+        "Zetsu"
       ],
-      "explanation": "O ato 3, The White Land, apresenta Zezsuo.",
+      "explanation": "O ato 3, The White Land, apresenta Zezsuo. No anime: Zetsu.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -2139,14 +2221,18 @@
       "id": "boss:4:6",
       "category": "Chefes",
       "subject": "world:4",
-      "prompt": "Qual é o **chefe inicial do ato 6 de Hidden Sand Village**? Responda com o nome do chefe no jogo.",
+      "prompt": "Qual é o **chefe inicial do ato 6 de Hidden Sand Village**? Vale o nome do jogo ou do anime.",
       "answer": "Sashora",
       "answers": [
-        "Sashora"
+        "Sashora",
+        "Sasori"
       ],
-      "explanation": "O ato 6, The Scorpion of the Red Sand, apresenta Sashora → Sashora (Puppet Master).",
+      "explanation": "O ato 6, The Scorpion of the Red Sand, apresenta Sashora → Sashora (Puppet Master). No anime: Sasori.",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -2156,11 +2242,15 @@
       "prompt": "Em qual **forma Sashora se transforma** no ato 6 de Hidden Sand Village?",
       "answer": "Sashora (Puppet Master)",
       "answers": [
-        "Sashora (Puppet Master)"
+        "Sashora (Puppet Master)",
+        "Sasori (Puppet Master)"
       ],
-      "explanation": "Neste ato, Sashora se transforma em Sashora (Puppet Master).",
+      "explanation": "Neste ato, Sashora se transforma em Sashora (Puppet Master). Também vale: Sasori (Puppet Master).",
       "sources": [
         "story"
+      ],
+      "alias_sources": [
+        "boss_names"
       ]
     },
     {
@@ -2181,14 +2271,14 @@
       "id": "story:first",
       "category": "Modos",
       "subject": "story",
-      "prompt": "Quantas **Gems** um ato de Story dava na **primeira conclusão**, segundo o registro de julho de 2022?",
+      "prompt": "Quantas **Gems** um ato de Story dava na **primeira conclusão**, no lançamento?",
       "answer": "75 Gems",
       "answers": [
         "75",
         "75 Gems",
         "75 gemas"
       ],
-      "explanation": "O registro histórico lista 75 Gems na primeira conclusão e 15 nas seguintes.",
+      "explanation": "Na primeira vez, você ganhava 75 Gems. Ao repetir o ato, eram 15 Gems.",
       "sources": [
         "story"
       ]
@@ -2197,14 +2287,14 @@
       "id": "story:repeat",
       "category": "Modos",
       "subject": "story",
-      "prompt": "Quantas **Gems** um ato de Story dava ao **completá-lo novamente**, no registro de julho de 2022?",
+      "prompt": "Quantas **Gems** um ato de Story dava ao **repetir o ato**, no lançamento?",
       "answer": "15 Gems",
       "answers": [
         "15",
         "15 Gems",
         "15 gemas"
       ],
-      "explanation": "O bônus da primeira conclusão não se repete: o registro lista 15 Gems nas repetições.",
+      "explanation": "Repetir um ato dava 15 Gems. O bônus de primeira conclusão não se repetia.",
       "sources": [
         "story"
       ]
@@ -2213,7 +2303,7 @@
       "id": "food:Senzu Beans:name",
       "category": "Comida e XP",
       "subject": "food:Senzu Beans",
-      "prompt": "Qual **alimento de XP** é obtido nos atos de Planet Namak?",
+      "prompt": "Qual **alimento de XP** você consegue nos atos de Planet Namak?",
       "answer": "Senzu Beans",
       "answers": [
         "Senzu Beans",
@@ -2228,7 +2318,7 @@
       "id": "food:Senzu Beans:xp",
       "category": "Comida e XP",
       "subject": "food:Senzu Beans",
-      "prompt": "Quanto **XP uma unidade recebe por um Senzu Beans** no registro do Release?",
+      "prompt": "Quanto **XP Senzu Beans dá para uma unidade**, no lançamento?",
       "answer": "25 XP",
       "answers": [
         "25",
@@ -2261,7 +2351,7 @@
       "id": "food:Mysterious Fluid:name",
       "category": "Comida e XP",
       "subject": "food:Mysterious Fluid",
-      "prompt": "Qual **alimento de XP** é obtido nos atos de Shiganshinu District?",
+      "prompt": "Qual **alimento de XP** você consegue nos atos de Shiganshinu District?",
       "answer": "Mysterious Fluid",
       "answers": [
         "Mysterious Fluid"
@@ -2275,7 +2365,7 @@
       "id": "food:Mysterious Fluid:xp",
       "category": "Comida e XP",
       "subject": "food:Mysterious Fluid",
-      "prompt": "Quanto **XP uma unidade recebe por um Mysterious Fluid** no registro do Release?",
+      "prompt": "Quanto **XP Mysterious Fluid dá para uma unidade**, no lançamento?",
       "answer": "50 XP",
       "answers": [
         "50",
@@ -2308,7 +2398,7 @@
       "id": "food:Wisteria Flower:name",
       "category": "Comida e XP",
       "subject": "food:Wisteria Flower",
-      "prompt": "Qual **alimento de XP** é obtido nos atos de Snowy Town?",
+      "prompt": "Qual **alimento de XP** você consegue nos atos de Snowy Town?",
       "answer": "Wisteria Flower",
       "answers": [
         "Wisteria Flower"
@@ -2322,7 +2412,7 @@
       "id": "food:Wisteria Flower:xp",
       "category": "Comida e XP",
       "subject": "food:Wisteria Flower",
-      "prompt": "Quanto **XP uma unidade recebe por um Wisteria Flower** no registro do Release?",
+      "prompt": "Quanto **XP Wisteria Flower dá para uma unidade**, no lançamento?",
       "answer": "115 XP",
       "answers": [
         "115",
@@ -2351,7 +2441,7 @@
       "id": "food:Ramen:name",
       "category": "Comida e XP",
       "subject": "food:Ramen",
-      "prompt": "Qual **alimento de XP** é obtido nos atos de Hidden Sand Village?",
+      "prompt": "Qual **alimento de XP** você consegue nos atos de Hidden Sand Village?",
       "answer": "Ramen",
       "answers": [
         "Ramen",
@@ -2366,7 +2456,7 @@
       "id": "food:Ramen:xp",
       "category": "Comida e XP",
       "subject": "food:Ramen",
-      "prompt": "Quanto **XP uma unidade recebe por um Ramen** no registro do Release?",
+      "prompt": "Quanto **XP Ramen dá para uma unidade**, no lançamento?",
       "answer": "250 XP",
       "answers": [
         "250",
@@ -2537,7 +2627,7 @@
       "id": "trait:item",
       "category": "Traits",
       "subject": "trait",
-      "prompt": "Qual **item** era usado para refazer traits no Release?",
+      "prompt": "Qual **item** era usado para refazer traits no lançamento?",
       "answer": "Star Remnant",
       "answers": [
         "Star Remnant",
@@ -2552,12 +2642,12 @@
       "id": "trait:npc",
       "category": "Traits",
       "subject": "trait",
-      "prompt": "Qual era o **NPC de reroll de traits** no registro de julho de 2022?",
+      "prompt": "Qual era o **NPC de reroll de traits** no lançamento?",
       "answer": "Wis",
       "answers": [
         "Wis"
       ],
-      "explanation": "A fonte histórica chama o NPC de Wis, localizado fora da área Evolve.",
+      "explanation": "Wis ficava do lado de fora da área Evolve.",
       "sources": [
         "traits"
       ]
@@ -2566,7 +2656,7 @@
       "id": "trait:shop",
       "category": "Traits",
       "subject": "trait",
-      "prompt": "Em qual **loja** os Star Remnants eram obtidos no registro do Release?",
+      "prompt": "Em qual **loja** os Star Remnants eram obtidos no lançamento?",
       "answer": "Travelling Merchant Shop",
       "answers": [
         "Travelling Merchant Shop",
@@ -2574,7 +2664,7 @@
         "Traveling Merchant",
         "Mercador Viajante"
       ],
-      "explanation": "A fonte de julho de 2022 registra a Travelling Merchant Shop como origem dos Star Remnants.",
+      "explanation": "Star Remnants eram obtidos na Travelling Merchant Shop.",
       "sources": [
         "traits"
       ]
@@ -2615,13 +2705,13 @@
       "id": "currency:ticket",
       "category": "Economia",
       "subject": "currency",
-      "prompt": "Qual **moeda** podia comprar Summon Tickets no Release?",
+      "prompt": "Qual **moeda** podia comprar Summon Tickets no lançamento?",
       "answer": "Gold",
       "answers": [
         "Gold",
         "Ouro"
       ],
-      "explanation": "A página histórica de Currencies cita Summon Tickets como um uso de Gold.",
+      "explanation": "Gold podia ser usado para comprar Summon Tickets.",
       "sources": [
         "currencies"
       ]
@@ -2637,7 +2727,7 @@
         "Iene",
         "Ienes"
       ],
-      "explanation": "Os custos históricos de implantação e upgrades são expressos em Yen (¥).",
+      "explanation": "Você usava Yen (¥) para colocar e melhorar as unidades no mapa.",
       "sources": [
         "madara"
       ]
@@ -2646,13 +2736,13 @@
       "id": "summon:pity",
       "category": "Summon",
       "subject": "summon",
-      "prompt": "Qual **raridade** era garantida ao completar o pity do summon no Release?",
+      "prompt": "Qual **raridade** era garantida ao completar o pity do summon no lançamento?",
       "answer": "Legendary",
       "answers": [
         "Legendary",
         "Lendária"
       ],
-      "explanation": "O pity histórico garantia uma unidade Legendary.",
+      "explanation": "Completar o pity garantia uma unidade Legendary.",
       "sources": [
         "summon"
       ]
@@ -2667,7 +2757,7 @@
         "Legendary",
         "Lendária"
       ],
-      "explanation": "O registro de julho de 2022 diz que tirar uma Legendary reiniciava o pity.",
+      "explanation": "Tirar uma Legendary antes de completar o pity zerava a contagem.",
       "sources": [
         "summon"
       ]
@@ -2693,13 +2783,13 @@
       "id": "infinite:difficulty",
       "category": "Modos",
       "subject": "infinite",
-      "prompt": "Em qual **dificuldade** o Infinite estava disponível no Release?",
+      "prompt": "Em qual **dificuldade** o Infinite estava disponível no lançamento?",
       "answer": "Hard",
       "answers": [
         "Hard",
         "Difícil"
       ],
-      "explanation": "O registro histórico diz que o Infinite só estava disponível em Hard.",
+      "explanation": "No lançamento, Infinite só estava disponível na dificuldade Hard.",
       "sources": [
         "infinite"
       ]
@@ -2770,12 +2860,12 @@
       "id": "code:release",
       "category": "Loja e códigos",
       "subject": "code",
-      "prompt": "Qual **código**, com o nome inglês de lançamento, dava 50 Gems no período do Release?",
+      "prompt": "Qual **código**, com o nome inglês de lançamento, dava 50 Gems no lançamento?",
       "answer": "RELEASE",
       "answers": [
         "RELEASE"
       ],
-      "explanation": "RELEASE está registrado com recompensa de 50 Gems. É uma informação histórica, não uma promessa de resgate atual.",
+      "explanation": "Na época do lançamento, RELEASE dava 50 Gems. Isso não significa que o código ainda esteja ativo.",
       "sources": [
         "codes"
       ]
@@ -2784,14 +2874,14 @@
       "id": "summon:cost",
       "category": "Summon",
       "subject": "summon",
-      "prompt": "Quantas **Gems custa um summon comum**, sem desconto VIP, no Release?",
+      "prompt": "Quantas **Gems custa um summon comum**, sem desconto VIP, no lançamento?",
       "answer": "50 Gems",
       "answers": [
         "50",
         "50 Gems",
         "50 gemas"
       ],
-      "explanation": "Cada summon comum custava 50 Gems no registro de julho de 2022.",
+      "explanation": "No lançamento, cada summon comum custava 50 Gems, sem desconto VIP.",
       "sources": [
         "summon"
       ]
@@ -2835,7 +2925,7 @@
       "id": "summon:progress",
       "category": "Summon",
       "subject": "summon",
-      "prompt": "Quantos **pontos percentuais de pity** cada summon adicionava no Release?",
+      "prompt": "Quantos **pontos percentuais de pity** cada summon adicionava no lançamento?",
       "answer": "2 %",
       "answers": [
         "2",
@@ -2859,7 +2949,7 @@
         "3 Gems",
         "3 gemas"
       ],
-      "explanation": "O registro histórico indica 3 Gems a cada 150 segundos para a taxa comum.",
+      "explanation": "Sem VIP nem Premium, você ganhava 3 Gems a cada 150 segundos.",
       "sources": [
         "time"
       ]
@@ -2975,7 +3065,7 @@
       "id": "quest:Summoning I:reward",
       "category": "Missões",
       "subject": "quest:Summoning I",
-      "prompt": "Quantas **Gems** a Daily quest **Summoning I** dava no registro do Release?",
+      "prompt": "Quantas **Gems** a Daily quest **Summoning I** dava no lançamento?",
       "answer": "10 Gems",
       "answers": [
         "10",
@@ -2997,7 +3087,7 @@
         "1",
         "1 invocação"
       ],
-      "explanation": "Objetivo histórico de Summoning I: 1 invocação.",
+      "explanation": "Summoning I pedia 1 invocação.",
       "sources": [
         "quests"
       ]
@@ -3006,7 +3096,7 @@
       "id": "quest:Challenge I:reward",
       "category": "Missões",
       "subject": "quest:Challenge I",
-      "prompt": "Quantas **Gems** a Daily quest **Challenge I** dava no registro do Release?",
+      "prompt": "Quantas **Gems** a Daily quest **Challenge I** dava no lançamento?",
       "answer": "20 Gems",
       "answers": [
         "20",
@@ -3028,7 +3118,7 @@
         "2",
         "2 Challenges"
       ],
-      "explanation": "Objetivo histórico de Challenge I: 2 Challenges.",
+      "explanation": "Challenge I pedia 2 Challenges.",
       "sources": [
         "quests"
       ]
@@ -3037,7 +3127,7 @@
       "id": "quest:Damage I:reward",
       "category": "Missões",
       "subject": "quest:Damage I",
-      "prompt": "Quantas **Gems** a Daily quest **Damage I** dava no registro do Release?",
+      "prompt": "Quantas **Gems** a Daily quest **Damage I** dava no lançamento?",
       "answer": "15 Gems",
       "answers": [
         "15",
@@ -3061,7 +3151,7 @@
         "10.000",
         "10,000"
       ],
-      "explanation": "Objetivo histórico de Damage I: 10000 de dano.",
+      "explanation": "Damage I pedia 10000 de dano.",
       "sources": [
         "quests"
       ]
@@ -3070,7 +3160,7 @@
       "id": "quest:Story II:reward",
       "category": "Missões",
       "subject": "quest:Story II",
-      "prompt": "Quantas **Gems** a Daily quest **Story II** dava no registro do Release?",
+      "prompt": "Quantas **Gems** a Daily quest **Story II** dava no lançamento?",
       "answer": "30 Gems",
       "answers": [
         "30",
@@ -3092,7 +3182,7 @@
         "3",
         "3 conclusões de Story"
       ],
-      "explanation": "Objetivo histórico de Story II: 3 conclusões de Story.",
+      "explanation": "Story II pedia 3 conclusões de Story.",
       "sources": [
         "quests"
       ]
@@ -3101,7 +3191,7 @@
       "id": "quest:Story III:reward",
       "category": "Missões",
       "subject": "quest:Story III",
-      "prompt": "Quantas **Gems** a Daily quest **Story III** dava no registro do Release?",
+      "prompt": "Quantas **Gems** a Daily quest **Story III** dava no lançamento?",
       "answer": "50 Gems",
       "answers": [
         "50",
@@ -3123,7 +3213,7 @@
         "5",
         "5 conclusões de Story"
       ],
-      "explanation": "Objetivo histórico de Story III: 5 conclusões de Story.",
+      "explanation": "Story III pedia 5 conclusões de Story.",
       "sources": [
         "quests"
       ]
@@ -3132,7 +3222,7 @@
       "id": "quest:Multiplayer II:reward",
       "category": "Missões",
       "subject": "quest:Multiplayer II",
-      "prompt": "Quantas **Gems** a Daily quest **Multiplayer II** dava no registro do Release?",
+      "prompt": "Quantas **Gems** a Daily quest **Multiplayer II** dava no lançamento?",
       "answer": "30 Gems",
       "answers": [
         "30",
@@ -3154,7 +3244,7 @@
         "3",
         "3 conclusões em coop"
       ],
-      "explanation": "Objetivo histórico de Multiplayer II: 3 conclusões em coop.",
+      "explanation": "Multiplayer II pedia 3 conclusões em coop.",
       "sources": [
         "quests"
       ]
@@ -3163,7 +3253,7 @@
       "id": "quest:Multiplayer III:reward",
       "category": "Missões",
       "subject": "quest:Multiplayer III",
-      "prompt": "Quantas **Gems** a Daily quest **Multiplayer III** dava no registro do Release?",
+      "prompt": "Quantas **Gems** a Daily quest **Multiplayer III** dava no lançamento?",
       "answer": "50 Gems",
       "answers": [
         "50",
@@ -3185,7 +3275,7 @@
         "5",
         "5 conclusões em coop"
       ],
-      "explanation": "Objetivo histórico de Multiplayer III: 5 conclusões em coop.",
+      "explanation": "Multiplayer III pedia 5 conclusões em coop.",
       "sources": [
         "quests"
       ]
@@ -3194,7 +3284,7 @@
       "id": "quest:Kills IV:reward",
       "category": "Missões",
       "subject": "quest:Kills IV",
-      "prompt": "Quantas **Gems** a Daily quest **Kills IV** dava no registro do Release?",
+      "prompt": "Quantas **Gems** a Daily quest **Kills IV** dava no lançamento?",
       "answer": "35 Gems",
       "answers": [
         "35",
@@ -3218,7 +3308,7 @@
         "1.000",
         "1,000"
       ],
-      "explanation": "Objetivo histórico de Kills IV: 1000 inimigos.",
+      "explanation": "Kills IV pedia 1000 inimigos.",
       "sources": [
         "quests"
       ]
@@ -3227,7 +3317,7 @@
       "id": "quest:Kills V:reward",
       "category": "Missões",
       "subject": "quest:Kills V",
-      "prompt": "Quantas **Gems** a Daily quest **Kills V** dava no registro do Release?",
+      "prompt": "Quantas **Gems** a Daily quest **Kills V** dava no lançamento?",
       "answer": "50 Gems",
       "answers": [
         "50",
@@ -3251,7 +3341,7 @@
         "2.000",
         "2,000"
       ],
-      "explanation": "Objetivo histórico de Kills V: 2000 inimigos.",
+      "explanation": "Kills V pedia 2000 inimigos.",
       "sources": [
         "quests"
       ]
@@ -3274,14 +3364,14 @@
       "id": "store:Super Lucky:price",
       "category": "Loja e códigos",
       "subject": "store:Super Lucky",
-      "prompt": "Qual era o **preço em Robux de Super Lucky**, segundo a loja registrada em julho de 2022?",
+      "prompt": "Qual era o **preço em Robux de Super Lucky**, na loja do lançamento?",
       "answer": "99 Robux",
       "answers": [
         "99",
         "99 Robux",
         "99 R$"
       ],
-      "explanation": "Super Lucky custava 99 Robux naquele registro histórico.",
+      "explanation": "Super Lucky custava 99 Robux na época do lançamento.",
       "sources": [
         "store"
       ]
@@ -3304,14 +3394,14 @@
       "id": "store:Ultra Lucky:price",
       "category": "Loja e códigos",
       "subject": "store:Ultra Lucky",
-      "prompt": "Qual era o **preço em Robux de Ultra Lucky**, segundo a loja registrada em julho de 2022?",
+      "prompt": "Qual era o **preço em Robux de Ultra Lucky**, na loja do lançamento?",
       "answer": "149 Robux",
       "answers": [
         "149",
         "149 Robux",
         "149 R$"
       ],
-      "explanation": "Ultra Lucky custava 149 Robux naquele registro histórico.",
+      "explanation": "Ultra Lucky custava 149 Robux na época do lançamento.",
       "sources": [
         "store"
       ]
@@ -3334,14 +3424,14 @@
       "id": "store:VIP:price",
       "category": "Loja e códigos",
       "subject": "store:VIP",
-      "prompt": "Qual era o **preço em Robux de VIP**, segundo a loja registrada em julho de 2022?",
+      "prompt": "Qual era o **preço em Robux de VIP**, na loja do lançamento?",
       "answer": "299 Robux",
       "answers": [
         "299",
         "299 Robux",
         "299 R$"
       ],
-      "explanation": "VIP custava 299 Robux naquele registro histórico.",
+      "explanation": "VIP custava 299 Robux na época do lançamento.",
       "sources": [
         "store"
       ]
@@ -3364,14 +3454,14 @@
       "id": "store:Shiny Hunter:price",
       "category": "Loja e códigos",
       "subject": "store:Shiny Hunter",
-      "prompt": "Qual era o **preço em Robux de Shiny Hunter**, segundo a loja registrada em julho de 2022?",
+      "prompt": "Qual era o **preço em Robux de Shiny Hunter**, na loja do lançamento?",
       "answer": "1299 Robux",
       "answers": [
         "1299",
         "1299 Robux",
         "1299 R$"
       ],
-      "explanation": "Shiny Hunter custava 1299 Robux naquele registro histórico.",
+      "explanation": "Shiny Hunter custava 1299 Robux na época do lançamento.",
       "sources": [
         "store"
       ]
@@ -3394,14 +3484,14 @@
       "id": "store:Unit Storage:price",
       "category": "Loja e códigos",
       "subject": "store:Unit Storage",
-      "prompt": "Qual era o **preço em Robux de Unit Storage**, segundo a loja registrada em julho de 2022?",
+      "prompt": "Qual era o **preço em Robux de Unit Storage**, na loja do lançamento?",
       "answer": "99 Robux",
       "answers": [
         "99",
         "99 Robux",
         "99 R$"
       ],
-      "explanation": "Unit Storage custava 99 Robux naquele registro histórico.",
+      "explanation": "Unit Storage custava 99 Robux na época do lançamento.",
       "sources": [
         "store"
       ]
@@ -3424,14 +3514,14 @@
       "id": "store:Display 3 Units:price",
       "category": "Loja e códigos",
       "subject": "store:Display 3 Units",
-      "prompt": "Qual era o **preço em Robux de Display 3 Units**, segundo a loja registrada em julho de 2022?",
+      "prompt": "Qual era o **preço em Robux de Display 3 Units**, na loja do lançamento?",
       "answer": "199 Robux",
       "answers": [
         "199",
         "199 Robux",
         "199 R$"
       ],
-      "explanation": "Display 3 Units custava 199 Robux naquele registro histórico.",
+      "explanation": "Display 3 Units custava 199 Robux na época do lançamento.",
       "sources": [
         "store"
       ]
@@ -3440,7 +3530,7 @@
       "id": "stats:madara:cost",
       "category": "Upgrades",
       "subject": "madara",
-      "prompt": "Qual era o **custo de implantação em Yen de Madara**, na ficha de julho de 2022?",
+      "prompt": "No lançamento, quantos **Yen custava colocar Madara no mapa**?",
       "answer": "1400 Yen",
       "answers": [
         "1400",
@@ -3448,7 +3538,7 @@
         "1400 ienes",
         "1400 ¥"
       ],
-      "explanation": "A ficha histórica registra implantação de Madara por 1400 Yen.",
+      "explanation": "Colocar Madara no mapa custava 1400 Yen.",
       "sources": [
         "madara"
       ]
@@ -3457,13 +3547,13 @@
       "id": "stats:madara:upgrades",
       "category": "Upgrades",
       "subject": "madara",
-      "prompt": "Quantos **níveis de upgrade** Madara tinha na ficha do Release?",
+      "prompt": "Quantos **upgrades Madara tinha** no lançamento?",
       "answer": "7 upgrades",
       "answers": [
         "7",
         "7 upgrades"
       ],
-      "explanation": "A ficha histórica de Madara possui 7 upgrades.",
+      "explanation": "Madara tinha 7 upgrades.",
       "sources": [
         "madara"
       ]
@@ -3472,7 +3562,7 @@
       "id": "stats:madara:ability",
       "category": "Upgrades",
       "subject": "madara",
-      "prompt": "Qual **ataque Madara ganhava no upgrade 2**, segundo a ficha do Release? Responda com o nome em inglês.",
+      "prompt": "Qual **ataque Madara ganhava no upgrade 2**, no lançamento? Responda com o nome em inglês.",
       "answer": "Susanoo Strike",
       "answers": [
         "Susanoo Strike"
@@ -3486,7 +3576,7 @@
       "id": "stats:ichigo:cost",
       "category": "Upgrades",
       "subject": "ichigo",
-      "prompt": "Qual era o **custo de implantação em Yen de Ichigo**, na ficha de julho de 2022?",
+      "prompt": "No lançamento, quantos **Yen custava colocar Ichigo no mapa**?",
       "answer": "350 Yen",
       "answers": [
         "350",
@@ -3494,7 +3584,7 @@
         "350 ienes",
         "350 ¥"
       ],
-      "explanation": "A ficha histórica registra implantação de Ichigo por 350 Yen.",
+      "explanation": "Colocar Ichigo no mapa custava 350 Yen.",
       "sources": [
         "ichigo"
       ]
@@ -3503,13 +3593,13 @@
       "id": "stats:ichigo:upgrades",
       "category": "Upgrades",
       "subject": "ichigo",
-      "prompt": "Quantos **níveis de upgrade** Ichigo tinha na ficha do Release?",
+      "prompt": "Quantos **upgrades Ichigo tinha** no lançamento?",
       "answer": "4 upgrades",
       "answers": [
         "4",
         "4 upgrades"
       ],
-      "explanation": "A ficha histórica de Ichigo possui 4 upgrades.",
+      "explanation": "Ichigo tinha 4 upgrades.",
       "sources": [
         "ichigo"
       ]
@@ -3518,7 +3608,7 @@
       "id": "stats:ichigo:ability",
       "category": "Upgrades",
       "subject": "ichigo",
-      "prompt": "Qual **ataque Ichigo ganhava no upgrade 4**, segundo a ficha do Release? Responda com o nome em inglês.",
+      "prompt": "Qual **ataque Ichigo ganhava no upgrade 4**, no lançamento? Responda com o nome em inglês.",
       "answer": "Cross Slash",
       "answers": [
         "Cross Slash"
@@ -3532,7 +3622,7 @@
       "id": "stats:josuke:cost",
       "category": "Upgrades",
       "subject": "josuke",
-      "prompt": "Qual era o **custo de implantação em Yen de Josuke**, na ficha de julho de 2022?",
+      "prompt": "No lançamento, quantos **Yen custava colocar Josuke no mapa**?",
       "answer": "400 Yen",
       "answers": [
         "400",
@@ -3540,7 +3630,7 @@
         "400 ienes",
         "400 ¥"
       ],
-      "explanation": "A ficha histórica registra implantação de Josuke por 400 Yen.",
+      "explanation": "Colocar Josuke no mapa custava 400 Yen.",
       "sources": [
         "josuke"
       ]
@@ -3549,13 +3639,13 @@
       "id": "stats:josuke:upgrades",
       "category": "Upgrades",
       "subject": "josuke",
-      "prompt": "Quantos **níveis de upgrade** Josuke tinha na ficha do Release?",
+      "prompt": "Quantos **upgrades Josuke tinha** no lançamento?",
       "answer": "4 upgrades",
       "answers": [
         "4",
         "4 upgrades"
       ],
-      "explanation": "A ficha histórica de Josuke possui 4 upgrades.",
+      "explanation": "Josuke tinha 4 upgrades.",
       "sources": [
         "josuke"
       ]
@@ -3564,7 +3654,7 @@
       "id": "stats:josuke:ability",
       "category": "Upgrades",
       "subject": "josuke",
-      "prompt": "Qual **ataque Josuke ganhava no upgrade 3**, segundo a ficha do Release? Responda com o nome em inglês.",
+      "prompt": "Qual **ataque Josuke ganhava no upgrade 3**, no lançamento? Responda com o nome em inglês.",
       "answer": "Disassembling Punch",
       "answers": [
         "Disassembling Punch"
@@ -3578,7 +3668,7 @@
       "id": "stats:zoro:cost",
       "category": "Upgrades",
       "subject": "zoro",
-      "prompt": "Qual era o **custo de implantação em Yen de Zoro**, na ficha de julho de 2022?",
+      "prompt": "No lançamento, quantos **Yen custava colocar Zoro no mapa**?",
       "answer": "400 Yen",
       "answers": [
         "400",
@@ -3586,7 +3676,7 @@
         "400 ienes",
         "400 ¥"
       ],
-      "explanation": "A ficha histórica registra implantação de Zoro por 400 Yen.",
+      "explanation": "Colocar Zoro no mapa custava 400 Yen.",
       "sources": [
         "zoro"
       ]
@@ -3595,13 +3685,13 @@
       "id": "stats:zoro:upgrades",
       "category": "Upgrades",
       "subject": "zoro",
-      "prompt": "Quantos **níveis de upgrade** Zoro tinha na ficha do Release?",
+      "prompt": "Quantos **upgrades Zoro tinha** no lançamento?",
       "answer": "4 upgrades",
       "answers": [
         "4",
         "4 upgrades"
       ],
-      "explanation": "A ficha histórica de Zoro possui 4 upgrades.",
+      "explanation": "Zoro tinha 4 upgrades.",
       "sources": [
         "zoro"
       ]
@@ -3610,7 +3700,7 @@
       "id": "stats:zoro:ability",
       "category": "Upgrades",
       "subject": "zoro",
-      "prompt": "Qual **ataque Zoro ganhava no upgrade 3**, segundo a ficha do Release? Responda com o nome em inglês.",
+      "prompt": "Qual **ataque Zoro ganhava no upgrade 3**, no lançamento? Responda com o nome em inglês.",
       "answer": "Three Sword Style",
       "answers": [
         "Three Sword Style"
@@ -3624,7 +3714,7 @@
       "id": "stats:madara:perfect",
       "category": "Upgrades",
       "subject": "madara",
-      "prompt": "Qual **ataque Madara ganhava no upgrade 7**, na ficha do Release?",
+      "prompt": "Qual **ataque Madara ganhava no upgrade 7**, no lançamento?",
       "answer": "Perfected Susanoo",
       "answers": [
         "Perfected Susanoo"
@@ -3638,14 +3728,14 @@
       "id": "stats:sell",
       "category": "Economia",
       "subject": "stats",
-      "prompt": "Na ficha do Release de Madara, qual **porcentagem do custo de implantação e upgrades** era recuperada na venda?",
+      "prompt": "No lançamento, que **porcentagem do que você gastou em Madara** voltava ao vender a unidade?",
       "answer": "25 %",
       "answers": [
         "25",
         "25 %",
         "25 por cento"
       ],
-      "explanation": "A ficha registra retorno de 25% do investimento ao vender a unidade.",
+      "explanation": "Ao vender a unidade, você recebia 25% do total gasto para colocá-la no mapa e fazer seus upgrades.",
       "sources": [
         "madara"
       ]

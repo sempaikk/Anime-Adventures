@@ -146,7 +146,7 @@ class QuizSession:
     async def expire_lobby(self):
         await asyncio.sleep(LOBBY_TIMEOUT)
         if self.phase == 'lobby' and self.running:
-            await self.stop_now('O painel fechou porque a partida não foi iniciada. Abra outra quando quiser.')
+            await self.stop_now('Ninguém iniciou a partida. Use /adventures quando quiser jogar.')
 
     def launch(self):
         self.running = True
@@ -337,11 +337,11 @@ class QuizSession:
         except discord.HTTPException:
             log.exception('Sessão interrompida por erro do Discord no canal %s', self.channel.id)
             with contextlib.suppress(discord.HTTPException):
-                await self.channel.send('A aventura foi interrompida. Confira as permissões do canal e use **/adventures** para abrir outro painel.')
+                await self.channel.send('Não deu para continuar o quiz. Confira as permissões do canal e use **/adventures** para tentar de novo.')
         except Exception:
             log.exception('Erro na sessão do canal %s', self.channel.id)
             with contextlib.suppress(discord.HTTPException):
-                await self.channel.send('A aventura precisou ser encerrada. Use **/adventures** para começar outra.')
+                await self.channel.send('Deu um erro e o quiz precisou parar. Use **/adventures** para jogar de novo.')
         finally:
             self.running = False
             self.phase = 'ended'
@@ -409,13 +409,13 @@ async def begin_lobby(interaction):
         return
     existing = active_sessions.get(interaction.channel.id)
     if existing and existing.running:
-        await interaction.response.send_message('Já existe uma aventura neste canal. Use o painel mais recente para participar.', ephemeral=True)
+        await interaction.response.send_message('Já tem um quiz aberto neste canal. É só participar pelo painel mais recente.', ephemeral=True)
         return
     session = QuizSession(interaction.channel, interaction.user, bot.scores)
     session.running = True
     active_sessions[session.channel.id] = session
     try:
-        await interaction.response.send_message('✦ Painel aberto! Escolha os assuntos e toque em **Começar aventura**.', ephemeral=True)
+        await interaction.response.send_message('✦ Painel aberto! Escolha os assuntos e toque em **Começar quiz**.', ephemeral=True)
         await session.open_lobby()
     except BaseException:
         session.running = False
@@ -449,15 +449,15 @@ async def handle_control(interaction, action, value=None):
         return
     if (session is None or not session.running or session.control_message is None
             or interaction.message is None or session.control_message.id != interaction.message.id):
-        await interaction.response.send_message('Este painel já foi concluído. Use o painel mais recente ou **/adventures** para começar.', ephemeral=True)
+        await interaction.response.send_message('Esse painel já foi encerrado. Use o mais recente ou abra outro com **/adventures**.', ephemeral=True)
         return
     owner = interaction.user.id == session.host.id
     if action in ('start', 'category', 'time'):
         if not owner:
-            await interaction.response.send_message('O anfitrião escolhe as opções e inicia a partida. Você pode responder assim que ela começar!', ephemeral=True)
+            await interaction.response.send_message('Só quem abriu o quiz pode ajustar as opções e começar. Quando a pergunta aparecer, todo mundo pode responder!', ephemeral=True)
             return
         if session.phase != 'lobby':
-            await interaction.response.send_message('As opções são escolhidas antes de começar a aventura.', ephemeral=True)
+            await interaction.response.send_message('Essas opções só podem mudar antes da partida começar.', ephemeral=True)
             return
         if action == 'category':
             if value not in screen.GROUPS:
@@ -477,7 +477,7 @@ async def handle_control(interaction, action, value=None):
             await session.refresh_controls()
         return
     if not (owner or is_moderator(interaction.user)):
-        await interaction.response.send_message('Pausar, retomar e encerrar ficam com o anfitrião e a moderação. Todos podem consultar o placar e jogar.', ephemeral=True)
+        await interaction.response.send_message('Só quem criou a partida e a moderação podem pausar, retomar ou encerrar. Você pode responder e consultar o placar normalmente.', ephemeral=True)
         return
     if action == 'pause':
         if session.is_paused:
@@ -488,7 +488,7 @@ async def handle_control(interaction, action, value=None):
                 await session.refresh_controls()
             return
         if not session.pause():
-            await interaction.response.send_message('Esta etapa já terminou ou está em pausa. Use os controles do painel mais recente.', ephemeral=True)
+            await interaction.response.send_message('Essa rodada já terminou ou está pausada. Use o painel mais recente.', ephemeral=True)
             return
         try:
             await interaction.response.defer()
@@ -502,7 +502,7 @@ async def handle_control(interaction, action, value=None):
                 finally:
                     await session.refresh_controls()
                 return
-            await interaction.response.send_message('Esta etapa já foi retomada ou encerrada.', ephemeral=True)
+            await interaction.response.send_message('Essa rodada já voltou ou foi encerrada. Confira o painel mais recente.', ephemeral=True)
             return
         try:
             await interaction.response.defer()
@@ -511,7 +511,7 @@ async def handle_control(interaction, action, value=None):
     elif action == 'stop':
         if session.phase in ('question', 'resolving'):
             session.stop_requested = True
-            await interaction.response.send_message('Esta será a última pergunta. O tempo e o ponto em disputa continuam valendo até ela terminar.', ephemeral=True)
+            await interaction.response.send_message('Beleza, essa é a última pergunta! Ainda dá para responder e ganhar o ponto antes de encerrar.', ephemeral=True)
             await session.refresh_controls()
         else:
             # Mark the session stopped before acknowledging; the loop cannot start another round.
@@ -519,9 +519,9 @@ async def handle_control(interaction, action, value=None):
             try:
                 await interaction.response.defer()
             finally:
-                await session.stop_now('Encerrada pelo anfitrião ou pela moderação. Obrigado por jogar!')
+                await session.stop_now('Partida encerrada por quem criou o quiz ou pela moderação. Valeu por jogar!')
     else:
-        await interaction.response.send_message('A partida mudou de etapa. Use os controles do painel mais recente.', ephemeral=True)
+        await interaction.response.send_message('O quiz já passou para outra rodada. Use o painel mais recente.', ephemeral=True)
 
 
 @bot.event
@@ -546,7 +546,7 @@ async def release_deleted_panel(channel_id, message_ids):
     if session.phase in ('question', 'resolving') and future and future.done() and not future.cancelled():
         session.stop_requested = True
         return
-    await session.stop_now('O painel da partida foi removido. Use /adventures para abrir outra aventura.')
+    await session.stop_now('O painel foi apagado. Use /adventures para jogar de novo.')
 
 
 @bot.event
@@ -570,7 +570,7 @@ async def on_guild_channel_delete(channel):
         await session.stop_now('O canal da partida foi removido.')
 
 
-@bot.tree.command(name='adventures', description='Abra o quiz Release de Anime Adventures com imagens, placar e pausa.')
+@bot.tree.command(name='adventures', description='Jogue o quiz de Anime Adventures com imagens, placar e pausa.')
 @app_commands.guild_only()
 async def adventures(interaction: discord.Interaction):
     await begin_lobby(interaction)

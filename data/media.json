@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "policy": "Only user-supplied banners or Anime Adventures wiki media. No generated images. Current wiki visuals are permitted; gameplay data remains restricted to Release. Crops are deterministic and only remove unrelated text/UI.",
+  "policy": "Only user-supplied banners or Anime Adventures wiki media. No generated images. Current wiki visuals are permitted; gameplay data remains restricted to Release. Crops are deterministic and only remove unrelated text/UI. Rarity questions only show portraits explicitly reviewed as rarity_safe. Character identification uses neutral ALT text and opaque filenames; its images are original copies.",
   "assets": {
     "banner-summon": {
       "kind": "user_provided",
@@ -18,7 +18,9 @@
         "generation": false
       },
       "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
-      "approval": "Second banner supplied in chat, visually matched to the original official game thumbnail; no generated pixels."
+      "approval": "Second banner supplied in chat, visually matched to the original official game thumbnail; no generated pixels.",
+      "width": 768,
+      "height": 431
     },
     "game-logo": {
       "kind": "wiki",
@@ -35,7 +37,9 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "width": 959,
+      "height": 419
     },
     "unit-zoro": {
       "kind": "wiki",
@@ -58,7 +62,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/71c5bb4b884443510be88aa5.png",
+      "width": 61,
+      "height": 63
     },
     "unit-josuke": {
       "kind": "wiki",
@@ -81,7 +89,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/fad8b3718b4ac89d1eb907aa.png",
+      "width": 99,
+      "height": 102
     },
     "unit-ichigo": {
       "kind": "wiki",
@@ -104,7 +116,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/634b0663e494cc1743577101.png",
+      "width": 113,
+      "height": 118
     },
     "unit-nezuko": {
       "kind": "wiki",
@@ -127,7 +143,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/0583f9059f0bd9041226987b.png",
+      "width": 116,
+      "height": 120
     },
     "unit-usopp": {
       "kind": "wiki",
@@ -150,7 +170,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/2cc152e1572079e5536856ed.png",
+      "width": 272,
+      "height": 282
     },
     "unit-goku": {
       "kind": "wiki",
@@ -173,7 +197,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/f885a07dbbe6ee312777aa02.png",
+      "width": 61,
+      "height": 63
     },
     "unit-uraraka": {
       "kind": "wiki",
@@ -196,7 +224,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/f8d9aee1b17a035277426f22.png",
+      "width": 171,
+      "height": 176
     },
     "unit-luffy": {
       "kind": "wiki",
@@ -219,7 +251,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/9020bb595b2a6092704f475a.png",
+      "width": 272,
+      "height": 282
     },
     "unit-tanjiro": {
       "kind": "wiki",
@@ -242,7 +278,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/2ce95d6cdbe3e6e1e5f956c7.png",
+      "width": 123,
+      "height": 127
     },
     "unit-naruto": {
       "kind": "wiki",
@@ -265,7 +305,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/466d51141c56f2396eef9f06.png",
+      "width": 61,
+      "height": 63
     },
     "unit-krillin": {
       "kind": "wiki",
@@ -288,7 +332,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/945c1a8f03ca601b496529b4.png",
+      "width": 61,
+      "height": 63
     },
     "unit-vegeta": {
       "kind": "wiki",
@@ -311,7 +359,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/cde07a3450366457e2d4ed97.png",
+      "width": 61,
+      "height": 63
     },
     "unit-sasuke": {
       "kind": "wiki",
@@ -334,7 +386,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/d5ce08835d6bef5d2b119838.png",
+      "width": 61,
+      "height": 63
     },
     "unit-sakura": {
       "kind": "wiki",
@@ -357,7 +413,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/0fa9c2aa50596b3f3919ee3e.png",
+      "width": 61,
+      "height": 63
     },
     "unit-sanji": {
       "kind": "wiki",
@@ -380,7 +440,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": false,
+      "quiz_path": "assets/quiz/5ff95b65c7609c4df66eb9e9.png",
+      "width": 61,
+      "height": 63
     },
     "unit-jonathan": {
       "kind": "wiki",
@@ -397,7 +461,11 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "quiz_path": "assets/quiz/9a14b9f871f7dd132dccf992.webp",
+      "width": 387,
+      "height": 442
     },
     "unit-speedwagon": {
       "kind": "wiki",
@@ -414,7 +482,11 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "quiz_path": "assets/quiz/0eeee7378dd798764cebf285.webp",
+      "width": 600,
+      "height": 600
     },
     "unit-all_might": {
       "kind": "wiki",
@@ -437,7 +509,11 @@
         ],
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "quiz_path": "assets/quiz/da7ca2b6aa0031e998470638.png",
+      "width": 103,
+      "height": 60
     },
     "unit-erwin": {
       "kind": "wiki",
@@ -454,7 +530,11 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "quiz_path": "assets/quiz/38a3a463960c3a7734491f10.webp",
+      "width": 591,
+      "height": 546
     },
     "unit-armin": {
       "kind": "wiki",
@@ -471,7 +551,11 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "quiz_path": "assets/quiz/559f7e0bea13d2f8f60c0d3b.webp",
+      "width": 900,
+      "height": 900
     },
     "unit-levi": {
       "kind": "wiki",
@@ -488,7 +572,11 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "quiz_path": "assets/quiz/fbc80252aa1030ea0acc16c4.webp",
+      "width": 900,
+      "height": 900
     },
     "unit-madara": {
       "kind": "wiki",
@@ -505,7 +593,11 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "quiz_path": "assets/quiz/5986187f9c9706c653dd1556.webp",
+      "width": 900,
+      "height": 900
     },
     "unit-broly": {
       "kind": "wiki",
@@ -522,7 +614,11 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "quiz_path": "assets/quiz/24c77ace35370e69bce48c21.webp",
+      "width": 900,
+      "height": 900
     },
     "unit-rengoku": {
       "kind": "wiki",
@@ -539,7 +635,11 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "quiz_path": "assets/quiz/044765e0f06956054c8e0093.webp",
+      "width": 900,
+      "height": 900
     },
     "unit-diavolo": {
       "kind": "wiki",
@@ -556,7 +656,11 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "quiz_path": "assets/quiz/f4db735ae870d4196d8ff04b.webp",
+      "width": 900,
+      "height": 900
     },
     "unit-madara_evolved": {
       "kind": "wiki",
@@ -573,7 +677,10 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "width": 900,
+      "height": 900
     },
     "unit-levi_evolved": {
       "kind": "wiki",
@@ -590,7 +697,10 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "width": 900,
+      "height": 900
     },
     "unit-broly_evolved": {
       "kind": "wiki",
@@ -607,7 +717,10 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "rarity_safe": true,
+      "width": 900,
+      "height": 900
     },
     "map-1": {
       "kind": "wiki",
@@ -624,7 +737,9 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "width": 1023,
+      "height": 575
     },
     "map-2": {
       "kind": "wiki",
@@ -641,7 +756,9 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "width": 1023,
+      "height": 575
     },
     "map-3": {
       "kind": "wiki",
@@ -658,7 +775,9 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "width": 1023,
+      "height": 575
     },
     "map-4": {
       "kind": "wiki",
@@ -675,7 +794,9 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "width": 1023,
+      "height": 575
     },
     "food-senzu_bean": {
       "kind": "wiki",
@@ -692,7 +813,9 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "width": 228,
+      "height": 228
     },
     "food-mysterious_fluid": {
       "kind": "wiki",
@@ -709,7 +832,9 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "width": 228,
+      "height": 228
     },
     "food-wisteria_flower": {
       "kind": "wiki",
@@ -726,7 +851,9 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "width": 228,
+      "height": 228
     },
     "food-ramen_bowl": {
       "kind": "wiki",
@@ -743,7 +870,9 @@
         "type": "original_copy",
         "generation": false
       },
-      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "width": 228,
+      "height": 228
     },
     "banner-p2w": {
       "kind": "user_provided",
@@ -761,7 +890,9 @@
         "generation": false
       },
       "review": "Visually matched to the first banner supplied in chat; original PNG copied unchanged.",
-      "approval": "First banner supplied by the user in chat, then supplied as a signed Discord attachment link; fetched from the corresponding original CDN URL."
+      "approval": "First banner supplied by the user in chat, then supplied as a signed Discord attachment link; fetched from the corresponding original CDN URL.",
+      "width": 498,
+      "height": 280
     }
   },
   "units": {

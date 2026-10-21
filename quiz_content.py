@@ -37,6 +37,7 @@ class Question:
     sources: tuple[str, ...]
     subject: str
     rarity: str | None = None
+    alias_sources: tuple[str, ...] = ()
 
     def accepts(self, answer: str) -> bool:
         return normalize_answer(answer) in self.accepted
@@ -63,22 +64,23 @@ def load_pack(path: Path = DATA_FILE) -> ContentPack:
     for unit in data["units"]:
         if unit["rarity"] not in RARITIES:
             raise ValueError(f"Raridade histórica inválida: {unit['id']}")
-        label = f"{unit['character']} · {unit['game_name']}"
-        detail = f"{unit['character']} é de {unit['anime']}. No jogo: {unit['game_name']}."
-        if unit.get("historical_name"):
-            detail += f" Nome histórico: {unit['historical_name']}."
+        aliases = list(dict.fromkeys([unit["game_name"], unit["character"],
+                                      *([unit["historical_name"]] if unit.get("historical_name") else []),
+                                      *unit["aliases"]]))
+        label = f"{unit['game_name']} · {unit['character']}"
+        detail = f"**Anime:** {unit['anime']}\n**Também vale:** {', '.join(aliases[1:])}."
         raw_questions.append({
             "id": f"unit:{unit['id']}", "category": "Unidades", "subject": unit["id"],
-            "prompt": f"**Quem é esta unidade?**\n\n{unit['hint']}",
-            "answer": label, "answers": [unit["character"], unit["game_name"], *unit["aliases"]],
+            "prompt": f"Quem é esse personagem?\n\n{unit['hint']}",
+            "answer": label, "answers": aliases,
             "explanation": detail, "sources": unit["sources"], "rarity": unit["rarity"],
         })
         raw_questions.append({
             "id": f"rarity:{unit['id']}", "category": "Raridades", "subject": unit["id"],
-            "prompt": f"Qual era a **raridade da forma base** de {unit['character']} no Release?",
-            "answer": f"{unit['rarity']} · {RARITIES[unit['rarity']]}",
+            "prompt": f"Qual era a **raridade de {unit['character']} na forma base**, no lançamento?",
+            "answer": f"{RARITIES[unit['rarity']]} · {unit['rarity']}",
             "answers": RARITY_ANSWERS[unit["rarity"]],
-            "explanation": f"A forma base de {unit['character']} está listada como {unit['rarity']} na lista de julho de 2022.",
+            "explanation": f"No lançamento, {unit['game_name']} ({unit['character']}) era uma unidade {RARITIES[unit['rarity']].lower()}.",
             "sources": ["roster"],
         })
     questions = []
@@ -92,6 +94,10 @@ def load_pack(path: Path = DATA_FILE) -> ContentPack:
         identifiers.add(raw["id"])
         if not set(raw["sources"]) <= sources.keys():
             raise ValueError(f"Fonte ausente: {raw['id']}")
+        alias_sources = raw.get("alias_sources", [])
+        if (not isinstance(alias_sources, list) or not all(isinstance(s, str) for s in alias_sources)
+                or not set(alias_sources) <= sources.keys()):
+            raise ValueError(f"Fonte de nomes inválida: {raw['id']}")
         if not isinstance(raw["answers"], list) or not all(isinstance(a, str) for a in raw["answers"]):
             raise ValueError(f"Lista de respostas inválida: {raw['id']}")
         answers = tuple(dict.fromkeys(normalize_answer(a) for a in raw["answers"]))
@@ -103,6 +109,7 @@ def load_pack(path: Path = DATA_FILE) -> ContentPack:
             id=raw["id"], category=raw["category"], subject=raw["subject"],
             prompt=raw["prompt"], answer=raw["answer"], accepted=answers,
             explanation=raw["explanation"], sources=tuple(raw["sources"]), rarity=raw.get("rarity"),
+            alias_sources=tuple(alias_sources),
         ))
     if not questions:
         raise ValueError("O pacote não tem perguntas.")
