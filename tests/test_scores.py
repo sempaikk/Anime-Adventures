@@ -22,6 +22,7 @@ class ScoresTests(unittest.TestCase):
 
     def test_award_is_atomic_and_idempotent_after_restart(self):
         self.store = ScoreStore(self.path)
+        self.assertEqual(self.store.points(42), 0)
         self.assertEqual(self.store.award('question1', 42, 'Player'), 1)
         self.assertEqual(self.store.award('question1', 42, 'Player'), 1)
         with self.assertRaises(ValueError):
@@ -31,6 +32,7 @@ class ScoresTests(unittest.TestCase):
         self.store = ScoreStore(self.path)
         self.assertEqual(self.store.award('question2', 42, 'New name'), 2)
         self.assertEqual(self.store.award('question3', 42, 'New name'), 3)
+        self.assertEqual(self.store.points(42), 3)
 
     def test_legacy_points_are_migrated_once_without_changing_original_file(self):
         original = json.dumps({'42': {'name': 'Player', 'points': 8, 'correct': 8}})

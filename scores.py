@@ -62,5 +62,9 @@ class ScoreStore:
                 """, (uid, name))
             return self.connection.execute("SELECT points FROM scores WHERE user_id=?", (uid,)).fetchone()[0]
 
+    def points(self, user_id: int) -> int:
+        row = self.connection.execute("SELECT points FROM scores WHERE user_id=?", (str(user_id),)).fetchone()
+        return row[0] if row else 0
+
     def close(self):
         self.connection.close()

@@ -10,6 +10,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import discord
 import bot as app
+import quiz_ui as screen
 from scores import ScoreStore
 
 QUESTIONS = {q.id: q for q in app.PACK.questions}
@@ -64,9 +65,13 @@ async def until(predicate):
             await asyncio.sleep(0.001)
 
 
+def view_text(view):
+    return '\n'.join(item.content for item in view.walk_children() if isinstance(item, discord.ui.TextDisplay))
+
+
 class SessionTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        self.patches = [patch.object(app, 'QUESTION_TIME', 0.06), patch.object(app, 'COUNTDOWN_INTERVAL', 0.01), patch.object(app, 'BETWEEN_QUESTIONS', 0.002), patch.object(app, 'WELCOME_DELAY', 0)]
+        self.patches = [patch.object(app, 'QUESTION_TIME', 0.06), patch.object(app, 'COUNTDOWN_INTERVAL', 0.01), patch.object(app, 'BETWEEN_QUESTIONS', 0.002)]
         for p in self.patches:
             p.start()
         self.sessions = []
@@ -109,7 +114,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         self.store.award.assert_called_once_with(str(session.question_message.id), 50, 'Player 50')
         self.assertEqual(session.correct_count, 1)
         self.assertEqual(len(session.session_scores), 1)
-        self.assertIn('Player 50', self.channel.sent[-1]['embed'].description)
+        self.assertIn('Player 50', view_text(self.channel.sent[-1]['view']))
 
     async def test_wrong_attempt_keeps_session_going_without_feedback_spam(self):
         session = self.session()
@@ -118,8 +123,8 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(await task)
         self.store.award.assert_not_called()
         self.assertEqual(len(self.channel.sent), 2)
-        self.assertIn('TEMPO ESGOTADO', self.channel.sent[-1]['embed'].title)
-        self.assertIn('PRÓXIMA PERGUNTA', [f.name for f in self.channel.sent[-1]['embed'].fields])
+        self.assertIn('O tempo acabou', view_text(self.channel.sent[-1]['view']))
+        self.assertIn('Próxima pergunta', view_text(self.channel.sent[-1]['view']))
 
     async def test_silent_round_stops_and_releases_channel(self):
         session = self.session()
@@ -129,8 +134,8 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(session.running)
         self.assertNotIn(self.channel.id, app.active_sessions)
         self.assertEqual(session.question_number, 1)
-        self.assertEqual(len(self.channel.sent), 3)
-        self.assertIn('SESSÃO ENCERRADA', [f.name for f in self.channel.sent[-1]['embed'].fields])
+        self.assertEqual(len(self.channel.sent), 2)
+        self.assertIn('Fim da aventura', view_text(self.channel.sent[-1]['view']))
 
     async def test_winner_continues_then_silence_ends_next_question(self):
         session = self.session()
@@ -201,7 +206,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         session.question_message.edit_error = discord.HTTPException(SimpleNamespace(status=500, reason='error'), 'temporary')
         with self.assertLogs('adventures', level='WARNING'):
             self.assertFalse(await task)
-        self.assertIn('TEMPO ESGOTADO', self.channel.sent[-1]['embed'].title)
+        self.assertIn('O tempo acabou', view_text(self.channel.sent[-1]['view']))
 
     async def test_deleted_question_releases_session(self):
         session = self.session()
@@ -232,7 +237,7 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
             session.submit(Message(self.channel, content='50'))
             self.assertTrue(await task)
         self.assertEqual(session.correct_count, 1)
-        self.assertIn('Não foi possível salvar', self.channel.sent[-1]['embed'].fields[0].value)
+        self.assertIn('não pôde ser salvo', view_text(self.channel.sent[-1]['view']))
 
     async def test_cancellation_releases_session_and_clock(self):
         session = self.session()
@@ -268,16 +273,22 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
     async def test_all_cards_fit_discord_limits_and_do_not_reveal_rarity_answer(self):
         session = self.session()
         session.ends_at = datetime.now(timezone.utc)
+        session.next_at = session.ends_at
         for q in app.PACK.questions:
             session.current_question = q
-            embed = session.question_embed(app.QUESTION_TIME)
-            self.assertLessEqual(len(embed), 6000, q.id)
-            self.assertLessEqual(len(embed.title), 256, q.id)
-            self.assertTrue(all(len(f.value) <= 1024 for f in embed.fields), q.id)
+            for panel in [screen.question_panel(session, app.handle_control, session.question_time),
+                          screen.result_panel(session, None, None, True, app.handle_control)]:
+                self.assertLessEqual(panel.total_children_count, 40, q.id)
+                self.assertLessEqual(panel.content_length(), 4000, q.id)
+                payload = discord.http.handle_message_parameters(view=panel).payload
+                self.assertEqual(payload['flags'] & 32768, 32768)
+                self.assertNotIn('embeds', payload)
+                ids = [item.custom_id for item in panel.walk_children() if getattr(item, 'custom_id', None)]
+                self.assertEqual(len(ids), len(set(ids)), q.id)
+            panel = screen.question_panel(session, app.handle_control, session.question_time)
             if q.category == 'Raridades':
-                self.assertEqual(embed.color.value, app.BRAND_COLOR)
-                self.assertFalse(any(f.name == '✦ RARIDADE' for f in embed.fields))
-            self.assertTrue(session.source_view().children[0].url.startswith('https://'))
+                self.assertEqual(panel.card.to_component_dict()['accent_color'], screen.BRAND_COLOR)
+                self.assertNotIn(q.answer, view_text(panel))
 
 
 class CommandTests(unittest.IsolatedAsyncioTestCase):
@@ -291,9 +302,9 @@ class CommandTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual([c.name for c in app.bot.tree.get_commands()], ['adventures'])
         self.assertTrue(app.adventures.guild_only)
         interaction = self.interaction()
-        with patch.object(app.QuizSession, 'launch') as launch:
+        with patch.object(app.QuizSession, 'open_lobby', new_callable=AsyncMock) as launch:
             await asyncio.gather(app.adventures.callback(interaction), app.adventures.callback(interaction))
-        launch.assert_called_once()
+        launch.assert_awaited_once()
         self.assertEqual(len(app.active_sessions), 1)
         self.assertEqual(interaction.response.send_message.await_count, 2)
 
@@ -312,13 +323,12 @@ class CommandTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(app.active_sessions, {})
 
     async def test_shutdown_cancels_active_sessions(self):
-        with patch.object(app, 'WELCOME_DELAY', 0):
-            session = app.QuizSession(Channel(), user(), Mock(), deck=Deck())
-            app.active_sessions[session.channel.id] = session
-            session.launch()
-            await until(lambda: session.ticker is not None)
-            client = app.AdventuresBot()
-            async with client:
-                await client.close()
-            self.assertFalse(session.running)
-            self.assertEqual(app.active_sessions, {})
+        session = app.QuizSession(Channel(), user(), Mock(), deck=Deck())
+        app.active_sessions[session.channel.id] = session
+        session.launch()
+        await until(lambda: session.ticker is not None)
+        client = app.AdventuresBot()
+        async with client:
+            await client.close()
+        self.assertFalse(session.running)
+        self.assertEqual(app.active_sessions, {})
