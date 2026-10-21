@@ -6,12 +6,12 @@ from unittest.mock import AsyncMock, Mock, patch
 import discord
 import bot as app
 import quiz_ui as screen
-from test_session import Channel, Deck, Message, until, user, view_text
+from test_session import Channel, Deck, IDS, Message, until, user, view_text
 
 
 def interaction(session, actor=None, message=None):
     return SimpleNamespace(
-        channel=session.channel, channel_id=session.channel.id, guild=object(),
+        id=next(IDS), channel=session.channel, channel_id=session.channel.id, guild=object(),
         user=actor or session.host, message=message or session.control_message,
         app_permissions=SimpleNamespace(view_channel=True, send_messages=True, embed_links=True),
         response=SimpleNamespace(send_message=AsyncMock(), defer=AsyncMock()),
@@ -63,7 +63,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         self.sessions.append(session)
         self.assertEqual(session.phase, 'lobby')
         self.assertIsNone(session.question_message)
-        self.assertIn('Sua próxima aventura', view_text(session.control_view))
+        self.assertIn('Prepare sua aventura', view_text(session.control_view))
         start = next(item for item in session.control_view.walk_children() if getattr(item, 'custom_id', '') == 'aa:start')
         await start.callback(interaction(session))
         await until(lambda: session.question_message is not None)
@@ -114,33 +114,182 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         await until(lambda: session.question_message is not None)
         event = interaction(session, message=old)
         await app.handle_control(event, 'pause')
-        self.assertFalse(session.pause_requested)
+        self.assertFalse(session.is_paused)
         self.assertIn('painel', event.response.send_message.call_args.args[0])
 
-    async def test_pause_waits_for_answer_then_resume_preserves_progress(self):
-        session = await self.playing()
-        remaining = session.deadline
-        await app.handle_control(interaction(session), 'pause')
+    async def test_old_panel_cannot_pause_a_question_still_being_published(self):
+        session = await self.lobby()
+        old = session.control_message
+        original_send = session.channel.send
+        publishing = asyncio.Event()
+        release = asyncio.Event()
+
+        async def slow_send(*args, **kwargs):
+            publishing.set()
+            await release.wait()
+            return await original_send(*args, **kwargs)
+
+        session.channel.send = slow_send
+        session.launch()
+        await publishing.wait()
+        try:
+            event = interaction(session, message=old)
+            await app.handle_control(event, 'pause')
+            self.assertFalse(session.is_paused)
+            self.assertIn('painel', event.response.send_message.call_args.args[0])
+        finally:
+            release.set()
+        await until(lambda: session.question_message is not None)
         self.assertEqual(session.phase, 'question')
-        self.assertEqual(session.deadline, remaining)
-        self.assertTrue(session.pause_requested)
-        session.submit(Message(session.channel, content='50'))
-        await until(lambda: session.phase == 'paused' and session.control_message is not session.question_message)
-        await asyncio.sleep(.04)
-        self.assertEqual(session.question_number, 1)
-        self.assertEqual(session.correct_count, 1)
-        self.assertIn('Aventura em pausa', view_text(session.control_view))
+        self.assertFalse(session.is_paused)
+
+    async def test_pause_freezes_current_question_and_resume_preserves_remaining_time(self):
+        session = await self.playing()
+        deadline = session.deadline
+        await app.handle_control(interaction(session), 'pause')
+        self.assertEqual(session.phase, 'paused_question')
+        self.assertIsNone(session.deadline)
+        frozen = session.remaining_seconds
+        await asyncio.sleep(.18)
+        self.assertEqual(session.remaining_seconds, frozen)
+        self.assertFalse(session.answer_future.done())
+        self.assertFalse(session.submit(Message(session.channel, content='50')))
+        self.assertFalse(session.had_participation)
+        self.assertIn('Tempo congelado', view_text(session.control_view))
+        self.assertNotIn('<t:', view_text(session.control_view))
+        self.assertTrue(any(getattr(x, 'custom_id', None) == 'aa:resume' for x in session.control_view.walk_children()))
         await app.handle_control(interaction(session), 'resume')
+        self.assertEqual(session.phase, 'question')
+        self.assertGreater(session.deadline, deadline)
+        self.assertLessEqual(session.remaining_seconds, frozen)
+        self.assertGreater(session.remaining_seconds, frozen - .02)
+        self.assertTrue(session.submit(Message(session.channel, content='50')))
         await until(lambda: session.question_number == 2)
         self.assertEqual(session.correct_count, 1)
 
-    async def test_requested_pause_can_be_cancelled_before_round_ends(self):
+    async def test_double_pause_is_idempotent_and_resume_is_an_explicit_action(self):
         session = await self.playing()
         await app.handle_control(interaction(session), 'pause')
+        remaining = session.remaining_seconds
         await app.handle_control(interaction(session), 'pause')
-        self.assertFalse(session.pause_requested)
+        self.assertTrue(session.is_paused)
+        self.assertEqual(session.remaining_seconds, remaining)
+        await app.handle_control(interaction(session), 'resume')
+        self.assertFalse(session.is_paused)
         session.submit(Message(session.channel, content='50'))
         await until(lambda: session.question_number == 2)
+
+    async def test_answers_created_during_pause_are_rejected_after_resume(self):
+        session = await self.playing()
+        await app.handle_control(interaction(session), 'pause')
+        delayed = Message(session.channel, content='50')
+        self.assertFalse(session.submit(delayed))
+        await app.handle_control(interaction(session), 'resume')
+        self.assertFalse(session.submit(delayed))
+        self.assertFalse(session.had_participation)
+        self.assertTrue(session.submit(Message(session.channel, content='50')))
+        await until(lambda: session.correct_count == 1)
+        app.bot.scores.award.assert_called_once()
+
+    async def test_failed_pause_acknowledgement_still_updates_the_frozen_panel(self):
+        session = await self.playing()
+        event = interaction(session)
+        event.response.defer.side_effect = discord.HTTPException(SimpleNamespace(status=500, reason='error'), 'temporary')
+        with self.assertRaises(discord.HTTPException):
+            await app.handle_control(event, 'pause')
+        self.assertTrue(session.is_paused)
+        self.assertIn('Tempo congelado', view_text(session.control_view))
+
+    async def test_pause_cannot_steal_an_already_claimed_correct_answer(self):
+        session = await self.playing()
+        self.assertTrue(session.submit(Message(session.channel, content='50')))
+        event = interaction(session)
+        await app.handle_control(event, 'pause')
+        self.assertFalse(session.is_paused)
+        await until(lambda: session.correct_count == 1)
+        app.bot.scores.award.assert_called_once()
+
+    async def test_repeated_pause_recovers_a_failed_panel_edit_without_resetting_time(self):
+        session = await self.playing()
+        session.control_message.edit_error = discord.HTTPException(SimpleNamespace(status=500, reason='error'), 'temporary')
+        with self.assertRaises(discord.HTTPException):
+            await app.handle_control(interaction(session), 'pause')
+        frozen = session.remaining_seconds
+        session.control_message.edit_error = None
+        await app.handle_control(interaction(session), 'pause')
+        self.assertTrue(session.is_paused)
+        self.assertEqual(session.remaining_seconds, frozen)
+        self.assertIn('Tempo congelado', view_text(session.control_message.edits[-1]['view']))
+
+    async def test_repeated_resume_recovers_failed_panel_edit_without_extending_time(self):
+        session = await self.playing()
+        await app.handle_control(interaction(session), 'pause')
+        session.control_message.edit_error = discord.HTTPException(SimpleNamespace(status=500, reason='error'), 'temporary')
+        with self.assertRaises(discord.HTTPException):
+            await app.handle_control(interaction(session), 'resume')
+        deadline = session.deadline
+        session.control_message.edit_error = None
+        await app.handle_control(interaction(session), 'resume')
+        self.assertEqual(session.deadline, deadline)
+        self.assertFalse(session.is_paused)
+        self.assertNotIn('Tempo congelado', view_text(session.control_message.edits[-1]['view']))
+        self.assertTrue(any(getattr(item, 'custom_id', None) == 'aa:pause'
+                            for item in session.control_message.edits[-1]['view'].walk_children()))
+
+    async def test_intermission_pause_preserves_its_budget_and_does_not_advance(self):
+        session = await self.playing()
+        session.between_questions = .08
+        session.submit(Message(session.channel, content='50'))
+        await until(lambda: session.phase == 'intermission' and session.control_message is not session.question_message)
+        await app.handle_control(interaction(session), 'pause')
+        frozen = session.remaining_seconds
+        await asyncio.sleep(.10)
+        self.assertEqual(session.question_number, 1)
+        self.assertEqual(session.remaining_seconds, frozen)
+        self.assertIn('Intervalo congelado', view_text(session.control_view))
+        self.assertNotIn('<t:', view_text(session.control_view))
+        await app.handle_control(interaction(session), 'resume')
+        self.assertGreater(session.remaining_seconds, frozen - .02)
+        await until(lambda: session.question_number == 2)
+
+    async def test_lobby_has_a_working_close_button(self):
+        session = await self.lobby()
+        close = next(item for item in session.control_view.walk_children() if getattr(item, 'custom_id', '') == 'aa:stop')
+        await close.callback(interaction(session))
+        self.assertFalse(session.running)
+        self.assertNotIn(session.channel.id, app.active_sessions)
+
+    async def test_deleting_a_paused_panel_does_not_leave_a_stuck_channel(self):
+        session = await self.playing()
+        await app.handle_control(interaction(session), 'pause')
+        await app.on_raw_message_delete(SimpleNamespace(channel_id=session.channel.id, message_id=session.control_message.id))
+        self.assertFalse(session.running)
+        self.assertNotIn(session.channel.id, app.active_sessions)
+        self.assertTrue(session.runner.done())
+
+    async def test_deleting_panel_after_correct_claim_preserves_the_point(self):
+        session = await self.playing()
+        self.assertTrue(session.submit(Message(session.channel, content='50')))
+        await app.on_raw_message_delete(SimpleNamespace(channel_id=session.channel.id, message_id=session.control_message.id))
+        await session.runner
+        self.assertEqual(session.correct_count, 1)
+        app.bot.scores.award.assert_called_once()
+        self.assertNotIn(session.channel.id, app.active_sessions)
+
+    async def test_bulk_deletion_of_old_messages_cannot_close_a_new_session(self):
+        session = await self.lobby()
+        await app.on_raw_bulk_message_delete(SimpleNamespace(channel_id=session.channel.id, message_ids={session.control_message.id-1}))
+        self.assertTrue(session.running)
+        self.assertIs(app.active_sessions[session.channel.id], session)
+
+    async def test_channel_deletion_preserves_an_already_claimed_point(self):
+        session = await self.playing()
+        self.assertTrue(session.submit(Message(session.channel, content='50')))
+        await app.on_guild_channel_delete(session.channel)
+        await session.runner
+        self.assertEqual(session.correct_count, 1)
+        app.bot.scores.award.assert_called_once()
+        self.assertNotIn(session.channel.id, app.active_sessions)
 
     async def test_stop_during_question_preserves_the_claimed_point(self):
         session = await self.playing()
@@ -158,8 +307,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
     async def test_paused_session_can_be_ended_without_starting_another_round(self):
         session = await self.playing()
         await app.handle_control(interaction(session), 'pause')
-        session.submit(Message(session.channel, content='50'))
-        await until(lambda: session.phase == 'paused' and session.control_message is not session.question_message)
+        self.assertEqual(session.phase, 'paused_question')
         await app.handle_control(interaction(session), 'stop')
         await asyncio.sleep(.03)
         self.assertFalse(session.running)
@@ -169,8 +317,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
     async def test_failed_stop_acknowledgement_still_cleans_up_paused_session(self):
         session = await self.playing()
         await app.handle_control(interaction(session), 'pause')
-        session.submit(Message(session.channel, content='50'))
-        await until(lambda: session.phase == 'paused' and session.control_message is not session.question_message)
+        self.assertEqual(session.phase, 'paused_question')
         event = interaction(session)
         event.response.defer.side_effect = discord.HTTPException(SimpleNamespace(status=500, reason='error'), 'temporary')
         with self.assertRaises(discord.HTTPException):
@@ -245,7 +392,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn('17 pontos acumulados', content)
         self.assertNotIn('pontos nesta sessão', content)
 
-    async def test_pause_requested_during_intermission_does_not_lose_resume_signal(self):
+    async def test_pause_during_intermission_does_not_lose_resume_signal(self):
         session = await self.playing()
         session.submit(Message(session.channel, content='50'))
         await until(lambda: session.phase == 'intermission' and session.control_message is not session.question_message)

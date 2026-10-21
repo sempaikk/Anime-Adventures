@@ -184,6 +184,21 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(await task)
         self.assertFalse(session.had_participation)
 
+    async def test_slow_result_publication_does_not_consume_reading_interval(self):
+        session = self.session()
+        session.between_questions = .06
+        task = await self.play(session)
+        original_send = self.channel.send
+
+        async def slow_send(*args, **kwargs):
+            await asyncio.sleep(.08)
+            return await original_send(*args, **kwargs)
+
+        self.channel.send = slow_send
+        self.assertTrue(session.submit(Message(self.channel, content='50')))
+        self.assertTrue(await task)
+        self.assertGreater(session.remaining_seconds, .05)
+
     async def test_delayed_edit_cannot_extend_answer_deadline(self):
         session = self.session()
         task = await self.play(session)
@@ -277,7 +292,8 @@ class SessionTests(unittest.IsolatedAsyncioTestCase):
         for q in app.PACK.questions:
             session.current_question = q
             for panel in [screen.question_panel(session, app.handle_control, session.question_time),
-                          screen.result_panel(session, None, None, True, app.handle_control)]:
+                          screen.result_panel(session, None, None, True, app.handle_control),
+                          screen.result_panel(session, None, None, False, app.handle_control)]:
                 self.assertLessEqual(panel.total_children_count, 40, q.id)
                 self.assertLessEqual(panel.content_length(), 4000, q.id)
                 payload = discord.http.handle_message_parameters(view=panel).payload

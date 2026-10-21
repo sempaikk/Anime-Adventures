@@ -1,0 +1,818 @@
+{
+  "schema_version": 1,
+  "policy": "Only user-supplied banners or Anime Adventures wiki media. No generated images. Current wiki visuals are permitted; gameplay data remains restricted to Release. Crops are deterministic and only remove unrelated text/UI.",
+  "assets": {
+    "banner-summon": {
+      "kind": "user_provided",
+      "path": "assets/wiki/banner-summon.png",
+      "display": "wide",
+      "alt": "Anime Adventures: personagens diante do painel Summon, o segundo banner enviado pelo usuário.",
+      "form": null,
+      "source_file": "user_banner_2",
+      "source_url": "https://tr.rbxcdn.com/180DAY-bd4fbfaf530e5a1f2f4a053791448977/768/432/Image/Png/noFilter",
+      "source_page": "https://www.roblox.com/games/8304191830",
+      "original_sha256": "48ee6fa50d734253f9204695a6ae99bf0ca4146e01e1882aded2d806d41f2ac9",
+      "sha256": "48ee6fa50d734253f9204695a6ae99bf0ca4146e01e1882aded2d806d41f2ac9",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder.",
+      "approval": "Second banner supplied in chat, visually matched to the original official game thumbnail; no generated pixels."
+    },
+    "game-logo": {
+      "kind": "wiki",
+      "path": "assets/wiki/game-logo.webp",
+      "display": "portrait",
+      "alt": "Logotipo de Anime Adventures",
+      "form": null,
+      "source_file": "Logo.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/c/c9/Logo.png/revision/latest?cb=20220828054644",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Logo.png",
+      "original_sha256": "43748c3ad0cf7f096816d1ce42a667bfabae7fb3452a2d7421aa705f1070f4ae",
+      "sha256": "43748c3ad0cf7f096816d1ce42a667bfabae7fb3452a2d7421aa705f1070f4ae",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-zoro": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-zoro.png",
+      "display": "portrait",
+      "alt": "Zoro no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Zoro_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/d/de/Zoro_Cover.webp/revision/latest?cb=20220828214217",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Zoro_Cover.webp",
+      "original_sha256": "038e160d484f8d2215e9365db929f085ede94ad6501b01dc0802d445912c72f5",
+      "sha256": "71c5bb4b884443510be88aa5a9efeb5a46c193cbe7830472f601c770e10bc5fe",
+      "processing": {
+        "type": "crop",
+        "box": [
+          11,
+          8,
+          72,
+          71
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-josuke": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-josuke.png",
+      "display": "portrait",
+      "alt": "Josuke no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Josuke_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/6/69/Josuke_Cover.webp/revision/latest?cb=20220828214217",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Josuke_Cover.webp",
+      "original_sha256": "402911abac395d70a0b9ca9b2de571dd1239fac8ca8ac3639e296207233fce01",
+      "sha256": "fad8b3718b4ac89d1eb907aa3c718a9d901573a8b5d4883deddb18c765a55ccf",
+      "processing": {
+        "type": "crop",
+        "box": [
+          18,
+          13,
+          117,
+          115
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-ichigo": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-ichigo.png",
+      "display": "portrait",
+      "alt": "Ichigo no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Ichigo_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/2/29/Ichigo_Cover.webp/revision/latest?cb=20220828214216",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Ichigo_Cover.webp",
+      "original_sha256": "67d64fc75f53245990bb4e9ff84f0280f5a5982d0f821b96b50e7fdcabc72e88",
+      "sha256": "634b0663e494cc1743577101b3a60c5676688ab410bd9dbeef6e1b3cd2de2087",
+      "processing": {
+        "type": "crop",
+        "box": [
+          21,
+          15,
+          134,
+          133
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-nezuko": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-nezuko.png",
+      "display": "portrait",
+      "alt": "Nezuko no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Nezuko_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/5/57/Nezuko_Cover.webp/revision/latest?cb=20220828214215",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Nezuko_Cover.webp",
+      "original_sha256": "fc01b56e61d0b92849c991d2f48517eac0908649aa91d70ee77a9c880d305a29",
+      "sha256": "0583f9059f0bd9041226987b0e13b8d44a275823fb48fb0b3889857f34b9306f",
+      "processing": {
+        "type": "crop",
+        "box": [
+          21,
+          15,
+          137,
+          135
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-usopp": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-usopp.png",
+      "display": "portrait",
+      "alt": "Usopp no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Ussop_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/7/7a/Ussop_Cover.webp/revision/latest?cb=20220828214305",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Ussop_Cover.webp",
+      "original_sha256": "a239d4ee13bf8c36c2f60ca275f3511a940c5d5ad9fbbeb2a1e03201c9a90c14",
+      "sha256": "2cc152e1572079e5536856ed341197666c05b666ee256d457a9e1cb85d1dc0b4",
+      "processing": {
+        "type": "crop",
+        "box": [
+          50,
+          36,
+          322,
+          318
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-goku": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-goku.png",
+      "display": "portrait",
+      "alt": "Goku no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Goku_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/f/f5/Goku_Cover.webp/revision/latest?cb=20220828213913",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Goku_Cover.webp",
+      "original_sha256": "64a874ded064c0fcb9c2b65b574925d8fff57dfcd441eb4a57c3f76f39585168",
+      "sha256": "f885a07dbbe6ee312777aa02e35d2435c0f1b44b079691abde05f050471bd105",
+      "processing": {
+        "type": "crop",
+        "box": [
+          11,
+          8,
+          72,
+          71
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-uraraka": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-uraraka.png",
+      "display": "portrait",
+      "alt": "Uraraka no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Uraraka.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/1/17/Uraraka.webp/revision/latest?cb=20220828214305",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Uraraka.webp",
+      "original_sha256": "be6abc00cef3f146bdb685e2221901bf339cdd1d7faff1d3dba92606a8b4df50",
+      "sha256": "f8d9aee1b17a035277426f22a43268861bfc231f6690d96f7be00e143d6754bc",
+      "processing": {
+        "type": "crop",
+        "box": [
+          31,
+          22,
+          202,
+          198
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-luffy": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-luffy.png",
+      "display": "portrait",
+      "alt": "Luffy no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Luffy_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/f/f4/Luffy_Cover.webp/revision/latest?cb=20220828214304",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Luffy_Cover.webp",
+      "original_sha256": "f3f62210a6180231ac26eaa5a0b0dcac8084ec3d9cb96a569468ebc6ede901b8",
+      "sha256": "9020bb595b2a6092704f475a63900e72b953e33a025ed79ad137c786123e5637",
+      "processing": {
+        "type": "crop",
+        "box": [
+          50,
+          36,
+          322,
+          318
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-tanjiro": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-tanjiro.png",
+      "display": "portrait",
+      "alt": "Tanjiro no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Tanjiro_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/3/34/Tanjiro_Cover.webp/revision/latest?cb=20220828214144",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Tanjiro_Cover.webp",
+      "original_sha256": "4e146cdd9fc4125bcd6ec0ac1b7987e13373b94ab48aab67816c139c84cb7e54",
+      "sha256": "2ce95d6cdbe3e6e1e5f956c76f35b97a23cf0011121c1b3d96249c30d98ef0ee",
+      "processing": {
+        "type": "crop",
+        "box": [
+          22,
+          16,
+          145,
+          143
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-naruto": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-naruto.png",
+      "display": "portrait",
+      "alt": "Naruto no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Naruto_R.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/a/a6/Naruto_R.webp/revision/latest?cb=20220828213912",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Naruto_R.webp",
+      "original_sha256": "460f000f7cb607eb771d200c7b2eab39b5616a1714f23fc25d4b006e0f6ce4e0",
+      "sha256": "466d51141c56f2396eef9f069146f7aaa189ba3267d40ab461d01dd75394884c",
+      "processing": {
+        "type": "crop",
+        "box": [
+          11,
+          8,
+          72,
+          71
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-krillin": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-krillin.png",
+      "display": "portrait",
+      "alt": "Krillin no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Krillin_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/9/9f/Krillin_Cover.webp/revision/latest?cb=20220828213913",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Krillin_Cover.webp",
+      "original_sha256": "f028b3db6c1ee4ea67e1e12eca63c83002dbfadf795668636d33d4b64bfe68c7",
+      "sha256": "945c1a8f03ca601b496529b4566d98fff6d24c19c118a7bb3689831c5a656e25",
+      "processing": {
+        "type": "crop",
+        "box": [
+          11,
+          8,
+          72,
+          71
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-vegeta": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-vegeta.png",
+      "display": "portrait",
+      "alt": "Vegeta no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Vegeta_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/6/6f/Vegeta_Cover.webp/revision/latest?cb=20220828213913",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Vegeta_Cover.webp",
+      "original_sha256": "5973b715ce56684b4fd97cdf90bf8d6df0dacbdae050b2f09e8fcfb9571e7011",
+      "sha256": "cde07a3450366457e2d4ed976abee227ede7ed0b7a851bc4a34eedc9014b394d",
+      "processing": {
+        "type": "crop",
+        "box": [
+          11,
+          8,
+          72,
+          71
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-sasuke": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-sasuke.png",
+      "display": "portrait",
+      "alt": "Sasuke no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Sasuke_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/6/6f/Sasuke_Cover.webp/revision/latest?cb=20220828213913",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Sasuke_Cover.webp",
+      "original_sha256": "acb1157cdb752a0a287090506dde3f55eb7f031fd84f9671bd43c1392ed71346",
+      "sha256": "d5ce08835d6bef5d2b119838c57ba5623e822d1887166e94d05f4196ba3ee23c",
+      "processing": {
+        "type": "crop",
+        "box": [
+          11,
+          8,
+          72,
+          71
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-sakura": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-sakura.png",
+      "display": "portrait",
+      "alt": "Sakura no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Sakura_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/1/1f/Sakura_Cover.webp/revision/latest?cb=20220828213913",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Sakura_Cover.webp",
+      "original_sha256": "2707e617a91f5c5399aa6ab6787c8d2ad9e3d2ddedd0ae92706f4bec1bcd2ca5",
+      "sha256": "0fa9c2aa50596b3f3919ee3ef1980e4f44b184bd989b651fed346d8082797208",
+      "processing": {
+        "type": "crop",
+        "box": [
+          11,
+          8,
+          72,
+          71
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-sanji": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-sanji.png",
+      "display": "portrait",
+      "alt": "Sanji no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Sanji_Cover.webp",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/a/aa/Sanji_Cover.webp/revision/latest?cb=20220828214217",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Sanji_Cover.webp",
+      "original_sha256": "39d26bc6d515e299629f2f59aeecf93d2cb6f374a3d291afe5e11941fea5d814",
+      "sha256": "5ff95b65c7609c4df66eb9e9ba113227d643a93974b1b0e09ac4b61f36b926ec",
+      "processing": {
+        "type": "crop",
+        "box": [
+          11,
+          8,
+          72,
+          71
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-jonathan": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-jonathan.webp",
+      "display": "portrait",
+      "alt": "Jonathan no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "Johna.png.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/2/26/Johna.png.png/revision/latest?cb=20250203221326",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Johna.png.png",
+      "original_sha256": "9a14b9f871f7dd132dccf992b8f5e3c72c5b3a6d84e9d6d71ee5932016e19ff4",
+      "sha256": "9a14b9f871f7dd132dccf992b8f5e3c72c5b3a6d84e9d6d71ee5932016e19ff4",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-speedwagon": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-speedwagon.webp",
+      "display": "portrait",
+      "alt": "Speedwagon no jogo · forma base · imagem da wiki.",
+      "form": "base",
+      "source_file": "C.E.O..png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/d/df/C.E.O..png/revision/latest?cb=20250107061654",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:C.E.O..png",
+      "original_sha256": "0eeee7378dd798764cebf285363da0b01d1539dbf05934bdc8926d60a20da888",
+      "sha256": "0eeee7378dd798764cebf285363da0b01d1539dbf05934bdc8926d60a20da888",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-all_might": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-all_might.png",
+      "display": "portrait",
+      "alt": "All Might no jogo · forma base · retrato da wiki sem rótulo de raridade.",
+      "form": "base",
+      "source_file": "AllMight.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/d/d6/AllMight.png/revision/latest?cb=20220801032614",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:AllMight.png",
+      "original_sha256": "8d067a5cef44d97a288586d0746c64279af9ff89efcda764a1b9a6d18d002454",
+      "sha256": "da7ca2b6aa0031e9984706385dd348091a60ea542153db14c43ab9e44c87b910",
+      "processing": {
+        "type": "crop",
+        "box": [
+          13,
+          35,
+          116,
+          95
+        ],
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-erwin": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-erwin.webp",
+      "display": "portrait",
+      "alt": "Erwin · forma base · visual atual da wiki.",
+      "form": "base",
+      "source_file": "Commander.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/2/2e/Commander.png/revision/latest?cb=20250119185905",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Commander.png",
+      "original_sha256": "38a3a463960c3a7734491f10599901051d9c71632d3f333a50d1f1895c57d40e",
+      "sha256": "38a3a463960c3a7734491f10599901051d9c71632d3f333a50d1f1895c57d40e",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-armin": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-armin.webp",
+      "display": "portrait",
+      "alt": "Armin · forma base · visual atual da wiki.",
+      "form": "base",
+      "source_file": "Arlem.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/d/d1/Arlem.png/revision/latest?cb=20250413183058",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Arlem.png",
+      "original_sha256": "559f7e0bea13d2f8f60c0d3b9ac2125bff42e83dd5a8bc1a5a49c7397ebe1dcd",
+      "sha256": "559f7e0bea13d2f8f60c0d3b9ac2125bff42e83dd5a8bc1a5a49c7397ebe1dcd",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-levi": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-levi.webp",
+      "display": "portrait",
+      "alt": "Levi · forma base · visual atual da wiki.",
+      "form": "base",
+      "source_file": "Lex.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/6/6f/Lex.png/revision/latest?cb=20250416203055",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Lex.png",
+      "original_sha256": "fbc80252aa1030ea0acc16c444102053b1458a6ab0809accc60b988fdc246481",
+      "sha256": "fbc80252aa1030ea0acc16c444102053b1458a6ab0809accc60b988fdc246481",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-madara": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-madara.webp",
+      "display": "portrait",
+      "alt": "Madara · forma base · visual atual da wiki.",
+      "form": "base",
+      "source_file": "Mazara.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/8/8b/Mazara.png/revision/latest?cb=20250416204306",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Mazara.png",
+      "original_sha256": "5986187f9c9706c653dd1556e3a5447131c7f802a20509975411c6eccacae996",
+      "sha256": "5986187f9c9706c653dd1556e3a5447131c7f802a20509975411c6eccacae996",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-broly": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-broly.webp",
+      "display": "portrait",
+      "alt": "Broly · forma base · visual atual da wiki.",
+      "form": "base",
+      "source_file": "Bro.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/5/5c/Bro.png/revision/latest?cb=20250416203941",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Bro.png",
+      "original_sha256": "24c77ace35370e69bce48c214d924696a1dae5a16d4fc6966e8984010b0ba171",
+      "sha256": "24c77ace35370e69bce48c214d924696a1dae5a16d4fc6966e8984010b0ba171",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-rengoku": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-rengoku.webp",
+      "display": "portrait",
+      "alt": "Rengoku · forma base · visual atual da wiki.",
+      "form": "base",
+      "source_file": "Donut.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/9/9b/Donut.png/revision/latest?cb=20250416204912",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Donut.png",
+      "original_sha256": "044765e0f06956054c8e0093c71d82b20acdf5e5c37ee58e6179c90a4fe6f05f",
+      "sha256": "044765e0f06956054c8e0093c71d82b20acdf5e5c37ee58e6179c90a4fe6f05f",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-diavolo": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-diavolo.webp",
+      "display": "portrait",
+      "alt": "Diavolo · forma base · visual atual da wiki.",
+      "form": "base",
+      "source_file": "Devil Boss.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/e/e8/Devil_Boss.png/revision/latest?cb=20250416203914",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Devil_Boss.png",
+      "original_sha256": "f4db735ae870d4196d8ff04be925d6813c11673bfbd4893447f61e4be2079e3d",
+      "sha256": "f4db735ae870d4196d8ff04be925d6813c11673bfbd4893447f61e4be2079e3d",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-madara_evolved": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-madara_evolved.webp",
+      "display": "portrait",
+      "alt": "Madara · forma evoluída · visual atual da wiki.",
+      "form": "evolved",
+      "source_file": "Mazara (Founder).png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/b/ba/Mazara_%28Founder%29.png/revision/latest?cb=20250416211208",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Mazara_(Founder).png",
+      "original_sha256": "5986187f9c9706c653dd1556e3a5447131c7f802a20509975411c6eccacae996",
+      "sha256": "5986187f9c9706c653dd1556e3a5447131c7f802a20509975411c6eccacae996",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-levi_evolved": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-levi_evolved.webp",
+      "display": "portrait",
+      "alt": "Levi · forma evoluída · visual atual da wiki.",
+      "form": "evolved",
+      "source_file": "Lex Akoman.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/a/a7/Lex_Akoman.png/revision/latest?cb=20250416211215",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Lex_Akoman.png",
+      "original_sha256": "fbc80252aa1030ea0acc16c444102053b1458a6ab0809accc60b988fdc246481",
+      "sha256": "fbc80252aa1030ea0acc16c444102053b1458a6ab0809accc60b988fdc246481",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "unit-broly_evolved": {
+      "kind": "wiki",
+      "path": "assets/wiki/unit-broly_evolved.webp",
+      "display": "portrait",
+      "alt": "Broly · forma evoluída · visual atual da wiki.",
+      "form": "evolved",
+      "source_file": "Super Bro.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/d/db/Super_Bro.png/revision/latest?cb=20250416212126",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Super_Bro.png",
+      "original_sha256": "24c77ace35370e69bce48c214d924696a1dae5a16d4fc6966e8984010b0ba171",
+      "sha256": "24c77ace35370e69bce48c214d924696a1dae5a16d4fc6966e8984010b0ba171",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "map-1": {
+      "kind": "wiki",
+      "path": "assets/wiki/map-1.webp",
+      "display": "wide",
+      "alt": "Cenário de Planet Namak em Anime Adventures.",
+      "form": null,
+      "source_file": "Map_-_Planet_Namak.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/5/5c/Map_-_Planet_Namak.png/revision/latest?cb=20220903130611",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Map_-_Planet_Namak.png",
+      "original_sha256": "1eacd2f7eb6fc1759dd974bea19c61cca4486ef3ea049bb9109713a749cc6d77",
+      "sha256": "1eacd2f7eb6fc1759dd974bea19c61cca4486ef3ea049bb9109713a749cc6d77",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "map-2": {
+      "kind": "wiki",
+      "path": "assets/wiki/map-2.webp",
+      "display": "wide",
+      "alt": "Cenário de Shinganshinu District em Anime Adventures.",
+      "form": null,
+      "source_file": "Map_-_Shinganshinu_District.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/7/7d/Map_-_Shinganshinu_District.png/revision/latest?cb=20220903173653",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Map_-_Shinganshinu_District.png",
+      "original_sha256": "808e1e116ad168a91cd3ebacd7ec7787341e9cfd094e9ccc350ec4edee4b7ded",
+      "sha256": "808e1e116ad168a91cd3ebacd7ec7787341e9cfd094e9ccc350ec4edee4b7ded",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "map-3": {
+      "kind": "wiki",
+      "path": "assets/wiki/map-3.webp",
+      "display": "wide",
+      "alt": "Cenário de Snowy Town em Anime Adventures.",
+      "form": null,
+      "source_file": "Map_-_Snowy_Town.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/9/99/Map_-_Snowy_Town.png/revision/latest?cb=20220903173631",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Map_-_Snowy_Town.png",
+      "original_sha256": "0afc0ab93fe044a12f64912d4fe79806d97c42bfaf1ca9d315c775a387e41f86",
+      "sha256": "0afc0ab93fe044a12f64912d4fe79806d97c42bfaf1ca9d315c775a387e41f86",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "map-4": {
+      "kind": "wiki",
+      "path": "assets/wiki/map-4.webp",
+      "display": "wide",
+      "alt": "Cenário de Hidden Sand Village em Anime Adventures.",
+      "form": null,
+      "source_file": "Map_-_Hidden_Sand_Village.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/c/cb/Map_-_Hidden_Sand_Village.png/revision/latest?cb=20220903173603",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Map_-_Hidden_Sand_Village.png",
+      "original_sha256": "74399ffdbd003a4b64fa38f2bbaadc9a88b472469f30b1da74ec4e0b644b2a94",
+      "sha256": "74399ffdbd003a4b64fa38f2bbaadc9a88b472469f30b1da74ec4e0b644b2a94",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "food-senzu_bean": {
+      "kind": "wiki",
+      "path": "assets/wiki/food-senzu_bean.webp",
+      "display": "portrait",
+      "alt": "Senzu Beans · item de XP de Anime Adventures.",
+      "form": null,
+      "source_file": "Senzu_Bean.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/6/6c/Senzu_Bean.png/revision/latest?cb=20230101141509",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Senzu_Bean.png",
+      "original_sha256": "2cd00c286533fe15f1939f34e0b18bd0be68b9c1789e3ca023e17e61ad5b0c22",
+      "sha256": "2cd00c286533fe15f1939f34e0b18bd0be68b9c1789e3ca023e17e61ad5b0c22",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "food-mysterious_fluid": {
+      "kind": "wiki",
+      "path": "assets/wiki/food-mysterious_fluid.webp",
+      "display": "portrait",
+      "alt": "Mysterious Fluid · item de XP de Anime Adventures.",
+      "form": null,
+      "source_file": "Mysterious_Fluid.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/7/72/Mysterious_Fluid.png/revision/latest?cb=20230101141428",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Mysterious_Fluid.png",
+      "original_sha256": "946d98f0240e4c9cc600c7066f2277a7c7971404602b0c2227cad52969ac14dd",
+      "sha256": "946d98f0240e4c9cc600c7066f2277a7c7971404602b0c2227cad52969ac14dd",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "food-wisteria_flower": {
+      "kind": "wiki",
+      "path": "assets/wiki/food-wisteria_flower.webp",
+      "display": "portrait",
+      "alt": "Wisteria Flower · item de XP de Anime Adventures.",
+      "form": null,
+      "source_file": "Wisteria_Flower.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/9/95/Wisteria_Flower.png/revision/latest?cb=20230101141611",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Wisteria_Flower.png",
+      "original_sha256": "3bb7e702f2fc6bdc75d1db3fbacda0958b138853ece9735c87a48531ef807347",
+      "sha256": "3bb7e702f2fc6bdc75d1db3fbacda0958b138853ece9735c87a48531ef807347",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "food-ramen_bowl": {
+      "kind": "wiki",
+      "path": "assets/wiki/food-ramen_bowl.webp",
+      "display": "portrait",
+      "alt": "Ramen · item de XP de Anime Adventures.",
+      "form": null,
+      "source_file": "Ramen_Bowl.png",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/f/fd/Ramen_Bowl.png/revision/latest?cb=20230101142002",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Ramen_Bowl.png",
+      "original_sha256": "697bfc3dbaff821f01b60eb26e604a4eb803cf8146deec9ac92161c55d2b589e",
+      "sha256": "697bfc3dbaff821f01b60eb26e604a4eb803cf8146deec9ac92161c55d2b589e",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually reviewed: actual Anime Adventures game media, correct subject/form, no placeholder."
+    },
+    "banner-p2w": {
+      "kind": "user_provided",
+      "path": "assets/wiki/banner-p2w.png",
+      "display": "wide",
+      "alt": "Banner de Anime Adventures fornecido pelo usuário: personagens, detalhes P2W e logotipo do jogo.",
+      "form": null,
+      "source_file": "user_banner_1",
+      "source_url": "https://cdn.discordapp.com/attachments/1401931074472251515/1562276218554818622/noFilter.png",
+      "source_page": null,
+      "original_sha256": "10dab19258946eef30d58646d11f20532e7e5e79583fd6134f277db6623cf15c",
+      "sha256": "10dab19258946eef30d58646d11f20532e7e5e79583fd6134f277db6623cf15c",
+      "processing": {
+        "type": "original_copy",
+        "generation": false
+      },
+      "review": "Visually matched to the first banner supplied in chat; original PNG copied unchanged.",
+      "approval": "First banner supplied by the user in chat, then supplied as a signed Discord attachment link; fetched from the corresponding original CDN URL."
+    }
+  },
+  "units": {
+    "zoro": "unit-zoro",
+    "josuke": "unit-josuke",
+    "ichigo": "unit-ichigo",
+    "nezuko": "unit-nezuko",
+    "usopp": "unit-usopp",
+    "goku": "unit-goku",
+    "uraraka": "unit-uraraka",
+    "luffy": "unit-luffy",
+    "tanjiro": "unit-tanjiro",
+    "naruto": "unit-naruto",
+    "krillin": "unit-krillin",
+    "vegeta": "unit-vegeta",
+    "sasuke": "unit-sasuke",
+    "sakura": "unit-sakura",
+    "sanji": "unit-sanji",
+    "jonathan": "unit-jonathan",
+    "speedwagon": "unit-speedwagon",
+    "all_might": "unit-all_might",
+    "erwin": "unit-erwin",
+    "armin": "unit-armin",
+    "levi": "unit-levi",
+    "madara": "unit-madara",
+    "broly": "unit-broly",
+    "rengoku": "unit-rengoku",
+    "diavolo": "unit-diavolo",
+    "madara_evolved": "unit-madara_evolved",
+    "levi_evolved": "unit-levi_evolved",
+    "broly_evolved": "unit-broly_evolved"
+  },
+  "maps": {
+    "1": "map-1",
+    "2": "map-2",
+    "3": "map-3",
+    "4": "map-4"
+  },
+  "foods": {
+    "Senzu Beans": "food-senzu_bean",
+    "Mysterious Fluid": "food-mysterious_fluid",
+    "Wisteria Flower": "food-wisteria_flower",
+    "Ramen": "food-ramen_bowl"
+  },
+  "banners": [
+    "banner-p2w",
+    "banner-summon"
+  ],
+  "unavailable": [
+    "all_might_evolved: current and archived wiki portraits are placeholders; no base portrait is substituted for this evolved answer."
+  ],
+  "wiki_file_index_complete": true,
+  "indexed_wiki_file_count": 2387
+}

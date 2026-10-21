@@ -19,6 +19,7 @@ from dotenv import load_dotenv
 import quiz_ui as screen
 from quiz_content import QuestionDeck, load_pack
 from scores import ScoreStore
+from timing import PausableTimer
 
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / '.env')
@@ -46,7 +47,8 @@ class QuizSession:
         self.question_message = None
         self.question_number = 0
         self.had_participation = False
-        self.deadline = 0.0
+        self.timer = None
+        self.answer_min_id = 0
         self.ends_at = None
         self.next_at = None
         self.answer_future = None
@@ -56,14 +58,76 @@ class QuizSession:
         self.control_message = None
         self.control_view = None
         self.question_view = None
-        self.pause_requested = False
         self.stop_requested = False
-        self.pause_signal = asyncio.Event()
-        self.resume_signal = asyncio.Event()
+        self.timing_changed = asyncio.Event()
         self.session_scores: dict[int, dict] = {}
         self.correct_count = 0
         self.last_result = None
         self.control_lock = asyncio.Lock()
+
+    @property
+    def deadline(self):
+        return self.timer.deadline if self.timer else 0.0
+
+    @property
+    def is_paused(self):
+        return bool(self.timer and self.timer.paused)
+
+    @property
+    def remaining_seconds(self):
+        return self.timer.remaining if self.timer else self.question_time
+
+    def timing_updated(self):
+        # Every waiter observes its own generation, so no consumer can clear another's wakeup.
+        previous = self.timing_changed
+        self.timing_changed = asyncio.Event()
+        previous.set()
+
+    def pause(self):
+        if self.phase not in ('question', 'intermission') or not self.timer:
+            return False
+        if self.phase == 'question' and (self.answer_future is None or self.answer_future.done()):
+            return False
+        if not self.timer.pause():
+            return False
+        self.phase = 'paused_question' if self.phase == 'question' else 'paused_intermission'
+        self.timing_updated()
+        return True
+
+    def resume(self, interaction_id=0):
+        if self.phase not in ('paused_question', 'paused_intermission') or not self.timer:
+            return False
+        question = self.phase == 'paused_question'
+        if not self.timer.resume():
+            return False
+        self.phase = 'question' if question else 'intermission'
+        if question:
+            self.answer_min_id = max(self.answer_min_id, interaction_id)
+            self.ends_at = datetime.now(timezone.utc) + timedelta(seconds=self.timer.remaining)
+        else:
+            self.next_at = datetime.now(timezone.utc) + timedelta(seconds=self.timer.remaining)
+        self.timing_updated()
+        return True
+
+    async def await_answer(self):
+        while self.running:
+            event = self.timing_changed
+            if self.answer_future.done():
+                return await self.answer_future
+            if not self.is_paused and self.remaining_seconds <= 0:
+                self.answer_future.cancel()
+                return None
+            changed = asyncio.create_task(event.wait())
+            try:
+                await asyncio.wait(
+                    (self.answer_future, changed),
+                    timeout=None if self.is_paused else self.remaining_seconds,
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+            finally:
+                changed.cancel()
+                await asyncio.gather(changed, return_exceptions=True)
+        return None
 
     def selected_questions(self):
         categories = screen.GROUPS[self.group][1]
@@ -99,6 +163,7 @@ class QuizSession:
                     with contextlib.suppress(discord.HTTPException):
                         await self.control_message.edit(view=self.control_view)
                 self.control_view = None
+            self.control_message = None
 
     async def refresh_controls(self):
         async with self.control_lock:
@@ -106,10 +171,10 @@ class QuizSession:
                 return
             if self.phase == 'lobby':
                 view = screen.lobby_panel(self, handle_control)
-            elif self.phase == 'question':
-                view = screen.question_panel(self, handle_control, self.deadline - self.clock())
+            elif self.phase in ('question', 'paused_question'):
+                view = screen.question_panel(self, handle_control, self.remaining_seconds)
                 self.question_view = view
-            elif self.phase in ('paused', 'intermission') and self.last_result:
+            elif self.phase in ('paused_intermission', 'intermission') and self.last_result:
                 winner, total = self.last_result
                 view = screen.result_panel(self, winner, total, True, handle_control)
             else:
@@ -122,9 +187,9 @@ class QuizSession:
     def submit(self, message):
         """Claim synchronously so two correct messages cannot both win."""
         if (not self.running or self.phase != 'question' or self.question_message is None
-                or self.answer_future is None or self.answer_future.done() or self.clock() >= self.deadline):
+                or self.answer_future is None or self.answer_future.done() or self.remaining_seconds <= 0):
             return False
-        if message.author.bot or message.webhook_id is not None or message.id <= self.question_message.id:
+        if message.author.bot or message.webhook_id is not None or message.id <= self.answer_min_id:
             return False
         self.had_participation = True
         if self.current_question.accepts(message.content):
@@ -134,20 +199,30 @@ class QuizSession:
 
     async def update_clock(self, refresh_immediately=False):
         first = True
-        while True:
-            remaining = self.deadline - self.clock()
+        while not self.answer_future.done():
+            event = self.timing_changed
+            if self.is_paused:
+                await event.wait()
+                first = True
+                continue
+            remaining = self.remaining_seconds
             if remaining <= 0:
                 return
             if not (first and refresh_immediately):
-                await asyncio.sleep(min(COUNTDOWN_INTERVAL, remaining))
+                try:
+                    await asyncio.wait_for(event.wait(), min(COUNTDOWN_INTERVAL, remaining))
+                except asyncio.TimeoutError:
+                    pass
             first = False
-            remaining = self.deadline - self.clock()
-            if remaining <= 0 or self.answer_future.done():
+            if self.is_paused or self.answer_future.done():
+                continue
+            if self.remaining_seconds <= 0:
                 return
             try:
-                # Serialize edits so a queued clock update cannot replace newer controls.
                 async with self.control_lock:
-                    self.question_view.clock_text.content = screen.clock_label(self, remaining)
+                    if self.is_paused or self.answer_future.done():
+                        continue
+                    self.question_view.clock_text.content = screen.clock_label(self, self.remaining_seconds)
                     await self.question_message.edit(view=self.question_view)
             except (discord.NotFound, discord.Forbidden):
                 self.answer_future.cancel()
@@ -172,7 +247,7 @@ class QuizSession:
         self.answer_future = asyncio.get_running_loop().create_future()
         self.phase = 'question'
         publishing_started = self.clock()
-        self.deadline = publishing_started + self.question_time
+        self.timer = PausableTimer(self.question_time, self.clock)
         self.ends_at = datetime.now(timezone.utc) + timedelta(seconds=self.question_time)
         self.question_view = screen.question_panel(self, handle_control, self.question_time)
         self.control_view = self.question_view
@@ -180,13 +255,12 @@ class QuizSession:
         self.control_message = self.question_message
         # Publishing latency must not consume a player's answer time.
         publish_lag = self.clock() - publishing_started
-        self.deadline = self.clock() + self.question_time
+        self.timer = PausableTimer(self.question_time, self.clock)
+        self.answer_min_id = self.question_message.id
         self.ends_at = datetime.now(timezone.utc) + timedelta(seconds=self.question_time)
         self.ticker = asyncio.create_task(self.update_clock(publish_lag >= 1), name=f'clock:{self.channel.id}')
         try:
-            winner = await asyncio.wait_for(self.answer_future, max(0, self.deadline - self.clock()))
-        except asyncio.TimeoutError:
-            winner = None
+            winner = await self.await_answer()
         finally:
             self.phase = 'resolving'
             await self.stop_ticker()
@@ -207,27 +281,29 @@ class QuizSession:
             self.control_message = None
             self.control_view = None
         continuing = self.had_participation and not self.stop_requested
-        self.phase = ('paused' if self.pause_requested else 'intermission') if continuing else 'ended'
+        self.phase = 'intermission' if continuing else 'ended'
+        self.timer = PausableTimer(self.between_questions, self.clock) if continuing else None
         self.next_at = datetime.now(timezone.utc) + timedelta(seconds=self.between_questions)
         self.last_result = (winner, total)
         self.control_view = screen.result_panel(self, winner, total, continuing, handle_control)
+        publishing_started = self.clock()
         self.control_message = await self.channel.send(view=self.control_view)
+        if continuing:
+            # Give players the full reading interval after the result becomes visible.
+            publish_lag = self.clock() - publishing_started
+            self.timer = PausableTimer(self.between_questions, self.clock)
+            self.next_at = datetime.now(timezone.utc) + timedelta(seconds=self.between_questions)
+            if publish_lag >= 1:
+                await self.refresh_controls()
         return continuing
 
     async def wait_between_questions(self):
         while self.running:
-            if self.pause_requested:
-                self.phase = 'paused'
-                self.resume_signal.clear()
-                await self.resume_signal.wait()
-                if not self.running:
-                    return
-            self.pause_signal.clear()
-            self.phase = 'intermission'
-            self.next_at = datetime.now(timezone.utc) + timedelta(seconds=self.between_questions)
-            await self.refresh_controls()
+            event = self.timing_changed
+            if not self.is_paused and self.remaining_seconds <= 0:
+                return
             try:
-                await asyncio.wait_for(self.pause_signal.wait(), self.between_questions)
+                await asyncio.wait_for(event.wait(), None if self.is_paused else self.remaining_seconds)
             except asyncio.TimeoutError:
                 return
 
@@ -403,19 +479,35 @@ async def handle_control(interaction, action, value=None):
     if not (owner or is_moderator(interaction.user)):
         await interaction.response.send_message('Pausar, retomar e encerrar ficam com o anfitrião e a moderação. Todos podem consultar o placar e jogar.', ephemeral=True)
         return
-    if action == 'pause' and session.phase in ('question', 'resolving', 'intermission'):
-        session.pause_requested = not session.pause_requested
-        session.pause_signal.set()
-        if session.phase == 'intermission' and session.pause_requested:
-            session.phase = 'paused'
-        await interaction.response.defer()
-        await session.refresh_controls()
-    elif action == 'resume' and session.phase == 'paused':
-        session.pause_requested = False
-        session.resume_signal.set()
-        session.phase = 'intermission'
-        session.next_at = datetime.now(timezone.utc) + timedelta(seconds=session.between_questions)
-        await interaction.response.defer()
+    if action == 'pause':
+        if session.is_paused:
+            # A repeated click can recover a panel whose previous edit failed.
+            try:
+                await interaction.response.defer()
+            finally:
+                await session.refresh_controls()
+            return
+        if not session.pause():
+            await interaction.response.send_message('Esta etapa já terminou ou está em pausa. Use os controles do painel mais recente.', ephemeral=True)
+            return
+        try:
+            await interaction.response.defer()
+        finally:
+            await session.refresh_controls()
+    elif action == 'resume':
+        if not session.resume(getattr(interaction, 'id', 0)):
+            if session.phase in ('question', 'intermission'):
+                try:
+                    await interaction.response.defer()
+                finally:
+                    await session.refresh_controls()
+                return
+            await interaction.response.send_message('Esta etapa já foi retomada ou encerrada.', ephemeral=True)
+            return
+        try:
+            await interaction.response.defer()
+        finally:
+            await session.refresh_controls()
     elif action == 'stop':
         if session.phase in ('question', 'resolving'):
             session.stop_requested = True
@@ -445,7 +537,40 @@ async def on_message(message: discord.Message):
             session.submit(message)
 
 
-@bot.tree.command(name='adventures', description='Abra o painel interativo do quiz Release de Anime Adventures.')
+async def release_deleted_panel(channel_id, message_ids):
+    session = active_sessions.get(channel_id)
+    if not session or not session.control_message or session.control_message.id not in message_ids:
+        return
+    # A winner claimed just before deletion must still receive the earned point.
+    future = session.answer_future
+    if session.phase in ('question', 'resolving') and future and future.done() and not future.cancelled():
+        session.stop_requested = True
+        return
+    await session.stop_now('O painel da partida foi removido. Use /adventures para abrir outra aventura.')
+
+
+@bot.event
+async def on_raw_message_delete(payload):
+    await release_deleted_panel(payload.channel_id, {payload.message_id})
+
+
+@bot.event
+async def on_raw_bulk_message_delete(payload):
+    await release_deleted_panel(payload.channel_id, payload.message_ids)
+
+
+@bot.event
+async def on_guild_channel_delete(channel):
+    session = active_sessions.get(channel.id)
+    if session:
+        future = session.answer_future
+        if session.phase in ('question', 'resolving') and future and future.done() and not future.cancelled():
+            session.stop_requested = True
+            return
+        await session.stop_now('O canal da partida foi removido.')
+
+
+@bot.tree.command(name='adventures', description='Abra o quiz Release de Anime Adventures com imagens, placar e pausa.')
 @app_commands.guild_only()
 async def adventures(interaction: discord.Interaction):
     await begin_lobby(interaction)

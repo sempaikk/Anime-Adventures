@@ -4,10 +4,11 @@ Quiz de respostas abertas no Discord, restrito à versão inicial de julho de 20
 
 - **251 perguntas em 14 categorias:** unidades, raridades, evoluções, mundos, chefes, atos, comida e XP, traits, summon, economia, modos, missões, loja e códigos, upgrades.
 - **44 unidades base e quatro relações de evolução documentadas.** Nomes do anime e nomes antigos/atuais documentados são aceitos nas perguntas de identidade. Perguntas sobre uma evolução exigem o nome da forma evoluída.
-- **Interface Components V2:** arte original de abertura, cartões com títulos, separadores, emojis e cores por raridade. Ajuda e placar são consultas privadas, sem mensagens extras no canal.
+- **Interface Components V2:** os dois banners fornecidos pelo usuário, identidade roxa/dourada e cartões separados para pergunta, relógio e resultado. Retratos de unidades, mapas e alimentos vêm da wiki; nenhuma imagem gerada por IA. Ajuda e placar são consultas privadas.
 - **Tempo configurável:** 30, 45 (padrão) ou 60 segundos por pergunta; intervalo de 8 segundos. Edições do relógio a cada 10 segundos; uma edição lenta não aumenta o prazo.
 - **Assuntos configuráveis:** aventura completa, personagens, mundos e chefes, ou sistemas do jogo. A escolha filtra o banco Release antes de embaralhar, sem introduzir outros updates.
-- **Pausar, retomar, encerrar e jogar novamente**, sem comandos adicionais. Só o anfitrião escolhe opções/inicia; anfitrião e moderadores com Administrador, Gerenciar Servidor ou Gerenciar Canais controlam pausa/fim. Durante uma pergunta, esses pedidos valem ao final dela, preservando o ponto em disputa.
+- **Pausa imediata:** congela o relógio da pergunta ou do intervalo; retomar preserva exatamente o tempo restante. Respostas enviadas em pausa não contam, inclusive se chegarem depois da retomada. Só o anfitrião escolhe opções/inicia; anfitrião e moderadores com Administrador, Gerenciar Servidor ou Gerenciar Canais controlam pausa/fim.
+- **Encerrar e jogar novamente**, sem comandos adicionais. Encerrar uma pergunta ativa aguarda seu desfecho; em pausa, encerra imediatamente. Apagar o painel libera o canal; um acerto já registrado continua pontuando.
 - Um resultado por pergunta, explicação, link da fonte e placar da sessão. Qualquer tentativa válida de um jogador conta como participação; sem participação, a sessão termina.
 - Sem aproximação de nomes: maiúsculas, acentos, pontuação e separadores são normalizados. Mensagens anteriores à pergunta, de bots, de webhooks, editadas ou recebidas após o prazo não contam.
 - Pontos acumulados em SQLite, com crédito único por pergunta e importação única do `scores.json` antigo, caso o arquivo ainda esteja disponível.
@@ -24,7 +25,7 @@ No Discord Developer Portal, habilite **Message Content Intent**. O bot precisa 
 python -m unittest discover -s tests -v
 ```
 
-Os testes não usam token, não sincronizam comandos e não enviam mensagens reais. Cobrem concorrência, prazo, publicação/edição lenta, inatividade, falhas do Discord, permissões, baralho, conteúdo, fontes, migração e escrita transacional da pontuação.
+Os testes não usam token, não sincronizam comandos e não enviam mensagens reais. Cobrem concorrência, pausa/retomada, respostas atrasadas da pausa, exclusão de painéis, prazo, publicação/edição lenta, inatividade, falhas do Discord, permissões, baralho, conteúdo, fontes, seleção de imagens, migração e escrita transacional da pontuação.
 
 As decisões visuais e as referências oficiais estão em [`docs/interface.md`](docs/interface.md). O painel inicial expira após dois minutos sem iniciar. Botões antigos de ajuda, pontos e revanche têm tratamento após reinícios; controles de uma sessão encerrada nunca controlam outra.
 
@@ -39,6 +40,8 @@ Sem volume, o disco do container é temporário e os totais podem ser perdidos e
 ## Conteúdo e próximas etapas
 
 O pacote ativo está em [`data/release.json`](data/release.json); o carregador gera as perguntas de identidade e raridade a partir do elenco, além das perguntas específicas. O bot não depende de acesso à wiki durante as partidas.
+
+[`data/media.json`](data/media.json) registra a origem, a forma da unidade, o processamento e os hashes de cada imagem. Visuais atuais da wiki podem ilustrar perguntas históricas, sem alterar os fatos do Release. Perguntas de identidade ocultam o retrato até a resposta; evoluções só usam a forma correspondente. Imagens ausentes ou substituídas por placeholders na wiki ficam de fora.
 
 A pesquisa, suas limitações e a política para adicionar conteúdo estão em [`docs/release-research.md`](docs/release-research.md). As fontes históricas usadas foram preservadas em `docs/sources/`, com hashes no pacote. [`data/release_pending.json`](data/release_pending.json) registra candidatos, conflitos e conteúdo posterior; **esse arquivo não é carregado pelo quiz**.
 
