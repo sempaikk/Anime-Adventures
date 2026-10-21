@@ -231,7 +231,7 @@ class QuizSession(AdventureState):
 
     def finish_reason(self):
         if self.stop_requested:
-            return 'Partida encerrada por quem criou o painel ou pela moderação.'
+            return 'Partida encerrada pelo anfitrião ou pela moderação.'
         if self.round_limit and self.question_number >= self.round_limit:
             return f'As {self.round_limit} perguntas foram concluídas. Valeu por jogar!'
         return 'Ninguém tentou responder essa rodada. Quer jogar de novo?'
@@ -277,12 +277,13 @@ class QuizSession(AdventureState):
         answer = normalize_answer(message.content)
         if not answer:
             return False
-        attempts = self.chat_attempts.setdefault(message.author.id, set())
+        attempts = self.chat_attempts.get(message.author.id, set())
         if answer in attempts or len(attempts) >= self.chat_attempt_limit:
             return False
         if not self.track_attempt(message.author):
             return False
         attempts.add(answer)
+        self.chat_attempts[message.author.id] = attempts
         self.had_participation = True
         if answer in self.current_question.accepted:
             self.answer_future.set_result(message.author)
@@ -771,7 +772,7 @@ async def handle_control(interaction, action, value=None):
     owner = interaction.user.id == session.host.id
     if action in ('start', 'category', 'time', 'rounds','difficulty','format','advanced'):
         if not owner:
-            await interaction.response.send_message('Só quem abriu a partida pode ajustar as opções e começar. Quando a pergunta aparecer, todo mundo pode responder!', ephemeral=True)
+            await interaction.response.send_message('Só o anfitrião atual pode ajustar as opções e começar. Quando a pergunta aparecer, todo mundo pode responder!', ephemeral=True)
             return
         if session.phase != 'lobby':
             await interaction.response.send_message('Essas opções só podem mudar antes da partida começar.', ephemeral=True)
@@ -814,7 +815,7 @@ async def handle_control(interaction, action, value=None):
             await session.refresh_controls()
         return
     if not (owner or is_moderator(interaction.user)):
-        await interaction.response.send_message('Só quem criou a partida e a moderação podem pausar, retomar ou encerrar. Você pode responder e consultar o placar normalmente.', ephemeral=True)
+        await interaction.response.send_message('Só o anfitrião atual e a moderação podem pausar, retomar ou encerrar. Você pode responder e consultar o placar normalmente.', ephemeral=True)
         return
     if action == 'pause':
         if session.is_paused:
@@ -860,7 +861,7 @@ async def handle_control(interaction, action, value=None):
             try:
                 await interaction.response.defer()
             finally:
-                await session.stop_now('Partida encerrada por quem criou o painel ou pela moderação. Valeu por jogar!')
+                await session.stop_now('Partida encerrada pelo anfitrião ou pela moderação. Valeu por jogar!')
     else:
         await interaction.response.send_message('A partida já passou para outra rodada. Use o painel mais recente.', ephemeral=True)
 

@@ -2,6 +2,10 @@
 
 Esta entrega fecha a interface, a duração das partidas e as regras de disputa do comando atual. O único comando continua sendo `/adventures`; site, novos comandos, idiomas e histórico de updates ficam em etapas próprias.
 
+O acabamento final organiza **Como jogar** em dois cartões, com três passos rápidos e regras separadas por assunto. As mensagens identificam o anfitrião atual mesmo após uma transferência; o placar avisa quando mostra apenas cinco jogadores. A moderação lê relatos completos de até 400 caracteres e uma indicação clara quando a fila está vazia. O limite de 200 participantes também limita os registros de tentativas no chat.
+
+**207 testes automatizados passaram** na revisão final. A versão está pronta no código; falta a validação real após o novo deploy, sem promessa de ausência absoluta de falhas. O roteiro único para essa validação está em [teste-discord.md](teste-discord.md).
+
 ## Experiência entregue
 
 - Dez ícones coloridos da wiki, transparência e os dois banners autorizados. Sem arte gerada ou recoloração. O original da mochila foi preservado antes de remover seu fundo.

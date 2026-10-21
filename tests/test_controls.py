@@ -305,7 +305,7 @@ class ControlTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(session.correct_count, 1)
         self.assertEqual(session.question_number, 1)
         app.bot.scores.credit.assert_called_once()
-        self.assertIn('Partida encerrada por quem criou', view_text(session.control_view))
+        self.assertIn('Partida encerrada pelo anfitrião', view_text(session.control_view))
         self.assertNotIn(session.channel.id, app.active_sessions)
 
     async def test_paused_session_can_be_ended_without_starting_another_round(self):

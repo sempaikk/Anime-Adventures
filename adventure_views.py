@@ -97,7 +97,7 @@ def recovery_panel(session,callback,*,restarting=False):
                     f'{screen.session_summary(session)}'),screen.divider(),
         screen.text(f'### Placar da partida\n{screen.standings(session)}'),
         screen.text('-# Uma rodada interrompida sem acerto é anulada. Pontos já gravados não contam duas vezes.\n'
-                    '-# Quem criou a partida ou a moderação pode retomar. O painel expira em 10 minutos.'),
+                    '-# O anfitrião e a moderação podem retomar. O painel expira em 10 minutos.'),
         ui.ActionRow(screen.ActionButton('resume_saved',callback,label='Retomar partida',style=discord.ButtonStyle.success),
                      screen.ActionButton('stop',callback,label='Encerrar'),screen.ActionButton('manage',callback,label='Controles')),
         color=screen.GOLD)
@@ -160,19 +160,22 @@ def reports_panel(queue,guild_id,pack):
     by_id = {q.id:q for q in pack.questions}
     for report in queue['items']:
         question = by_id.get(report['question_id'])
-        reason = ''.join(c for c in report['reason'] if unicontrol(c))[:180]
+        reason = ''.join(c for c in report['reason'] if unicontrol(c))[:400]
         reason = discord.utils.escape_markdown(discord.utils.escape_mentions(reason))
         prompt = question.prompt[:180] if question else 'Pergunta de uma versão anterior.'
         answer = '\n**Resposta cadastrada:** '+question.answer[:160] if question else ''
-        content = f'### Aviso #{report["id"]}\n{prompt}{answer}\n\n{reason}'
+        content = f'### Aviso #{report["id"]}\n{prompt}{answer}\n\n**Relato do jogador:**\n{reason}'
         row = ui.ActionRow(DynamicControls(f'report_done:{report["id"]}:0',label='Marcar revisado'))
         if question:
             row.add_item(ui.Button(label='Conferir a fonte',url=pack.sources[question.sources[0]]['url']))
         children += [screen.divider(),*screen.illustrated(content,media.for_question(question,revealed=True) if question else None),row]
     page = queue['page']
-    children += [screen.divider(),ui.ActionRow(
-        DynamicControls(f'report_page:{guild_id}:{max(0,page-1)}',label='Anterior',disabled=page==0),
-        DynamicControls(f'report_page:{guild_id}:{page+1}',label='Próxima',disabled=(page+1)*3>=queue['total']))]
+    if not queue['total']:
+        children += [screen.divider(),screen.text('**Tudo em dia.** Nenhuma pergunta aguardando revisão neste servidor.')]
+    else:
+        children += [screen.divider(),screen.text(f'-# Página {page+1}/{math.ceil(queue["total"]/3)} · só a moderação vê esta consulta.'),ui.ActionRow(
+            DynamicControls(f'report_page:{guild_id}:{max(0,page-1)}',label='Anterior',disabled=page==0),
+            DynamicControls(f'report_page:{guild_id}:{page+1}',label='Próxima',disabled=(page+1)*3>=queue['total']))]
     return screen.Panel(*children,timeout=300)
 
 

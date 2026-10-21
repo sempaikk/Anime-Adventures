@@ -195,7 +195,8 @@ def lobby_panel(session, callback):
         ui.ActionRow(ActionButton('start', callback, label='Começar', emoji=icons.component('summon'), style=discord.ButtonStyle.success,disabled=not count),
                      ActionButton('advanced',callback,label='Voltar' if advanced else 'Mais opções'),
                      ActionButton('stop', callback, label='Fechar painel')),
-        text(f'-# Criado por {safe_name(session.host.display_name)} · respostas no chat ou nos botões, conforme a pergunta.\n'
+        text(f'-# Anfitrião: **{safe_name(session.host.display_name)}** · só ele configura e inicia.\n'
+             '-# Todo mundo pode responder. A pergunta indica se é no chat ou nos botões.\n'
              '-# Cada pergunta soma no total global uma vez a cada 24h. O painel fecha após 2 minutos sem iniciar.'),
         header=artwork(0),
         footer=[utilities(callback)],
@@ -250,8 +251,11 @@ def closed_question_panel(session):
 
 
 def standings(session):
-    entries = sorted(session.session_scores.values(), key=lambda row: (-row['points'], row['first']))[:5]
-    return '\n'.join(f"{i + 1}. **{safe_name(row['name'])}** · **{quantity(row['points'], 'ponto')}**" for i, row in enumerate(entries)) or 'O primeiro ponto ainda está em jogo.'
+    entries = sorted(session.session_scores.values(), key=lambda row: (-row['points'], row['first']))
+    rows = '\n'.join(f"{i + 1}. **{safe_name(row['name'])}** · **{quantity(row['points'], 'ponto')}**" for i, row in enumerate(entries[:5]))
+    if len(entries) > 5:
+        rows += f'\n-# Mostrando 5 de {len(entries)} jogadores com pontos.'
+    return rows or 'O primeiro ponto ainda está em jogo.'
 
 
 def match_leaders(session):
@@ -316,17 +320,19 @@ def ended_panel(session, reason, callback):
 
 def help_panel():
     return Panel(
-        *illustrated('## Como jogar', icons.asset('items')), divider(),
-        text('### 1 · Monte a partida\nUse **/adventures**, escolha um grupo ou assunto específico, o tempo e 10, 20 ou 30 perguntas. **Partida contínua** não tem limite de rodadas. Em **Mais opções**, escolha dificuldade e formato. Só quem abriu o painel ajusta as opções.'),
-        text('### 2 · Veja como responder\n**O primeiro acerto vale 1 ponto.** Algumas perguntas pedem resposta no chat, outras mostram uma imagem ou três alternativas. No chat, cada pessoa pode enviar **até três respostas diferentes** por pergunta; repetir a mesma não gasta outra tentativa. Nas alternativas, vale **uma tentativa** por pessoa. Quem acertar primeiro leva o ponto.'),
-        text('### 3 · Qual nome vale?\nAceitamos os nomes cadastrados do jogo (atuais e antigos) e do anime. Maiúsculas e acentos não fazem diferença. Confira a digitação: nomes parecidos não contam. Se a pergunta pedir uma evolução, responda a forma evoluída.'),
-        text('### 4 · Mantenha a partida rolando\nTentou e errou? Tudo bem, a partida continua. Ela termina ao chegar ao total escolhido, ao encerrar pelo botão ou na primeira rodada sem tentativa. Abrir ajuda ou placar não conta como resposta.'),
-        text('### 5 · Pontuação\nTodo primeiro acerto vale **1 ponto na partida**. No **total global**, a mesma pergunta soma um ponto por pessoa a cada **24 horas**, mesmo mudando de canal ou abrindo outra partida.'),
-        text('### Precisa de uma pausa?\nQuem abriu a partida e a moderação podem pausar e encerrar. Pausar trava o relógio e as respostas; retomar continua do mesmo ponto. Uma pausa de **10 minutos** encerra a partida. Ao encerrar com uma pergunta ativa, ela termina primeiro. Com a partida pausada, encerra na hora.'),
-        text('### Veja seu desempenho\nO resultado oferece uma revisão privada das últimas 50 rodadas, com respostas e primeiros acertos por assunto. O percentual também depende da velocidade. **Sinalizar pergunta** envia um aviso privado para revisão: até cinco avisos por pessoa em 24h.'),
-        text('### Controle e recuperação\nEm **Controles**, o anfitrião e a moderação podem transferir a partida. Se ele sair do servidor, alguém que já participou pode assumir após a confirmação da saída. Após um reinício, partidas salvas por até 24h oferecem **Retomar partida**. Uma rodada interrompida sem acerto é anulada; pontos gravados são preservados.'),
-        text('-# Se a conexão com o Discord cair, o relógio pausa e volta após reconectar. Uma pausa que já era sua continua pausada.\n'
-             '-# Até 200 participantes por partida. A ajuda e seus pontos aparecem só para você. A fonte de cada resposta fica no botão da wiki.'),
+        text('### Tentativas e nomes\n**Chat ou imagem:** até três respostas diferentes por pessoa. Repetir a mesma não gasta tentativa.\n**Alternativas:** uma escolha por pessoa.\n\nValem os nomes cadastrados do jogo, atuais e antigos, e do anime. Maiúsculas e acentos não mudam a resposta; nomes parecidos não contam. Se a pergunta pedir uma evolução, responda a forma evoluída.'),
+        divider(),
+        text('### Partida e total global\nO primeiro acerto vale **1 ponto na partida**. No **total global**, a mesma pergunta soma uma vez por pessoa a cada **24 horas**, mesmo em outro canal ou partida.'),
+        text('### Quando a partida termina?\nAo completar o total escolhido, ao encerrar pelo botão ou na **primeira rodada sem tentativa**. Tentou e errou? A partida continua. Abrir ajuda ou placar não conta como tentativa.'),
+        divider(),
+        text('### Pausa e controle\nO anfitrião e a moderação podem pausar e encerrar pelo painel da partida. Para passar o controle, use **Controles**. Pausar trava tempo e respostas; retomar continua do mesmo ponto. Uma pausa de **10 minutos** encerra a partida.\n\nEncerrar durante uma pergunta ativa deixa a rodada terminar. Com a partida pausada ou no intervalo, encerra na hora. Se o anfitrião sair do servidor, um participante ou moderador pode assumir após a saída ser confirmada.'),
+        text('### Desempenho e revisão\n**Meu desempenho** mostra seus primeiros acertos por assunto e as últimas 50 rodadas. O percentual inclui a disputa por velocidade. **Sinalizar pergunta** envia um aviso privado à moderação: até cinco por pessoa em 24h.'),
+        text('### Se a conexão cair ou o bot reiniciar\nUma queda de conexão pausa o relógio; a reconexão retoma só a pausa automática. Após reiniciar, partidas salvas por até **24h** oferecem **Retomar partida**. A rodada interrompida sem acerto é anulada e os pontos gravados são preservados.'),
+        text('-# Até 200 participantes por partida. Só você vê esta ajuda e suas consultas de pontos/desempenho. A fonte de cada resposta fica no botão da wiki.'),
+        header=[*illustrated('## Como jogar\nTodo mundo no canal pode participar.', icons.asset('items')), divider(),
+                text('### 1 · Prepare\nAbra **/adventures**. Escolha assuntos, tempo e **10, 20 ou 30 perguntas**, ou **Partida contínua**. Em **Mais opções**, ajuste dificuldade e formato. Só o anfitrião configura e toca em **Começar**.'),
+                text('### 2 · Responda\nSiga a indicação da pergunta: escreva no chat ou escolha **A, B ou C**. O primeiro acerto válido processado pelo bot leva o ponto; a conexão pode influenciar a ordem.'),
+                text('### 3 · Confira o resultado\nVeja a resposta, o placar e a fonte. O intervalo entre perguntas é de **8 segundos**. Use **Meu desempenho** para rever suas rodadas em uma consulta privada.')],
     )
 
 

@@ -83,6 +83,19 @@ class GuardTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(s.chat_attempts[42], {'nao'})
         self.assertTrue(s.submit(Message(s.channel, content='50')))
 
+    async def test_player_limit_also_bounds_chat_attempt_storage(self):
+        s = await self.playing()
+        for uid in range(1, 201):
+            self.assertFalse(s.submit(Message(s.channel, user(uid), 'errado')))
+        for uid in range(201, 1201):
+            self.assertFalse(s.submit(Message(s.channel, user(uid), '50')))
+        self.assertEqual(len(s.performance), 200)
+        self.assertEqual(len(s.chat_attempts), 200)
+        self.assertFalse(s.answer_future.done())
+        self.assertTrue(s.submit(Message(s.channel, user(42), '50')))
+        await until(lambda: s.correct_count == 1)
+        self.assertEqual(s.session_scores[42]['points'], 1)
+
     async def test_empty_oversized_and_webhook_messages_do_not_count(self):
         s = await self.playing()
         for answer in ('', '   ', '!!!', 'x' * (app.MAX_ANSWER_LENGTH + 1)):

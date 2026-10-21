@@ -272,6 +272,19 @@ class FeatureTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(panel.timeout,300)
         discord.http.handle_message_parameters(view=panel)
 
+    async def test_moderators_can_read_the_entire_report_and_the_empty_queue(self):
+        reason = 'x' * 360 + ' O erro está no último upgrade.'
+        queue = {'total':3,'page':0,'items':[
+            {'id':i,'question_id':'summon:cost','reason':reason} for i in range(3)]}
+        panel = views.reports_panel(queue,10,app.PACK)
+        self.assertEqual(view_text(panel).count(reason),3)
+        self.assertLessEqual(panel.content_length(),4000)
+        self.assertLessEqual(panel.total_children_count,40)
+        discord.http.handle_message_parameters(view=panel)
+        empty = views.reports_panel({'total':0,'page':0,'items':[]},10,app.PACK)
+        self.assertIn('Nenhuma pergunta aguardando revisão',view_text(empty))
+        self.assertFalse(any(isinstance(item,discord.ui.Button) for item in empty.walk_children()))
+
     async def test_report_modal_cannot_be_submitted_by_another_user_or_channel(self):
         s=await self.lobby()
         modal=views.ReportModal(self.repo,s.control_message.id,10,s.channel.id,42)
