@@ -906,10 +906,11 @@ async def check_host_presence(session):
     guild = getattr(session.channel,'guild',None)
     if guild is None or not hasattr(guild,'fetch_member'):
         return
-    last = getattr(session,'last_host_check',0)
-    if time.monotonic() - last < 60:
+    last = getattr(session,'last_host_check',None)
+    now = session.clock()
+    if last is not None and now - last < 60:
         return
-    session.last_host_check = time.monotonic()
+    session.last_host_check = now
     expected_host = session.host.id
     try:
         member = await guild.fetch_member(expected_host)

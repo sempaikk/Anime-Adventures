@@ -174,11 +174,11 @@ class FeatureTests(unittest.IsolatedAsyncioTestCase):
     async def test_missing_host_is_verified_and_only_one_participant_can_claim(self):
         s=await self.lobby()
         s.channel.guild.fetch_member.side_effect=discord.Forbidden(SimpleNamespace(status=403,reason='no'), 'no')
-        s.last_host_check=0
+        s.last_host_check=None
         await app.check_host_presence(s)
         self.assertFalse(s.host_missing)
         s.channel.guild.fetch_member.side_effect=discord.NotFound(SimpleNamespace(status=404,reason='gone'),'gone')
-        s.last_host_check=0
+        s.last_host_check=None
         await app.check_host_presence(s)
         self.assertTrue(s.host_missing)
         s.track_attempt(user(78));s.track_attempt(user(99))
@@ -238,9 +238,22 @@ class FeatureTests(unittest.IsolatedAsyncioTestCase):
         async def changing_host(uid):
             s.host=user(99)
             return SimpleNamespace(id=uid,display_name='Old host',bot=False,guild=s.channel.guild)
-        s.channel.guild.fetch_member.side_effect=changing_host;s.last_host_check=0
+        s.channel.guild.fetch_member.side_effect=changing_host;s.last_host_check=None
         await app.check_host_presence(s)
         self.assertEqual(s.host.id,99)
+
+    async def test_host_presence_checks_immediately_after_boot_then_respects_the_interval(self):
+        s=await self.lobby()
+        now=[0]
+        s.clock=lambda:now[0]
+        await app.check_host_presence(s)
+        s.channel.guild.fetch_member.assert_awaited_once_with(42)
+        now[0]=59
+        await app.check_host_presence(s)
+        self.assertEqual(s.channel.guild.fetch_member.await_count,1)
+        now[0]=60
+        await app.check_host_presence(s)
+        self.assertEqual(s.channel.guild.fetch_member.await_count,2)
 
     async def test_transfer_rejects_bots_and_members_from_other_guilds(self):
         s=await self.lobby()

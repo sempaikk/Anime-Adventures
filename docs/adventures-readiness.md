@@ -4,7 +4,7 @@ Esta entrega fecha a interface, a duração das partidas e as regras de disputa 
 
 O acabamento final organiza **Como jogar** em dois cartões, com três passos rápidos e regras separadas por assunto. As mensagens identificam o anfitrião atual mesmo após uma transferência; o placar avisa quando mostra apenas cinco jogadores. A moderação lê relatos completos de até 400 caracteres e uma indicação clara quando a fila está vazia. O limite de 200 participantes também limita os registros de tentativas no chat.
 
-**207 testes automatizados passaram** na revisão final. A versão está pronta no código; falta a validação real após o novo deploy, sem promessa de ausência absoluta de falhas. O roteiro único para essa validação está em [teste-discord.md](teste-discord.md).
+**208 testes automatizados passaram** na revisão final. A primeira conferência de presença do anfitrião acontece mesmo numa máquina recém-iniciada; as seguintes respeitam o intervalo de um minuto. A versão está pronta no código; falta a validação real após o novo deploy, sem promessa de ausência absoluta de falhas. O roteiro único para essa validação está em [teste-discord.md](teste-discord.md).
 
 ## Experiência entregue
 
