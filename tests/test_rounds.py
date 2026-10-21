@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 
 import discord
 
-import bot as app
+import quiz_legacy as app
 import quiz_ui as screen
 from scores import AwardResult, ScoreStore
 from test_controls import interaction

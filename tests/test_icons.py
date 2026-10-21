@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 import discord
 
-import bot as app
+import quiz_legacy as app
 import quiz_icons as icons
 import quiz_ui as screen
 from test_session import Channel, user, view_text

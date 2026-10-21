@@ -13,7 +13,7 @@ import aiohttp
 
 from runtime_health import RuntimeHealth
 from scripts.check_health import check_ready
-import bot as app
+import quiz_legacy as app
 
 
 class HealthTests(unittest.IsolatedAsyncioTestCase):

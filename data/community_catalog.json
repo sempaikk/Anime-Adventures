@@ -1,0 +1,2903 @@
+{
+  "schema": 1,
+  "policy": "Identity catalog only. Availability, roles, strength and current balance are not inferred from this snapshot.",
+  "source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=46960",
+  "source_snapshot": "docs/sources/46960.wiki",
+  "source_sha256": "e68313f42b14c066cb50298b336502e17f5e3ec49ec2097ad23a1a03baafbaaf",
+  "units": [
+    {
+      "id": "gogeta_failed",
+      "name": "???",
+      "aliases": []
+    },
+    {
+      "id": "pain",
+      "name": "Agony",
+      "aliases": [
+        "Pain"
+      ]
+    },
+    {
+      "id": "pain_2_evolved",
+      "name": "Agony (Divine)",
+      "aliases": []
+    },
+    {
+      "id": "pain_2",
+      "name": "Agony (Path)",
+      "aliases": []
+    },
+    {
+      "id": "akeno",
+      "name": "Akemy",
+      "aliases": []
+    },
+    {
+      "id": "akeno_evolved",
+      "name": "Akemy (Fallen Angel)",
+      "aliases": []
+    },
+    {
+      "id": "boros",
+      "name": "Alien King",
+      "aliases": []
+    },
+    {
+      "id": "amon",
+      "name": "Aman",
+      "aliases": []
+    },
+    {
+      "id": "android21",
+      "name": "Android AAA",
+      "aliases": []
+    },
+    {
+      "id": "meruem",
+      "name": "Ant",
+      "aliases": []
+    },
+    {
+      "id": "noelle",
+      "name": "Aquatic Mage",
+      "aliases": []
+    },
+    {
+      "id": "noelle_evolved",
+      "name": "Aquatic Mage (Valkyrie Armor)",
+      "aliases": []
+    },
+    {
+      "id": "arima",
+      "name": "Ariva",
+      "aliases": []
+    },
+    {
+      "id": "arima_evolved",
+      "name": "Ariva (Reaper)",
+      "aliases": []
+    },
+    {
+      "id": "armin",
+      "name": "Arlem",
+      "aliases": [
+        "Armein",
+        "Armin",
+        "Armin Arlert"
+      ]
+    },
+    {
+      "id": "shigaraki",
+      "name": "Ashborn",
+      "aliases": []
+    },
+    {
+      "id": "shigaraki_evolved",
+      "name": "Ashborn (Decay)",
+      "aliases": []
+    },
+    {
+      "id": "attack_titan",
+      "name": "Attack Titan",
+      "aliases": []
+    },
+    {
+      "id": "inosuke",
+      "name": "Beast",
+      "aliases": [
+        "Inosuke",
+        "Inosuke Hashibira",
+        "Inosuku"
+      ]
+    },
+    {
+      "id": "guts",
+      "name": "Berserker",
+      "aliases": []
+    },
+    {
+      "id": "guts_berserker",
+      "name": "Berserker (Rage)",
+      "aliases": []
+    },
+    {
+      "id": "hei",
+      "name": "Black Assassin",
+      "aliases": []
+    },
+    {
+      "id": "hei_evo",
+      "name": "Black Assassin (Reaper)",
+      "aliases": []
+    },
+    {
+      "id": "yami",
+      "name": "Black Blade",
+      "aliases": []
+    },
+    {
+      "id": "yami_evolved",
+      "name": "Black Blade (Captain)",
+      "aliases": []
+    },
+    {
+      "id": "akutagawa",
+      "name": "Black Dog",
+      "aliases": []
+    },
+    {
+      "id": "akutagawa_evolved",
+      "name": "Black Dog (HellHound)",
+      "aliases": []
+    },
+    {
+      "id": "blackbeard",
+      "name": "Blackhair",
+      "aliases": []
+    },
+    {
+      "id": "denji",
+      "name": "Blade Beast",
+      "aliases": []
+    },
+    {
+      "id": "denji_evolved",
+      "name": "Blade Beast (Hybrid)",
+      "aliases": []
+    },
+    {
+      "id": "denji_secret",
+      "name": "Blade Beast (Past)",
+      "aliases": []
+    },
+    {
+      "id": "todoroki_2",
+      "name": "Blaze Frost",
+      "aliases": []
+    },
+    {
+      "id": "todoroki",
+      "name": "Blaze Frost (Epic)",
+      "aliases": []
+    },
+    {
+      "id": "todoroki_2_evolved",
+      "name": "Blaze Frost (Released)",
+      "aliases": []
+    },
+    {
+      "id": "unohana",
+      "name": "Bleed Queen",
+      "aliases": []
+    },
+    {
+      "id": "power",
+      "name": "Blood",
+      "aliases": []
+    },
+    {
+      "id": "shalltear",
+      "name": "Bloodcry",
+      "aliases": []
+    },
+    {
+      "id": "shalltear_evolved",
+      "name": "Bloodcry (Fallen)",
+      "aliases": []
+    },
+    {
+      "id": "sakura",
+      "name": "Blossom",
+      "aliases": [
+        "Sakura",
+        "Sakura Haruno"
+      ]
+    },
+    {
+      "id": "rin_oku",
+      "name": "Blue Devil",
+      "aliases": []
+    },
+    {
+      "id": "mash",
+      "name": "Bodybuilder",
+      "aliases": []
+    },
+    {
+      "id": "mash_evolved",
+      "name": "Bodybuilder (Muscles)",
+      "aliases": []
+    },
+    {
+      "id": "bambietta",
+      "name": "Bombietta",
+      "aliases": []
+    },
+    {
+      "id": "ippo",
+      "name": "Boxer",
+      "aliases": []
+    },
+    {
+      "id": "jozu",
+      "name": "Bozo",
+      "aliases": []
+    },
+    {
+      "id": "chad",
+      "name": "Brawler",
+      "aliases": []
+    },
+    {
+      "id": "chad_evolved",
+      "name": "Brawler (Soul)",
+      "aliases": []
+    },
+    {
+      "id": "britannia_soldier",
+      "name": "Britannia Soldier",
+      "aliases": []
+    },
+    {
+      "id": "broly",
+      "name": "Bro",
+      "aliases": [
+        "Broly",
+        "Brulo"
+      ]
+    },
+    {
+      "id": "buu",
+      "name": "Bubblegum",
+      "aliases": []
+    },
+    {
+      "id": "buu_evolved",
+      "name": "Bubblegum (Ultimate)",
+      "aliases": []
+    },
+    {
+      "id": "bulma",
+      "name": "Bulby",
+      "aliases": []
+    },
+    {
+      "id": "carrot",
+      "name": "Bunny",
+      "aliases": []
+    },
+    {
+      "id": "carrot_evolved",
+      "name": "Bunny (Night)",
+      "aliases": []
+    },
+    {
+      "id": "speedwagon",
+      "name": "C.E.O.",
+      "aliases": [
+        "CEO",
+        "Robert E. O. Speedwagon",
+        "Robert Speedwagon",
+        "Speedwagon"
+      ]
+    },
+    {
+      "id": "kira",
+      "name": "Calm Killer",
+      "aliases": []
+    },
+    {
+      "id": "kira_evolved",
+      "name": "Calm Killer (Meets the End)",
+      "aliases": []
+    },
+    {
+      "id": "usopp",
+      "name": "Captain",
+      "aliases": [
+        "Usopp"
+      ]
+    },
+    {
+      "id": "usopp_ts_evolved",
+      "name": "Captain (God)",
+      "aliases": []
+    },
+    {
+      "id": "usopp_ts",
+      "name": "Captain (Timeskip)",
+      "aliases": []
+    },
+    {
+      "id": "goku",
+      "name": "Carrot",
+      "aliases": [
+        "Goku",
+        "Goku base",
+        "Son Goku"
+      ]
+    },
+    {
+      "id": "goku_ssj3",
+      "name": "Carrot (Super III)",
+      "aliases": []
+    },
+    {
+      "id": "goku_ssb",
+      "name": "Carrot (Super)",
+      "aliases": [
+        "Goku Blue",
+        "Goku SSB",
+        "Goku Super Saiyajin Blue",
+        "Goku Super Saiyan Blue"
+      ]
+    },
+    {
+      "id": "goku_ssj3_evolved",
+      "name": "Carrot (Ultra)",
+      "aliases": []
+    },
+    {
+      "id": "goku_black",
+      "name": "Carrot Black",
+      "aliases": [
+        "Black Goku",
+        "Goku Black"
+      ]
+    },
+    {
+      "id": "pitou",
+      "name": "Cat Guard",
+      "aliases": []
+    },
+    {
+      "id": "pitou_evolved",
+      "name": "Cat Guard (Ballet)",
+      "aliases": []
+    },
+    {
+      "id": "koneko",
+      "name": "Catgirl",
+      "aliases": []
+    },
+    {
+      "id": "koneko_evolved",
+      "name": "Catgirl (Hell-Cat)",
+      "aliases": []
+    },
+    {
+      "id": "netero_evolved",
+      "name": "Chairman Prayer Master",
+      "aliases": []
+    },
+    {
+      "id": "kite",
+      "name": "Chance",
+      "aliases": []
+    },
+    {
+      "id": "kite_evolved_focus",
+      "name": "Chance (Focus)",
+      "aliases": []
+    },
+    {
+      "id": "kite_evolved_frenzy",
+      "name": "Chance (Frenzy)",
+      "aliases": []
+    },
+    {
+      "id": "kite_evolved_lethal",
+      "name": "Chance (Lethal)",
+      "aliases": []
+    },
+    {
+      "id": "kite_evolved_precision",
+      "name": "Chance (Precision)",
+      "aliases": []
+    },
+    {
+      "id": "albedo",
+      "name": "Cherub",
+      "aliases": []
+    },
+    {
+      "id": "albedo_evolved",
+      "name": "Cherub (Overseer)",
+      "aliases": []
+    },
+    {
+      "id": "trunks",
+      "name": "Chunks",
+      "aliases": []
+    },
+    {
+      "id": "rikka",
+      "name": "Chuuni",
+      "aliases": []
+    },
+    {
+      "id": "rikka_evo",
+      "name": "Chuuni (Delusion)",
+      "aliases": []
+    },
+    {
+      "id": "gray",
+      "name": "Cold Mage",
+      "aliases": []
+    },
+    {
+      "id": "gray_evolved",
+      "name": "Cold Mage (Devil Slayer)",
+      "aliases": []
+    },
+    {
+      "id": "erwin",
+      "name": "Commander",
+      "aliases": [
+        "Erwin",
+        "Erwin Smith"
+      ]
+    },
+    {
+      "id": "conrad",
+      "name": "Connor",
+      "aliases": []
+    },
+    {
+      "id": "conrad_evolved",
+      "name": "Connor (Wizard King)",
+      "aliases": []
+    },
+    {
+      "id": "kakashi",
+      "name": "Copy Ninja",
+      "aliases": [
+        "Kakashi",
+        "Kakashi Hatake",
+        "Kazashu"
+      ]
+    },
+    {
+      "id": "charmy",
+      "name": "Cotton",
+      "aliases": []
+    },
+    {
+      "id": "charmy_evolved",
+      "name": "Cotton (Sheep)",
+      "aliases": []
+    },
+    {
+      "id": "kobeni",
+      "name": "Cowardly",
+      "aliases": []
+    },
+    {
+      "id": "vanilla_ice",
+      "name": "Cream",
+      "aliases": []
+    },
+    {
+      "id": "vanilla_ice_evo",
+      "name": "Cream (Void)",
+      "aliases": []
+    },
+    {
+      "id": "ban",
+      "name": "Crimson Thief",
+      "aliases": []
+    },
+    {
+      "id": "ban_evolved",
+      "name": "Crimson Thief (Hunt)",
+      "aliases": []
+    },
+    {
+      "id": "heathcliff",
+      "name": "Crusader",
+      "aliases": []
+    },
+    {
+      "id": "heathcliff_evolved",
+      "name": "Crusader (Admin)",
+      "aliases": []
+    },
+    {
+      "id": "gildarts",
+      "name": "Crush",
+      "aliases": []
+    },
+    {
+      "id": "gildarts_evolved",
+      "name": "Crush (Ace)",
+      "aliases": []
+    },
+    {
+      "id": "evileye",
+      "name": "Crystal Rose",
+      "aliases": []
+    },
+    {
+      "id": "evileye_evolved",
+      "name": "Crystal Rose (Impact)",
+      "aliases": []
+    },
+    {
+      "id": "aki",
+      "name": "Curse",
+      "aliases": []
+    },
+    {
+      "id": "aki_evolved",
+      "name": "Curse (Contract)",
+      "aliases": []
+    },
+    {
+      "id": "sukuna",
+      "name": "Cursed King",
+      "aliases": []
+    },
+    {
+      "id": "genos",
+      "name": "Cyborg",
+      "aliases": [
+        "Genos"
+      ]
+    },
+    {
+      "id": "genos_2_evolved",
+      "name": "Cyborg (Incinerate)",
+      "aliases": []
+    },
+    {
+      "id": "genos_2",
+      "name": "Cyborg (Overdrive)",
+      "aliases": []
+    },
+    {
+      "id": "judar",
+      "name": "Dark Mage",
+      "aliases": []
+    },
+    {
+      "id": "judar_evo",
+      "name": "Dark Mage (Fallen Star)",
+      "aliases": []
+    },
+    {
+      "id": "dark_young",
+      "name": "Dark Young",
+      "aliases": []
+    },
+    {
+      "id": "hidan_unit",
+      "name": "Death Ninja",
+      "aliases": []
+    },
+    {
+      "id": "hidan_unit_evolved",
+      "name": "Death Ninja (Immortal Butcher)",
+      "aliases": []
+    },
+    {
+      "id": "nokotan",
+      "name": "Deer-tan",
+      "aliases": []
+    },
+    {
+      "id": "jotaro",
+      "name": "Delinquent",
+      "aliases": [
+        "Jotaro",
+        "Jotaro Kujo"
+      ]
+    },
+    {
+      "id": "jotaro_p6",
+      "name": "Delinquent (Serious)",
+      "aliases": []
+    },
+    {
+      "id": "jotaro_p6_evolved",
+      "name": "Delinquent (The Universe)",
+      "aliases": []
+    },
+    {
+      "id": "sato",
+      "name": "Demihuman",
+      "aliases": []
+    },
+    {
+      "id": "sato_evo",
+      "name": "Demihuman (Gamer)",
+      "aliases": []
+    },
+    {
+      "id": "nezuko",
+      "name": "Demon Girl",
+      "aliases": [
+        "Nezuko",
+        "Nezuko Kamado"
+      ]
+    },
+    {
+      "id": "tanjiro",
+      "name": "Demonkiller",
+      "aliases": [
+        "Tanjiro",
+        "Tanjiro Kamado"
+      ]
+    },
+    {
+      "id": "hiei",
+      "name": "Demonshade",
+      "aliases": []
+    },
+    {
+      "id": "diavolo",
+      "name": "Devil Boss",
+      "aliases": [
+        "Diavolo",
+        "Diavoro"
+      ]
+    },
+    {
+      "id": "boxxo",
+      "name": "Dispenser",
+      "aliases": []
+    },
+    {
+      "id": "mahoraga",
+      "name": "Divine General",
+      "aliases": []
+    },
+    {
+      "id": "inuyasha",
+      "name": "Dog Demon",
+      "aliases": []
+    },
+    {
+      "id": "gowther",
+      "name": "Doll",
+      "aliases": []
+    },
+    {
+      "id": "gowther_evolved",
+      "name": "Doll (Spirit Archer)",
+      "aliases": []
+    },
+    {
+      "id": "jolyne",
+      "name": "Dolphin",
+      "aliases": []
+    },
+    {
+      "id": "jolyne_evolved",
+      "name": "Dolphin (Determination)",
+      "aliases": []
+    },
+    {
+      "id": "rengoku",
+      "name": "Donut",
+      "aliases": [
+        "Kyojuro Rengoku",
+        "Rengoku",
+        "Renkoko"
+      ]
+    },
+    {
+      "id": "rengoku_evolved",
+      "name": "Donut (ABLAZE)",
+      "aliases": []
+    },
+    {
+      "id": "alucard",
+      "name": "Dracula",
+      "aliases": []
+    },
+    {
+      "id": "alucard_evolved",
+      "name": "Dracula (Unholy King)",
+      "aliases": []
+    },
+    {
+      "id": "issei",
+      "name": "Dragon Knight",
+      "aliases": []
+    },
+    {
+      "id": "issei_evolved",
+      "name": "Dragon Knight (Gauntlet)",
+      "aliases": []
+    },
+    {
+      "id": "natsu",
+      "name": "Dragonslayer",
+      "aliases": []
+    },
+    {
+      "id": "natsu_evolved",
+      "name": "Dragonslayer (Lightning Mode)",
+      "aliases": []
+    },
+    {
+      "id": "gremmy",
+      "name": "Dreamer",
+      "aliases": []
+    },
+    {
+      "id": "gremmy_evo",
+      "name": "Dreamer (Visionary)",
+      "aliases": []
+    },
+    {
+      "id": "hange",
+      "name": "Eccentric Researcher",
+      "aliases": []
+    },
+    {
+      "id": "hange_evolved",
+      "name": "Eccentric Researcher (Captain)",
+      "aliases": []
+    },
+    {
+      "id": "frieren",
+      "name": "Elf Mage",
+      "aliases": []
+    },
+    {
+      "id": "frieren_evo",
+      "name": "Elf Mage (Aura)",
+      "aliases": []
+    },
+    {
+      "id": "yuno",
+      "name": "Elf Spirit",
+      "aliases": []
+    },
+    {
+      "id": "yuno_evolved",
+      "name": "Elf Spirit (Wind)",
+      "aliases": []
+    },
+    {
+      "id": "leafa",
+      "name": "Elfy",
+      "aliases": []
+    },
+    {
+      "id": "leafa_evolved",
+      "name": "Elfy (Sylph)",
+      "aliases": []
+    },
+    {
+      "id": "erza",
+      "name": "Elize",
+      "aliases": []
+    },
+    {
+      "id": "erza_lightning",
+      "name": "Elize (Lightning)",
+      "aliases": []
+    },
+    {
+      "id": "erza_evolved",
+      "name": "Elize (Random Equip)",
+      "aliases": []
+    },
+    {
+      "id": "erza_samurai",
+      "name": "Elize (True Heart)",
+      "aliases": []
+    },
+    {
+      "id": "erza_valkyrie",
+      "name": "Elize (Valkyrie)",
+      "aliases": []
+    },
+    {
+      "id": "isharmla",
+      "name": "Elyssia",
+      "aliases": []
+    },
+    {
+      "id": "isharmla_evo",
+      "name": "Elyssia (Abyssal)",
+      "aliases": []
+    },
+    {
+      "id": "whitebeard_evolved",
+      "name": "Emperor Whitehair",
+      "aliases": []
+    },
+    {
+      "id": "buddha",
+      "name": "Enlightened",
+      "aliases": []
+    },
+    {
+      "id": "buddha_evo",
+      "name": "Enlightened (Nirvana)",
+      "aliases": []
+    },
+    {
+      "id": "eto",
+      "name": "Eta",
+      "aliases": []
+    },
+    {
+      "id": "eto_evolved",
+      "name": "Eta (One-Eye)",
+      "aliases": []
+    },
+    {
+      "id": "cell_imperfect",
+      "name": "Experiment X (Imperfect)",
+      "aliases": []
+    },
+    {
+      "id": "cell_perfect",
+      "name": "Experiment X (Perfect)",
+      "aliases": []
+    },
+    {
+      "id": "cell_super_perfect",
+      "name": "Experiment X (SUPER PERFECT)",
+      "aliases": []
+    },
+    {
+      "id": "cell_semi_perfect",
+      "name": "Experiment X (Semi-Perfect)",
+      "aliases": []
+    },
+    {
+      "id": "bakugou",
+      "name": "Explosion Hero",
+      "aliases": [
+        "Bakugo",
+        "Bakugou",
+        "Katsuki Bakugo",
+        "Katsuki Bakugou"
+      ]
+    },
+    {
+      "id": "bakugou_2",
+      "name": "Explosion Hero (Bang)",
+      "aliases": []
+    },
+    {
+      "id": "bakugou_2_evolved",
+      "name": "Explosion Hero (Impact)",
+      "aliases": []
+    },
+    {
+      "id": "king_7ds",
+      "name": "Fairy Ruler",
+      "aliases": []
+    },
+    {
+      "id": "king_7ds_evolved",
+      "name": "Fairy Ruler (Sloth)",
+      "aliases": []
+    },
+    {
+      "id": "archer",
+      "name": "Faker",
+      "aliases": []
+    },
+    {
+      "id": "archer_evolved",
+      "name": "Faker (Hero's Soul)",
+      "aliases": []
+    },
+    {
+      "id": "hawks",
+      "name": "Falcon",
+      "aliases": []
+    },
+    {
+      "id": "hawks_evolved",
+      "name": "Falcon (Feather Strike)",
+      "aliases": []
+    },
+    {
+      "id": "temari",
+      "name": "Fan Ninja",
+      "aliases": []
+    },
+    {
+      "id": "hinami",
+      "name": "Fiend Girl",
+      "aliases": []
+    },
+    {
+      "id": "hinami_evolved",
+      "name": "Fiend Girl (Buttterfly)",
+      "aliases": []
+    },
+    {
+      "id": "yamamoto",
+      "name": "Fiery Commander",
+      "aliases": []
+    },
+    {
+      "id": "yamamoto_evolved",
+      "name": "Fiery Commander (Hellfire)",
+      "aliases": []
+    },
+    {
+      "id": "ace",
+      "name": "Fire Fist",
+      "aliases": []
+    },
+    {
+      "id": "endeavor",
+      "name": "Flame Hero",
+      "aliases": []
+    },
+    {
+      "id": "endeavor_evolved",
+      "name": "Flame Hero (Hellfire)",
+      "aliases": []
+    },
+    {
+      "id": "magna",
+      "name": "Flame Wizard",
+      "aliases": []
+    },
+    {
+      "id": "avdol",
+      "name": "Flamefeather",
+      "aliases": []
+    },
+    {
+      "id": "avdol_evolved",
+      "name": "Flamefeather (Arcane Blaze)",
+      "aliases": []
+    },
+    {
+      "id": "minato",
+      "name": "Flash Ninja",
+      "aliases": []
+    },
+    {
+      "id": "akainu_evolved",
+      "name": "Fleet Admiral Magma",
+      "aliases": []
+    },
+    {
+      "id": "gabimaru",
+      "name": "Flower Ninja",
+      "aliases": []
+    },
+    {
+      "id": "gabimaru_evolved",
+      "name": "Flower Ninja (Austere Flame)",
+      "aliases": []
+    },
+    {
+      "id": "naruto",
+      "name": "Fox Ninja",
+      "aliases": [
+        "Naruto",
+        "Naruto Uzumaki"
+      ]
+    },
+    {
+      "id": "naruto_pts_evolved",
+      "name": "Fox Ninja (Beast Cloak)",
+      "aliases": []
+    },
+    {
+      "id": "naruto_pts",
+      "name": "Fox Ninja (Demon Cloak)",
+      "aliases": []
+    },
+    {
+      "id": "naruto_sage",
+      "name": "Fox Ninja (Sage)",
+      "aliases": []
+    },
+    {
+      "id": "naruto_6tails",
+      "name": "Fox Ninja (Six Tails)",
+      "aliases": []
+    },
+    {
+      "id": "cooler",
+      "name": "Fridge",
+      "aliases": []
+    },
+    {
+      "id": "aokiji",
+      "name": "Frost Navy",
+      "aliases": []
+    },
+    {
+      "id": "aokiji_evolved",
+      "name": "Frost Navy (Blue Pigeon)",
+      "aliases": []
+    },
+    {
+      "id": "vegito",
+      "name": "Fused Hero",
+      "aliases": []
+    },
+    {
+      "id": "future_gohan",
+      "name": "Future Goh",
+      "aliases": []
+    },
+    {
+      "id": "gajeel",
+      "name": "Gajoze",
+      "aliases": []
+    },
+    {
+      "id": "hakari",
+      "name": "Gambler",
+      "aliases": []
+    },
+    {
+      "id": "hakari_evo",
+      "name": "Gambler (Jackpot)",
+      "aliases": []
+    },
+    {
+      "id": "kirito",
+      "name": "Gamer",
+      "aliases": []
+    },
+    {
+      "id": "kirito_evolved",
+      "name": "Gamer (Dual)",
+      "aliases": []
+    },
+    {
+      "id": "asuna",
+      "name": "Gamer Girl",
+      "aliases": []
+    },
+    {
+      "id": "asuna_evolved",
+      "name": "Gamer Girl (Flash)",
+      "aliases": []
+    },
+    {
+      "id": "caesarclown",
+      "name": "Gas",
+      "aliases": []
+    },
+    {
+      "id": "caesarclown_evolved",
+      "name": "Gas (Toxic)",
+      "aliases": []
+    },
+    {
+      "id": "geto",
+      "name": "Gazu",
+      "aliases": []
+    },
+    {
+      "id": "geto_evolved",
+      "name": "Gazu (Maximum)",
+      "aliases": []
+    },
+    {
+      "id": "gon",
+      "name": "Gene",
+      "aliases": []
+    },
+    {
+      "id": "gon_adult_evolved",
+      "name": "Gene (???)",
+      "aliases": []
+    },
+    {
+      "id": "gon_adult",
+      "name": "Gene (Adult)",
+      "aliases": []
+    },
+    {
+      "id": "perona",
+      "name": "Ghost Lady",
+      "aliases": []
+    },
+    {
+      "id": "perona_evolved",
+      "name": "Ghost Lady (Princess)",
+      "aliases": []
+    },
+    {
+      "id": "hanako_kun",
+      "name": "Ghost-kun",
+      "aliases": []
+    },
+    {
+      "id": "hanako_kun_evo",
+      "name": "Ghost-kun (Bound)",
+      "aliases": []
+    },
+    {
+      "id": "himeno",
+      "name": "Ghosty",
+      "aliases": []
+    },
+    {
+      "id": "kaneki",
+      "name": "Ghoul",
+      "aliases": []
+    },
+    {
+      "id": "kaneki_2",
+      "name": "Ghoul (Centipede)",
+      "aliases": []
+    },
+    {
+      "id": "giorno",
+      "name": "Gold Boy",
+      "aliases": [
+        "Giorno",
+        "Giorno Giovanna",
+        "Jiorno"
+      ]
+    },
+    {
+      "id": "gilgamesh",
+      "name": "Golden King",
+      "aliases": []
+    },
+    {
+      "id": "gilgamesh_evolved",
+      "name": "Golden King (Lord of Heroes)",
+      "aliases": []
+    },
+    {
+      "id": "sengoku_unit",
+      "name": "Golden Navy",
+      "aliases": []
+    },
+    {
+      "id": "sengoku_unit_evolved",
+      "name": "Golden Navy (Buddha)",
+      "aliases": []
+    },
+    {
+      "id": "frieza_golden",
+      "name": "Golden Tyrant",
+      "aliases": []
+    },
+    {
+      "id": "frieza_golden_evolved",
+      "name": "Golden Tyrant (Emperor)",
+      "aliases": []
+    },
+    {
+      "id": "uraraka",
+      "name": "Gravity Hero",
+      "aliases": [
+        "Ochaco Uraraka",
+        "Ochako Uraraka",
+        "Uraraka"
+      ]
+    },
+    {
+      "id": "chuya",
+      "name": "Gravity Mage",
+      "aliases": []
+    },
+    {
+      "id": "chuya_evolved",
+      "name": "Gravity Mage (Void)",
+      "aliases": []
+    },
+    {
+      "id": "fujitora",
+      "name": "Gravity Navy",
+      "aliases": []
+    },
+    {
+      "id": "fujitora_evolved",
+      "name": "Gravity Navy (Admiral)",
+      "aliases": []
+    },
+    {
+      "id": "piccolo",
+      "name": "Green Alien",
+      "aliases": [
+        "Piccolo"
+      ]
+    },
+    {
+      "id": "piccolo_fused",
+      "name": "Green Alien (Fusion)",
+      "aliases": []
+    },
+    {
+      "id": "piccolo_fused_evolved",
+      "name": "Green Alien (Nameless)",
+      "aliases": []
+    },
+    {
+      "id": "griffith",
+      "name": "Griffin",
+      "aliases": []
+    },
+    {
+      "id": "femto_egg",
+      "name": "Griffin (Ascension)",
+      "aliases": []
+    },
+    {
+      "id": "femto",
+      "name": "Griffin (Darkness)",
+      "aliases": []
+    },
+    {
+      "id": "griffith_reincarnation",
+      "name": "Griffin (Reincarnation)",
+      "aliases": []
+    },
+    {
+      "id": "vash",
+      "name": "Gunslinger",
+      "aliases": []
+    },
+    {
+      "id": "vash_evolved",
+      "name": "Gunslinger (Cross)",
+      "aliases": []
+    },
+    {
+      "id": "diane",
+      "name": "Hammer Giantess",
+      "aliases": []
+    },
+    {
+      "id": "diane_evolved",
+      "name": "Hammer Giantess (Creation)",
+      "aliases": []
+    },
+    {
+      "id": "nobara",
+      "name": "Hammergirl",
+      "aliases": []
+    },
+    {
+      "id": "harribel",
+      "name": "Hammerhead",
+      "aliases": []
+    },
+    {
+      "id": "harribel_evolved",
+      "name": "Hammerhead (Shark Empress)",
+      "aliases": []
+    },
+    {
+      "id": "fugo",
+      "name": "Haze",
+      "aliases": []
+    },
+    {
+      "id": "fugo_evolved",
+      "name": "Haze (Rage)",
+      "aliases": []
+    },
+    {
+      "id": "dominico_evolved",
+      "name": "Heavy Weather",
+      "aliases": []
+    },
+    {
+      "id": "ermes",
+      "name": "Hermy",
+      "aliases": []
+    },
+    {
+      "id": "ermes_evolved",
+      "name": "Hermy (Duplicate)",
+      "aliases": []
+    },
+    {
+      "id": "medea",
+      "name": "Hex",
+      "aliases": []
+    },
+    {
+      "id": "medea_evolved",
+      "name": "Hex (Witch of Betrayal)",
+      "aliases": []
+    },
+    {
+      "id": "honey",
+      "name": "Honey",
+      "aliases": []
+    },
+    {
+      "id": "honey_evo",
+      "name": "Honey (Hive)",
+      "aliases": []
+    },
+    {
+      "id": "escanor",
+      "name": "Hubris (Day)",
+      "aliases": []
+    },
+    {
+      "id": "escanor_weak",
+      "name": "Hubris (Night)",
+      "aliases": []
+    },
+    {
+      "id": "escanor_evolved",
+      "name": "Hubris (The One)",
+      "aliases": []
+    },
+    {
+      "id": "emilia",
+      "name": "Ice Lily",
+      "aliases": []
+    },
+    {
+      "id": "esdeath",
+      "name": "Ice Queen",
+      "aliases": []
+    },
+    {
+      "id": "esdeath_evolved",
+      "name": "Ice Queen (Empire's Strongest)",
+      "aliases": []
+    },
+    {
+      "id": "grimmjow",
+      "name": "Iceclaw",
+      "aliases": []
+    },
+    {
+      "id": "rebirth_grimmjow_evo",
+      "name": "Iceclaw (Azure Fang)",
+      "aliases": []
+    },
+    {
+      "id": "rebirth_grimmjow",
+      "name": "Iceclaw (Rebirth)",
+      "aliases": []
+    },
+    {
+      "id": "toshiro",
+      "name": "Icy Dragon",
+      "aliases": []
+    },
+    {
+      "id": "toshiro_evolved",
+      "name": "Icy Dragon (Lotus)",
+      "aliases": []
+    },
+    {
+      "id": "hoshino",
+      "name": "Idol",
+      "aliases": []
+    },
+    {
+      "id": "hoshino_evolved",
+      "name": "Idol (Star)",
+      "aliases": []
+    },
+    {
+      "id": "aizen",
+      "name": "Illusionist",
+      "aliases": []
+    },
+    {
+      "id": "aizen_evolved",
+      "name": "Illusionist (Betrayal)",
+      "aliases": []
+    },
+    {
+      "id": "aizen_chrys",
+      "name": "Illusionist (Chrysalis)",
+      "aliases": []
+    },
+    {
+      "id": "aizen_hog_evolved",
+      "name": "Illusionist (Final)",
+      "aliases": []
+    },
+    {
+      "id": "aizen_hog",
+      "name": "Illusionist (Fusion)",
+      "aliases": []
+    },
+    {
+      "id": "aizen_transcended",
+      "name": "Illusionist (Transcended)",
+      "aliases": []
+    },
+    {
+      "id": "dazai",
+      "name": "InHuman",
+      "aliases": []
+    },
+    {
+      "id": "dazai_evolved",
+      "name": "InHuman (Nullifier)",
+      "aliases": []
+    },
+    {
+      "id": "merlin",
+      "name": "Infinity Mage",
+      "aliases": []
+    },
+    {
+      "id": "merlin_evolved",
+      "name": "Infinity Mage (Endless)",
+      "aliases": []
+    },
+    {
+      "id": "metal_knight",
+      "name": "Iron Knight",
+      "aliases": []
+    },
+    {
+      "id": "metal_knight_evolved",
+      "name": "Iron Knight (Arsenal)",
+      "aliases": []
+    },
+    {
+      "id": "itadori",
+      "name": "Itukoda",
+      "aliases": []
+    },
+    {
+      "id": "itachi",
+      "name": "Izo",
+      "aliases": [
+        "Itachi",
+        "Itachi Uchiha"
+      ]
+    },
+    {
+      "id": "itachi_2",
+      "name": "Izo (Black Fire)",
+      "aliases": []
+    },
+    {
+      "id": "itachi_2_evolved",
+      "name": "Izo (Samurai)",
+      "aliases": []
+    },
+    {
+      "id": "dio",
+      "name": "JIO",
+      "aliases": [
+        "Dio",
+        "Dio Brando"
+      ]
+    },
+    {
+      "id": "dio_heaven",
+      "name": "JIO (Over Heaven)",
+      "aliases": []
+    },
+    {
+      "id": "starrk",
+      "name": "Jackal",
+      "aliases": []
+    },
+    {
+      "id": "starrk_evolved",
+      "name": "Jackal (Alpha)",
+      "aliases": []
+    },
+    {
+      "id": "jellal",
+      "name": "Jelly",
+      "aliases": []
+    },
+    {
+      "id": "jellal_evolved",
+      "name": "Jelly (Heaven)",
+      "aliases": []
+    },
+    {
+      "id": "sanji",
+      "name": "Joan",
+      "aliases": [
+        "Sanji",
+        "Vinsmoke Sanji"
+      ]
+    },
+    {
+      "id": "jonathan",
+      "name": "Johna",
+      "aliases": [
+        "Jonathan",
+        "Jonathan Joestar"
+      ]
+    },
+    {
+      "id": "shidou",
+      "name": "Joker",
+      "aliases": []
+    },
+    {
+      "id": "josuke",
+      "name": "Jose",
+      "aliases": [
+        "Josuka",
+        "Josuke",
+        "Josuke Higashikata"
+      ]
+    },
+    {
+      "id": "josuke_2",
+      "name": "Jose (Shining Gem)",
+      "aliases": []
+    },
+    {
+      "id": "josuke_2_evolved",
+      "name": "Jose (Unbreakable)",
+      "aliases": []
+    },
+    {
+      "id": "luffy",
+      "name": "Joykid",
+      "aliases": [
+        "Luffy",
+        "Luffy base",
+        "Monkey D. Luffy"
+      ]
+    },
+    {
+      "id": "luffy_g4",
+      "name": "Joykid (Bounce)",
+      "aliases": []
+    },
+    {
+      "id": "luffy_g4_evolved",
+      "name": "Joykid (Mode IV)",
+      "aliases": []
+    },
+    {
+      "id": "luffy_marineford",
+      "name": "Joykid (Navy Bay)",
+      "aliases": []
+    },
+    {
+      "id": "caesar",
+      "name": "Julias",
+      "aliases": []
+    },
+    {
+      "id": "juuzou",
+      "name": "Juozu",
+      "aliases": []
+    },
+    {
+      "id": "juuzou_evolved",
+      "name": "Juozu (Joker)",
+      "aliases": []
+    },
+    {
+      "id": "juvia",
+      "name": "Juvy",
+      "aliases": []
+    },
+    {
+      "id": "kasuga",
+      "name": "Kansai",
+      "aliases": []
+    },
+    {
+      "id": "kasuga_evo",
+      "name": "Kansai (Daydream)",
+      "aliases": []
+    },
+    {
+      "id": "luck",
+      "name": "Karma",
+      "aliases": []
+    },
+    {
+      "id": "luck_evolved",
+      "name": "Karma (Thunder Fiend)",
+      "aliases": []
+    },
+    {
+      "id": "kakyoin",
+      "name": "Karyn",
+      "aliases": [
+        "Kakyoin",
+        "Noriaki Kakyoin"
+      ]
+    },
+    {
+      "id": "kenshin",
+      "name": "Katana",
+      "aliases": []
+    },
+    {
+      "id": "killua",
+      "name": "Killer",
+      "aliases": []
+    },
+    {
+      "id": "killua_godspeed_evolved",
+      "name": "Killer (Godspeed)",
+      "aliases": []
+    },
+    {
+      "id": "killua_godspeed",
+      "name": "Killer (Whirlwind)",
+      "aliases": []
+    },
+    {
+      "id": "gaku",
+      "name": "Killstreak",
+      "aliases": []
+    },
+    {
+      "id": "gaku_evo",
+      "name": "Killstreak (Speedrun)",
+      "aliases": []
+    },
+    {
+      "id": "kimimaro",
+      "name": "Kimoaro",
+      "aliases": []
+    },
+    {
+      "id": "meruem_evolved",
+      "name": "King Ant",
+      "aliases": []
+    },
+    {
+      "id": "krillin",
+      "name": "Kolo",
+      "aliases": [
+        "Krillin",
+        "Kuririn"
+      ]
+    },
+    {
+      "id": "kuma_unit",
+      "name": "Komo",
+      "aliases": []
+    },
+    {
+      "id": "kyoko",
+      "name": "Kyko",
+      "aliases": []
+    },
+    {
+      "id": "kyoko_evolved",
+      "name": "Kyko (Crimson Spear)",
+      "aliases": []
+    },
+    {
+      "id": "sakamoto",
+      "name": "Legendary Assassin",
+      "aliases": []
+    },
+    {
+      "id": "sakamoto_evo",
+      "name": "Legendary Assassin (Prime)",
+      "aliases": []
+    },
+    {
+      "id": "levi",
+      "name": "Lex",
+      "aliases": [
+        "Levi",
+        "Levi Ackerman",
+        "Levy"
+      ]
+    },
+    {
+      "id": "levi_evolved",
+      "name": "Lex Akoman",
+      "aliases": []
+    },
+    {
+      "id": "kizaru_unit",
+      "name": "Light Admiral",
+      "aliases": []
+    },
+    {
+      "id": "thor",
+      "name": "Lightning God",
+      "aliases": []
+    },
+    {
+      "id": "thor_evolved",
+      "name": "Lightning God (Awakened)",
+      "aliases": []
+    },
+    {
+      "id": "illya",
+      "name": "Lilia",
+      "aliases": []
+    },
+    {
+      "id": "illya_evolved",
+      "name": "Lilia (Homunculus)",
+      "aliases": []
+    },
+    {
+      "id": "boros_evolved",
+      "name": "Lord Alien King",
+      "aliases": []
+    },
+    {
+      "id": "byakuya",
+      "name": "Lotus Samurai",
+      "aliases": []
+    },
+    {
+      "id": "demiurge",
+      "name": "Lucifer",
+      "aliases": []
+    },
+    {
+      "id": "demiurge_evolved",
+      "name": "Lucifer (Demon Emperor)",
+      "aliases": []
+    },
+    {
+      "id": "lelouch",
+      "name": "Lulu",
+      "aliases": []
+    },
+    {
+      "id": "lelouch_evolved",
+      "name": "Lulu (Emperor)",
+      "aliases": []
+    },
+    {
+      "id": "mirko",
+      "name": "Lunar Hare",
+      "aliases": []
+    },
+    {
+      "id": "mirko_evolved",
+      "name": "Lunar Hare (Tiger)",
+      "aliases": []
+    },
+    {
+      "id": "lucy",
+      "name": "Lyla",
+      "aliases": []
+    },
+    {
+      "id": "lucy_evolved",
+      "name": "Lyla (Celestial)",
+      "aliases": []
+    },
+    {
+      "id": "asta",
+      "name": "Magic Disbeliever",
+      "aliases": []
+    },
+    {
+      "id": "asta_evolved",
+      "name": "Magic Disbeliever (Dark)",
+      "aliases": []
+    },
+    {
+      "id": "madoka",
+      "name": "Magic Girl",
+      "aliases": []
+    },
+    {
+      "id": "madoka_evolved",
+      "name": "Magic Girl (Salvation)",
+      "aliases": []
+    },
+    {
+      "id": "hisoka",
+      "name": "Magician",
+      "aliases": []
+    },
+    {
+      "id": "akainu",
+      "name": "Magma",
+      "aliases": []
+    },
+    {
+      "id": "rohan",
+      "name": "Mangaka",
+      "aliases": []
+    },
+    {
+      "id": "rohan_evolved",
+      "name": "Mangaka (Artist)",
+      "aliases": []
+    },
+    {
+      "id": "akaza_unit",
+      "name": "Martial Demon",
+      "aliases": []
+    },
+    {
+      "id": "akaza_unit_evolved",
+      "name": "Martial Demon (Destruction)",
+      "aliases": []
+    },
+    {
+      "id": "madara",
+      "name": "Mazara",
+      "aliases": [
+        "Madara",
+        "Madara Uchiha",
+        "Marada"
+      ]
+    },
+    {
+      "id": "madara_evolved",
+      "name": "Mazara (Founder)",
+      "aliases": []
+    },
+    {
+      "id": "frieza_mecha",
+      "name": "Mecha Tyrant",
+      "aliases": []
+    },
+    {
+      "id": "stain",
+      "name": "Menace",
+      "aliases": []
+    },
+    {
+      "id": "stain_evolved",
+      "name": "Menace (Terror)",
+      "aliases": []
+    },
+    {
+      "id": "isagi",
+      "name": "Messi",
+      "aliases": []
+    },
+    {
+      "id": "mami",
+      "name": "Millie",
+      "aliases": []
+    },
+    {
+      "id": "mami_evolved",
+      "name": "Millie (Holy)",
+      "aliases": []
+    },
+    {
+      "id": "yuta",
+      "name": "Mimic Sorcerer",
+      "aliases": []
+    },
+    {
+      "id": "yuta_evolved",
+      "name": "Mimic Sorcerer (Cursed Child)",
+      "aliases": []
+    },
+    {
+      "id": "haku",
+      "name": "Mirror Ninja",
+      "aliases": []
+    },
+    {
+      "id": "haku_evolved",
+      "name": "Mirror Ninja (Reflection)",
+      "aliases": []
+    },
+    {
+      "id": "zabuza",
+      "name": "Mist Ninja",
+      "aliases": []
+    },
+    {
+      "id": "katakuri",
+      "name": "Mochi",
+      "aliases": []
+    },
+    {
+      "id": "katakuri_evolved",
+      "name": "Mochi (Rage)",
+      "aliases": []
+    },
+    {
+      "id": "zeke",
+      "name": "Monkey",
+      "aliases": []
+    },
+    {
+      "id": "moria",
+      "name": "Morbid",
+      "aliases": []
+    },
+    {
+      "id": "moria_evolved",
+      "name": "Morbid (Shadow Lord)",
+      "aliases": []
+    },
+    {
+      "id": "luffy_nightmare",
+      "name": "Nightmare Joykid",
+      "aliases": []
+    },
+    {
+      "id": "noro",
+      "name": "Norro",
+      "aliases": []
+    },
+    {
+      "id": "law",
+      "name": "Operator",
+      "aliases": []
+    },
+    {
+      "id": "law_2",
+      "name": "Operator (Heart)",
+      "aliases": []
+    },
+    {
+      "id": "law_2_evolved",
+      "name": "Operator (ROOM)",
+      "aliases": []
+    },
+    {
+      "id": "konan_unit",
+      "name": "Origami",
+      "aliases": []
+    },
+    {
+      "id": "konan_unit_evolved",
+      "name": "Origami (Paper Angel)",
+      "aliases": []
+    },
+    {
+      "id": "kenpachi",
+      "name": "Packy",
+      "aliases": []
+    },
+    {
+      "id": "kenpachi_evolved",
+      "name": "Packy (Maniac)",
+      "aliases": []
+    },
+    {
+      "id": "gojo",
+      "name": "Paradox",
+      "aliases": []
+    },
+    {
+      "id": "gojo_evolved",
+      "name": "Paradox (Divine Sight)",
+      "aliases": []
+    },
+    {
+      "id": "angel_devil",
+      "name": "Paragon",
+      "aliases": []
+    },
+    {
+      "id": "angel_devil_evolved",
+      "name": "Paragon (Devil)",
+      "aliases": []
+    },
+    {
+      "id": "roger",
+      "name": "Pirate King",
+      "aliases": []
+    },
+    {
+      "id": "roger_evolved",
+      "name": "Pirate King (Final)",
+      "aliases": []
+    },
+    {
+      "id": "cranel",
+      "name": "Player",
+      "aliases": []
+    },
+    {
+      "id": "cranel_evolved",
+      "name": "Player (Argus)",
+      "aliases": []
+    },
+    {
+      "id": "netero",
+      "name": "Prayer Master",
+      "aliases": []
+    },
+    {
+      "id": "pucci",
+      "name": "Priest",
+      "aliases": []
+    },
+    {
+      "id": "pucci_heaven",
+      "name": "Priest (Heaven)",
+      "aliases": []
+    },
+    {
+      "id": "pucci_cmoon",
+      "name": "Priest (New Moon)",
+      "aliases": []
+    },
+    {
+      "id": "all_might",
+      "name": "Prime Force",
+      "aliases": [
+        "All Force",
+        "All Might",
+        "Toshinori Yagi"
+      ]
+    },
+    {
+      "id": "all_might_evolved",
+      "name": "Prime Force (Peace)",
+      "aliases": []
+    },
+    {
+      "id": "starlia",
+      "name": "Psychic Princess",
+      "aliases": []
+    },
+    {
+      "id": "starlia_evo",
+      "name": "Psychic Princess (Evo)",
+      "aliases": []
+    },
+    {
+      "id": "yoshino",
+      "name": "Puppet Girl",
+      "aliases": []
+    },
+    {
+      "id": "yoshino_evolved",
+      "name": "Puppet Girl (Spirit)",
+      "aliases": []
+    },
+    {
+      "id": "kento",
+      "name": "Ratio",
+      "aliases": []
+    },
+    {
+      "id": "kento_evolved",
+      "name": "Ratio (Overtime)",
+      "aliases": []
+    },
+    {
+      "id": "sabo",
+      "name": "Rebel",
+      "aliases": []
+    },
+    {
+      "id": "sabo_evolved",
+      "name": "Rebel (Flame Ruler)",
+      "aliases": []
+    },
+    {
+      "id": "shanks",
+      "name": "Red Scar",
+      "aliases": []
+    },
+    {
+      "id": "shanks_evolved",
+      "name": "Red Scar (Conqueror)",
+      "aliases": []
+    },
+    {
+      "id": "koichi",
+      "name": "Reliable Student",
+      "aliases": []
+    },
+    {
+      "id": "koichi_evolved",
+      "name": "Reliable Student (Echoes)",
+      "aliases": []
+    },
+    {
+      "id": "renji",
+      "name": "Renzi",
+      "aliases": []
+    },
+    {
+      "id": "overhaul",
+      "name": "Restructure",
+      "aliases": [
+        "Kai Chisaki",
+        "Overhaul",
+        "Underhaul"
+      ]
+    },
+    {
+      "id": "rias",
+      "name": "Riony",
+      "aliases": []
+    },
+    {
+      "id": "rias_evolved",
+      "name": "Riony (Devil Princess)",
+      "aliases": []
+    },
+    {
+      "id": "mechamaru",
+      "name": "Robot Sorcerer",
+      "aliases": []
+    },
+    {
+      "id": "saiki",
+      "name": "Saickik",
+      "aliases": []
+    },
+    {
+      "id": "daki",
+      "name": "Saka",
+      "aliases": []
+    },
+    {
+      "id": "daki_evolved",
+      "name": "Saka (Ribbon)",
+      "aliases": []
+    },
+    {
+      "id": "sayaka",
+      "name": "Saki",
+      "aliases": []
+    },
+    {
+      "id": "sayaka_evolved",
+      "name": "Saki (Cyanblade)",
+      "aliases": []
+    },
+    {
+      "id": "gaara",
+      "name": "Sand Ninja",
+      "aliases": [
+        "Gaara"
+      ]
+    },
+    {
+      "id": "crocodile",
+      "name": "Sandy",
+      "aliases": []
+    },
+    {
+      "id": "izumi",
+      "name": "Scarlet Slayer",
+      "aliases": []
+    },
+    {
+      "id": "izumi_evolved",
+      "name": "Scarlet Slayer (Cursed Frost)",
+      "aliases": []
+    },
+    {
+      "id": "dabi",
+      "name": "Scorch",
+      "aliases": [
+        "Dabi"
+      ]
+    },
+    {
+      "id": "poseidon",
+      "name": "Sea God",
+      "aliases": []
+    },
+    {
+      "id": "poseidon_evolved",
+      "name": "Sea God (Tyrant of the Seas)",
+      "aliases": []
+    },
+    {
+      "id": "gyutaro",
+      "name": "Sepsis",
+      "aliases": []
+    },
+    {
+      "id": "gyutaro_evolved",
+      "name": "Sepsis (Moon)",
+      "aliases": []
+    },
+    {
+      "id": "megumi",
+      "name": "Shadow Sorcerer",
+      "aliases": []
+    },
+    {
+      "id": "megumi_evolved",
+      "name": "Shadow Sorcerer (Hybrid Shadow)",
+      "aliases": []
+    },
+    {
+      "id": "megumi_2",
+      "name": "Shadow Sorcerer (Incident)",
+      "aliases": []
+    },
+    {
+      "id": "megumi_2_evo",
+      "name": "Shadow Sorcerer (Ritual)",
+      "aliases": []
+    },
+    {
+      "id": "homura",
+      "name": "Shadowgirl",
+      "aliases": []
+    },
+    {
+      "id": "homura_evolved",
+      "name": "Shadowgirl (Time Traveller)",
+      "aliases": []
+    },
+    {
+      "id": "kisame_unit",
+      "name": "Sharkfin",
+      "aliases": []
+    },
+    {
+      "id": "kisame_unit_evolved",
+      "name": "Sharkfin (Tailless Beast)",
+      "aliases": []
+    },
+    {
+      "id": "shinkiro",
+      "name": "Shinjira",
+      "aliases": []
+    },
+    {
+      "id": "sasuke",
+      "name": "Shinobi",
+      "aliases": [
+        "Sasuke",
+        "Sasuke Uchiha"
+      ]
+    },
+    {
+      "id": "sasuke_3",
+      "name": "Shinobi (Awakened)",
+      "aliases": []
+    },
+    {
+      "id": "sasuke_3_evolved",
+      "name": "Shinobi (Eternal)",
+      "aliases": []
+    },
+    {
+      "id": "sasuke_2",
+      "name": "Shinobi (Hood)",
+      "aliases": []
+    },
+    {
+      "id": "sasuke_2_evolved",
+      "name": "Shinobi (Storm)",
+      "aliases": []
+    },
+    {
+      "id": "shisui",
+      "name": "Shizo",
+      "aliases": []
+    },
+    {
+      "id": "shisui_evolved",
+      "name": "Shizo (Flicker)",
+      "aliases": []
+    },
+    {
+      "id": "yuma",
+      "name": "Shrimp",
+      "aliases": []
+    },
+    {
+      "id": "yuma_evolved",
+      "name": "Shrimp (White Terror)",
+      "aliases": []
+    },
+    {
+      "id": "toge",
+      "name": "Silent",
+      "aliases": []
+    },
+    {
+      "id": "rayleigh",
+      "name": "Silver King",
+      "aliases": []
+    },
+    {
+      "id": "ragna",
+      "name": "Silver Slayer",
+      "aliases": []
+    },
+    {
+      "id": "ragna_evo",
+      "name": "Silver Slayer (Hunter)",
+      "aliases": []
+    },
+    {
+      "id": "monet",
+      "name": "Siren",
+      "aliases": []
+    },
+    {
+      "id": "monet_evo",
+      "name": "Siren (Harpy)",
+      "aliases": []
+    },
+    {
+      "id": "ghiaccio",
+      "name": "Skater",
+      "aliases": []
+    },
+    {
+      "id": "ghiaccio_evolved",
+      "name": "Skater (Album)",
+      "aliases": []
+    },
+    {
+      "id": "brook",
+      "name": "Skeleton",
+      "aliases": []
+    },
+    {
+      "id": "brook_evolved",
+      "name": "Skeleton (Soul King)",
+      "aliases": []
+    },
+    {
+      "id": "skull_knight",
+      "name": "Skeleton Knight",
+      "aliases": []
+    },
+    {
+      "id": "skull_knight_evolved",
+      "name": "Skeleton Knight (King)",
+      "aliases": []
+    },
+    {
+      "id": "smoker_unit",
+      "name": "Smoka",
+      "aliases": []
+    },
+    {
+      "id": "smoker_unit_evolved",
+      "name": "Smoka (Hunter)",
+      "aliases": []
+    },
+    {
+      "id": "boa",
+      "name": "Snake Princess",
+      "aliases": []
+    },
+    {
+      "id": "rukia",
+      "name": "Snow Reaper",
+      "aliases": []
+    },
+    {
+      "id": "rukia_2_evo",
+      "name": "Snow Reaper (Final)",
+      "aliases": []
+    },
+    {
+      "id": "rukia_2",
+      "name": "Snow Reaper (War)",
+      "aliases": []
+    },
+    {
+      "id": "osaragi",
+      "name": "Somber",
+      "aliases": []
+    },
+    {
+      "id": "osaragi_evo",
+      "name": "Somber (Buzzsaw)",
+      "aliases": []
+    },
+    {
+      "id": "toji",
+      "name": "Sorcerer Killer",
+      "aliases": []
+    },
+    {
+      "id": "toji_evo",
+      "name": "Sorcerer Killer (Heavenly Body)",
+      "aliases": []
+    },
+    {
+      "id": "lancer",
+      "name": "Spearer",
+      "aliases": []
+    },
+    {
+      "id": "lancer_evolved",
+      "name": "Spearer (Child of Light)",
+      "aliases": []
+    },
+    {
+      "id": "feitan",
+      "name": "Spider",
+      "aliases": []
+    },
+    {
+      "id": "feitan_evo",
+      "name": "Spider (Immolation)",
+      "aliases": []
+    },
+    {
+      "id": "uryu",
+      "name": "Spirit Archer",
+      "aliases": []
+    },
+    {
+      "id": "uryu_evolved",
+      "name": "Spirit Archer (Reversal)",
+      "aliases": []
+    },
+    {
+      "id": "ichigo",
+      "name": "Spirit Reaper",
+      "aliases": [
+        "Ichi",
+        "Ichigo",
+        "Ichigo Kurosaki"
+      ]
+    },
+    {
+      "id": "ichigo_mugetsu",
+      "name": "Spirit Reaper (Dusk)",
+      "aliases": []
+    },
+    {
+      "id": "ichigo_mugetsu_evolved",
+      "name": "Spirit Reaper (Final Dusk)",
+      "aliases": []
+    },
+    {
+      "id": "ichigo_hollow",
+      "name": "Spirit Reaper (Full Hollow)",
+      "aliases": []
+    },
+    {
+      "id": "ichigo_mask",
+      "name": "Spirit Reaper (Masked)",
+      "aliases": []
+    },
+    {
+      "id": "chika",
+      "name": "Spirit Sniper",
+      "aliases": []
+    },
+    {
+      "id": "chika_evolved",
+      "name": "Spirit Sniper (Prodigy)",
+      "aliases": []
+    },
+    {
+      "id": "starrk_wolf_unit",
+      "name": "Spirit Wolf",
+      "aliases": []
+    },
+    {
+      "id": "buggy",
+      "name": "Stitches",
+      "aliases": []
+    },
+    {
+      "id": "doflamingo",
+      "name": "Stringy",
+      "aliases": []
+    },
+    {
+      "id": "doflamingo_evolved",
+      "name": "Stringy (Awakened)",
+      "aliases": []
+    },
+    {
+      "id": "broly_evolved",
+      "name": "Super Bro",
+      "aliases": []
+    },
+    {
+      "id": "trunks_evolved",
+      "name": "Super Chunks",
+      "aliases": []
+    },
+    {
+      "id": "sonic_evolved",
+      "name": "Supersound (Speed)",
+      "aliases": []
+    },
+    {
+      "id": "ainz",
+      "name": "Supreme Being",
+      "aliases": []
+    },
+    {
+      "id": "ainz_evolved",
+      "name": "Supreme Being (Sovereign)",
+      "aliases": []
+    },
+    {
+      "id": "aot_generic",
+      "name": "Survey Corps Member",
+      "aliases": []
+    },
+    {
+      "id": "shinji",
+      "name": "Swingo",
+      "aliases": []
+    },
+    {
+      "id": "nagumo",
+      "name": "Switchblade",
+      "aliases": []
+    },
+    {
+      "id": "nagumo_evo",
+      "name": "Switchblade (Deception)",
+      "aliases": []
+    },
+    {
+      "id": "saber",
+      "name": "Sword Queen",
+      "aliases": []
+    },
+    {
+      "id": "saber_evolved",
+      "name": "Sword Queen (Knight)",
+      "aliases": []
+    },
+    {
+      "id": "tsuna",
+      "name": "Takamu",
+      "aliases": []
+    },
+    {
+      "id": "tsuna_evolved",
+      "name": "Takamu (Reborn)",
+      "aliases": []
+    },
+    {
+      "id": "tatsumaki_evolved",
+      "name": "Tamiki (Tornado)",
+      "aliases": []
+    },
+    {
+      "id": "tengen",
+      "name": "Tango",
+      "aliases": []
+    },
+    {
+      "id": "tengen_2_evolved",
+      "name": "Tango (Flash God)",
+      "aliases": []
+    },
+    {
+      "id": "tengen_2",
+      "name": "Tango (Score)",
+      "aliases": []
+    },
+    {
+      "id": "tatara",
+      "name": "Tarata",
+      "aliases": []
+    },
+    {
+      "id": "tatara_evolved",
+      "name": "Tarata (Ignite)",
+      "aliases": []
+    },
+    {
+      "id": "tatsumi",
+      "name": "Tattermo",
+      "aliases": []
+    },
+    {
+      "id": "narberal",
+      "name": "Thunder Maid",
+      "aliases": []
+    },
+    {
+      "id": "narberal_evolved",
+      "name": "Thunder Maid (Servant)",
+      "aliases": []
+    },
+    {
+      "id": "atsushi",
+      "name": "Tiger",
+      "aliases": []
+    },
+    {
+      "id": "atsushi_evolved",
+      "name": "Tiger (Moonlight Beast)",
+      "aliases": []
+    },
+    {
+      "id": "julius",
+      "name": "Time Wizard",
+      "aliases": []
+    },
+    {
+      "id": "julius_evolved",
+      "name": "Time Wizard (Chronos)",
+      "aliases": []
+    },
+    {
+      "id": "jiraiya",
+      "name": "Toad Sensei",
+      "aliases": []
+    },
+    {
+      "id": "jiraiya_evolved",
+      "name": "Toad Sensei (Toad Sage)",
+      "aliases": []
+    },
+    {
+      "id": "obito",
+      "name": "Toby",
+      "aliases": []
+    },
+    {
+      "id": "touka",
+      "name": "Touci",
+      "aliases": []
+    },
+    {
+      "id": "kisuke",
+      "name": "Trickster",
+      "aliases": []
+    },
+    {
+      "id": "kisuke_evolved",
+      "name": "Trickster (Release)",
+      "aliases": []
+    },
+    {
+      "id": "roshi",
+      "name": "Turtle Master",
+      "aliases": []
+    },
+    {
+      "id": "frieza",
+      "name": "Tyrant (Final)",
+      "aliases": []
+    },
+    {
+      "id": "cid",
+      "name": "Umbra",
+      "aliases": []
+    },
+    {
+      "id": "cid_evolved",
+      "name": "Umbra (Nuclear)",
+      "aliases": []
+    },
+    {
+      "id": "eren",
+      "name": "Usurper",
+      "aliases": [
+        "Eren",
+        "Eren Jaeger",
+        "Eren Yeager"
+      ]
+    },
+    {
+      "id": "eren_final",
+      "name": "Usurper (Founder)",
+      "aliases": []
+    },
+    {
+      "id": "vegeta",
+      "name": "Vego",
+      "aliases": [
+        "Vegeta",
+        "Vegeta base"
+      ]
+    },
+    {
+      "id": "vegeta_majin_evolved",
+      "name": "Vego (Mage II)",
+      "aliases": []
+    },
+    {
+      "id": "vegeta_majin",
+      "name": "Vego (Mage)",
+      "aliases": []
+    },
+    {
+      "id": "vegeta_super_evolved",
+      "name": "Vego (Super II)",
+      "aliases": []
+    },
+    {
+      "id": "vegeta_super",
+      "name": "Vego (Super)",
+      "aliases": []
+    },
+    {
+      "id": "rokuhira",
+      "name": "Vengeful Swordsman",
+      "aliases": []
+    },
+    {
+      "id": "rokuhira_evo",
+      "name": "Vengeful Swordsman (Sky Reaver)",
+      "aliases": []
+    },
+    {
+      "id": "deku",
+      "name": "Verdant Hero",
+      "aliases": [
+        "Deku",
+        "Izuku Midoriya",
+        "Midoriya"
+      ]
+    },
+    {
+      "id": "deku_vigilante_evolved",
+      "name": "Verdant Hero (Dark)",
+      "aliases": []
+    },
+    {
+      "id": "deku_vigilante",
+      "name": "Verdant Hero (String)",
+      "aliases": []
+    },
+    {
+      "id": "dokuro",
+      "name": "Violentine",
+      "aliases": []
+    },
+    {
+      "id": "dokuro_evo",
+      "name": "Violentine (Brutal Angel)",
+      "aliases": []
+    },
+    {
+      "id": "klein",
+      "name": "Virtual Samurai",
+      "aliases": []
+    },
+    {
+      "id": "klein_evolved",
+      "name": "Virtual Samurai (Bachelor)",
+      "aliases": []
+    },
+    {
+      "id": "ulquiorra",
+      "name": "Void Spear",
+      "aliases": []
+    },
+    {
+      "id": "ulquiorra_evolved",
+      "name": "Void Spear (Revival)",
+      "aliases": []
+    },
+    {
+      "id": "soifon",
+      "name": "Wasp",
+      "aliases": []
+    },
+    {
+      "id": "soifon_evolved",
+      "name": "Wasp (Hornet)",
+      "aliases": []
+    },
+    {
+      "id": "bang",
+      "name": "Waterfist",
+      "aliases": []
+    },
+    {
+      "id": "bang_evolved",
+      "name": "Waterfist (White Tooth)",
+      "aliases": []
+    },
+    {
+      "id": "dominico",
+      "name": "Weather",
+      "aliases": []
+    },
+    {
+      "id": "nami",
+      "name": "Weather Girl",
+      "aliases": []
+    },
+    {
+      "id": "nami_evolved",
+      "name": "Weather Girl (Thief)",
+      "aliases": []
+    },
+    {
+      "id": "gin",
+      "name": "White Snake",
+      "aliases": []
+    },
+    {
+      "id": "gin_evolved",
+      "name": "White Snake (Sacred Spear)",
+      "aliases": []
+    },
+    {
+      "id": "whitebeard",
+      "name": "Whitehair",
+      "aliases": []
+    },
+    {
+      "id": "wendy",
+      "name": "Wind Dragon",
+      "aliases": []
+    },
+    {
+      "id": "nejire",
+      "name": "Windspire",
+      "aliases": []
+    },
+    {
+      "id": "meliodas",
+      "name": "Wratho",
+      "aliases": []
+    },
+    {
+      "id": "meliodas_evolved",
+      "name": "Wratho (Assault)",
+      "aliases": []
+    },
+    {
+      "id": "jin_mori",
+      "name": "Wukong",
+      "aliases": []
+    },
+    {
+      "id": "zenitsu",
+      "name": "Zapstu",
+      "aliases": [
+        "Zenitsu",
+        "Zenitsu Agatsuma"
+      ]
+    },
+    {
+      "id": "zoro",
+      "name": "Zen",
+      "aliases": [
+        "Roronoa Zoro",
+        "Zoro",
+        "Zoru"
+      ]
+    },
+    {
+      "id": "giselle",
+      "name": "Zombie",
+      "aliases": []
+    },
+    {
+      "id": "giselle_evo",
+      "name": "Zombie (Risen)",
+      "aliases": []
+    },
+    {
+      "id": "mihawk",
+      "name": "Zorrawk",
+      "aliases": []
+    }
+  ]
+}

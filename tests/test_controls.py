@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, Mock, patch
 import discord
 from scores import AwardResult
 
-import bot as app
+import quiz_legacy as app
 import quiz_ui as screen
 from test_session import Channel, Deck, IDS, Message, until, user, view_text
 

@@ -23,7 +23,8 @@ class RuntimeHealth:
     def database_ready(self):
         try:
             connection = self.database()
-            return connection is not None and connection.execute('SELECT 1').fetchone() == (1,)
+            row = connection.execute('SELECT 1').fetchone() if connection is not None else None
+            return row is not None and row[0] == 1
         except Exception:
             return False
 

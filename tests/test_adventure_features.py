@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import discord
 
-import bot as app
+import quiz_legacy as app
 import adventure_views as views
 import quiz_ui as screen
 from adventure_repository import AdventureRepository

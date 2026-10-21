@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 
 from scores import AwardResult
 
-import bot as app
+import quiz_legacy as app
 import quiz_ui as screen
 from quiz_guard import Cooldowns
 from test_controls import interaction

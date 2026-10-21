@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, Mock, patch
 import discord
 from discord import app_commands
 
-import bot as app
+import quiz_legacy as app
 import quiz_ui as screen
 from interaction_errors import respond_to_error
 from scores import AwardResult, ScoreStore

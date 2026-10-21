@@ -6,7 +6,7 @@ import discord
 
 from scores import AwardResult
 
-import bot as app
+import quiz_legacy as app
 from test_controls import interaction
 from test_session import Channel, Message, until, user
 

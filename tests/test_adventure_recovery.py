@@ -6,7 +6,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
-import bot as app
+import quiz_legacy as app
 from adventure_repository import AdventureRepository
 from quiz_content import QuestionDeck
 from scores import ScoreStore

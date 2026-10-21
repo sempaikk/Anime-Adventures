@@ -12,17 +12,17 @@ BACKUP_INTERVAL = 86400
 MIN_FREE_BYTES = 16 * 1024 * 1024
 
 
-def verify_database(path: Path):
+def verify_database(path: Path, *, required_tables=None):
     with closing(sqlite3.connect(path.resolve().as_uri() + '?mode=ro', uri=True, timeout=1)) as database:
         result = database.execute('PRAGMA quick_check').fetchall()
         if result != [('ok',)]:
             raise sqlite3.DatabaseError('A verificação de integridade do banco falhou.')
         tables = {row[0] for row in database.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-        if not {'scores', 'awards', 'metadata'} <= tables:
+        if not (required_tables or {'scores', 'awards', 'metadata'}) <= tables:
             raise sqlite3.DatabaseError('O arquivo não contém o banco de pontos esperado.')
 
 
-def snapshot_database(source: Path, destination: Path, *, timeout=10):
+def snapshot_database(source: Path, destination: Path, *, timeout=10, required_tables=None):
     """Copy committed data through SQLite; keep an existing snapshot on any failure."""
     source, destination = source.resolve(), destination.resolve()
     if source == destination:
@@ -46,7 +46,7 @@ def snapshot_database(source: Path, destination: Path, *, timeout=10):
         with closing(sqlite3.connect(source.as_uri() + '?mode=ro', uri=True, timeout=1)) as original:
             with closing(sqlite3.connect(temporary)) as copied:
                 original.backup(copied, pages=128, progress=progress, sleep=.01)
-        verify_database(temporary)
+        verify_database(temporary, required_tables=required_tables)
         with temporary.open('rb') as stream:
             os.fsync(stream.fileno())
         temporary.replace(destination)
@@ -54,16 +54,16 @@ def snapshot_database(source: Path, destination: Path, *, timeout=10):
         temporary.unlink(missing_ok=True)
 
 
-def maintain_storage(database: Path, *, now=None):
+def maintain_storage(database: Path, *, now=None, required_tables=None):
     """Called in a worker thread; at most one daily snapshot is retained."""
     now = time.time() if now is None else now
-    backup = database.parent / 'backups' / 'scores-latest.sqlite3'
+    backup = database.parent / 'backups' / (database.stem + '-latest.sqlite3')
     usage = shutil.disk_usage(database.parent)
     free = usage.free
     size = database.stat().st_size
     report = {'database_bytes': size, 'free_bytes': free, 'total_bytes': usage.total, 'backup': 'fresh'}
     if not backup.exists() or now - backup.stat().st_mtime >= BACKUP_INTERVAL:
-        snapshot_database(database, backup)
+        snapshot_database(database, backup, required_tables=required_tables)
         report['backup'] = 'created'
     report['backup_bytes'] = backup.stat().st_size
     report['backup_modified'] = backup.stat().st_mtime
