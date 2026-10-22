@@ -255,10 +255,15 @@ class NativeRuntimeCase(unittest.IsolatedAsyncioTestCase):
         )
         self.assertTrue(all(not part["component"].get("label") for part in parts))
         for form in (
+            modal,
             ReportModal(self.app, self.interaction(), 1),
             CorrectionModal(self.app, self.interaction()),
+            CorrectionModal(self.app, self.interaction(), proposal_id=1),
         ):
             self.assertEqual(form.to_components()[0]["type"], 18)
+            for part in form.to_components():
+                self.assertLessEqual(len(part["label"]), 45)
+                self.assertLessEqual(len(part.get("description", "")), 100)
 
     async def test_confirmation_is_private_native_and_keeps_vote_deadline(self):
         await self.setup_panel()

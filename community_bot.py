@@ -385,7 +385,7 @@ class CommunityBot(commands.Bot):
         reference = self.store.get("wiki_initial_reference")
         if reference:
             data = json.loads(reference)
-            text += f"\n**Base Wiki:** revisão {data['revision']} · {data['unresolved']} entradas antigas sem correspondência exata; importação parcial."
+            text += f"\n**Base Wiki:** revisão {data['revision']} · {data['unresolved']} entradas sem correspondência exata. Registro inicial interno, sem votos."
         text += f"\n**Relatos aguardando análise:** {pending}."
         text += f"\n**Resultados aguardando arquivo/limpeza:** {self.store.public_results_waiting()}."
         text += f"\n**Cota local do dia UTC:** {budget.get('calls', 0)}/{DAILY_CALLS} chamadas · {budget.get('tokens', 0)}/{DAILY_TOKENS} tokens."
@@ -916,7 +916,7 @@ class CommunityBot(commands.Bot):
                                     panel["guild_id"],
                                 ),
                             )
-                    await self.publish_audits(panel, thread)
+                    await self.sync_private_audits(panel, thread)
                     await self.sync_index(panel, thread)
             except discord.NotFound:
                 with self.store.connection:
@@ -934,35 +934,10 @@ class CommunityBot(commands.Bot):
     async def panels_ready(self):
         await self.wait_until_ready()
 
-    async def publish_audits(self, panel, thread):
-        rows = self.store.rows(
-            "SELECT a.* FROM tier_audit a WHERE a.created_at>=? AND NOT EXISTS(SELECT 1 FROM tier_audit_messages m WHERE m.audit_id=a.id AND m.guild_id=?) ORDER BY a.id LIMIT 10",
-            (self.store.clock() - 7 * 86400, panel["guild_id"]),
-        )
-        for row in rows:
-            if self.store.clock() - row["created_at"] > 7 * 86400:
-                continue
-            embed = discord.Embed(
-                title="Revisão da comunidade",
-                description=safe(row["reason"], 900),
-                color=0x960D16,
-            )
-            embed.set_footer(text=f"Revisão #{row['id']} · {moment(row['created_at'])}")
-            ident = row["id"]
-            message = await self.deliver(
-                thread,
-                f"audit:{ident}:{thread.id}",
-                embed=embed,
-                marker=lambda m: any(
-                    line.strip().removeprefix("-# ").startswith(f"Revisão #{ident} ·")
-                    for line in visible_text(m).splitlines()
-                ),
-            )
-            with self.store.connection:
-                self.store.connection.execute(
-                    "INSERT OR IGNORE INTO tier_audit_messages VALUES(?,?,?)",
-                    (ident, panel["guild_id"], str(message.id)),
-                )
+    async def sync_private_audits(self, panel, thread):
+        from tier_audit import hide_audit_messages
+
+        await hide_audit_messages(self, panel, thread)
 
     @tasks.loop(minutes=15)
     async def maintenance_loop(self):

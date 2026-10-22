@@ -5,7 +5,6 @@ import hashlib
 import io
 import json
 import math
-from urllib.parse import urlsplit, parse_qs
 from pathlib import Path
 import discord
 from PIL import Image, ImageDraw, UnidentifiedImageError
@@ -233,38 +232,15 @@ def index_text(
 ):
     thread = store.thread(panel["guild_id"])
     progress = progress or poll_progress(store, ai_enabled=ai_enabled)
-    source = (
-        "Fontes em cache"
-        if wiki_status in ("cache", "unavailable")
-        else "Referências sincronizadas"
-    )
-    classification = " · ".join(
-        f"{('Infinite' if mode == 'infinite' else 'Casual')}: "
-        + (
-            "base inicial da Wiki"
-            if publication["model"] == "wiki-baseline"
-            else "aguardando novas categorias"
-            if publication["model"] == "category-migration"
-            and not publication["ranking"]
-            else moment(publication["created_at"])
-        )
-        for mode, publication in store.board()["modes"].items()
-    )
     lines = [
         "## Votações e histórico",
         "**A imagem no canal mostra a classificação atual. As enquetes abertas aparecem junto dela; os resultados ficam aqui.**",
-        "Propostas com motivos, condições e fontes. Você escolhe **Aprovar**, **Manter** ou **Precisa de mais testes**.",
+        "Propostas com motivos, mudanças e condições de uso. Você escolhe **Aprovar**, **Manter** ou **Precisa de mais testes**.",
         "**Leitura:** Infinite e Casual têm posições independentes. Em cada modo, META e Good se dividem em Hill/Hybrid, Ground e Support. A ordem da linha vai da esquerda para a direita.",
         "\n**Regras:** 10 minutos · mínimo de 5 participantes · dois terços a favor · um voto por conta na rede. Você pode trocar até o prazo. As escolhas aparecem no resultado final.",
         "No máximo uma proposta por hora; sem evidência suficiente, a classificação é preservada.",
         "\n" + progress_text(progress),
-        f"**Wiki:** {source}.",
-        f"**Última classificação:** {classification}.",
     ]
-    if store.get("wiki_initial_reference"):
-        lines.append(
-            "**Base inicial:** [Wiki · revisão de 18/04/2025](https://animeadventures.fandom.com/wiki/Tier_Lists?oldid=46773), importada parcialmente por identidade exata. A página avisa que pode estar imprecisa. Essas posições são referência; revisões seguintes dependem de votação."
-        )
     proposal = store.active_proposal()
     if proposal and thread:
         receipt = store.connection.execute(
@@ -283,14 +259,6 @@ def index_text(
         if approved:
             lines.append(
                 f"**Última votação aprovada:** [ver resultado](https://discord.com/channels/{panel['guild_id']}/{thread['thread_id']}/{approved[0]['message_id']})."
-            )
-        audit = store.rows(
-            "SELECT m.message_id FROM tier_audit_messages m WHERE m.guild_id=? ORDER BY audit_id DESC LIMIT 1",
-            (panel["guild_id"],),
-        )
-        if audit:
-            lines.append(
-                f"**Última revisão:** [ver registro](https://discord.com/channels/{panel['guild_id']}/{thread['thread_id']}/{audit[0]['message_id']})."
             )
     lines += [
         "\nTem um retrato melhor ou uma skin atualizada? Use **Sugerir imagem** e acompanhe em **Meus envios**. A substituição passa por revisão.",
@@ -368,29 +336,6 @@ def poll_embed(store, catalog, proposal):
         embed.add_field(
             name="O que precisa ser considerado",
             value=safe(detail["caveat"], 300),
-            inline=False,
-        )
-    for source in detail["sources"][:2]:
-        url = source["url"].replace("(", "%28").replace(")", "%29")
-        if len(url) > 200:
-            revision = parse_qs(urlsplit(url).query).get("oldid", [""])[0]
-            url = (
-                (
-                    "https://animeadventures.fandom.com/wiki/Special:Redirect/revision/"
-                    + revision
-                )
-                if revision.isdigit() and len(revision) <= 20
-                else ""
-            )
-        embed.add_field(
-            name="Referência na wiki",
-            value="> "
-            + safe(source["quote"], 300).replace("\n", "\n> ")
-            + (
-                f"\n[Conferir a revisão]({url})"
-                if url
-                else "\nReferência preservada no registro da proposta."
-            ),
             inline=False,
         )
     counts = (

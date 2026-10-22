@@ -1,6 +1,7 @@
 """Independent mode decisions, attributed bootstrap, retention and image delivery."""
 
 import io
+import copy
 import json
 import tempfile
 import unittest
@@ -120,17 +121,26 @@ class ModeStoreCase(unittest.TestCase):
         self.assertEqual(self.store.latest()["ranking"], [])
         self.assertEqual(self.store.latest("casual")["ranking"], [])
 
-    def test_wiki_baseline_is_attributed_partial_and_creates_no_votes(self):
+    def test_wiki_baseline_keeps_attribution_internal_and_creates_no_votes(self):
         seed_initial(self.store, TierCatalog())
-        for mode in ("infinite", "casual"):
+        for mode, count in (("infinite", 71), ("casual", 76)):
             self.assertEqual(self.store.latest(mode)["model"], "wiki-baseline")
-            self.assertEqual(len(self.store.latest(mode)["ranking"]), 37)
+            self.assertEqual(len(self.store.latest(mode)["ranking"]), count)
         self.assertEqual(self.store.rows("SELECT * FROM tier_votes"), [])
         self.assertIsNone(self.store.active_proposal())
         self.store.remember_panel(1, 2, 3, self.store.board()["id"])
         text = index_text(self.store, self.store.panels()[0])
-        self.assertIn("importada parcialmente", text)
-        self.assertIn("posições são referência", text)
+        for technical in (
+            "Wiki",
+            "46773",
+            "fandom.com",
+            "Última revisão",
+            "Última classificação",
+        ):
+            self.assertNotIn(technical, text)
+        self.assertEqual(
+            json.loads(self.store.get("wiki_initial_reference"))["revision"], 46773
+        )
         self.assertEqual(
             len(self.store.rows("SELECT * FROM tier_audit WHERE kind='wiki-baseline'")),
             2,
@@ -179,11 +189,87 @@ class ModeStoreCase(unittest.TestCase):
             self.store.get("wiki_seed:placements-v1:infinite"), "preserved-existing"
         )
 
+    def partial_reference(self):
+        data = copy.deepcopy(load_reference())
+        data["modes"] = {mode: rows[::2] for mode, rows in data["modes"].items()}
+        return data
+
+    def test_corrected_reference_completes_only_the_untouched_seed_and_is_idempotent(
+        self,
+    ):
+        partial = self.partial_reference()
+        seed_initial(self.store, TierCatalog(), reference=partial)
+        original = self.store.latest()
+        seed_initial(self.store, TierCatalog())
+        updated = self.store.latest()
+        self.assertGreater(updated["id"], original["id"])
+        self.assertEqual(len(updated["ranking"]), 71)
+        old_ids = {r["unit_id"] for r in original["ranking"]}
+        self.assertEqual(
+            [r for r in updated["ranking"] if r["unit_id"] in old_ids],
+            original["ranking"],
+        )
+        self.assertEqual(
+            self.store.rows(
+                "SELECT ranking FROM tier_publications WHERE id=?", (original["id"],)
+            )[0]["ranking"],
+            json.dumps(original["ranking"]),
+        )
+        before = self.store.board()
+        seed_initial(self.store, TierCatalog())
+        self.assertEqual(self.store.board(), before)
+        self.assertEqual(self.store.rows("SELECT * FROM tier_votes"), [])
+        self.assertEqual(self.store.rows("SELECT * FROM tier_proposals"), [])
+
+    def test_corrected_reference_does_not_reset_a_real_community_decision(self):
+        seed_initial(self.store, TierCatalog(), reference=self.partial_reference())
+        ranking = [make_row("daki", "META_GROUND")]
+        self.store.create_proposal(
+            ranking, {}, details={}, source_version="test", model="test", comments=[]
+        )
+        proposal = self.store.active_proposal()
+        self.store.remember_poll(proposal["id"], 1, 2, 3)
+        for uid in range(5):
+            self.store.vote(proposal["id"], uid, 1, 2, 3, "approve")
+        self.now += 601
+        self.store.resolve_due(source_version="test")
+        approved = self.store.latest()
+        seed_initial(self.store, TierCatalog())
+        self.assertEqual(self.store.latest(), approved)
+        self.assertEqual(approved["ranking"], ranking)
+        self.assertEqual(self.store.proposal(proposal["id"])["status"], "approved")
+        self.assertEqual(self.store.poll_counts(proposal["id"])["approve"], 5)
+        self.assertEqual(len(self.store.latest("casual")["ranking"]), 76)
+
+    def test_reference_completion_defers_active_poll_without_changing_its_base(self):
+        seed_initial(self.store, TierCatalog(), reference=self.partial_reference())
+        self.store.create_proposal(
+            [make_row("daki", "META_GROUND")],
+            {},
+            details={},
+            source_version="test",
+            model="test",
+            comments=[],
+        )
+        before, proposal = self.store.latest(), self.store.active_proposal()
+        seed_initial(self.store, TierCatalog())
+        self.assertEqual(self.store.latest(), before)
+        self.assertEqual(self.store.proposal(proposal["id"]), proposal)
+        self.assertEqual(len(self.store.latest("casual")["ranking"]), 76)
+        self.store.cancel_proposal(
+            proposal["id"],
+            7,
+            "Encerramento artificial do teste para liberar a referência.",
+        )
+        seed_initial(self.store, TierCatalog())
+        self.assertEqual(len(self.store.latest()["ranking"]), 71)
+
     def test_reference_matches_pinned_source_and_excludes_unknown_names(self):
         data = load_reference()
         active = TierCatalog()
         self.assertEqual(data["revision"], 46773)
-        self.assertEqual(len(data["unresolved"]), 76)
+        self.assertEqual(data["unresolved"], [])
+        self.assertEqual(len(data["retired"]), 4)
         for mode, rows in data["modes"].items():
             self.assertTrue(all(r["unit_id"] in active.units for r in rows), mode)
             self.assertEqual(len({r["unit_id"] for r in rows}), len(rows))

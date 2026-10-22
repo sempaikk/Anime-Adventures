@@ -81,8 +81,8 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 
 ## Imagens da comunidade
 
-- Catálogo ativo inicial: 524 formas, 453 retratos e 71 pendências. Excluir as
-  25 formas com silhueta azul substituta excluídas pelo critério do dono, incluindo
+- Catálogo ativo inicial: 529 formas, 458 retratos e 71 pendências. Excluir as
+  26 formas com silhueta azul substituta excluídas pelo critério do dono, incluindo
   Gravity Hero apesar do retrato antigo. Preservar registros históricos e
   impedir reativação pela wiki/cache, propostas, coleta ou reversão.
 - Manter a lista pública de fotos pendentes no índice do tópico. Remover uma
@@ -147,16 +147,26 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 
 ## Referência inicial da Wiki
 
-A escolha do dono é começar pela Wiki e revisar com comentários/votos. Usa uma
-revisão fixa e atribuída da página Tier Lists: 46773, 18/04/2025. A fonte avisa
-que pode estar imprecisa; não foi possível confirmar uma revisão mais recente
-nesta execução. São 37 formas comprovadas por modo. Foram mantidas pendentes
-76 entradas (47 nomes distintos) sem correspondência exata; uma entrada de
-forma reconhecidamente retirada foi excluída. Não há associação por semelhança
-ou substituição de evolução. A ordem acompanha a fonte, sem alegar reavaliação.
+A escolha do dono é começar pela Wiki e revisar com comentários/votos. A
+revisão 46773 de 18/04/2025 coincide com a última retornada pela API na
+conferência de 22/10/2026. A fonte avisa que pode estar imprecisa. São 71
+formas ativas em Infinite e 76 em Casual. As 151 entradas foram identificadas
+por IDs exatos: 147 ativas e quatro ocorrências de formas retiradas. Revisões
+33578 e 43960 do módulo Names comprovam as identidades com nomes antigos.
+O parser também aceita aspas simples; seis formas antes omitidas voltaram
+ao catálogo histórico, cinco delas ativas. Ice Shaper exibe a silhueta azul
+e fica excluído pelo critério do dono. A ordem acompanha a fonte.
 
-O tópico identifica a origem parcial e distingue a base inicial de decisões
-aprovadas. A importação é única por modo; preserva listas atuais e correções
-humanas, não cria votos nem consome IA. O artefato é reproduzível pelo script
-`build_tier_baseline.py`, a partir de fontes e identidades registradas no repo.
-Uma atualização futura não reaplica a Wiki sobre os votos existentes.
+A base inicial não conta como decisão da comunidade. Importações, correções
+do dono e manutenção ficam em auditoria interna. O histórico público contém
+somente enquetes/resultados, sem avisos administrativos nem links técnicos da
+Wiki. A limpeza confere autor, marcador e servidor, preserva a auditoria e
+repete a tentativa se a API falhar.
+
+A inicialização completa apenas uma base inicial anterior ainda intacta,
+sem mudar a categoria ou a ordem relativa das formas já importadas. Não
+sobrescreve decisões da comunidade, correções humanas ou uma enquete aberta.
+Se houver uma votação em andamento, a complementação poderá ocorrer no
+próximo reinício após o encerramento. Não cria votos nem consome IA e não
+repete versões em reinícios posteriores. O script build_tier_baseline.py
+reproduz o artefato offline. Veja tierlist-catalog-audit.md para o escopo.

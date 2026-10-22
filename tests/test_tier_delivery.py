@@ -396,7 +396,7 @@ class VisiblePollCase(unittest.IsolatedAsyncioTestCase):
         index = self.env.partial(
             self.env.thread, int(self.app.store.thread(1)["intro_id"])
         )
-        self.assertIn("Última revisão", visible_text(index))
+        self.assertNotIn("Última revisão", visible_text(index))
         self.assertIn("Última votação aprovada", visible_text(index))
         self.assertIn("abrir votação", visible_text(index))
         self.assertIn("Histórico do tópico anterior", visible_text(index))

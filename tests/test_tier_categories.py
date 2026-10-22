@@ -113,7 +113,7 @@ class CategoryMigrationCase(unittest.TestCase):
         self.reopen()
         self.assertEqual(self.store.latest()["ranking"], [])
         self.assertEqual(self.store.latest()["model"], "category-migration")
-        self.assertIn(
+        self.assertNotIn(
             "aguardando novas categorias",
             index_text(self.store, self.store.panels()[0]),
         )

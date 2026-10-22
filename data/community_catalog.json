@@ -4,11 +4,25 @@
   "source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=46960",
   "source_snapshot": "docs/sources/46960.wiki",
   "source_sha256": "e68313f42b14c066cb50298b336502e17f5e3ec49ec2097ad23a1a03baafbaaf",
+  "historical_identity_sources": [
+    {
+      "url": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578",
+      "snapshot": "docs/sources/tier-names-33578.wiki",
+      "sha256": "815e3b0b85080deceef488503fc4fb78285d2545d4292baf434b19a63e01d8a2"
+    },
+    {
+      "url": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=43960",
+      "snapshot": "docs/sources/tier-names-43960.wiki",
+      "sha256": "d98c1f84b992f0d882e1152d3b321bbca0c00e9261780d86ce01295f5e501e3c"
+    }
+  ],
   "units": [
     {
       "id": "gogeta_failed",
       "name": "???",
-      "aliases": []
+      "aliases": [
+        "Veko"
+      ]
     },
     {
       "id": "pain",
@@ -20,27 +34,37 @@
     {
       "id": "pain_2_evolved",
       "name": "Agony (Divine)",
-      "aliases": []
+      "aliases": [
+        "Pain (Divine)"
+      ]
     },
     {
       "id": "pain_2",
       "name": "Agony (Path)",
-      "aliases": []
+      "aliases": [
+        "Pain (Path)"
+      ]
     },
     {
       "id": "akeno",
       "name": "Akemy",
-      "aliases": []
+      "aliases": [
+        "Akena"
+      ]
     },
     {
       "id": "akeno_evolved",
       "name": "Akemy (Fallen Angel)",
-      "aliases": []
+      "aliases": [
+        "Akena (Fallen Angel)"
+      ]
     },
     {
       "id": "boros",
       "name": "Alien King",
-      "aliases": []
+      "aliases": [
+        "Boron"
+      ]
     },
     {
       "id": "amon",
@@ -50,22 +74,30 @@
     {
       "id": "android21",
       "name": "Android AAA",
-      "aliases": []
+      "aliases": [
+        "Android 21"
+      ]
     },
     {
       "id": "meruem",
       "name": "Ant",
-      "aliases": []
+      "aliases": [
+        "Meruam"
+      ]
     },
     {
       "id": "noelle",
       "name": "Aquatic Mage",
-      "aliases": []
+      "aliases": [
+        "Noel"
+      ]
     },
     {
       "id": "noelle_evolved",
       "name": "Aquatic Mage (Valkyrie Armor)",
-      "aliases": []
+      "aliases": [
+        "Noel (Valkyrie Armor)"
+      ]
     },
     {
       "id": "arima",
@@ -105,6 +137,7 @@
       "id": "inosuke",
       "name": "Beast",
       "aliases": [
+        "Inosoku",
         "Inosuke",
         "Inosuke Hashibira",
         "Inosuku"
@@ -113,12 +146,16 @@
     {
       "id": "guts",
       "name": "Berserker",
-      "aliases": []
+      "aliases": [
+        "Guts"
+      ]
     },
     {
       "id": "guts_berserker",
       "name": "Berserker (Rage)",
-      "aliases": []
+      "aliases": [
+        "Guts (Berserk)"
+      ]
     },
     {
       "id": "hei",
@@ -133,22 +170,30 @@
     {
       "id": "yami",
       "name": "Black Blade",
-      "aliases": []
+      "aliases": [
+        "Yamo"
+      ]
     },
     {
       "id": "yami_evolved",
       "name": "Black Blade (Captain)",
-      "aliases": []
+      "aliases": [
+        "Yamo (Captain)"
+      ]
     },
     {
       "id": "akutagawa",
       "name": "Black Dog",
-      "aliases": []
+      "aliases": [
+        "Aku"
+      ]
     },
     {
       "id": "akutagawa_evolved",
       "name": "Black Dog (HellHound)",
-      "aliases": []
+      "aliases": [
+        "Aku (Rashamon)"
+      ]
     },
     {
       "id": "blackbeard",
@@ -158,59 +203,88 @@
     {
       "id": "denji",
       "name": "Blade Beast",
-      "aliases": []
+      "aliases": [
+        "Chainsaw"
+      ]
     },
     {
       "id": "denji_evolved",
       "name": "Blade Beast (Hybrid)",
-      "aliases": []
+      "aliases": [
+        "Chainsaw (Hybrid)"
+      ]
     },
     {
       "id": "denji_secret",
       "name": "Blade Beast (Past)",
-      "aliases": []
+      "aliases": [
+        "Denjy"
+      ]
     },
     {
       "id": "todoroki_2",
       "name": "Blaze Frost",
-      "aliases": []
+      "aliases": [
+        "Todorro (Half)"
+      ]
     },
     {
       "id": "todoroki",
       "name": "Blaze Frost (Epic)",
-      "aliases": []
+      "aliases": [
+        "Todorro"
+      ]
     },
     {
       "id": "todoroki_2_evolved",
       "name": "Blaze Frost (Released)",
-      "aliases": []
+      "aliases": [
+        "Todorro (Released)"
+      ]
     },
     {
       "id": "unohana",
       "name": "Bleed Queen",
-      "aliases": []
+      "aliases": [
+        "Unohona"
+      ]
     },
     {
       "id": "power",
       "name": "Blood",
-      "aliases": []
+      "aliases": [
+        "Power"
+      ]
+    },
+    {
+      "id": "power_evolved",
+      "name": "Blood (Unleashed)",
+      "aliases": [
+        "Power (Fiend)"
+      ]
     },
     {
       "id": "shalltear",
       "name": "Bloodcry",
-      "aliases": []
+      "aliases": [
+        "Shallta"
+      ]
     },
     {
       "id": "shalltear_evolved",
       "name": "Bloodcry (Fallen)",
-      "aliases": []
+      "aliases": [
+        "Bloodcry (Bloodfallen)",
+        "Shallta (Bloodfallen)"
+      ]
     },
     {
       "id": "sakura",
       "name": "Blossom",
       "aliases": [
         "Sakura",
-        "Sakura Haruno"
+        "Sakura Haruno",
+        "Sakuro"
       ]
     },
     {
@@ -221,12 +295,16 @@
     {
       "id": "mash",
       "name": "Bodybuilder",
-      "aliases": []
+      "aliases": [
+        "Mash"
+      ]
     },
     {
       "id": "mash_evolved",
       "name": "Bodybuilder (Muscles)",
-      "aliases": []
+      "aliases": [
+        "Mash (Muscles)"
+      ]
     },
     {
       "id": "bambietta",
@@ -236,22 +314,30 @@
     {
       "id": "ippo",
       "name": "Boxer",
-      "aliases": []
+      "aliases": [
+        "Ipo"
+      ]
     },
     {
       "id": "jozu",
       "name": "Bozo",
-      "aliases": []
+      "aliases": [
+        "Jozo"
+      ]
     },
     {
       "id": "chad",
       "name": "Brawler",
-      "aliases": []
+      "aliases": [
+        "Chad"
+      ]
     },
     {
       "id": "chad_evolved",
       "name": "Brawler (Soul)",
-      "aliases": []
+      "aliases": [
+        "Chad (Fullbringer)"
+      ]
     },
     {
       "id": "britannia_soldier",
@@ -269,69 +355,91 @@
     {
       "id": "buu",
       "name": "Bubblegum",
-      "aliases": []
+      "aliases": [
+        "Byu"
+      ]
     },
     {
       "id": "buu_evolved",
       "name": "Bubblegum (Ultimate)",
-      "aliases": []
+      "aliases": [
+        "Byu (Ultimate)"
+      ]
     },
     {
       "id": "bulma",
       "name": "Bulby",
-      "aliases": []
+      "aliases": [
+        "Bulmy"
+      ]
     },
     {
       "id": "carrot",
       "name": "Bunny",
-      "aliases": []
+      "aliases": [
+        "Carrot"
+      ]
     },
     {
       "id": "carrot_evolved",
       "name": "Bunny (Night)",
-      "aliases": []
+      "aliases": [
+        "Carrot (Sulong)"
+      ]
     },
     {
       "id": "speedwagon",
       "name": "C.E.O.",
       "aliases": [
+        "C.E.O",
         "CEO",
         "Robert E. O. Speedwagon",
         "Robert Speedwagon",
+        "Speedcart",
         "Speedwagon"
       ]
     },
     {
       "id": "kira",
       "name": "Calm Killer",
-      "aliases": []
+      "aliases": [
+        "Kiro"
+      ]
     },
     {
       "id": "kira_evolved",
       "name": "Calm Killer (Meets the End)",
-      "aliases": []
+      "aliases": [
+        "Kiro (Bites the Dust)"
+      ]
     },
     {
       "id": "usopp",
       "name": "Captain",
       "aliases": [
+        "Usoap",
         "Usopp"
       ]
     },
     {
       "id": "usopp_ts_evolved",
       "name": "Captain (God)",
-      "aliases": []
+      "aliases": [
+        "Usoap (God)"
+      ]
     },
     {
       "id": "usopp_ts",
       "name": "Captain (Timeskip)",
-      "aliases": []
+      "aliases": [
+        "Usoap (Timeskip)"
+      ]
     },
     {
       "id": "goku",
       "name": "Carrot",
       "aliases": [
+        "Goko",
         "Goku",
         "Goku base",
         "Son Goku"
@@ -340,12 +448,15 @@
     {
       "id": "goku_ssj3",
       "name": "Carrot (Super III)",
-      "aliases": []
+      "aliases": [
+        "Goko (Super III)"
+      ]
     },
     {
       "id": "goku_ssb",
       "name": "Carrot (Super)",
       "aliases": [
+        "Goko (Super)",
         "Goku Blue",
         "Goku SSB",
         "Goku Super Saiyajin Blue",
@@ -355,75 +466,102 @@
     {
       "id": "goku_ssj3_evolved",
       "name": "Carrot (Ultra)",
-      "aliases": []
+      "aliases": [
+        "Goko (Ultra)"
+      ]
     },
     {
       "id": "goku_black",
       "name": "Carrot Black",
       "aliases": [
         "Black Goku",
+        "Goko Black",
         "Goku Black"
       ]
     },
     {
       "id": "pitou",
       "name": "Cat Guard",
-      "aliases": []
+      "aliases": [
+        "Pito"
+      ]
     },
     {
       "id": "pitou_evolved",
       "name": "Cat Guard (Ballet)",
-      "aliases": []
+      "aliases": [
+        "Pito (Terpsichora)"
+      ]
     },
     {
       "id": "koneko",
       "name": "Catgirl",
-      "aliases": []
+      "aliases": [
+        "Kuneko"
+      ]
     },
     {
       "id": "koneko_evolved",
       "name": "Catgirl (Hell-Cat)",
-      "aliases": []
+      "aliases": [
+        "Kuneko (Hell-Cat)"
+      ]
     },
     {
       "id": "netero_evolved",
       "name": "Chairman Prayer Master",
-      "aliases": []
+      "aliases": [
+        "Chairman Neteru"
+      ]
     },
     {
       "id": "kite",
       "name": "Chance",
-      "aliases": []
+      "aliases": [
+        "Kit"
+      ]
     },
     {
       "id": "kite_evolved_focus",
       "name": "Chance (Focus)",
-      "aliases": []
+      "aliases": [
+        "Kit (Focus)"
+      ]
     },
     {
       "id": "kite_evolved_frenzy",
       "name": "Chance (Frenzy)",
-      "aliases": []
+      "aliases": [
+        "Kit (Frenzy)"
+      ]
     },
     {
       "id": "kite_evolved_lethal",
       "name": "Chance (Lethal)",
-      "aliases": []
+      "aliases": [
+        "Kit (Lethal)"
+      ]
     },
     {
       "id": "kite_evolved_precision",
       "name": "Chance (Precision)",
-      "aliases": []
+      "aliases": [
+        "Kit (Precision)"
+      ]
     },
     {
       "id": "albedo",
       "name": "Cherub",
-      "aliases": []
+      "aliases": [
+        "Albedo"
+      ]
     },
     {
       "id": "albedo_evolved",
       "name": "Cherub (Overseer)",
-      "aliases": []
+      "aliases": [
+        "Albedo (Overseer)"
+      ]
     },
     {
       "id": "trunks",
@@ -443,30 +581,39 @@
     {
       "id": "gray",
       "name": "Cold Mage",
-      "aliases": []
+      "aliases": [
+        "Gray"
+      ]
     },
     {
       "id": "gray_evolved",
       "name": "Cold Mage (Devil Slayer)",
-      "aliases": []
+      "aliases": [
+        "Gray (Devil Slayer)"
+      ]
     },
     {
       "id": "erwin",
       "name": "Commander",
       "aliases": [
         "Erwin",
-        "Erwin Smith"
+        "Erwin Smith",
+        "Orwin"
       ]
     },
     {
       "id": "conrad",
       "name": "Connor",
-      "aliases": []
+      "aliases": [
+        "Conrod"
+      ]
     },
     {
       "id": "conrad_evolved",
       "name": "Connor (Wizard King)",
-      "aliases": []
+      "aliases": [
+        "Conrod (Wizard King)"
+      ]
     },
     {
       "id": "kakashi",
@@ -480,17 +627,30 @@
     {
       "id": "charmy",
       "name": "Cotton",
-      "aliases": []
+      "aliases": [
+        "Charmi"
+      ]
     },
     {
       "id": "charmy_evolved",
       "name": "Cotton (Sheep)",
-      "aliases": []
+      "aliases": [
+        "Charmi (Sheep)"
+      ]
     },
     {
       "id": "kobeni",
       "name": "Cowardly",
-      "aliases": []
+      "aliases": [
+        "Kobeno"
+      ]
+    },
+    {
+      "id": "kobeni_evolved",
+      "name": "Cowardly (Scared)",
+      "aliases": [
+        "Kobeno (Scared)"
+      ]
     },
     {
       "id": "vanilla_ice",
@@ -505,22 +665,30 @@
     {
       "id": "ban",
       "name": "Crimson Thief",
-      "aliases": []
+      "aliases": [
+        "Greed"
+      ]
     },
     {
       "id": "ban_evolved",
       "name": "Crimson Thief (Hunt)",
-      "aliases": []
+      "aliases": [
+        "Greed (Hunt)"
+      ]
     },
     {
       "id": "heathcliff",
       "name": "Crusader",
-      "aliases": []
+      "aliases": [
+        "Heathcliff"
+      ]
     },
     {
       "id": "heathcliff_evolved",
       "name": "Crusader (Admin)",
-      "aliases": []
+      "aliases": [
+        "Heathcliff (Admin)"
+      ]
     },
     {
       "id": "gildarts",
@@ -535,44 +703,59 @@
     {
       "id": "evileye",
       "name": "Crystal Rose",
-      "aliases": []
+      "aliases": [
+        "Evileye"
+      ]
     },
     {
       "id": "evileye_evolved",
       "name": "Crystal Rose (Impact)",
-      "aliases": []
+      "aliases": [
+        "Evileye (Landfall)"
+      ]
     },
     {
       "id": "aki",
       "name": "Curse",
-      "aliases": []
+      "aliases": [
+        "Akin"
+      ]
     },
     {
       "id": "aki_evolved",
       "name": "Curse (Contract)",
-      "aliases": []
+      "aliases": [
+        "Akin (Contract)"
+      ]
     },
     {
       "id": "sukuna",
       "name": "Cursed King",
-      "aliases": []
+      "aliases": [
+        "Sukuno"
+      ]
     },
     {
       "id": "genos",
       "name": "Cyborg",
       "aliases": [
+        "Geno",
         "Genos"
       ]
     },
     {
       "id": "genos_2_evolved",
       "name": "Cyborg (Incinerate)",
-      "aliases": []
+      "aliases": [
+        "Geno (Incinerate)"
+      ]
     },
     {
       "id": "genos_2",
       "name": "Cyborg (Overdrive)",
-      "aliases": []
+      "aliases": [
+        "Geno (Overdrive)"
+      ]
     },
     {
       "id": "judar",
@@ -592,12 +775,16 @@
     {
       "id": "hidan_unit",
       "name": "Death Ninja",
-      "aliases": []
+      "aliases": [
+        "Hido"
+      ]
     },
     {
       "id": "hidan_unit_evolved",
       "name": "Death Ninja (Immortal Butcher)",
-      "aliases": []
+      "aliases": [
+        "Hido (Immortal Butcher)"
+      ]
     },
     {
       "id": "nokotan",
@@ -608,6 +795,7 @@
       "id": "jotaro",
       "name": "Delinquent",
       "aliases": [
+        "Jokujo",
         "Jotaro",
         "Jotaro Kujo"
       ]
@@ -615,12 +803,17 @@
     {
       "id": "jotaro_p6",
       "name": "Delinquent (Serious)",
-      "aliases": []
+      "aliases": [
+        "Jokujo (Serious)"
+      ]
     },
     {
       "id": "jotaro_p6_evolved",
       "name": "Delinquent (The Universe)",
-      "aliases": []
+      "aliases": [
+        "Delinquent (The World)",
+        "Jokujo (The World)"
+      ]
     },
     {
       "id": "sato",
@@ -636,6 +829,7 @@
       "id": "nezuko",
       "name": "Demon Girl",
       "aliases": [
+        "Nezuka",
         "Nezuko",
         "Nezuko Kamado"
       ]
@@ -644,6 +838,7 @@
       "id": "tanjiro",
       "name": "Demonkiller",
       "aliases": [
+        "Tanji",
         "Tanjiro",
         "Tanjiro Kamado"
       ]
@@ -651,7 +846,9 @@
     {
       "id": "hiei",
       "name": "Demonshade",
-      "aliases": []
+      "aliases": [
+        "Hie"
+      ]
     },
     {
       "id": "diavolo",
@@ -664,7 +861,9 @@
     {
       "id": "boxxo",
       "name": "Dispenser",
-      "aliases": []
+      "aliases": [
+        "Boxo"
+      ]
     },
     {
       "id": "mahoraga",
@@ -674,27 +873,37 @@
     {
       "id": "inuyasha",
       "name": "Dog Demon",
-      "aliases": []
+      "aliases": [
+        "Inuyashu"
+      ]
     },
     {
       "id": "gowther",
       "name": "Doll",
-      "aliases": []
+      "aliases": [
+        "Gowthy"
+      ]
     },
     {
       "id": "gowther_evolved",
       "name": "Doll (Spirit Archer)",
-      "aliases": []
+      "aliases": [
+        "Gowthy (Invasion)"
+      ]
     },
     {
       "id": "jolyne",
       "name": "Dolphin",
-      "aliases": []
+      "aliases": [
+        "Jolyna"
+      ]
     },
     {
       "id": "jolyne_evolved",
       "name": "Dolphin (Determination)",
-      "aliases": []
+      "aliases": [
+        "Jolyna (Determination)"
+      ]
     },
     {
       "id": "rengoku",
@@ -708,37 +917,51 @@
     {
       "id": "rengoku_evolved",
       "name": "Donut (ABLAZE)",
-      "aliases": []
+      "aliases": [
+        "Renkoko (ABLAZE)"
+      ]
     },
     {
       "id": "alucard",
       "name": "Dracula",
-      "aliases": []
+      "aliases": [
+        "Alucard"
+      ]
     },
     {
       "id": "alucard_evolved",
       "name": "Dracula (Unholy King)",
-      "aliases": []
+      "aliases": [
+        "Alucard (Unholy King)"
+      ]
     },
     {
       "id": "issei",
       "name": "Dragon Knight",
-      "aliases": []
+      "aliases": [
+        "Issai"
+      ]
     },
     {
       "id": "issei_evolved",
       "name": "Dragon Knight (Gauntlet)",
-      "aliases": []
+      "aliases": [
+        "Issai (Boosted Gear)"
+      ]
     },
     {
       "id": "natsu",
       "name": "Dragonslayer",
-      "aliases": []
+      "aliases": [
+        "Natzo"
+      ]
     },
     {
       "id": "natsu_evolved",
       "name": "Dragonslayer (Lightning Mode)",
-      "aliases": []
+      "aliases": [
+        "Natzo (Lightning Dragon Mode)"
+      ]
     },
     {
       "id": "gremmy",
@@ -753,12 +976,16 @@
     {
       "id": "hange",
       "name": "Eccentric Researcher",
-      "aliases": []
+      "aliases": [
+        "Hanje"
+      ]
     },
     {
       "id": "hange_evolved",
       "name": "Eccentric Researcher (Captain)",
-      "aliases": []
+      "aliases": [
+        "Hanje (Captain)"
+      ]
     },
     {
       "id": "frieren",
@@ -773,47 +1000,65 @@
     {
       "id": "yuno",
       "name": "Elf Spirit",
-      "aliases": []
+      "aliases": [
+        "Yono"
+      ]
     },
     {
       "id": "yuno_evolved",
       "name": "Elf Spirit (Wind)",
-      "aliases": []
+      "aliases": [
+        "Yono (Spirit)"
+      ]
     },
     {
       "id": "leafa",
       "name": "Elfy",
-      "aliases": []
+      "aliases": [
+        "Leafy"
+      ]
     },
     {
       "id": "leafa_evolved",
       "name": "Elfy (Sylph)",
-      "aliases": []
+      "aliases": [
+        "Leafy (Sylph)"
+      ]
     },
     {
       "id": "erza",
       "name": "Elize",
-      "aliases": []
+      "aliases": [
+        "Ezra"
+      ]
     },
     {
       "id": "erza_lightning",
       "name": "Elize (Lightning)",
-      "aliases": []
+      "aliases": [
+        "Ezra (Lightning)"
+      ]
     },
     {
       "id": "erza_evolved",
       "name": "Elize (Random Equip)",
-      "aliases": []
+      "aliases": [
+        "Ezra (Random Equip)"
+      ]
     },
     {
       "id": "erza_samurai",
       "name": "Elize (True Heart)",
-      "aliases": []
+      "aliases": [
+        "Ezra (True Heart)"
+      ]
     },
     {
       "id": "erza_valkyrie",
       "name": "Elize (Valkyrie)",
-      "aliases": []
+      "aliases": [
+        "Ezra (Valkyrie)"
+      ]
     },
     {
       "id": "isharmla",
@@ -853,22 +1098,30 @@
     {
       "id": "cell_imperfect",
       "name": "Experiment X (Imperfect)",
-      "aliases": []
+      "aliases": [
+        "Cel (Imperfect)"
+      ]
     },
     {
       "id": "cell_perfect",
       "name": "Experiment X (Perfect)",
-      "aliases": []
+      "aliases": [
+        "Cel (Perfect)"
+      ]
     },
     {
       "id": "cell_super_perfect",
       "name": "Experiment X (SUPER PERFECT)",
-      "aliases": []
+      "aliases": [
+        "Cel (SUPER PERFECT)"
+      ]
     },
     {
       "id": "cell_semi_perfect",
       "name": "Experiment X (Semi-Perfect)",
-      "aliases": []
+      "aliases": [
+        "Cel (Semi-Perfect)"
+      ]
     },
     {
       "id": "bakugou",
@@ -883,7 +1136,9 @@
     {
       "id": "bakugou_2",
       "name": "Explosion Hero (Bang)",
-      "aliases": []
+      "aliases": [
+        "Bakugo (Explosion)"
+      ]
     },
     {
       "id": "bakugou_2_evolved",
@@ -893,22 +1148,31 @@
     {
       "id": "king_7ds",
       "name": "Fairy Ruler",
-      "aliases": []
+      "aliases": [
+        "King"
+      ]
     },
     {
       "id": "king_7ds_evolved",
       "name": "Fairy Ruler (Sloth)",
-      "aliases": []
+      "aliases": [
+        "King (Sloth)"
+      ]
     },
     {
       "id": "archer",
       "name": "Faker",
-      "aliases": []
+      "aliases": [
+        "Archer"
+      ]
     },
     {
       "id": "archer_evolved",
       "name": "Faker (Hero's Soul)",
-      "aliases": []
+      "aliases": [
+        "Archer (Heroic Spirit)",
+        "Faker (Hero's Spirit)"
+      ]
     },
     {
       "id": "hawks",
@@ -918,32 +1182,45 @@
     {
       "id": "hawks_evolved",
       "name": "Falcon (Feather Strike)",
-      "aliases": []
+      "aliases": [
+        "Falcon (Feather Wings)"
+      ]
     },
     {
       "id": "temari",
       "name": "Fan Ninja",
-      "aliases": []
+      "aliases": [
+        "Temori"
+      ]
     },
     {
       "id": "hinami",
       "name": "Fiend Girl",
-      "aliases": []
+      "aliases": [
+        "Hinamy"
+      ]
     },
     {
       "id": "hinami_evolved",
       "name": "Fiend Girl (Buttterfly)",
-      "aliases": []
+      "aliases": [
+        "Fiend Girl (Butterfly)",
+        "Hinamy (Yotsume)"
+      ]
     },
     {
       "id": "yamamoto",
       "name": "Fiery Commander",
-      "aliases": []
+      "aliases": [
+        "Yamomoto"
+      ]
     },
     {
       "id": "yamamoto_evolved",
       "name": "Fiery Commander (Hellfire)",
-      "aliases": []
+      "aliases": [
+        "Yamomoto (Hellfire)"
+      ]
     },
     {
       "id": "ace",
@@ -958,100 +1235,138 @@
     {
       "id": "endeavor_evolved",
       "name": "Flame Hero (Hellfire)",
-      "aliases": []
+      "aliases": [
+        "Flame Hero (Hellflame)"
+      ]
     },
     {
       "id": "magna",
       "name": "Flame Wizard",
-      "aliases": []
+      "aliases": [
+        "Magnu"
+      ]
     },
     {
       "id": "avdol",
       "name": "Flamefeather",
-      "aliases": []
+      "aliases": [
+        "Avdo"
+      ]
     },
     {
       "id": "avdol_evolved",
       "name": "Flamefeather (Arcane Blaze)",
-      "aliases": []
+      "aliases": [
+        "Avdo (Magician's Red)",
+        "Flamefeather (Magician's Red)"
+      ]
     },
     {
       "id": "minato",
       "name": "Flash Ninja",
-      "aliases": []
+      "aliases": [
+        "Minata"
+      ]
     },
     {
       "id": "akainu_evolved",
       "name": "Fleet Admiral Magma",
-      "aliases": []
+      "aliases": [
+        "Fleet Admiral Akano"
+      ]
     },
     {
       "id": "gabimaru",
       "name": "Flower Ninja",
-      "aliases": []
+      "aliases": [
+        "Gabimaro"
+      ]
     },
     {
       "id": "gabimaru_evolved",
       "name": "Flower Ninja (Austere Flame)",
-      "aliases": []
+      "aliases": [
+        "Gabimaro (Ascetic Blaze)"
+      ]
     },
     {
       "id": "naruto",
       "name": "Fox Ninja",
       "aliases": [
         "Naruto",
-        "Naruto Uzumaki"
+        "Naruto Uzumaki",
+        "Noruto"
       ]
     },
     {
       "id": "naruto_pts_evolved",
       "name": "Fox Ninja (Beast Cloak)",
-      "aliases": []
+      "aliases": [
+        "Noruto (Beast Cloak)"
+      ]
     },
     {
       "id": "naruto_pts",
       "name": "Fox Ninja (Demon Cloak)",
-      "aliases": []
+      "aliases": [
+        "Noruto (Demon Cloak)"
+      ]
     },
     {
       "id": "naruto_sage",
       "name": "Fox Ninja (Sage)",
-      "aliases": []
+      "aliases": [
+        "Noruto (Sage)"
+      ]
     },
     {
       "id": "naruto_6tails",
       "name": "Fox Ninja (Six Tails)",
-      "aliases": []
+      "aliases": [
+        "Noruto (Six Tails)"
+      ]
     },
     {
       "id": "cooler",
       "name": "Fridge",
-      "aliases": []
+      "aliases": [
+        "Cooler"
+      ]
     },
     {
       "id": "aokiji",
       "name": "Frost Navy",
-      "aliases": []
+      "aliases": [
+        "Aokijo"
+      ]
     },
     {
       "id": "aokiji_evolved",
       "name": "Frost Navy (Blue Pigeon)",
-      "aliases": []
+      "aliases": [
+        "Aokijo (Blue Pheasant)"
+      ]
     },
     {
       "id": "vegito",
       "name": "Fused Hero",
-      "aliases": []
+      "aliases": [
+        "Vegeto"
+      ]
     },
     {
       "id": "future_gohan",
       "name": "Future Goh",
-      "aliases": []
+      "aliases": [
+        "Future Guhon"
+      ]
     },
     {
       "id": "gajeel",
       "name": "Gajoze",
-      "aliases": []
+      "aliases": [
+        "Gajule"
+      ]
     },
     {
       "id": "hakari",
@@ -1066,22 +1381,30 @@
     {
       "id": "kirito",
       "name": "Gamer",
-      "aliases": []
+      "aliases": [
+        "Kiroto"
+      ]
     },
     {
       "id": "kirito_evolved",
       "name": "Gamer (Dual)",
-      "aliases": []
+      "aliases": [
+        "Kiroto (Dual)"
+      ]
     },
     {
       "id": "asuna",
       "name": "Gamer Girl",
-      "aliases": []
+      "aliases": [
+        "Asuno"
+      ]
     },
     {
       "id": "asuna_evolved",
       "name": "Gamer Girl (Flash)",
-      "aliases": []
+      "aliases": [
+        "Asuno (Flash)"
+      ]
     },
     {
       "id": "caesarclown",
@@ -1096,37 +1419,51 @@
     {
       "id": "geto",
       "name": "Gazu",
-      "aliases": []
+      "aliases": [
+        "Getu"
+      ]
     },
     {
       "id": "geto_evolved",
       "name": "Gazu (Maximum)",
-      "aliases": []
+      "aliases": [
+        "Getu (Maximum)"
+      ]
     },
     {
       "id": "gon",
       "name": "Gene",
-      "aliases": []
+      "aliases": [
+        "Gone"
+      ]
     },
     {
       "id": "gon_adult_evolved",
       "name": "Gene (???)",
-      "aliases": []
+      "aliases": [
+        "Gone (???)"
+      ]
     },
     {
       "id": "gon_adult",
       "name": "Gene (Adult)",
-      "aliases": []
+      "aliases": [
+        "Gone (Adult)"
+      ]
     },
     {
       "id": "perona",
       "name": "Ghost Lady",
-      "aliases": []
+      "aliases": [
+        "Peruna"
+      ]
     },
     {
       "id": "perona_evolved",
       "name": "Ghost Lady (Princess)",
-      "aliases": []
+      "aliases": [
+        "Peruna (Ghost Princess)"
+      ]
     },
     {
       "id": "hanako_kun",
@@ -1141,17 +1478,30 @@
     {
       "id": "himeno",
       "name": "Ghosty",
-      "aliases": []
+      "aliases": [
+        "Hime"
+      ]
+    },
+    {
+      "id": "himeno_evolved",
+      "name": "Ghosty (Sacrifice)",
+      "aliases": [
+        "Hime (Ghost)"
+      ]
     },
     {
       "id": "kaneki",
       "name": "Ghoul",
-      "aliases": []
+      "aliases": [
+        "Kazeki"
+      ]
     },
     {
       "id": "kaneki_2",
       "name": "Ghoul (Centipede)",
-      "aliases": []
+      "aliases": [
+        "Kazeki (Centipede)"
+      ]
     },
     {
       "id": "giorno",
@@ -1165,32 +1515,44 @@
     {
       "id": "gilgamesh",
       "name": "Golden King",
-      "aliases": []
+      "aliases": [
+        "Gilgamesh"
+      ]
     },
     {
       "id": "gilgamesh_evolved",
       "name": "Golden King (Lord of Heroes)",
-      "aliases": []
+      "aliases": [
+        "Gilgamesh (King of Heroes)"
+      ]
     },
     {
       "id": "sengoku_unit",
       "name": "Golden Navy",
-      "aliases": []
+      "aliases": [
+        "Senbodu"
+      ]
     },
     {
       "id": "sengoku_unit_evolved",
       "name": "Golden Navy (Buddha)",
-      "aliases": []
+      "aliases": [
+        "Senbodu (Buddha)"
+      ]
     },
     {
       "id": "frieza_golden",
       "name": "Golden Tyrant",
-      "aliases": []
+      "aliases": [
+        "Golden Freezo"
+      ]
     },
     {
       "id": "frieza_golden_evolved",
       "name": "Golden Tyrant (Emperor)",
-      "aliases": []
+      "aliases": [
+        "Golden Freezo (Emperor)"
+      ]
     },
     {
       "id": "uraraka",
@@ -1204,39 +1566,52 @@
     {
       "id": "chuya",
       "name": "Gravity Mage",
-      "aliases": []
+      "aliases": [
+        "Chuyo"
+      ]
     },
     {
       "id": "chuya_evolved",
       "name": "Gravity Mage (Void)",
-      "aliases": []
+      "aliases": [
+        "Chuyo (Corruption)"
+      ]
     },
     {
       "id": "fujitora",
       "name": "Gravity Navy",
-      "aliases": []
+      "aliases": [
+        "Fuji"
+      ]
     },
     {
       "id": "fujitora_evolved",
       "name": "Gravity Navy (Admiral)",
-      "aliases": []
+      "aliases": [
+        "Fuji (Admiral)"
+      ]
     },
     {
       "id": "piccolo",
       "name": "Green Alien",
       "aliases": [
-        "Piccolo"
+        "Piccolo",
+        "Piccoru"
       ]
     },
     {
       "id": "piccolo_fused",
       "name": "Green Alien (Fusion)",
-      "aliases": []
+      "aliases": [
+        "Piccoru (Fusion)"
+      ]
     },
     {
       "id": "piccolo_fused_evolved",
       "name": "Green Alien (Nameless)",
-      "aliases": []
+      "aliases": [
+        "Piccoru (Nameless)"
+      ]
     },
     {
       "id": "griffith",
@@ -1271,27 +1646,37 @@
     {
       "id": "diane",
       "name": "Hammer Giantess",
-      "aliases": []
+      "aliases": [
+        "Dany"
+      ]
     },
     {
       "id": "diane_evolved",
       "name": "Hammer Giantess (Creation)",
-      "aliases": []
+      "aliases": [
+        "Dany (Creation)"
+      ]
     },
     {
       "id": "nobara",
       "name": "Hammergirl",
-      "aliases": []
+      "aliases": [
+        "Nobaba"
+      ]
     },
     {
       "id": "harribel",
       "name": "Hammerhead",
-      "aliases": []
+      "aliases": [
+        "Harribu"
+      ]
     },
     {
       "id": "harribel_evolved",
       "name": "Hammerhead (Shark Empress)",
-      "aliases": []
+      "aliases": [
+        "Harribu (Shark Empress)"
+      ]
     },
     {
       "id": "fugo",
@@ -1311,22 +1696,30 @@
     {
       "id": "ermes",
       "name": "Hermy",
-      "aliases": []
+      "aliases": [
+        "Ermo"
+      ]
     },
     {
       "id": "ermes_evolved",
       "name": "Hermy (Duplicate)",
-      "aliases": []
+      "aliases": [
+        "Ermo (Duplicate)"
+      ]
     },
     {
       "id": "medea",
       "name": "Hex",
-      "aliases": []
+      "aliases": [
+        "Medae"
+      ]
     },
     {
       "id": "medea_evolved",
       "name": "Hex (Witch of Betrayal)",
-      "aliases": []
+      "aliases": [
+        "Medae (Witch of Betrayal)"
+      ]
     },
     {
       "id": "honey",
@@ -1341,22 +1734,30 @@
     {
       "id": "escanor",
       "name": "Hubris (Day)",
-      "aliases": []
+      "aliases": [
+        "Pride (Day)"
+      ]
     },
     {
       "id": "escanor_weak",
       "name": "Hubris (Night)",
-      "aliases": []
+      "aliases": [
+        "Pride (Night)"
+      ]
     },
     {
       "id": "escanor_evolved",
       "name": "Hubris (The One)",
-      "aliases": []
+      "aliases": [
+        "Pride (The One)"
+      ]
     },
     {
       "id": "emilia",
       "name": "Ice Lily",
-      "aliases": []
+      "aliases": [
+        "Emili"
+      ]
     },
     {
       "id": "esdeath",
@@ -1369,9 +1770,16 @@
       "aliases": []
     },
     {
+      "id": "geten",
+      "name": "Ice Shaper",
+      "aliases": []
+    },
+    {
       "id": "grimmjow",
       "name": "Iceclaw",
-      "aliases": []
+      "aliases": [
+        "Grim Jaw"
+      ]
     },
     {
       "id": "rebirth_grimmjow_evo",
@@ -1386,47 +1794,65 @@
     {
       "id": "toshiro",
       "name": "Icy Dragon",
-      "aliases": []
+      "aliases": [
+        "Toshin"
+      ]
     },
     {
       "id": "toshiro_evolved",
       "name": "Icy Dragon (Lotus)",
-      "aliases": []
+      "aliases": [
+        "Toshin (Dragon Lotus)"
+      ]
     },
     {
       "id": "hoshino",
       "name": "Idol",
-      "aliases": []
+      "aliases": [
+        "Oshy"
+      ]
     },
     {
       "id": "hoshino_evolved",
       "name": "Idol (Star)",
-      "aliases": []
+      "aliases": [
+        "Oshy (Idol)"
+      ]
     },
     {
       "id": "aizen",
       "name": "Illusionist",
-      "aliases": []
+      "aliases": [
+        "Aizo"
+      ]
     },
     {
       "id": "aizen_evolved",
       "name": "Illusionist (Betrayal)",
-      "aliases": []
+      "aliases": [
+        "Aizo (Betrayal)"
+      ]
     },
     {
       "id": "aizen_chrys",
       "name": "Illusionist (Chrysalis)",
-      "aliases": []
+      "aliases": [
+        "Aizo (Chrysalis)"
+      ]
     },
     {
       "id": "aizen_hog_evolved",
       "name": "Illusionist (Final)",
-      "aliases": []
+      "aliases": [
+        "Aizo (Final)"
+      ]
     },
     {
       "id": "aizen_hog",
       "name": "Illusionist (Fusion)",
-      "aliases": []
+      "aliases": [
+        "Aizo (Fusion)"
+      ]
     },
     {
       "id": "aizen_transcended",
@@ -1436,55 +1862,74 @@
     {
       "id": "dazai",
       "name": "InHuman",
-      "aliases": []
+      "aliases": [
+        "Dazai"
+      ]
     },
     {
       "id": "dazai_evolved",
       "name": "InHuman (Nullifier)",
-      "aliases": []
+      "aliases": [
+        "Dazai (No Longer Human)"
+      ]
     },
     {
       "id": "merlin",
       "name": "Infinity Mage",
-      "aliases": []
+      "aliases": [
+        "Merlyn"
+      ]
     },
     {
       "id": "merlin_evolved",
       "name": "Infinity Mage (Endless)",
-      "aliases": []
+      "aliases": [
+        "Merlyn (Infinity)"
+      ]
     },
     {
       "id": "metal_knight",
       "name": "Iron Knight",
-      "aliases": []
+      "aliases": [
+        "Metal Knight"
+      ]
     },
     {
       "id": "metal_knight_evolved",
       "name": "Iron Knight (Arsenal)",
-      "aliases": []
+      "aliases": [
+        "Metal Knight (Arsenal)"
+      ]
     },
     {
       "id": "itadori",
       "name": "Itukoda",
-      "aliases": []
+      "aliases": [
+        "Itadoki"
+      ]
     },
     {
       "id": "itachi",
       "name": "Izo",
       "aliases": [
         "Itachi",
-        "Itachi Uchiha"
+        "Itachi Uchiha",
+        "Itochi"
       ]
     },
     {
       "id": "itachi_2",
       "name": "Izo (Black Fire)",
-      "aliases": []
+      "aliases": [
+        "Itochi (Amaterasu)"
+      ]
     },
     {
       "id": "itachi_2_evolved",
       "name": "Izo (Samurai)",
-      "aliases": []
+      "aliases": [
+        "Itochi (Susanoo)"
+      ]
     },
     {
       "id": "dio",
@@ -1502,12 +1947,16 @@
     {
       "id": "starrk",
       "name": "Jackal",
-      "aliases": []
+      "aliases": [
+        "Coyote"
+      ]
     },
     {
       "id": "starrk_evolved",
       "name": "Jackal (Alpha)",
-      "aliases": []
+      "aliases": [
+        "Coyote (Primera)"
+      ]
     },
     {
       "id": "jellal",
@@ -1523,6 +1972,7 @@
       "id": "sanji",
       "name": "Joan",
       "aliases": [
+        "Sanjay",
         "Sanji",
         "Vinsmoke Sanji"
       ]
@@ -1552,17 +2002,22 @@
     {
       "id": "josuke_2",
       "name": "Jose (Shining Gem)",
-      "aliases": []
+      "aliases": [
+        "Josuka (Crazy Diamond)"
+      ]
     },
     {
       "id": "josuke_2_evolved",
       "name": "Jose (Unbreakable)",
-      "aliases": []
+      "aliases": [
+        "Josuka (Unbreakable)"
+      ]
     },
     {
       "id": "luffy",
       "name": "Joykid",
       "aliases": [
+        "Luffo",
         "Luffy",
         "Luffy base",
         "Monkey D. Luffy"
@@ -1571,22 +2026,31 @@
     {
       "id": "luffy_g4",
       "name": "Joykid (Bounce)",
-      "aliases": []
+      "aliases": [
+        "Luffo (Bounce)"
+      ]
     },
     {
       "id": "luffy_g4_evolved",
       "name": "Joykid (Mode IV)",
-      "aliases": []
+      "aliases": [
+        "Joykid (Gear IV)",
+        "Luffo (Gear IV)"
+      ]
     },
     {
       "id": "luffy_marineford",
       "name": "Joykid (Navy Bay)",
-      "aliases": []
+      "aliases": [
+        "Luffo (Marine's Ford)"
+      ]
     },
     {
       "id": "caesar",
       "name": "Julias",
-      "aliases": []
+      "aliases": [
+        "Caesar"
+      ]
     },
     {
       "id": "juuzou",
@@ -1616,40 +2080,54 @@
     {
       "id": "luck",
       "name": "Karma",
-      "aliases": []
+      "aliases": [
+        "Lucky"
+      ]
     },
     {
       "id": "luck_evolved",
       "name": "Karma (Thunder Fiend)",
-      "aliases": []
+      "aliases": [
+        "Lucky (Thunder Fiend)"
+      ]
     },
     {
       "id": "kakyoin",
       "name": "Karyn",
       "aliases": [
         "Kakyoin",
+        "Karyoin",
         "Noriaki Kakyoin"
       ]
     },
     {
       "id": "kenshin",
       "name": "Katana",
-      "aliases": []
+      "aliases": [
+        "Kanata",
+        "Kenshi"
+      ]
     },
     {
       "id": "killua",
       "name": "Killer",
-      "aliases": []
+      "aliases": [
+        "Kizzua"
+      ]
     },
     {
       "id": "killua_godspeed_evolved",
       "name": "Killer (Godspeed)",
-      "aliases": []
+      "aliases": [
+        "Kizzua (Godspeed)"
+      ]
     },
     {
       "id": "killua_godspeed",
       "name": "Killer (Whirlwind)",
-      "aliases": []
+      "aliases": [
+        "Kizzua (Whirlwind)"
+      ]
     },
     {
       "id": "gaku",
@@ -1664,35 +2142,46 @@
     {
       "id": "kimimaro",
       "name": "Kimoaro",
-      "aliases": []
+      "aliases": [
+        "Kimomaro"
+      ]
     },
     {
       "id": "meruem_evolved",
       "name": "King Ant",
-      "aliases": []
+      "aliases": [
+        "King Meruam"
+      ]
     },
     {
       "id": "krillin",
       "name": "Kolo",
       "aliases": [
         "Krillin",
+        "Krillo",
         "Kuririn"
       ]
     },
     {
       "id": "kuma_unit",
       "name": "Komo",
-      "aliases": []
+      "aliases": [
+        "Kumo"
+      ]
     },
     {
       "id": "kyoko",
       "name": "Kyko",
-      "aliases": []
+      "aliases": [
+        "Kyoka"
+      ]
     },
     {
       "id": "kyoko_evolved",
       "name": "Kyko (Crimson Spear)",
-      "aliases": []
+      "aliases": [
+        "Kyoka (Scarlet Lance)"
+      ]
     },
     {
       "id": "sakamoto",
@@ -1716,52 +2205,72 @@
     {
       "id": "levi_evolved",
       "name": "Lex Akoman",
-      "aliases": []
+      "aliases": [
+        "Levy Ackman"
+      ]
     },
     {
       "id": "kizaru_unit",
       "name": "Light Admiral",
-      "aliases": []
+      "aliases": [
+        "Kazoru"
+      ]
     },
     {
       "id": "thor",
       "name": "Lightning God",
-      "aliases": []
+      "aliases": [
+        "Thor"
+      ]
     },
     {
       "id": "thor_evolved",
       "name": "Lightning God (Awakened)",
-      "aliases": []
+      "aliases": [
+        "Thor (Awakened)"
+      ]
     },
     {
       "id": "illya",
       "name": "Lilia",
-      "aliases": []
+      "aliases": [
+        "Illy"
+      ]
     },
     {
       "id": "illya_evolved",
       "name": "Lilia (Homunculus)",
-      "aliases": []
+      "aliases": [
+        "Illy (Homunculus)"
+      ]
     },
     {
       "id": "boros_evolved",
       "name": "Lord Alien King",
-      "aliases": []
+      "aliases": [
+        "Lord Boron"
+      ]
     },
     {
       "id": "byakuya",
       "name": "Lotus Samurai",
-      "aliases": []
+      "aliases": [
+        "Bakayua"
+      ]
     },
     {
       "id": "demiurge",
       "name": "Lucifer",
-      "aliases": []
+      "aliases": [
+        "Demiurge"
+      ]
     },
     {
       "id": "demiurge_evolved",
       "name": "Lucifer (Demon Emperor)",
-      "aliases": []
+      "aliases": [
+        "Demiurge (Demon Emperor)"
+      ]
     },
     {
       "id": "lelouch",
@@ -1771,77 +2280,108 @@
     {
       "id": "lelouch_evolved",
       "name": "Lulu (Emperor)",
-      "aliases": []
+      "aliases": [
+        "Lulu (Geass)"
+      ]
     },
     {
       "id": "mirko",
       "name": "Lunar Hare",
-      "aliases": []
+      "aliases": [
+        "Mirka"
+      ]
     },
     {
       "id": "mirko_evolved",
       "name": "Lunar Hare (Tiger)",
-      "aliases": []
+      "aliases": [
+        "Lunar Hare (Tiger Bunny)",
+        "Mirka (Tiger Bunny)"
+      ]
     },
     {
       "id": "lucy",
       "name": "Lyla",
-      "aliases": []
+      "aliases": [
+        "Luci"
+      ]
     },
     {
       "id": "lucy_evolved",
       "name": "Lyla (Celestial)",
-      "aliases": []
+      "aliases": [
+        "Luci (Celestial)"
+      ]
     },
     {
       "id": "asta",
       "name": "Magic Disbeliever",
-      "aliases": []
+      "aliases": [
+        "Asto"
+      ]
     },
     {
       "id": "asta_evolved",
       "name": "Magic Disbeliever (Dark)",
-      "aliases": []
+      "aliases": [
+        "Dark Asto"
+      ]
     },
     {
       "id": "madoka",
       "name": "Magic Girl",
-      "aliases": []
+      "aliases": [
+        "Madoko"
+      ]
     },
     {
       "id": "madoka_evolved",
       "name": "Magic Girl (Salvation)",
-      "aliases": []
+      "aliases": [
+        "Madoko (Salvation)"
+      ]
     },
     {
       "id": "hisoka",
       "name": "Magician",
-      "aliases": []
+      "aliases": [
+        "Hisova"
+      ]
     },
     {
       "id": "akainu",
       "name": "Magma",
-      "aliases": []
+      "aliases": [
+        "Akano"
+      ]
     },
     {
       "id": "rohan",
       "name": "Mangaka",
-      "aliases": []
+      "aliases": [
+        "Rohon"
+      ]
     },
     {
       "id": "rohan_evolved",
       "name": "Mangaka (Artist)",
-      "aliases": []
+      "aliases": [
+        "Rohon (Artist)"
+      ]
     },
     {
       "id": "akaza_unit",
       "name": "Martial Demon",
-      "aliases": []
+      "aliases": [
+        "Akoku"
+      ]
     },
     {
       "id": "akaza_unit_evolved",
       "name": "Martial Demon (Destruction)",
-      "aliases": []
+      "aliases": [
+        "Akoku (Destruction)"
+      ]
     },
     {
       "id": "madara",
@@ -1855,12 +2395,16 @@
     {
       "id": "madara_evolved",
       "name": "Mazara (Founder)",
-      "aliases": []
+      "aliases": [
+        "Marada (Founder)"
+      ]
     },
     {
       "id": "frieza_mecha",
       "name": "Mecha Tyrant",
-      "aliases": []
+      "aliases": [
+        "Mecha Freezo"
+      ]
     },
     {
       "id": "stain",
@@ -1875,37 +2419,51 @@
     {
       "id": "isagi",
       "name": "Messi",
-      "aliases": []
+      "aliases": [
+        "Isago"
+      ]
     },
     {
       "id": "mami",
       "name": "Millie",
-      "aliases": []
+      "aliases": [
+        "Mamy"
+      ]
     },
     {
       "id": "mami_evolved",
       "name": "Millie (Holy)",
-      "aliases": []
+      "aliases": [
+        "Mamy (Holy)"
+      ]
     },
     {
       "id": "yuta",
       "name": "Mimic Sorcerer",
-      "aliases": []
+      "aliases": [
+        "Yuto"
+      ]
     },
     {
       "id": "yuta_evolved",
       "name": "Mimic Sorcerer (Cursed Child)",
-      "aliases": []
+      "aliases": [
+        "Yuto (Cursed Child)"
+      ]
     },
     {
       "id": "haku",
       "name": "Mirror Ninja",
-      "aliases": []
+      "aliases": [
+        "Haka"
+      ]
     },
     {
       "id": "haku_evolved",
       "name": "Mirror Ninja (Reflection)",
-      "aliases": []
+      "aliases": [
+        "Haka (Reflection)"
+      ]
     },
     {
       "id": "zabuza",
@@ -1920,27 +2478,37 @@
     {
       "id": "katakuri_evolved",
       "name": "Mochi (Rage)",
-      "aliases": []
+      "aliases": [
+        "Mochi Charlot"
+      ]
     },
     {
       "id": "zeke",
       "name": "Monkey",
-      "aliases": []
+      "aliases": [
+        "Zeike"
+      ]
     },
     {
       "id": "moria",
       "name": "Morbid",
-      "aliases": []
+      "aliases": [
+        "Moriu"
+      ]
     },
     {
       "id": "moria_evolved",
       "name": "Morbid (Shadow Lord)",
-      "aliases": []
+      "aliases": [
+        "Moriu (Shadow Lord)"
+      ]
     },
     {
       "id": "luffy_nightmare",
       "name": "Nightmare Joykid",
-      "aliases": []
+      "aliases": [
+        "Nightmare Luffo"
+      ]
     },
     {
       "id": "noro",
@@ -1950,97 +2518,135 @@
     {
       "id": "law",
       "name": "Operator",
-      "aliases": []
+      "aliases": [
+        "Lao"
+      ]
     },
     {
       "id": "law_2",
       "name": "Operator (Heart)",
-      "aliases": []
+      "aliases": [
+        "Lao (Heart)"
+      ]
     },
     {
       "id": "law_2_evolved",
       "name": "Operator (ROOM)",
-      "aliases": []
+      "aliases": [
+        "Lao (ROOM)"
+      ]
     },
     {
       "id": "konan_unit",
       "name": "Origami",
-      "aliases": []
+      "aliases": [
+        "Komon"
+      ]
     },
     {
       "id": "konan_unit_evolved",
       "name": "Origami (Paper Angel)",
-      "aliases": []
+      "aliases": [
+        "Komon (Paper Angel)"
+      ]
     },
     {
       "id": "kenpachi",
       "name": "Packy",
-      "aliases": []
+      "aliases": [
+        "Kenpaki"
+      ]
     },
     {
       "id": "kenpachi_evolved",
       "name": "Packy (Maniac)",
-      "aliases": []
+      "aliases": [
+        "Kenpaki (Maniac)"
+      ]
     },
     {
       "id": "gojo",
       "name": "Paradox",
-      "aliases": []
+      "aliases": [
+        "Goju"
+      ]
     },
     {
       "id": "gojo_evolved",
       "name": "Paradox (Divine Sight)",
-      "aliases": []
+      "aliases": [
+        "Goju (Six Eyes)"
+      ]
     },
     {
       "id": "angel_devil",
       "name": "Paragon",
-      "aliases": []
+      "aliases": [
+        "Angel"
+      ]
     },
     {
       "id": "angel_devil_evolved",
       "name": "Paragon (Devil)",
-      "aliases": []
+      "aliases": [
+        "Angel (Devil)"
+      ]
     },
     {
       "id": "roger",
       "name": "Pirate King",
-      "aliases": []
+      "aliases": [
+        "Roger"
+      ]
     },
     {
       "id": "roger_evolved",
       "name": "Pirate King (Final)",
-      "aliases": []
+      "aliases": [
+        "Roger (Pirate King)"
+      ]
     },
     {
       "id": "cranel",
       "name": "Player",
-      "aliases": []
+      "aliases": [
+        "Bell"
+      ]
     },
     {
       "id": "cranel_evolved",
       "name": "Player (Argus)",
-      "aliases": []
+      "aliases": [
+        "Bell (Argonaut)"
+      ]
     },
     {
       "id": "netero",
       "name": "Prayer Master",
-      "aliases": []
+      "aliases": [
+        "Neteru"
+      ]
     },
     {
       "id": "pucci",
       "name": "Priest",
-      "aliases": []
+      "aliases": [
+        "Puchi"
+      ]
     },
     {
       "id": "pucci_heaven",
       "name": "Priest (Heaven)",
-      "aliases": []
+      "aliases": [
+        "Puchi (Heaven)"
+      ]
     },
     {
       "id": "pucci_cmoon",
       "name": "Priest (New Moon)",
-      "aliases": []
+      "aliases": [
+        "Puchi (New Moon)"
+      ]
     },
     {
       "id": "all_might",
@@ -2069,32 +2675,45 @@
     {
       "id": "yoshino",
       "name": "Puppet Girl",
-      "aliases": []
+      "aliases": [
+        "Yoshina"
+      ]
     },
     {
       "id": "yoshino_evolved",
       "name": "Puppet Girl (Spirit)",
-      "aliases": []
+      "aliases": [
+        "Yoshina (Spirit)"
+      ]
     },
     {
       "id": "kento",
       "name": "Ratio",
-      "aliases": []
+      "aliases": [
+        "Kent"
+      ]
     },
     {
       "id": "kento_evolved",
       "name": "Ratio (Overtime)",
-      "aliases": []
+      "aliases": [
+        "Kent (Overtime)"
+      ]
     },
     {
       "id": "sabo",
       "name": "Rebel",
-      "aliases": []
+      "aliases": [
+        "Saby"
+      ]
     },
     {
       "id": "sabo_evolved",
       "name": "Rebel (Flame Ruler)",
-      "aliases": []
+      "aliases": [
+        "Rebel (Flame Emperor)",
+        "Saby (Flame Emperor)"
+      ]
     },
     {
       "id": "shanks",
@@ -2109,12 +2728,16 @@
     {
       "id": "koichi",
       "name": "Reliable Student",
-      "aliases": []
+      "aliases": [
+        "Koichy"
+      ]
     },
     {
       "id": "koichi_evolved",
       "name": "Reliable Student (Echoes)",
-      "aliases": []
+      "aliases": [
+        "Koichy (Echoes)"
+      ]
     },
     {
       "id": "renji",
@@ -2133,101 +2756,139 @@
     {
       "id": "rias",
       "name": "Riony",
-      "aliases": []
+      "aliases": [
+        "Ria"
+      ]
     },
     {
       "id": "rias_evolved",
       "name": "Riony (Devil Princess)",
-      "aliases": []
+      "aliases": [
+        "Ria (Devil Princess)"
+      ]
     },
     {
       "id": "mechamaru",
       "name": "Robot Sorcerer",
-      "aliases": []
+      "aliases": [
+        "Robot Sorceror"
+      ]
     },
     {
       "id": "saiki",
       "name": "Saickik",
-      "aliases": []
+      "aliases": [
+        "Saicky"
+      ]
     },
     {
       "id": "daki",
       "name": "Saka",
-      "aliases": []
+      "aliases": [
+        "Daky"
+      ]
     },
     {
       "id": "daki_evolved",
       "name": "Saka (Ribbon)",
-      "aliases": []
+      "aliases": [
+        "Daky (Obi)"
+      ]
     },
     {
       "id": "sayaka",
       "name": "Saki",
-      "aliases": []
+      "aliases": [
+        "Sayako"
+      ]
     },
     {
       "id": "sayaka_evolved",
       "name": "Saki (Cyanblade)",
-      "aliases": []
+      "aliases": [
+        "Sayako (Sapphire Blade)"
+      ]
     },
     {
       "id": "gaara",
       "name": "Sand Ninja",
       "aliases": [
-        "Gaara"
+        "Gaara",
+        "Gaaro"
       ]
     },
     {
       "id": "crocodile",
       "name": "Sandy",
-      "aliases": []
+      "aliases": [
+        "Croc"
+      ]
     },
     {
       "id": "izumi",
       "name": "Scarlet Slayer",
-      "aliases": []
+      "aliases": [
+        "Izu"
+      ]
     },
     {
       "id": "izumi_evolved",
       "name": "Scarlet Slayer (Cursed Frost)",
-      "aliases": []
+      "aliases": [
+        "Izu (Demon Snow)"
+      ]
     },
     {
       "id": "dabi",
       "name": "Scorch",
       "aliases": [
-        "Dabi"
+        "Dabi",
+        "Dabo"
       ]
     },
     {
       "id": "poseidon",
       "name": "Sea God",
-      "aliases": []
+      "aliases": [
+        "Poseidon"
+      ]
     },
     {
       "id": "poseidon_evolved",
       "name": "Sea God (Tyrant of the Seas)",
-      "aliases": []
+      "aliases": [
+        "Poseidon (Tyrant of the Seas)"
+      ]
     },
     {
       "id": "gyutaro",
       "name": "Sepsis",
-      "aliases": []
+      "aliases": [
+        "Gyutaru"
+      ]
     },
     {
       "id": "gyutaro_evolved",
       "name": "Sepsis (Moon)",
-      "aliases": []
+      "aliases": [
+        "Gyutaru (Moon)"
+      ]
     },
     {
       "id": "megumi",
       "name": "Shadow Sorcerer",
-      "aliases": []
+      "aliases": [
+        "Megomu",
+        "Shade Sorceror"
+      ]
     },
     {
       "id": "megumi_evolved",
       "name": "Shadow Sorcerer (Hybrid Shadow)",
-      "aliases": []
+      "aliases": [
+        "Megomu (Chimera Shadow)",
+        "Shade Sorceror (Hybrid Shadow)"
+      ]
     },
     {
       "id": "megumi_2",
@@ -2242,85 +2903,116 @@
     {
       "id": "homura",
       "name": "Shadowgirl",
-      "aliases": []
+      "aliases": [
+        "Homuru"
+      ]
     },
     {
       "id": "homura_evolved",
       "name": "Shadowgirl (Time Traveller)",
-      "aliases": []
+      "aliases": [
+        "Homuru (Time Traveller)"
+      ]
     },
     {
       "id": "kisame_unit",
       "name": "Sharkfin",
-      "aliases": []
+      "aliases": [
+        "Kizume"
+      ]
     },
     {
       "id": "kisame_unit_evolved",
       "name": "Sharkfin (Tailless Beast)",
-      "aliases": []
+      "aliases": [
+        "Kizume (Tailless Beast)"
+      ]
     },
     {
       "id": "shinkiro",
       "name": "Shinjira",
-      "aliases": []
+      "aliases": [
+        "Shinkura"
+      ]
     },
     {
       "id": "sasuke",
       "name": "Shinobi",
       "aliases": [
         "Sasuke",
-        "Sasuke Uchiha"
+        "Sasuke Uchiha",
+        "Sosuke"
       ]
     },
     {
       "id": "sasuke_3",
       "name": "Shinobi (Awakened)",
-      "aliases": []
+      "aliases": [
+        "Sosuke (Awakened)"
+      ]
     },
     {
       "id": "sasuke_3_evolved",
       "name": "Shinobi (Eternal)",
-      "aliases": []
+      "aliases": [
+        "Sosuke (Eternal)"
+      ]
     },
     {
       "id": "sasuke_2",
       "name": "Shinobi (Hood)",
-      "aliases": []
+      "aliases": [
+        "Sosuke (Hebi)"
+      ]
     },
     {
       "id": "sasuke_2_evolved",
       "name": "Shinobi (Storm)",
-      "aliases": []
+      "aliases": [
+        "Sosuke (Storm)"
+      ]
     },
     {
       "id": "shisui",
       "name": "Shizo",
-      "aliases": []
+      "aliases": [
+        "Shisu"
+      ]
     },
     {
       "id": "shisui_evolved",
       "name": "Shizo (Flicker)",
-      "aliases": []
+      "aliases": [
+        "Shisu (Flicker)"
+      ]
     },
     {
       "id": "yuma",
       "name": "Shrimp",
-      "aliases": []
+      "aliases": [
+        "Yumo"
+      ]
     },
     {
       "id": "yuma_evolved",
       "name": "Shrimp (White Terror)",
-      "aliases": []
+      "aliases": [
+        "Yumo (White Nightmare)"
+      ]
     },
     {
       "id": "toge",
       "name": "Silent",
-      "aliases": []
+      "aliases": [
+        "Togu"
+      ]
     },
     {
       "id": "rayleigh",
       "name": "Silver King",
-      "aliases": []
+      "aliases": [
+        "Raylay"
+      ]
     },
     {
       "id": "ragna",
@@ -2345,32 +3037,44 @@
     {
       "id": "ghiaccio",
       "name": "Skater",
-      "aliases": []
+      "aliases": [
+        "Ghacco"
+      ]
     },
     {
       "id": "ghiaccio_evolved",
       "name": "Skater (Album)",
-      "aliases": []
+      "aliases": [
+        "Ghacco (Album)"
+      ]
     },
     {
       "id": "brook",
       "name": "Skeleton",
-      "aliases": []
+      "aliases": [
+        "Broke"
+      ]
     },
     {
       "id": "brook_evolved",
       "name": "Skeleton (Soul King)",
-      "aliases": []
+      "aliases": [
+        "Broke (Soul King)"
+      ]
     },
     {
       "id": "skull_knight",
       "name": "Skeleton Knight",
-      "aliases": []
+      "aliases": [
+        "Skull Knight"
+      ]
     },
     {
       "id": "skull_knight_evolved",
       "name": "Skeleton Knight (King)",
-      "aliases": []
+      "aliases": [
+        "Skull Knight (King)"
+      ]
     },
     {
       "id": "smoker_unit",
@@ -2390,7 +3094,9 @@
     {
       "id": "rukia",
       "name": "Snow Reaper",
-      "aliases": []
+      "aliases": [
+        "Ruki"
+      ]
     },
     {
       "id": "rukia_2_evo",
@@ -2425,12 +3131,16 @@
     {
       "id": "lancer",
       "name": "Spearer",
-      "aliases": []
+      "aliases": [
+        "Lancer"
+      ]
     },
     {
       "id": "lancer_evolved",
       "name": "Spearer (Child of Light)",
-      "aliases": []
+      "aliases": [
+        "Lancer (Child of Light)"
+      ]
     },
     {
       "id": "feitan",
@@ -2445,12 +3155,16 @@
     {
       "id": "uryu",
       "name": "Spirit Archer",
-      "aliases": []
+      "aliases": [
+        "Uru"
+      ]
     },
     {
       "id": "uryu_evolved",
       "name": "Spirit Archer (Reversal)",
-      "aliases": []
+      "aliases": [
+        "Uru (Antithesis)"
+      ]
     },
     {
       "id": "ichigo",
@@ -2464,32 +3178,44 @@
     {
       "id": "ichigo_mugetsu",
       "name": "Spirit Reaper (Dusk)",
-      "aliases": []
+      "aliases": [
+        "Ichi (Dusk)"
+      ]
     },
     {
       "id": "ichigo_mugetsu_evolved",
       "name": "Spirit Reaper (Final Dusk)",
-      "aliases": []
+      "aliases": [
+        "Ichi (Final Dusk)"
+      ]
     },
     {
       "id": "ichigo_hollow",
       "name": "Spirit Reaper (Full Hollow)",
-      "aliases": []
+      "aliases": [
+        "Ichi (Full Hollow)"
+      ]
     },
     {
       "id": "ichigo_mask",
       "name": "Spirit Reaper (Masked)",
-      "aliases": []
+      "aliases": [
+        "Ichi (Masked)"
+      ]
     },
     {
       "id": "chika",
       "name": "Spirit Sniper",
-      "aliases": []
+      "aliases": [
+        "Chiko"
+      ]
     },
     {
       "id": "chika_evolved",
       "name": "Spirit Sniper (Prodigy)",
-      "aliases": []
+      "aliases": [
+        "Chiko (Trion Prodigy)"
+      ]
     },
     {
       "id": "starrk_wolf_unit",
@@ -2499,22 +3225,30 @@
     {
       "id": "buggy",
       "name": "Stitches",
-      "aliases": []
+      "aliases": [
+        "Buggy"
+      ]
     },
     {
       "id": "doflamingo",
       "name": "Stringy",
-      "aliases": []
+      "aliases": [
+        "Flamingo"
+      ]
     },
     {
       "id": "doflamingo_evolved",
       "name": "Stringy (Awakened)",
-      "aliases": []
+      "aliases": [
+        "Flamingo (Awakened)"
+      ]
     },
     {
       "id": "broly_evolved",
       "name": "Super Bro",
-      "aliases": []
+      "aliases": [
+        "Super Brulo"
+      ]
     },
     {
       "id": "trunks_evolved",
@@ -2522,19 +3256,32 @@
       "aliases": []
     },
     {
+      "id": "sonic",
+      "name": "Supersound",
+      "aliases": [
+        "Sonic"
+      ]
+    },
+    {
       "id": "sonic_evolved",
       "name": "Supersound (Speed)",
-      "aliases": []
+      "aliases": [
+        "Sonic (Speed)"
+      ]
     },
     {
       "id": "ainz",
       "name": "Supreme Being",
-      "aliases": []
+      "aliases": [
+        "Anz"
+      ]
     },
     {
       "id": "ainz_evolved",
       "name": "Supreme Being (Sovereign)",
-      "aliases": []
+      "aliases": [
+        "Anz (Overlord)"
+      ]
     },
     {
       "id": "aot_generic",
@@ -2544,7 +3291,9 @@
     {
       "id": "shinji",
       "name": "Swingo",
-      "aliases": []
+      "aliases": [
+        "Shingo"
+      ]
     },
     {
       "id": "nagumo",
@@ -2559,27 +3308,44 @@
     {
       "id": "saber",
       "name": "Sword Queen",
-      "aliases": []
+      "aliases": [
+        "Saber"
+      ]
     },
     {
       "id": "saber_evolved",
       "name": "Sword Queen (Knight)",
-      "aliases": []
+      "aliases": [
+        "Saber (Promised Sword)"
+      ]
     },
     {
       "id": "tsuna",
       "name": "Takamu",
-      "aliases": []
+      "aliases": [
+        "Tuna"
+      ]
     },
     {
       "id": "tsuna_evolved",
       "name": "Takamu (Reborn)",
-      "aliases": []
+      "aliases": [
+        "Tuna (Reborn)"
+      ]
+    },
+    {
+      "id": "tatsumaki",
+      "name": "Tamiki",
+      "aliases": [
+        "Tatsumiki"
+      ]
     },
     {
       "id": "tatsumaki_evolved",
       "name": "Tamiki (Tornado)",
-      "aliases": []
+      "aliases": [
+        "Tatsumiki (Tornado)"
+      ]
     },
     {
       "id": "tengen",
@@ -2589,7 +3355,9 @@
     {
       "id": "tengen_2_evolved",
       "name": "Tango (Flash God)",
-      "aliases": []
+      "aliases": [
+        "Tango (God of Flashiness)"
+      ]
     },
     {
       "id": "tengen_2",
@@ -2609,47 +3377,66 @@
     {
       "id": "tatsumi",
       "name": "Tattermo",
-      "aliases": []
+      "aliases": [
+        "Tatsumo"
+      ]
     },
     {
       "id": "narberal",
       "name": "Thunder Maid",
-      "aliases": []
+      "aliases": [
+        "Narbera"
+      ]
     },
     {
       "id": "narberal_evolved",
       "name": "Thunder Maid (Servant)",
-      "aliases": []
+      "aliases": [
+        "Narbera (Battle Maid)"
+      ]
     },
     {
       "id": "atsushi",
       "name": "Tiger",
-      "aliases": []
+      "aliases": [
+        "Asushi"
+      ]
     },
     {
       "id": "atsushi_evolved",
       "name": "Tiger (Moonlight Beast)",
-      "aliases": []
+      "aliases": [
+        "Asushi (Moonlight Beast)"
+      ]
     },
     {
       "id": "julius",
       "name": "Time Wizard",
-      "aliases": []
+      "aliases": [
+        "Julio"
+      ]
     },
     {
       "id": "julius_evolved",
       "name": "Time Wizard (Chronos)",
-      "aliases": []
+      "aliases": [
+        "Julio (Wizard King)",
+        "Time Wizard (Chrono)"
+      ]
     },
     {
       "id": "jiraiya",
       "name": "Toad Sensei",
-      "aliases": []
+      "aliases": [
+        "Jirayo"
+      ]
     },
     {
       "id": "jiraiya_evolved",
       "name": "Toad Sensei (Toad Sage)",
-      "aliases": []
+      "aliases": [
+        "Jirayo (Toad Sage)"
+      ]
     },
     {
       "id": "obito",
@@ -2664,37 +3451,50 @@
     {
       "id": "kisuke",
       "name": "Trickster",
-      "aliases": []
+      "aliases": [
+        "Kisoko"
+      ]
     },
     {
       "id": "kisuke_evolved",
       "name": "Trickster (Release)",
-      "aliases": []
+      "aliases": [
+        "Kisoko (Bankai)"
+      ]
     },
     {
       "id": "roshi",
       "name": "Turtle Master",
-      "aliases": []
+      "aliases": [
+        "Roshy"
+      ]
     },
     {
       "id": "frieza",
       "name": "Tyrant (Final)",
-      "aliases": []
+      "aliases": [
+        "Freezo (Final)"
+      ]
     },
     {
       "id": "cid",
       "name": "Umbra",
-      "aliases": []
+      "aliases": [
+        "Zid"
+      ]
     },
     {
       "id": "cid_evolved",
       "name": "Umbra (Nuclear)",
-      "aliases": []
+      "aliases": [
+        "Zid (Shadow)"
+      ]
     },
     {
       "id": "eren",
       "name": "Usurper",
       "aliases": [
+        "Erein",
         "Eren",
         "Eren Jaeger",
         "Eren Yeager"
@@ -2703,35 +3503,46 @@
     {
       "id": "eren_final",
       "name": "Usurper (Founder)",
-      "aliases": []
+      "aliases": [
+        "Erein (Founder)"
+      ]
     },
     {
       "id": "vegeta",
       "name": "Vego",
       "aliases": [
         "Vegeta",
-        "Vegeta base"
+        "Vegeta base",
+        "Vegita"
       ]
     },
     {
       "id": "vegeta_majin_evolved",
       "name": "Vego (Mage II)",
-      "aliases": []
+      "aliases": [
+        "Vegita (Majin II)"
+      ]
     },
     {
       "id": "vegeta_majin",
       "name": "Vego (Mage)",
-      "aliases": []
+      "aliases": [
+        "Vegita (Majin)"
+      ]
     },
     {
       "id": "vegeta_super_evolved",
       "name": "Vego (Super II)",
-      "aliases": []
+      "aliases": [
+        "Vegita (Super II)"
+      ]
     },
     {
       "id": "vegeta_super",
       "name": "Vego (Super)",
-      "aliases": []
+      "aliases": [
+        "Vegita (Super)"
+      ]
     },
     {
       "id": "rokuhira",
@@ -2749,7 +3560,8 @@
       "aliases": [
         "Deku",
         "Izuku Midoriya",
-        "Midoriya"
+        "Midoriya",
+        "Verdent Hero"
       ]
     },
     {
@@ -2775,42 +3587,59 @@
     {
       "id": "klein",
       "name": "Virtual Samurai",
-      "aliases": []
+      "aliases": [
+        "Klay"
+      ]
     },
     {
       "id": "klein_evolved",
       "name": "Virtual Samurai (Bachelor)",
-      "aliases": []
+      "aliases": [
+        "Klay (Bachelor)"
+      ]
     },
     {
       "id": "ulquiorra",
       "name": "Void Spear",
-      "aliases": []
+      "aliases": [
+        "Ulquiro"
+      ]
     },
     {
       "id": "ulquiorra_evolved",
       "name": "Void Spear (Revival)",
-      "aliases": []
+      "aliases": [
+        "Ulquiro (Resurrección)"
+      ]
     },
     {
       "id": "soifon",
       "name": "Wasp",
-      "aliases": []
+      "aliases": [
+        "Soi Fan"
+      ]
     },
     {
       "id": "soifon_evolved",
       "name": "Wasp (Hornet)",
-      "aliases": []
+      "aliases": [
+        "Soi Fan (Hornet)"
+      ]
     },
     {
       "id": "bang",
       "name": "Waterfist",
-      "aliases": []
+      "aliases": [
+        "Bang"
+      ]
     },
     {
       "id": "bang_evolved",
       "name": "Waterfist (White Tooth)",
-      "aliases": []
+      "aliases": [
+        "Bang (Silver Fang)",
+        "Waterfist (Silver Fang)"
+      ]
     },
     {
       "id": "dominico",
@@ -2820,22 +3649,30 @@
     {
       "id": "nami",
       "name": "Weather Girl",
-      "aliases": []
+      "aliases": [
+        "Navi"
+      ]
     },
     {
       "id": "nami_evolved",
       "name": "Weather Girl (Thief)",
-      "aliases": []
+      "aliases": [
+        "Navi (Thief)"
+      ]
     },
     {
       "id": "gin",
       "name": "White Snake",
-      "aliases": []
+      "aliases": [
+        "Ging"
+      ]
     },
     {
       "id": "gin_evolved",
       "name": "White Snake (Sacred Spear)",
-      "aliases": []
+      "aliases": [
+        "Ging (Sacred Spear)"
+      ]
     },
     {
       "id": "whitebeard",
@@ -2845,34 +3682,46 @@
     {
       "id": "wendy",
       "name": "Wind Dragon",
-      "aliases": []
+      "aliases": [
+        "Wenda"
+      ]
     },
     {
       "id": "nejire",
       "name": "Windspire",
-      "aliases": []
+      "aliases": [
+        "Nejiri",
+        "WindSpire"
+      ]
     },
     {
       "id": "meliodas",
       "name": "Wratho",
-      "aliases": []
+      "aliases": [
+        "Melio"
+      ]
     },
     {
       "id": "meliodas_evolved",
       "name": "Wratho (Assault)",
-      "aliases": []
+      "aliases": [
+        "Melio (Assault)"
+      ]
     },
     {
       "id": "jin_mori",
       "name": "Wukong",
-      "aliases": []
+      "aliases": [
+        "Ji Mo Ri"
+      ]
     },
     {
       "id": "zenitsu",
       "name": "Zapstu",
       "aliases": [
         "Zenitsu",
-        "Zenitsu Agatsuma"
+        "Zenitsu Agatsuma",
+        "Zennu"
       ]
     },
     {
@@ -2897,7 +3746,9 @@
     {
       "id": "mihawk",
       "name": "Zorrawk",
-      "aliases": []
+      "aliases": [
+        "Mivawk"
+      ]
     }
   ]
 }

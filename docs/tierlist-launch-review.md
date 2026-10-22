@@ -8,7 +8,7 @@ ou configuração obrigatória. O chat global continua em breve.
 
 - A mensagem permanente continua com um PNG, sem legenda, botões ou rodapé técnico.
   Enquetes temporárias aparecem no mesmo canal enquanto há uma proposta.
-- O tópico reúne resultados completos, revisões e histórico. Membros usam
+- O tópico reúne enquetes, resultados e histórico. Membros usam
   Sugerir imagem, Meus envios e Como funciona. Respostas pessoais são privadas.
 - Administradores preparam ou conferem o próprio painel. Revisão global,
   correções, diagnóstico e testes continuam exclusivos do dono do aplicativo.
@@ -19,9 +19,9 @@ ou configuração obrigatória. O chat global continua em breve.
 
 ## Catálogo e imagens
 
-O catálogo histórico conserva **549 identidades**. A política explícita de
-disponibilidade exclui **25 formas** pelo critério do dono de descartar as
-silhuetas azuis substitutas, restando **524 formas ativas**. Há **453 retratos
+O catálogo histórico conserva **555 identidades**. A política explícita de
+disponibilidade exclui **26 formas** pelo critério do dono de descartar as
+silhuetas azuis substitutas, restando **529 formas ativas**. Há **458 retratos
 disponíveis e 71 pendências iniciais**, antes de sugestões aprovadas na hospedagem.
 
 Das exclusões, 23 já estavam entre as pendências anteriores. Gravity Hero tinha
@@ -38,7 +38,7 @@ classificação existente, a migração cria uma revisão auditada e mantém a o
 relativa das demais; preserva snapshots, votos e histórico anterior. Não cria
 posições para preencher a imagem de estreia.
 
-Os 453 arquivos ativos passaram por abertura/verificação e conferência de
+Os 458 arquivos ativos passaram por abertura/verificação e conferência de
 transparência não vazia. Isso valida os arquivos, sem comprovar balanceamento
 ou substituir a revisão da forma/skin no jogo. Retratos aprovados recebem
 conferência de hash; arquivos ausentes/corrompidos não escondem pendências. Uma
@@ -172,14 +172,22 @@ adivinha colocação/função a partir de letras ou da antiga grade. Reversões
 respeitam modo/versão e não atravessam formatos incompatíveis. A retenção
 sempre conserva a versão atual de cada modo, mesmo com inatividade prolongada.
 
-O ponto de partida é **a referência parcial da Wiki**, revisão 46773 de
-18/04/2025: **37 formas em cada modo**. Não foi confirmada como a revisão mais
-recente nesta execução. A página avisa que pode estar imprecisa. Existem
-76 entradas (47 nomes distintos) sem correspondência exata comprovada; não
-foram associadas por aproximação. Uma entrada de forma retirada foi excluída.
-A origem e a limitação aparecem no tópico. A importação é única e não cria
-votos; listas existentes e correções humanas não são substituídas. O script
-reproduz a base com os snapshots, identidades e redirecionamentos registrados.
+O ponto de partida é a revisão 46773 da Wiki de 18/04/2025, confirmada na
+API em 22/10/2026: **71 formas em Infinite e 76 em Casual**. A auditoria
+identificou todas as 151 entradas: 147 ativas e quatro ocorrências de formas
+retiradas. Não restam nomes pendentes nessa fonte. A página ainda alerta
+para possível imprecisão. A comprovação de identidades não valida o balanceamento.
+
+Os antigos nomes foram vinculados pelos IDs nas revisões 33578 e 43960 do
+módulo Names. A leitura de aspas simples recuperou seis formas; Ice Shaper
+tem a silhueta azul e fica retirado. Cinco novos retratos válidos foram
+incluídos. A auditoria detalhada está em tierlist-catalog-audit.md.
+
+A base inicial e as correções administrativas não entram no histórico
+público. A atualização remove somente cópias antigas verificadas, mantendo
+os registros internos. A complementação automática só atua numa base inicial
+ainda intacta e sem enquete aberta. Decisões da comunidade e correções humanas
+são preservadas. Reiniciar não repete a importação nem fabrica votos.
 
 Os cards usam Components V2 com seções, separadores, galerias, arquivos e
 controles nativos. O PNG não tem cartão nem rodapé. Ícones originais só são
@@ -188,15 +196,16 @@ usam Labels, upload e seleção de modo na correção. Os dados técnicos ficam
 privados. Os anexos V2 são lidos dos componentes mesmo quando a API deixa
 Message.attachments vazio; os bytes/hash são conferidos.
 
-- **551 testes automatizados**, incluindo categorias/migração, protocolo V2,
+- **562 testes automatizados**, incluindo categorias/migração, protocolo V2,
   separação por modo, retenção, referência inicial e pacote de IA com fontes
   reais dentro da mesma cota de entrada. O prompt foi compactado, preservando
   as verificações locais e sem aumentar o orçamento gratuito.
-- **14 verificações na API real**, em dois espaços privados autorizados:
+- **17 verificações na API real**, em dois espaços privados autorizados:
   índice convertido na mesma mensagem, enquete/atalhos, atualização sem
   duplicação, participantes, resultado arquivado, alteração só em Casual, PNG
   editado/baixado, retenção/limpeza após reinício, dez etapas visuais, cinco
-  transições de TXT e cartões V2.
+  transições de TXT e cartões V2. A nova conferência removeu cópias administrativas
+  legadas/V2, preservou auditoria/posições/votos e confirmou o índice sem links técnicos.
 - Estado temporário com votos artificiais identificados, sem Gateway extra,
   chamadas à Groq ou mudanças na classificação oficial. API não reproduz
   aparência nos aplicativos, seleção humana de arquivo ou qualidade dos

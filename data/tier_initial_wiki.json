@@ -66,6 +66,13 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
       },
       {
+        "source_name": "Asushi (Moonlight Beast)",
+        "tier": "META_GROUND",
+        "line": 218,
+        "unit_id": "atsushi_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Gas (Toxic)",
         "tier": "META_GROUND",
         "line": 235,
@@ -73,11 +80,25 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Gas_%28Toxic%29?oldid=46085"
       },
       {
+        "source_name": "Noruto (Six Tails)",
+        "tier": "META_GROUND",
+        "line": 252,
+        "unit_id": "naruto_6tails",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Ashborn (Decay)",
         "tier": "META_GROUND",
         "line": 270,
         "unit_id": "shigaraki_evolved",
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+      },
+      {
+        "source_name": "Daky (Obi)",
+        "tier": "META_GROUND",
+        "line": 286,
+        "unit_id": "daki_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
       },
       {
         "source_name": "Vego (Mage II)",
@@ -105,7 +126,7 @@
         "tier": "META_SUPPORT",
         "line": 346,
         "unit_id": "wendy",
-        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=43960"
       },
       {
         "source_name": "Commander",
@@ -115,10 +136,31 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
       },
       {
+        "source_name": "Lao (ROOM)",
+        "tier": "META_SUPPORT",
+        "line": 370,
+        "unit_id": "law_2_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Shadowgirl (Time Traveller)",
         "tier": "META_SUPPORT",
         "line": 386,
         "unit_id": "homura_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+      },
+      {
+        "source_name": "Bloodcry (Bloodfallen)",
+        "tier": "META_SUPPORT",
+        "line": 403,
+        "unit_id": "shalltear_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=43960"
+      },
+      {
+        "source_name": "Blood (Unleashed)",
+        "tier": "META_SUPPORT",
+        "line": 419,
+        "unit_id": "power_evolved",
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
       },
       {
@@ -155,6 +197,13 @@
         "line": 502,
         "unit_id": "lelouch_evolved",
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+      },
+      {
+        "source_name": "Kiro (Bites the Dust)",
+        "tier": "META_SUPPORT",
+        "line": 517,
+        "unit_id": "kira_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
       },
       {
         "source_name": "Red Scar (Conqueror)",
@@ -241,6 +290,20 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Umbra_%28Nuclear%29?oldid=45611"
       },
       {
+        "source_name": "Poseidon (Tyrant of the Seas)",
+        "tier": "GOOD_HILL",
+        "line": 731,
+        "unit_id": "poseidon_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Aizo (Final)",
+        "tier": "GOOD_HILL",
+        "line": 748,
+        "unit_id": "aizen_hog_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Tango (Flash God)",
         "tier": "GOOD_HILL",
         "line": 764,
@@ -248,11 +311,46 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
       },
       {
+        "source_name": "Archer (Heroic Spirit)",
+        "tier": "GOOD_HILL",
+        "line": 779,
+        "unit_id": "archer_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Komon (Paper Angel)",
         "tier": "GOOD_HILL",
         "line": 798,
         "unit_id": "konan_unit_evolved",
-        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Fiend Girl (Butterfly)",
+        "tier": "GOOD_HILL",
+        "line": 817,
+        "unit_id": "hinami_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=43960"
+      },
+      {
+        "source_name": "Chuyo (Corruption)",
+        "tier": "GOOD_HILL",
+        "line": 837,
+        "unit_id": "chuya_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Medae (Witch of Betrayal)",
+        "tier": "GOOD_HILL",
+        "line": 872,
+        "unit_id": "medea_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Demiurge (Demon Emperor)",
+        "tier": "GOOD_HILL",
+        "line": 887,
+        "unit_id": "demiurge_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
       },
       {
         "source_name": "Golden Tyrant (Emperor)",
@@ -262,11 +360,151 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
       },
       {
+        "source_name": "Conrod (Wizard King)",
+        "tier": "GOOD_HILL",
+        "line": 917,
+        "unit_id": "conrad_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Captain (God)",
         "tier": "GOOD_HILL",
         "line": 932,
         "unit_id": "usopp_ts_evolved",
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+      },
+      {
+        "source_name": "Roger (Pirate King)",
+        "tier": "GOOD_GROUND",
+        "line": 951,
+        "unit_id": "roger_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Saber (Promised Sword)",
+        "tier": "GOOD_GROUND",
+        "line": 968,
+        "unit_id": "saber_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Albedo (Overseer)",
+        "tier": "GOOD_GROUND",
+        "line": 986,
+        "unit_id": "albedo_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Izu (Demon Snow)",
+        "tier": "GOOD_GROUND",
+        "line": 1003,
+        "unit_id": "izumi_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Lancer (Child of Light)",
+        "tier": "GOOD_GROUND",
+        "line": 1023,
+        "unit_id": "lancer_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Illy (Homunculus)",
+        "tier": "GOOD_GROUND",
+        "line": 1041,
+        "unit_id": "illya_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Aku (Rashamon)",
+        "tier": "GOOD_GROUND",
+        "line": 1057,
+        "unit_id": "akutagawa_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Senbodu (Buddha)",
+        "tier": "GOOD_GROUND",
+        "line": 1074,
+        "unit_id": "sengoku_unit_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Flamingo (Awakened)",
+        "tier": "GOOD_GROUND",
+        "line": 1095,
+        "unit_id": "doflamingo_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Kiroto (Dual)",
+        "tier": "GOOD_GROUND",
+        "line": 1112,
+        "unit_id": "kirito_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Heathcliff (Admin)",
+        "tier": "GOOD_GROUND",
+        "line": 1129,
+        "unit_id": "heathcliff_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Avdo (Magician's Red)",
+        "tier": "GOOD_GROUND",
+        "line": 1146,
+        "unit_id": "avdol_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Skull Knight (King)",
+        "tier": "GOOD_GROUND",
+        "line": 1161,
+        "unit_id": "skull_knight_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Josuka (Unbreakable)",
+        "tier": "GOOD_GROUND",
+        "line": 1176,
+        "unit_id": "josuke_2_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Jirayo (Toad Sage)",
+        "tier": "GOOD_SUPPORT",
+        "line": 1197,
+        "unit_id": "jiraiya_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Merlyn (Infinity)",
+        "tier": "GOOD_SUPPORT",
+        "line": 1214,
+        "unit_id": "merlin_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Sukuno",
+        "tier": "GOOD_SUPPORT",
+        "line": 1230,
+        "unit_id": "sukuna",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=43960"
+      },
+      {
+        "source_name": "Megomu (Chimera Shadow)",
+        "tier": "GOOD_SUPPORT",
+        "line": 1246,
+        "unit_id": "megumi_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Mochi Charlot",
+        "tier": "GOOD_SUPPORT",
+        "line": 1264,
+        "unit_id": "katakuri_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=43960"
       }
     ],
     "casual": [
@@ -275,7 +513,7 @@
         "tier": "META_HILL",
         "line": 1298,
         "unit_id": "usopp_ts_evolved",
-        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
       },
       {
         "source_name": "Shadowgirl (Time Traveller)",
@@ -310,7 +548,42 @@
         "tier": "META_HILL",
         "line": 1380,
         "unit_id": "konan_unit_evolved",
-        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Fiend Girl (Butterfly)",
+        "tier": "META_HILL",
+        "line": 1398,
+        "unit_id": "hinami_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=43960"
+      },
+      {
+        "source_name": "Archer (Heroic Spirit)",
+        "tier": "META_HILL",
+        "line": 1418,
+        "unit_id": "archer_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Chuyo (Corruption)",
+        "tier": "META_HILL",
+        "line": 1437,
+        "unit_id": "chuya_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Medae (Witch of Betrayal)",
+        "tier": "META_HILL",
+        "line": 1457,
+        "unit_id": "medea_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Poseidon (Tyrant of the Seas)",
+        "tier": "META_HILL",
+        "line": 1491,
+        "unit_id": "poseidon_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
       },
       {
         "source_name": "Shinobi (Eternal)",
@@ -334,6 +607,27 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Death_Ninja_%28Immortal_Butcher%29?oldid=45743"
       },
       {
+        "source_name": "Lancer (Child of Light)",
+        "tier": "META_GROUND",
+        "line": 1572,
+        "unit_id": "lancer_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Asushi (Moonlight Beast)",
+        "tier": "META_GROUND",
+        "line": 1590,
+        "unit_id": "atsushi_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Saber (Promised Sword)",
+        "tier": "META_GROUND",
+        "line": 1607,
+        "unit_id": "saber_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Fox Ninja (Six Tails)",
         "tier": "META_GROUND",
         "line": 1624,
@@ -355,6 +649,48 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
       },
       {
+        "source_name": "Roger (Pirate King)",
+        "tier": "META_GROUND",
+        "line": 1678,
+        "unit_id": "roger_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Illy (Homunculus)",
+        "tier": "META_GROUND",
+        "line": 1695,
+        "unit_id": "illya_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Izu (Demon Snow)",
+        "tier": "META_GROUND",
+        "line": 1711,
+        "unit_id": "izumi_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Heathcliff (Admin)",
+        "tier": "META_GROUND",
+        "line": 1730,
+        "unit_id": "heathcliff_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Kiro (Bites the Dust)",
+        "tier": "META_GROUND",
+        "line": 1749,
+        "unit_id": "kira_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Kiroto (Dual)",
+        "tier": "META_GROUND",
+        "line": 1766,
+        "unit_id": "kirito_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Saki (Cyanblade)",
         "tier": "META_GROUND",
         "line": 1783,
@@ -362,11 +698,18 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
       },
       {
+        "source_name": "Leafy (Sylph)",
+        "tier": "META_SUPPORT",
+        "line": 1802,
+        "unit_id": "leafa_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Wenda",
         "tier": "META_SUPPORT",
         "line": 1813,
         "unit_id": "wendy",
-        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=43960"
       },
       {
         "source_name": "Commander",
@@ -380,7 +723,7 @@
         "tier": "META_SUPPORT",
         "line": 1837,
         "unit_id": "hoshino_evolved",
-        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
       },
       {
         "source_name": "Operator (ROOM)",
@@ -397,10 +740,31 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
       },
       {
+        "source_name": "Jirayo (Toad Sage)",
+        "tier": "META_SUPPORT",
+        "line": 1876,
+        "unit_id": "jiraiya_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Reliable Student (Echoes)",
         "tier": "META_SUPPORT",
         "line": 1893,
         "unit_id": "koichi_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+      },
+      {
+        "source_name": "Bloodcry (Bloodfallen)",
+        "tier": "META_SUPPORT",
+        "line": 1909,
+        "unit_id": "shalltear_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=43960"
+      },
+      {
+        "source_name": "Blood (Unleashed)",
+        "tier": "META_SUPPORT",
+        "line": 1925,
+        "unit_id": "power_evolved",
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
       },
       {
@@ -409,6 +773,20 @@
         "line": 1942,
         "unit_id": "griffith_reincarnation",
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+      },
+      {
+        "source_name": "Harribu (Shark Empress)",
+        "tier": "GOOD_HILL",
+        "line": 1957,
+        "unit_id": "harribel_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Narbera (Battle Maid)",
+        "tier": "GOOD_HILL",
+        "line": 1976,
+        "unit_id": "narberal_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
       },
       {
         "source_name": "Bubblegum (Ultimate)",
@@ -425,11 +803,32 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Agony_%28Divine%29?oldid=45788"
       },
       {
+        "source_name": "Fuji (Admiral)",
+        "tier": "GOOD_HILL",
+        "line": 2028,
+        "unit_id": "fujitora_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Metal Knight (Arsenal)",
+        "tier": "GOOD_HILL",
+        "line": 2045,
+        "unit_id": "metal_knight_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Golden Tyrant (Emperor)",
         "tier": "GOOD_HILL",
         "line": 2062,
         "unit_id": "frieza_golden_evolved",
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+      },
+      {
+        "source_name": "Demiurge (Demon Emperor)",
+        "tier": "GOOD_HILL",
+        "line": 2077,
+        "unit_id": "demiurge_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
       },
       {
         "source_name": "Berserker (Rage)",
@@ -444,6 +843,13 @@
         "line": 2109,
         "unit_id": "mami_evolved",
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+      },
+      {
+        "source_name": "Conrod (Wizard King)",
+        "tier": "GOOD_HILL",
+        "line": 2124,
+        "unit_id": "conrad_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
       },
       {
         "source_name": "Umbra (Nuclear)",
@@ -481,6 +887,97 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Gas_%28Toxic%29?oldid=46085"
       },
       {
+        "source_name": "Senbodu (Buddha)",
+        "tier": "GOOD_GROUND",
+        "line": 2223,
+        "unit_id": "sengoku_unit_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Albedo (Overseer)",
+        "tier": "GOOD_GROUND",
+        "line": 2242,
+        "unit_id": "albedo_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Skull Knight (King)",
+        "tier": "GOOD_GROUND",
+        "line": 2260,
+        "unit_id": "skull_knight_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Aku (Rashamon)",
+        "tier": "GOOD_GROUND",
+        "line": 2275,
+        "unit_id": "akutagawa_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Greed (Hunt)",
+        "tier": "GOOD_GROUND",
+        "line": 2294,
+        "unit_id": "ban_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Evileye (Landfall)",
+        "tier": "GOOD_GROUND",
+        "line": 2311,
+        "unit_id": "evileye_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Saby (Flame Emperor)",
+        "tier": "GOOD_GROUND",
+        "line": 2326,
+        "unit_id": "sabo_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Kizume (Tailless Beast)",
+        "tier": "GOOD_GROUND",
+        "line": 2341,
+        "unit_id": "kisame_unit_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Rohon (Artist)",
+        "tier": "GOOD_GROUND",
+        "line": 2356,
+        "unit_id": "rohan_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Josuka (Unbreakable)",
+        "tier": "GOOD_GROUND",
+        "line": 2371,
+        "unit_id": "josuke_2_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Flamingo (Awakened)",
+        "tier": "GOOD_GROUND",
+        "line": 2403,
+        "unit_id": "doflamingo_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Avdo (Magician's Red)",
+        "tier": "GOOD_GROUND",
+        "line": 2420,
+        "unit_id": "avdol_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
+        "source_name": "Daky (Obi)",
+        "tier": "GOOD_GROUND",
+        "line": 2435,
+        "unit_id": "daki_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "Sepsis (Moon)",
         "tier": "GOOD_GROUND",
         "line": 2450,
@@ -495,6 +992,13 @@
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
       },
       {
+        "source_name": "Goju (Six Eyes)",
+        "tier": "GOOD_SUPPORT",
+        "line": 2487,
+        "unit_id": "gojo_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578"
+      },
+      {
         "source_name": "InHuman (Nullifier)",
         "tier": "GOOD_SUPPORT",
         "line": 2504,
@@ -507,6 +1011,13 @@
         "line": 2521,
         "unit_id": "pucci_heaven",
         "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322"
+      },
+      {
+        "source_name": "Mochi Charlot",
+        "tier": "GOOD_SUPPORT",
+        "line": 2538,
+        "unit_id": "katakuri_evolved",
+        "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=43960"
       },
       {
         "source_name": "JIO (Over Heaven)",
@@ -531,464 +1042,7 @@
       }
     ]
   },
-  "unresolved": [
-    {
-      "source_name": "Asushi (Moonlight Beast)",
-      "tier": "META_GROUND",
-      "line": 218,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Noruto (Six Tails)",
-      "tier": "META_GROUND",
-      "line": 252,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Daky (Obi)",
-      "tier": "META_GROUND",
-      "line": 286,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Lao (ROOM)",
-      "tier": "META_SUPPORT",
-      "line": 370,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Bloodcry (Bloodfallen)",
-      "tier": "META_SUPPORT",
-      "line": 403,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Blood (Unleashed)",
-      "tier": "META_SUPPORT",
-      "line": 419,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Kiro (Bites the Dust)",
-      "tier": "META_SUPPORT",
-      "line": 517,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Poseidon (Tyrant of the Seas)",
-      "tier": "GOOD_HILL",
-      "line": 731,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Aizo (Final)",
-      "tier": "GOOD_HILL",
-      "line": 748,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Archer (Heroic Spirit)",
-      "tier": "GOOD_HILL",
-      "line": 779,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Fiend Girl (Butterfly)",
-      "tier": "GOOD_HILL",
-      "line": 817,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Chuyo (Corruption)",
-      "tier": "GOOD_HILL",
-      "line": 837,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Luffo (Gear IV)",
-      "tier": "GOOD_HILL",
-      "line": 857,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Medae (Witch of Betrayal)",
-      "tier": "GOOD_HILL",
-      "line": 872,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Demiurge (Demon Emperor)",
-      "tier": "GOOD_HILL",
-      "line": 887,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Conrod (Wizard King)",
-      "tier": "GOOD_HILL",
-      "line": 917,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Roger (Pirate King)",
-      "tier": "GOOD_GROUND",
-      "line": 951,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Saber (Promised Sword)",
-      "tier": "GOOD_GROUND",
-      "line": 968,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Albedo (Overseer)",
-      "tier": "GOOD_GROUND",
-      "line": 986,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Izu (Demon Snow)",
-      "tier": "GOOD_GROUND",
-      "line": 1003,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Lancer (Child of Light)",
-      "tier": "GOOD_GROUND",
-      "line": 1023,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Illy (Homunculus)",
-      "tier": "GOOD_GROUND",
-      "line": 1041,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Aku (Rashamon)",
-      "tier": "GOOD_GROUND",
-      "line": 1057,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Senbodu (Buddha)",
-      "tier": "GOOD_GROUND",
-      "line": 1074,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Flamingo (Awakened)",
-      "tier": "GOOD_GROUND",
-      "line": 1095,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Kiroto (Dual)",
-      "tier": "GOOD_GROUND",
-      "line": 1112,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Heathcliff (Admin)",
-      "tier": "GOOD_GROUND",
-      "line": 1129,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Avdo (Magician's Red)",
-      "tier": "GOOD_GROUND",
-      "line": 1146,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Skull Knight (King)",
-      "tier": "GOOD_GROUND",
-      "line": 1161,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Josuka (Unbreakable)",
-      "tier": "GOOD_GROUND",
-      "line": 1176,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Jirayo (Toad Sage)",
-      "tier": "GOOD_SUPPORT",
-      "line": 1197,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Merlyn (Infinity)",
-      "tier": "GOOD_SUPPORT",
-      "line": 1214,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Sukuno",
-      "tier": "GOOD_SUPPORT",
-      "line": 1230,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Megomu (Chimera Shadow)",
-      "tier": "GOOD_SUPPORT",
-      "line": 1246,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Mochi Charlot",
-      "tier": "GOOD_SUPPORT",
-      "line": 1264,
-      "mode": "infinite"
-    },
-    {
-      "source_name": "Fiend Girl (Butterfly)",
-      "tier": "META_HILL",
-      "line": 1398,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Archer (Heroic Spirit)",
-      "tier": "META_HILL",
-      "line": 1418,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Chuyo (Corruption)",
-      "tier": "META_HILL",
-      "line": 1437,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Medae (Witch of Betrayal)",
-      "tier": "META_HILL",
-      "line": 1457,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Luffo (Gear IV)",
-      "tier": "META_HILL",
-      "line": 1472,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Poseidon (Tyrant of the Seas)",
-      "tier": "META_HILL",
-      "line": 1491,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Lancer (Child of Light)",
-      "tier": "META_GROUND",
-      "line": 1572,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Asushi (Moonlight Beast)",
-      "tier": "META_GROUND",
-      "line": 1590,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Saber (Promised Sword)",
-      "tier": "META_GROUND",
-      "line": 1607,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Roger (Pirate King)",
-      "tier": "META_GROUND",
-      "line": 1678,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Illy (Homunculus)",
-      "tier": "META_GROUND",
-      "line": 1695,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Izu (Demon Snow)",
-      "tier": "META_GROUND",
-      "line": 1711,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Heathcliff (Admin)",
-      "tier": "META_GROUND",
-      "line": 1730,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Kiro (Bites the Dust)",
-      "tier": "META_GROUND",
-      "line": 1749,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Kiroto (Dual)",
-      "tier": "META_GROUND",
-      "line": 1766,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Leafy (Sylph)",
-      "tier": "META_SUPPORT",
-      "line": 1802,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Jirayo (Toad Sage)",
-      "tier": "META_SUPPORT",
-      "line": 1876,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Bloodcry (Bloodfallen)",
-      "tier": "META_SUPPORT",
-      "line": 1909,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Blood (Unleashed)",
-      "tier": "META_SUPPORT",
-      "line": 1925,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Harribu (Shark Empress)",
-      "tier": "GOOD_HILL",
-      "line": 1957,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Narbera (Battle Maid)",
-      "tier": "GOOD_HILL",
-      "line": 1976,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Fuji (Admiral)",
-      "tier": "GOOD_HILL",
-      "line": 2028,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Metal Knight (Arsenal)",
-      "tier": "GOOD_HILL",
-      "line": 2045,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Demiurge (Demon Emperor)",
-      "tier": "GOOD_HILL",
-      "line": 2077,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Conrod (Wizard King)",
-      "tier": "GOOD_HILL",
-      "line": 2124,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Senbodu (Buddha)",
-      "tier": "GOOD_GROUND",
-      "line": 2223,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Albedo (Overseer)",
-      "tier": "GOOD_GROUND",
-      "line": 2242,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Skull Knight (King)",
-      "tier": "GOOD_GROUND",
-      "line": 2260,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Aku (Rashamon)",
-      "tier": "GOOD_GROUND",
-      "line": 2275,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Greed (Hunt)",
-      "tier": "GOOD_GROUND",
-      "line": 2294,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Evileye (Landfall)",
-      "tier": "GOOD_GROUND",
-      "line": 2311,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Saby (Flame Emperor)",
-      "tier": "GOOD_GROUND",
-      "line": 2326,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Kizume (Tailless Beast)",
-      "tier": "GOOD_GROUND",
-      "line": 2341,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Rohon (Artist)",
-      "tier": "GOOD_GROUND",
-      "line": 2356,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Josuka (Unbreakable)",
-      "tier": "GOOD_GROUND",
-      "line": 2371,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Flame Hero (Hellflame)",
-      "tier": "GOOD_GROUND",
-      "line": 2386,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Flamingo (Awakened)",
-      "tier": "GOOD_GROUND",
-      "line": 2403,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Avdo (Magician's Red)",
-      "tier": "GOOD_GROUND",
-      "line": 2420,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Daky (Obi)",
-      "tier": "GOOD_GROUND",
-      "line": 2435,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Goju (Six Eyes)",
-      "tier": "GOOD_SUPPORT",
-      "line": 2487,
-      "mode": "casual"
-    },
-    {
-      "source_name": "Mochi Charlot",
-      "tier": "GOOD_SUPPORT",
-      "line": 2538,
-      "mode": "casual"
-    }
-  ],
+  "unresolved": [],
   "retired": [
     {
       "source_name": "Flame Hero (Hellfire)",
@@ -997,6 +1051,30 @@
       "unit_id": "endeavor_evolved",
       "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data?oldid=47322",
       "mode": "infinite"
+    },
+    {
+      "source_name": "Luffo (Gear IV)",
+      "tier": "GOOD_HILL",
+      "line": 857,
+      "unit_id": "luffy_g4_evolved",
+      "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578",
+      "mode": "infinite"
+    },
+    {
+      "source_name": "Luffo (Gear IV)",
+      "tier": "META_HILL",
+      "line": 1472,
+      "unit_id": "luffy_g4_evolved",
+      "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=33578",
+      "mode": "casual"
+    },
+    {
+      "source_name": "Flame Hero (Hellflame)",
+      "tier": "GOOD_GROUND",
+      "line": 2386,
+      "unit_id": "endeavor_evolved",
+      "identity_source": "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=43960",
+      "mode": "casual"
     }
   ]
 }

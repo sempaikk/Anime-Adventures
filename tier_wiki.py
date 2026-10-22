@@ -8,6 +8,7 @@ import re
 import shutil
 from urllib.parse import quote, urlparse, parse_qs
 import aiohttp
+from tier_names import parse_names
 
 API = "https://animeadventures.fandom.com/api.php"
 WIKI = "https://animeadventures.fandom.com/wiki/"
@@ -180,11 +181,7 @@ class WikiSync:
                 accepted += 1
                 if title == NAMES:
                     entries = {}
-                    for name, uid in re.findall(
-                        r'^\s*\["([^"\n]+)"\]\s*=\s*\{\s*name\s*=\s*"([^"\n]+)"',
-                        text,
-                        re.M,
-                    ):
+                    for name, uid in parse_names(text):
                         entry = entries.setdefault(
                             uid, {"id": uid, "name": name, "aliases": []}
                         )

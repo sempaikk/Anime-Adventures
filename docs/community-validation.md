@@ -42,8 +42,8 @@ servidores no plano gratuito.
 Esta é a revisão completa das prioridades; o critério de conclusão é qualidade
 da experiência e da operação, em vez de acrescentar funcionalidades sem fim.
 
-- **Imagem e catálogo inicial:** há 524 formas ativas, 453 retratos e 71 formas
-  sem retrato aprovado. As 25 formas com silhueta azul substituta informadas
+- **Imagem e catálogo inicial:** há 529 formas ativas, 458 retratos e 71 formas
+  sem retrato aprovado. As 26 formas com silhueta azul substituta informadas
   excluídas pelo critério do dono estão fora da análise, inclusive Gravity Hero
   apesar da foto antiga e Illusionist (Chrysalis), encontrado na revisão visual.
   O catálogo bruto e os históricos ficam preservados.
@@ -102,7 +102,7 @@ Baixe `verificacao-tierlist.json` para acompanhar falhas. O relatório diferenci
 
 - Somente `/tierlist` e `/chatglobal`, sem campos adicionais. Chat global responde **Em breve.**
 - `/tierlist` é restrito a Administrador/Gerenciar servidor, tanto na permissão padrão quanto na execução. Uma imagem oficial por servidor; repetir o comando, até em outro canal, reutiliza a imagem existente. Membros usam a imagem e os botões, sem comandos.
-- O tópico tem índice, Sugerir imagem, Meus envios, Como funciona, propostas, resultados e revisões. A classificação fica somente no PNG. A mesma proposta é editada com o encerramento.
+- O tópico tem índice, Sugerir imagem, Meus envios, Como funciona, propostas e resultados. A classificação fica somente no PNG. A mesma proposta é editada com o encerramento.
 - retratos-pendentes.txt contém somente as formas que precisam de foto. Envios pendentes/rejeitados não diminuem a lista; uma aprovação válida diminui, e uma restauração pode recolocar a solicitação. Ao completar todas as fotos, o anexo desaparece.
 - Ninguém é classificado só para preencher a grade. **Sem avaliação** é diferente de E. A imagem não tem rodapé técnico; o índice mostra a última classificação. Contadores, conexão e revisão de mídia ficam no diagnóstico do dono.
 - Votos abertos mostram participantes, sem distribuição. Encerrados revelam os totais. A conta tem um voto na rede; trocar não soma outro.
@@ -156,16 +156,17 @@ caminho de consulta, sem afirmar validação semântica de todos os relatos reai
 
 ## Atualização final V2 e modos — 22/10/2026
 
-A suíte atual tem **551 testes**, com UI nativa, privacidade, anexos, seis
+A suíte atual tem **562 testes**, com UI nativa, privacidade, anexos, seis
 categorias, migração, separação por modo e referência inicial. O PNG reúne
 Infinite e Casual; cada modo usa META/Good × Hill/Hybrid, Ground, Support.
 Uma forma aparece uma vez em cada modo.
 
-O ensaio direto confere 14 operações pela API em espaços privados do servidor
+O ensaio direto confere 17 operações pela API em espaços privados do servidor
 autorizado, com banco temporário: índice convertido na mesma mensagem, enquete
 e atalhos, atualização sem duplicação, resultado arquivado, aprovação só em
 Casual preservando Infinite, PNG editado e baixado, limpeza após reinício, dez
-alterações visuais, cinco transições de TXT e cartões V2. Não envia dados à
+alterações visuais, cinco transições de TXT, cartões V2 e limpeza de avisos
+administrativos preservando registros internos, posições e votos. Não envia dados à
 Groq nem altera a produção.
 
 V2 pode guardar arquivos em File/MediaGallery e deixar a lista tradicional
@@ -173,9 +174,12 @@ de anexos vazia. O verificador lê componentes e confere bytes recebidos, sem
 confundir thumbnails externos com uploads. Ator/servidor/mensagem oficial
 continuam validados. Modais usam Labels e FileUpload; correção tem modo.
 
-A base parcial e atribuída usa 37 formas por modo da revisão Wiki 46773.
-Nomes não comprovados ficam pendentes; a fonte tem aviso de possível
-imprecisão. Validação técnica de arquivos/identidades não prova balanceamento
-ou atualidade de cada argumento. API não comprova aparência em cada cliente
-Discord nem o envio humano de arquivos. O dono pode confirmar uma interação
-humana pelo botão do verificador e conferir os primeiros relatos com jogadores.
+A referência inicial da revisão Wiki 46773 tem 71 formas ativas em Infinite
+e 76 em Casual. Todas as 151 entradas foram identificadas; quatro ocorrências
+são de formas retiradas. Fontes e avisos administrativos ficam internos, sem
+contar como resultados da comunidade. A complementação preserva decisões,
+correções e enquetes em andamento. Detalhes em tierlist-catalog-audit.md.
+A fonte mantém o aviso de possível imprecisão. Arquivos/identidades não
+comprovam balanceamento; a API não comprova aparência em cada cliente ou o
+envio humano de arquivos. O dono pode confirmar uma interação humana pelo
+verificador e conferir os primeiros argumentos com jogadores.

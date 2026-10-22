@@ -118,6 +118,7 @@ def sync(inventory=None):
         "Flame Hero",
         "Gravity Hero",
         "Illusionist (Chrysalis)",
+        "Ice Shaper",
         "Joykid (Bounce)",
         "Joykid (Mode IV)",
         "Lunar Hare",

@@ -1,4 +1,4 @@
-"""A frozen, attributed Wiki baseline; never fabricates votes or overwrites a live list."""
+"""A frozen Wiki baseline; never fabricates votes or overwrites community decisions."""
 
 import hashlib
 import json
@@ -54,21 +54,35 @@ def seed_initial(store, catalog, *, reference=None):
         store.connection.execute("BEGIN IMMEDIATE")
         for mode in MODES:
             marker = f"wiki_seed:{POLICY}:{mode}"
-            if store.get(marker):
-                continue
             current = store.latest(mode)
             pending = store.rows(
                 "SELECT 1 FROM tier_proposals WHERE mode=? AND status IN ('open','queued') LIMIT 1",
                 (mode,),
             )
-            if pending or (current["id"] and current["model"] != "category-migration"):
-                value = "preserved-existing"
-            else:
-                ranking = [
-                    {"unit_id": r["unit_id"], "tier": r["tier"]}
-                    for r in data["modes"][mode]
-                    if r["unit_id"] in catalog.units
-                ]
+            ranking = [
+                {"unit_id": r["unit_id"], "tier": r["tier"]}
+                for r in data["modes"][mode]
+                if r["unit_id"] in catalog.units
+            ]
+            old_marker = store.get(marker)
+            if old_marker:
+                # Complete an untouched earlier seed only. An open proposal keeps its
+                # exact base; community decisions and owner corrections are never reset.
+                previous_ids = {r["unit_id"] for r in current["ranking"]}
+                if (
+                    pending
+                    or old_marker != str(current["id"])
+                    or current["model"] != "wiki-baseline"
+                    or len(ranking) <= len(current["ranking"])
+                    or [r for r in ranking if r["unit_id"] in previous_ids]
+                    != current["ranking"]
+                ):
+                    continue
+            preserve = not old_marker and (
+                pending or (current["id"] and current["model"] != "category-migration")
+            )
+            value = "preserved-existing"
+            if not preserve:
                 if not ranking:
                     continue
                 cursor = store.connection.execute(
@@ -87,7 +101,7 @@ def seed_initial(store, catalog, *, reference=None):
                     "wiki-baseline",
                     "system",
                     MODES[mode]
-                    + f": base inicial parcial com {len(ranking)} formas identificadas na revisão {data['revision']} da Wiki. "
+                    + f": base inicial com {len(ranking)} formas identificadas na revisão {data['revision']} da Wiki. "
                     "São posições de referência, sem votos da comunidade. A página alerta que pode estar imprecisa; nomes sem correspondência exata ficam pendentes. "
                     + data["source_url"],
                     cursor.lastrowid,

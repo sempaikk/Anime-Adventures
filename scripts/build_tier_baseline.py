@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from community_domain import Catalog, normalize
 from tier_catalog import TierCatalog
 from tier_categories import LABELS
+from tier_names import parse_names
 
 root = Path(__file__).resolve().parents[1]
 source = root / "docs/sources/tierlist-46773.wiki"
@@ -15,14 +16,18 @@ all_units = Catalog()
 active = TierCatalog()
 names = {}
 proof = {}
-for uid, u in all_units.units.items():
-    for name in (u.name, *u.aliases):
+for revision, path in (
+    (46960, root / "docs/sources/46960.wiki"),
+    (33578, root / "docs/sources/tier-names-33578.wiki"),
+    (43960, root / "docs/sources/tier-names-43960.wiki"),
+):
+    for name, uid in parse_names(path.read_text()):
+        if uid not in all_units.units:
+            continue
         key = normalize(name)
         names.setdefault(key, set()).add(uid)
         proof[(key, uid)] = (
-            all_units.source
-            if hasattr(all_units, "source")
-            else "https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid=46960"
+            f"https://animeadventures.fandom.com/wiki/Module:UnitData/Data/Names?oldid={revision}"
         )
 for sid, item in json.loads((root / "data/tier_evidence.json").read_text())[
     "sources"
@@ -32,9 +37,9 @@ for sid, item in json.loads((root / "data/tier_evidence.json").read_text())[
         continue
     values = [item["title"].removeprefix("UnitData · ")]
     if sid.endswith(":data"):
-        match = re.search(r"\bname\s*=\s*[\x27\"]([^\x27\"\n]+)[\x27\"]", item["text"])
+        match = re.search(r"""\bname\s*=\s*(["'])([^\n]+?)\1""", item["text"])
         if match:
-            values.append(match[1])
+            values.append(match[2])
     for name in values:
         key = normalize(name)
         names.setdefault(key, set()).add(uid)

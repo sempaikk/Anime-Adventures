@@ -254,7 +254,9 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
         self.assertLessEqual(units(embed.title), 256)
         self.assertLessEqual(units(embed.description), 4096)
         self.assertTrue(all(units(field.value) <= 1024 for field in embed.fields))
-        self.assertIn("revision/123", str(embed.to_dict()))
+        self.assertNotIn("fandom.com", str(embed.to_dict()))
+        self.assertEqual(len(detail["sources"]), 1)
+        self.assertTrue(detail["sources"][0]["url"].endswith("?oldid=123"))
 
     async def test_maintenance_makes_a_restorable_snapshot_without_test_rankings(self):
         await self.setup_panel()
@@ -328,7 +330,10 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.app.store.latest()["ranking"], [])
         self.assertEqual(len([p for cid, p in self.env.payloads if cid == 10]), 2)
         self.assertEqual(
-            len(self.app.store.rows("SELECT * FROM tier_audit_messages")), 1
+            len(self.app.store.rows("SELECT * FROM tier_audit_messages")), 0
+        )
+        self.assertTrue(
+            self.app.store.rows("SELECT * FROM tier_audit WHERE kind='rollback'")
         )
 
 
@@ -773,7 +778,7 @@ class WikiCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.evidence.version, old)
 
     async def test_new_identity_is_added_from_names_and_data_without_a_tier(self):
-        names = 'return {\n ["Novel Hero"] = {name = "novel_hero"},\n}\n'
+        names = """return {\n ["Novel Hero"] = {name = 'novel_hero'},\n}\n"""
         data = "return {\n\tnovel_hero = {\n damage = 100,\n },\n}\n"
         sync = WikiSync(
             self.store,

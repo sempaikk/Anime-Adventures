@@ -40,8 +40,8 @@ class ActiveCatalogCase(unittest.TestCase):
     def test_retirements_are_explicit_and_keep_original_catalogue_for_history(self):
         archived, active = Catalog(), TierCatalog()
         manifest = json.loads((ROOT / "data/community_portraits.json").read_text())
-        self.assertEqual(len(archived.units), 549)
-        self.assertEqual(len(active.units), 524)
+        self.assertEqual(len(archived.units), 555)
+        self.assertEqual(len(active.units), 529)
         self.assertEqual(set(active.retired), set(manifest["rejected_placeholders"]))
         self.assertEqual(len(set(manifest["missing"]) - set(active.retired)), 71)
         self.assertIn("uraraka", archived.units)

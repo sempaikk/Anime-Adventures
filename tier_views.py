@@ -18,9 +18,9 @@ log = logging.getLogger("tierlist.ui")
 PLAYER_GUIDE = """## Como funciona a tier list
 **Leia a imagem:** cada modo tem seis linhas: META Hill/Hybrid, META Ground, META Support, Good Hill/Hybrid, Good Ground e Good Support. Hill/Hybrid é colocação elevada/híbrida; Ground é chão; Support é suporte. META indica destaque no grupo. Cada forma aparece uma vez por modo. A ordem da linha vai da esquerda para a direita. No celular, toque para ampliar.
 
-**Sem avaliação não significa ruim.** Uma forma só aparece na grade depois de uma decisão aprovada. As formas ainda sem avaliação ficam fora da imagem.
+**Sem avaliação não significa ruim.** A imagem parte de uma classificação inicial. As mudanças passam por votação, e formas ainda não classificadas ficam fora da grade.
 
-**Antes de votar:** leia o motivo, as condições, a ressalva e as referências. Considere a forma exata, o custo e as situações de uso. A wiki é comunitária e pode estar desatualizada.
+**Antes de votar:** leia o motivo, as condições e as limitações da mudança. Considere a forma exata, o custo e as situações de uso.
 
 **Escolha:** Aprovar aceita a mudança; Manter preserva as posições; Mais testes pede evidências melhores. Sua conta tem um voto na rede inteira e pode trocar até o prazo. Contas precisam ter pelo menos sete dias para votar.
 
@@ -491,7 +491,7 @@ class UndoImage(PrivateView):
             item.disabled = True
         await edit_response(
             i,
-            content="Retrato anterior restaurado. A revisão será registrada no tópico; as posições foram preservadas.",
+            content="Retrato anterior restaurado. O registro da revisão fica interno; as posições foram preservadas.",
             view=self,
         )
 
@@ -526,8 +526,8 @@ class CorrectionModal(BoundModal):
         )
         self.add_item(
             discord.ui.Label(
-                text="Motivo que ficará no histórico",
-                description="Este motivo será público. Enviar confirma a correção, após validar a classificação atual.",
+                text="Motivo do registro interno",
+                description="Confirma a correção após validar a lista atual. A justificativa fica no registro interno.",
                 component=self.reason,
             )
         )
@@ -541,7 +541,7 @@ class CorrectionModal(BoundModal):
             self.bot.store.rollback(
                 self.publications[mode], i.user.id, str(self.reason), mode=mode
             )
-            text = "Classificação anterior restaurada em uma nova revisão. O motivo ficará no tópico."
+            text = "Classificação anterior restaurada. O motivo foi guardado no registro interno; essa correção não conta como decisão da comunidade."
         else:
             self.bot.store.cancel_proposal(
                 self.proposal_id, i.user.id, str(self.reason)
@@ -707,7 +707,7 @@ class ReportReview(PrivateView):
         self.selected, self.proposal = row["id"], row["proposal_id"]
         await edit(
             i,
-            content=f"### Relato #{row['id']} · proposta #{row['proposal_id']}\n{safe(row['reason'], 800)}\n\nMarcar como revisado não modifica posições. Suspender exige uma justificativa pública.",
+            content=f"### Relato #{row['id']} · proposta #{row['proposal_id']}\n{safe(row['reason'], 800)}\n\nMarcar como revisado não modifica posições. A suspensão aparece no resultado da enquete; a justificativa fica no registro interno.",
             view=self,
             embeds=[],
             attachments=[],
