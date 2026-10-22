@@ -23,6 +23,8 @@ PLAYER_GUIDE = """## Como funciona a tier list
 
 **Quando muda:** são dez minutos de votação, cinco participantes e dois terços a favor. A imagem muda depois da aprovação. Sem aprovação, continua igual. Há no máximo uma proposta por hora; sem evidência suficiente, não há proposta.
 
+**Próxima enquete:** o tópico mostra quando uma nova análise ficará disponível e se já existe proposta pronta. O contador não garante uma votação: a análise pode concluir que as posições devem continuar iguais.
+
 **Resultados:** aparecem na própria proposta ao encerrar. A distribuição dos votos fica oculta durante a votação. Sinalizar problema envia um relato para revisão, sem acrescentar votos.
 
 **Retratos:** quando houver fotos pendentes, o tópico terá retratos-pendentes.txt com as formas exatas. Sugerir imagem envia a contribuição para revisão do responsável. Trocar um retrato não muda posições. Consulte Meus envios para acompanhar em particular."""

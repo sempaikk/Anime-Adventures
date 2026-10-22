@@ -769,10 +769,28 @@ class TierStore:
     def may_propose(self):
         if self.active_proposal():
             return False
+        return self.clock() >= self.next_proposal_at()
+
+    def next_proposal_at(self):
         row = self.connection.execute(
             "SELECT MAX(COALESCE(opened_at,created_at)) FROM tier_proposals"
         ).fetchone()[0]
-        return row is None or self.clock() - row >= 3600
+        return 0 if row is None else row + 3600
+
+    def next_analysis_at(self):
+        return max(
+            float(self.get("last_attempt") or 0) + self.interval(),
+            self.next_proposal_at(),
+        )
+
+    def has_pending_comments(self):
+        return (
+            self.connection.execute(
+                "SELECT 1 FROM tier_comments c JOIN tier_guilds g USING(guild_id) WHERE c.processed=0 AND c.attempts<3 AND c.created_at>=? LIMIT 1",
+                (self.clock() - 7 * 86400,),
+            ).fetchone()
+            is not None
+        )
 
     def create_proposal(
         self, ranking, explanations, *, details, source_version, model, comments

@@ -721,7 +721,8 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("Aguardando a chave", index.content)
         self.backend.enabled = False
         await self.app.panel_loop.coro(self.app)
-        self.assertIn("Análise automática ainda indisponível", index.content)
+        self.assertIn("temporariamente pausada; posições preservadas", index.content)
+        self.assertNotIn("**Nova análise:** disponível", index.content)
         self.assertNotIn("chave", index.content.lower())
 
     async def test_only_owner_sees_technical_diagnostics_and_image_has_no_footer(self):

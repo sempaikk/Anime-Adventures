@@ -13,6 +13,7 @@ from community_domain import ROOT
 from community_ui import font, portraits
 from tier_domain import safe, moment, place
 from tier_store import TIERS
+from tier_schedule import poll_progress, progress_text
 
 ROW_COLORS = {
     "META": "#920700",
@@ -33,21 +34,6 @@ POLL_STATES = {
     "outdated": "Cancelada · a referência mudou",
     "unavailable": "Cancelada · publicação indisponível",
     "suspended": "Suspensa pelo responsável · posição preservada",
-}
-STATUS = {
-    "not-connected": "Análise automática ainda indisponível",
-    "retry": "Análise temporariamente indisponível; posições preservadas",
-    "quota": "Análises em pausa; posições preservadas",
-    "poll-open": "Votação em andamento",
-    "poll-queued": "Preparando uma proposta",
-    "no-proposal": "Nenhuma nova proposta suficientemente fundamentada",
-    "ok": "Análise disponível",
-    "approved": "Última proposta aprovada",
-    "maintained": "Última proposta manteve a classificação",
-    "needs-tests": "Aguardando novas evidências",
-    "not-enough-votes": "Última proposta sem participantes suficientes",
-    "outdated": "Aguardando nova comparação",
-    "waiting": "Aguardando relatos relevantes sobre o jogo",
 }
 
 
@@ -212,14 +198,10 @@ def index_text(
     media_pending=0,
     ai_enabled=None,
     portrait_count=0,
+    progress=None,
 ):
     thread = store.thread(panel["guild_id"])
-    activity = store.get("analysis_status") or "waiting"
-    if ai_enabled is True and activity == "not-connected":
-        activity = "waiting"
-    elif ai_enabled is False and activity not in ("poll-open", "poll-queued"):
-        activity = "not-connected"
-    status = STATUS.get(activity, "Aguardando a próxima análise")
+    progress = progress or poll_progress(store, ai_enabled=ai_enabled)
     source = (
         "Fontes em cache"
         if wiki_status in ("cache", "unavailable")
@@ -231,7 +213,7 @@ def index_text(
         "Propostas com motivos, condições e fontes. Você escolhe **Aprovar**, **Manter** ou **Precisa de mais testes**.",
         "\n**Regras:** 10 minutos · mínimo de 5 participantes · dois terços a favor · um voto por conta na rede. Você pode trocar até o prazo. As escolhas aparecem no resultado final.",
         "No máximo uma proposta por hora; sem evidência suficiente, a classificação é preservada.",
-        f"\n**Análise:** {status}.",
+        "\n" + progress_text(progress),
         f"**Wiki:** {source}.",
         f"**Última classificação:** {moment(store.latest()['created_at'])}.",
     ]

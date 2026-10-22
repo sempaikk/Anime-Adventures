@@ -209,6 +209,7 @@ class TierAnalyzer:
         self.backend = backend or GroqBackend()
         self.evidence = evidence or EvidenceLibrary()
         self.source_guard = source_guard
+        self.running = False
 
     def packet(self):
         pending = [
@@ -445,7 +446,7 @@ class TierAnalyzer:
         if not self.backend.enabled:
             self.store.set("analysis_status", "not-connected")
             return False
-        if now - float(self.store.get("last_attempt") or 0) < self.store.interval():
+        if now < self.store.next_analysis_at():
             return False
         if not self.store.may_propose():
             return False
@@ -471,6 +472,7 @@ class TierAnalyzer:
         budget["calls"] += 1
         budget["tokens"] += worst
         self.store.set("budget", json.dumps(budget))
+        self.running = True
         try:
             result, usage = await self.backend.analyze(packet)
             budget["tokens"] += usage - worst
@@ -514,6 +516,8 @@ class TierAnalyzer:
                 )
                 else type(error).__name__,
             )
+        finally:
+            self.running = False
         return False
 
     async def check_connection(self):

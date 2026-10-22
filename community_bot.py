@@ -27,6 +27,7 @@ from tier_domain import digest, relevant_units, safe, moment
 from tier_image import PanelRenderer, image_file, index_text, poll_embed
 from tier_media import MediaLibrary, MAX_UPLOAD
 from tier_portraits import PortraitInventory
+from tier_schedule import poll_progress
 from tier_store import TierStore
 from tier_views import AdminView, PollView, ThreadView, reply
 from tier_wiki import WikiSync
@@ -667,6 +668,13 @@ class CommunityBot(commands.Bot):
             wiki_status=self.wiki.status,
             ai_enabled=self.analyzer.backend.enabled,
             portrait_count=needs.count,
+            progress=poll_progress(
+                self.store,
+                ai_enabled=self.analyzer.backend.enabled,
+                analyzing=self.analyzer.running,
+                preparing=self.history_import_lock.locked(),
+                maintenance=self.health.storage_level == "critical",
+            ),
         )
         if self.health.storage_level == "critical":
             text += "\n**Manutenção:** novas análises e imagens temporariamente pausadas. A classificação atual foi preservada."

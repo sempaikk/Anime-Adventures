@@ -75,7 +75,7 @@ reconhece arquivo reparado sem precisar alterar posições.
 - **457 testes locais aprovados**, incluindo 34 novos cenários de regressão
   do fechamento; lint de erros Python, formatação e diff conferidos.
 - A verificação isolada repete a mesma suíte em três processos sequenciais,
-  sem credenciais de produção, `.env` ou rede externa. Não são outros 455
+  sem credenciais de produção, `.env` ou rede externa. Não são outros 457
   cenários diferentes: é o caminho de execução usado pela hospedagem.
 - **Discord real**, no servidor de teste autorizado: dois comandos e permissão
   padrão de `/tierlist`; índice com três botões; lista 71→70→71 na mesma
@@ -99,6 +99,26 @@ A chave Groq está somente na hospedagem. Esta rodada direta não fez chamadas
 à Groq. A verificação completa, depois de reiniciar a versão atualizada, testa
 a resposta real respeitando o orçamento. A validação anterior dessa integração
 continua distinta das verificações locais desta revisão.
+
+## Complemento: acompanhamento da próxima enquete
+
+O índice de Votações e histórico distingue relatos aguardando avaliação,
+preparação, análise em andamento, proposta pronta, votação aberta e apuração.
+Quando existe intervalo a cumprir, mostra a próxima disponibilidade de análise
+usando o horário relativo nativo do Discord. Uma enquete continua condicionada
+a uma proposta fundamentada; a contagem não promete uma votação por hora.
+O prazo usa os mesmos registros e regras do motor de análise, permanece após
+reiniciar e não exige novas chamadas de IA nem edições por segundo.
+
+- **479 testes locais aprovados**, incluindo 22 cenários novos de prazo,
+  reinício, cotas, cancelamento e atualização do índice.
+- **11 verificações na API real do Discord**, no tópico privado de teste:
+  estados entregues/editados na mesma mensagem, componentes e anexo preservados,
+  contagem estável sem PATCH a cada passagem de tempo, reabertura do banco,
+  proposta em fila, início/fim de votação e pausa sem horário prometido.
+- Estado temporário, sem Gateway adicional, chamadas à Groq ou posições/votos
+  oficiais alterados. A API confirma a entrega dos horários relativos, sem
+  reproduzir a tela de uma conta humana.
 
 ## O que ainda depende da estreia
 

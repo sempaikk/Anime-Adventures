@@ -56,6 +56,10 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 
 - No máximo uma proposta global por hora. Dez minutos a partir da primeira
   publicação confirmada; cópias compartilham o mesmo prazo.
+- Índice mostra a próxima disponibilidade de análise, relatos aguardando,
+  análise em andamento, proposta pronta e prazo da votação atual. Horários
+  relativos nativos do Discord, preservados no reinício; não prometer uma
+  enquete por hora nem consumir IA para atualizar a contagem.
 - Aprovar / Manter / Precisa de mais testes; mínimo cinco contas e dois terços
   a favor. Um voto por conta na rede; troca permitida até o prazo.
 - Durante a votação mostrar só participantes; escolhas agregadas ao encerrar.
