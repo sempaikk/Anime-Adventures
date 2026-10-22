@@ -528,6 +528,8 @@ class TierAnalyzer:
             if result != {"changes": []}:
                 raise AnalysisUnavailable("invalid-json")
             self.store.set("last_connection_success", now)
+            if self.store.get("analysis_status") == "not-connected":
+                self.store.set("analysis_status", "waiting")
             return "Conexão com a IA confirmada por uma resposta válida. Este teste não criou proposta nem alterou posições."
         except (
             AnalysisUnavailable,

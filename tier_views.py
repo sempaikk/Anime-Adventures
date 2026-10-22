@@ -12,6 +12,21 @@ from tier_domain import safe
 
 log = logging.getLogger("tierlist.ui")
 
+PLAYER_GUIDE = """## Como funciona a tier list
+**Leia a imagem:** Meta é a categoria mais alta, seguida de S, A, B, C, D e E. Na mesma linha, os personagens mais bem colocados ficam à esquerda. Trocar essa ordem não precisa mudar o tier.
+
+**Sem avaliação não significa ruim.** Uma forma só aparece na grade depois de uma decisão aprovada. O arquivo do tópico inclui os nomes completos e as formas ainda sem avaliação.
+
+**Antes de votar:** leia o motivo, as condições, a ressalva e as referências. Considere a forma exata, o custo e as situações de uso. A wiki é comunitária e pode estar desatualizada.
+
+**Escolha:** Aprovar aceita a mudança; Manter preserva as posições; Mais testes pede evidências melhores. Sua conta tem um voto na rede inteira e pode trocar até o prazo. Contas precisam ter pelo menos sete dias para votar.
+
+**Quando muda:** são dez minutos de votação, cinco participantes e dois terços a favor. A imagem muda depois da aprovação. Sem aprovação, continua igual. Há no máximo uma proposta por hora; sem evidência suficiente, não há proposta.
+
+**Resultados:** aparecem na própria proposta ao encerrar. A distribuição dos votos fica oculta durante a votação. Sinalizar problema envia um relato para revisão, sem acrescentar votos.
+
+**Retratos:** Sugerir imagem envia uma correção para revisão do responsável. Trocar um retrato não muda a posição do personagem."""
+
 
 async def reply(i, text=None, **kwargs):
     kwargs.setdefault("ephemeral", True)
@@ -68,6 +83,11 @@ class ThreadView(GuardedView):
         self.bot.require_thread(i, index_only=True)
         self.bot.require_human(i)
         await i.response.send_modal(ImageModal(self.bot, i))
+
+    @discord.ui.button(label="Como funciona", custom_id="tier:v3:help")
+    async def help(self, i, button):
+        self.bot.require_thread(i, index_only=True)
+        await reply(i, PLAYER_GUIDE)
 
 
 class ImageModal(BoundModal):
@@ -315,12 +335,19 @@ class AdminView(PrivateView):
                     "undo-image",
                     "connection-test",
                     "full-verification",
+                    "visual-test",
                 ):
                     self.remove_item(item)
+            self.diagnosis.label = "Conferir painel"
 
     @discord.ui.button(label="Diagnóstico", row=0)
     async def diagnosis(self, i, button):
-        await reply(i, self.bot.diagnostics(i))
+        await reply(
+            i,
+            self.bot.diagnostics(i)
+            if self.bot.is_owner_id(i.user.id)
+            else self.bot.server_status(i),
+        )
 
     @discord.ui.button(label="Revisar imagens", custom_id="review-images", row=0)
     async def images(self, i, button):
@@ -373,6 +400,14 @@ class AdminView(PrivateView):
         from tier_verify import verify
 
         await verify(self.bot, i)
+
+    @discord.ui.button(
+        label="Testar personagens na imagem", custom_id="visual-test", row=2
+    )
+    async def visual(self, i, button):
+        from tier_preview import open_demo
+
+        await open_demo(self.bot, i)
 
 
 class UndoImage(PrivateView):

@@ -25,6 +25,16 @@ def png(color="red", size=(128, 128)):
     return output.getvalue()
 
 
+def attachment(file):
+    current = file.fp.tell()
+    file.fp.seek(0)
+    blob = file.fp.read()
+    file.fp.seek(current)
+    return SimpleNamespace(
+        filename=file.filename, size=len(blob), read=AsyncMock(return_value=blob)
+    )
+
+
 def missing():
     return discord.NotFound(
         SimpleNamespace(status=404, reason="Not found"),
@@ -59,6 +69,8 @@ class FakeMessage:
             self.embeds = [kwargs["embed"]]
         if "embeds" in kwargs:
             self.embeds = kwargs["embeds"]
+        if "attachments" in kwargs:
+            self.attachments = [attachment(f) for f in kwargs["attachments"]]
         if "view" in kwargs:
             self.components = (
                 [
@@ -84,7 +96,9 @@ class FakeDiscord:
     def __init__(self, app, clock):
         self.app, self.clock = app, clock
         self.permissions = SimpleNamespace(
-            **{p: True for p in PERMISSIONS}, manage_threads=False
+            **{p: True for p in PERMISSIONS},
+            manage_threads=False,
+            create_private_threads=True,
         )
         self.guild = SimpleNamespace(id=1, me=SimpleNamespace(id=42))
         self.channel = MagicMock(spec=discord.TextChannel)
@@ -193,9 +207,7 @@ class FakeDiscord:
         message.exists = True
         message.content = payload.get("content") or ""
         message.embeds = [discord.Embed.from_dict(e) for e in payload.get("embeds", [])]
-        message.attachments = [
-            SimpleNamespace(filename=f.filename) for f in params.files or []
-        ]
+        message.attachments = [attachment(f) for f in params.files or []]
         message.nonce = payload.get("nonce")
         message.components = [
             SimpleNamespace(children=row["components"])
@@ -499,7 +511,9 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_public_controls_have_no_consent_or_config_menus(self):
         view = ThreadView(self.app)
-        self.assertEqual([item.label for item in view.children], ["Sugerir imagem"])
+        self.assertEqual(
+            [item.label for item in view.children], ["Sugerir imagem", "Como funciona"]
+        )
         self.assertTrue(
             all(
                 not isinstance(item, discord.ui.ChannelSelect) for item in view.children
@@ -514,7 +528,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
     async def test_owner_review_cannot_be_used_by_server_admin_or_other_actor(self):
         i = self.interaction(user=8)
         view = AdminView(self.app, i)
-        self.assertEqual([item.label for item in view.children], ["Diagnóstico"])
+        self.assertEqual([item.label for item in view.children], ["Conferir painel"])
         with self.assertRaises(ValueError):
             self.app.require_owner(i)
         private = PrivateView(self.app, self.interaction(), owner=True)
@@ -542,6 +556,48 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(self.app.store.active_proposal())
         await self.app.analyzer.check_connection()
         self.backend.analyze.assert_awaited_once()
+
+    async def test_loaded_key_waits_for_reports_instead_of_claiming_missing_key(self):
+        self.backend.enabled = True
+        await self.setup_panel()
+        row = self.app.store.thread(1)
+        index = self.env.partial(self.env.thread, int(row["intro_id"]))
+        self.assertNotIn("Aguardando a chave", index.content)
+        self.assertIn("Aguardando relatos relevantes", index.content)
+        self.assertNotIn("chave", index.content.lower())
+        self.backend.analyze.return_value = ({"changes": []}, 50)
+        await self.app.analyzer.check_connection()
+        await self.app.panel_loop.coro(self.app)
+        self.assertIn("Aguardando relatos relevantes", index.content)
+        self.assertNotIn("Aguardando a chave", index.content)
+        self.backend.enabled = False
+        await self.app.panel_loop.coro(self.app)
+        self.assertIn("Análise automática ainda indisponível", index.content)
+        self.assertNotIn("chave", index.content.lower())
+
+    async def test_only_owner_sees_technical_diagnostics_and_image_has_no_footer(self):
+        await self.setup_panel()
+        with self.assertRaises(ValueError):
+            self.app.diagnostics(self.interaction(user=8))
+        self.assertIn("Catálogo", self.app.diagnostics(self.interaction()))
+        status = self.app.server_status(self.interaction(user=8))
+        self.assertNotIn("Banco", status)
+        self.assertNotIn("IA", status)
+        blob, _ = await self.app.picture()
+        with Image.open(io.BytesIO(blob)) as image:
+            self.assertEqual(image.height, 7 * 96)
+
+    async def test_player_guide_is_private_and_available_from_official_index(self):
+        await self.setup_panel()
+        row = self.app.store.thread(1)
+        i = self.interaction(admin=False, user=8, channel=self.env.thread)
+        i.message = SimpleNamespace(id=int(row["intro_id"]))
+        await ThreadView(self.app).help.callback(i)
+        kwargs = i.response.send_message.await_args.kwargs
+        self.assertTrue(kwargs["ephemeral"])
+        text = i.response.send_message.await_args.args[0]
+        self.assertIn("Sem avaliação", text)
+        self.assertLessEqual(len(text), 2000)
 
 
 class MediaCase(unittest.TestCase):

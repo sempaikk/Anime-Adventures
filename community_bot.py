@@ -289,7 +289,37 @@ class CommunityBot(commands.Bot):
     async def on_thread_delete(self, thread):
         await self.on_guild_channel_delete(thread)
 
+    def server_status(self, i):
+        self.require_admin(i)
+        panel = next(
+            (p for p in self.store.panels() if p["guild_id"] == str(i.guild_id)), None
+        )
+        thread = self.store.thread(i.guild_id)
+        if not panel or not thread:
+            return "**Painel ainda não preparado.** Use /tierlist em um canal de texto e confira as permissões informadas."
+        channel = self.get_channel(int(panel["channel_id"]))
+        if not channel:
+            return "**Painel indisponível.** Confira Ver canal e use /tierlist para preparar novamente o painel."
+        if thread["status"] == "missing":
+            return "**O tópico precisa de reparo.** Use /tierlist e siga a orientação para preparar novamente o painel."
+        missing = [
+            label
+            for flag, label in PERMISSIONS.items()
+            if channel
+            and not getattr(channel.permissions_for(channel.guild.me), flag, False)
+        ]
+        return (
+            "**Painel deste servidor**\n"
+            + f"[Ver imagem](https://discord.com/channels/{i.guild_id}/{panel['channel_id']}/{panel['message_id']}) · [Votações e histórico](https://discord.com/channels/{i.guild_id}/{thread['thread_id']})\n"
+            + (
+                "Confira estas permissões: " + ", ".join(missing) + "."
+                if missing
+                else "Painel preparado. Se o tópico estiver trancado, destranque para continuar as votações."
+            )
+        )
+
     def diagnostics(self, i):
+        self.require_owner(i)
         latest = self.store.latest()
         key = "carregada" if self.analyzer.backend.enabled else "ausente"
         checked = self.store.get("last_connection_success")
@@ -299,6 +329,7 @@ class CommunityBot(commands.Bot):
         if thread:
             text += f"\n**Tópico:** {thread['status']}."
         if self.is_owner_id(i.user.id):
+            text += f"\n**Catálogo:** {len(self.catalog.units)} formas · {max(0, len(self.catalog.units) - len(latest['ranking']))} sem avaliação.\n**Retratos:** revisão {int(self.store.get('media_revision') or 0)}."
             text += f"\n**Backup:** {'falha na última tentativa; confira o armazenamento e exporte a cópia anterior' if self.health.backup_error else 'sem falha registrada'}."
             error = self.store.get("analysis_error")
             if error:
@@ -566,7 +597,12 @@ class CommunityBot(commands.Bot):
 
     async def sync_index(self, panel, thread):
         record = self.store.thread(panel["guild_id"])
-        text = index_text(self.store, panel, wiki_status=self.wiki.status)
+        text = index_text(
+            self.store,
+            panel,
+            wiki_status=self.wiki.status,
+            ai_enabled=self.analyzer.backend.enabled,
+        )
         if self.health.storage_level == "critical":
             text += "\n**Manutenção:** novas análises e imagens pausadas por falta de espaço. A classificação atual foi preservada."
         previous = self.store.get("previous-thread:" + panel["guild_id"])

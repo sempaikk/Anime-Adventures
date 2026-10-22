@@ -11,9 +11,11 @@ O administrador usa `/tierlist` em um canal de texto. O bot publica **somente um
 
 O tópico contém um índice editável, classificação completa por nome em `.txt`, propostas, votações, resultados e revisões. O índice oferece **Sugerir imagem** e atalhos para decisões recentes. O resultado aparece na própria proposta encerrada. O canal principal continua com a mesma imagem editada; não há botão de histórico nela nem segundo canal obrigatório.
 
-Os retratos mantêm os pixels originais, sem ampliação artificial ou geração de personagens. A grade segue **Meta, S, A, B, C, D e E**, com ordem da esquerda para a direita e linhas que crescem. O rodapé distingue a última classificação aprovada da revisão de retratos, em horário de Brasília. O arquivo não recebe a descrição artificial de ponto que causava um indicador ALT desnecessário.
+Os retratos mantêm os pixels originais, sem ampliação artificial ou geração de personagens. A grade segue **Meta, S, A, B, C, D e E**, com ordem da esquerda para a direita e linhas que crescem. **A imagem não tem rodapé técnico.** A data da classificação fica no índice; contadores, versões e conexão ficam no diagnóstico exclusivo do dono. O arquivo não recebe a descrição artificial de ponto que causava um indicador ALT desnecessário.
 
 O catálogo inicial tem **549 identidades/formas, 455 retratos válidos e 94 pendências**. As formas sem classificação ficam em **Sem avaliação**, no arquivo textual, e não são colocadas em E. Um retrato ausente usa um marcador, sem tomar a imagem de outra evolução. A classificação inicial é vazia: não publicamos posições fictícias.
+
+**Como funciona**, no tópico, explica em particular a leitura da imagem, votos, resultados, formas sem avaliação e envio de retratos. O dono recebe controles técnicos exclusivos. Outros administradores recebem **Conferir painel**, com links e orientações de permissões do próprio servidor, sem dados internos da IA, banco ou revisões globais.
 
 ## Análise e votação global
 
@@ -73,10 +75,17 @@ O responsável pelo aplicativo recebe **Verificação completa** na resposta pri
 
 - executa a suíte automatizada em subprocesso com estado temporário, sem credenciais nem rede externa;
 - confere os dois comandos registrados na API real;
-- cria um tópico técnico separado, publica/lê/edita uma imagem, confere botões e arquivamento/retomada;
+- cria um tópico técnico **privado**, convida o dono, publica/lê/edita uma imagem, confere botões e arquivamento/retomada;
+- testa dez etapas visuais: entrada/remoção, ordem, mudança de tier, expansão/redução da linha, troca de retrato e restauração, comparando cada PNG baixado do Discord com o arquivo enviado;
 - verifica uma resposta real da Groq, respeitando cota e intervalo;
 - limpa as próprias mensagens técnicas e entrega um relatório JSON privado;
 - oferece **Confirmar teste de interação**, usando um clique real no código de voto com banco temporário.
+
+**Testar personagens na imagem** abre uma demonstração privada com Anterior, Próxima etapa e Executar todas. Também está disponível como **Ver alterações de personagens** no relatório. Posições artificiais recebem o aviso SIMULAÇÃO e nunca são gravadas no ranking global. Os retratos substituídos no ensaio ficam em bancos temporários. A execução automática pode ser interrompida com segurança no encerramento do bot.
+
+O teste da API exige **Criar tópicos privados**. Sem essa permissão, ele informa a limitação e não publica um teste público. A demonstração privada por interação continua disponível. As permissões de moderação do Discord continuam valendo nos tópicos privados.
+
+O subprocesso preserva os caminhos das bibliotecas carregadas pelo bot, incluindo instalações em `.local`, mesmo com HOME temporário. Mantém credenciais removidas, `.env` desativado e rede externa bloqueada. Zero testes é falha, não aprovação.
 
 **Não é preciso reunir cinco pessoas para os testes automatizados.** Os cenários de disputa usam participantes artificiais somente em bancos temporários, sem fabricar votos ou posições públicas. A ferramenta não se passa por uma conta humana. Aparência no celular/computador e seleção humana de anexos são identificadas como verificações do cliente ainda não executadas.
 

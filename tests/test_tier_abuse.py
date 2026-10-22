@@ -5,6 +5,7 @@ import io
 import json
 import random
 import os
+import sys
 import tempfile
 import unittest
 from datetime import timedelta
@@ -121,6 +122,7 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
                 "undo-image",
                 "connection-test",
                 "full-verification",
+                "visual-test",
             )
         ]
         for button in callbacks:
@@ -326,6 +328,39 @@ class VerificationCase(unittest.IsolatedAsyncioTestCase):
     asyncTearDown = fixtures.ThreadRuntimeCase.asyncTearDown
     interaction = fixtures.ThreadRuntimeCase.interaction
 
+    async def test_isolation_retains_host_prefix_dependencies_with_temporary_home(self):
+        from tier_verify import isolated_suite
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            prefix = root / "home" / ".local" / "lib" / "python3.12" / "site-packages"
+            prefix.mkdir(parents=True)
+            (prefix / "hosting_prefix_probe.py").write_text(
+                'VALUE="host-prefix-found"\n'
+            )
+            (root / "tests").mkdir()
+            (root / "tests" / "test_tier_hosting.py").write_text("""
+import unittest,os,socket
+import hosting_prefix_probe,dotenv,discord
+from PIL import Image
+class HostingCase(unittest.TestCase):
+    def test_runtime(self):
+        self.assertEqual(hosting_prefix_probe.VALUE,'host-prefix-found')
+        self.assertEqual(os.environ['HOME'],os.environ['DATA_DIR'])
+        self.assertNotIn('CUSTOM_CREDENTIAL',os.environ)
+        self.assertNotIn('DISCORD_TOKEN',os.environ)
+        self.assertFalse(dotenv.load_dotenv())
+        with self.assertRaises(OSError):socket.getaddrinfo('blocked.invalid',443)
+""")
+            with (
+                patch("tier_verify.ROOT", root),
+                patch.object(sys, "path", [str(prefix), *sys.path]),
+                patch.dict(os.environ, {"CUSTOM_CREDENTIAL": "synthetic-only"}),
+            ):
+                passed, count, output = await isolated_suite()
+            self.assertTrue(passed, output)
+            self.assertEqual(count, 1)
+
     async def test_full_verification_uses_isolated_scenarios_and_real_api_adapter(self):
         self.backend.enabled = True
         self.backend.analyze.return_value = ({"changes": []}, 50)
@@ -353,6 +388,40 @@ class VerificationCase(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(ValueError):
             await verify(self.app, i)
         self.assertEqual(self.env.payloads, [])
+
+    async def test_private_technical_thread_is_preferred_and_owner_is_invited(self):
+        self.env.permissions.create_private_threads = True
+        i = self.interaction()
+        i.edit_original_response = AsyncMock()
+        with patch(
+            "tier_verify.isolated_suite",
+            new_callable=AsyncMock,
+            return_value=(True, 100, "OK"),
+        ):
+            report = await verify(self.app, i)
+        self.assertEqual(
+            self.env.channel.create_thread.await_args.kwargs["type"],
+            discord.ChannelType.private_thread,
+        )
+        self.assertFalse(self.env.channel.create_thread.await_args.kwargs["invitable"])
+        self.env.thread.add_user.assert_awaited_once_with(i.user)
+        self.assertEqual(len(report["visual_steps"]), 10)
+
+    async def test_missing_private_thread_permission_does_not_create_public_test_messages(
+        self,
+    ):
+        self.env.permissions.create_private_threads = False
+        i = self.interaction()
+        i.edit_original_response = AsyncMock()
+        with patch(
+            "tier_verify.isolated_suite",
+            new_callable=AsyncMock,
+            return_value=(True, 100, "OK"),
+        ):
+            report = await verify(self.app, i)
+        self.assertEqual(self.env.payloads, [])
+        self.env.channel.create_thread.assert_not_awaited()
+        self.assertTrue(any(r["result"] == "failed" for r in report["checks"]))
 
     async def test_human_verification_click_uses_actual_vote_callback_in_temporary_database(
         self,

@@ -35,7 +35,7 @@ POLL_STATES = {
     "suspended": "Suspensa pelo responsável · posição preservada",
 }
 STATUS = {
-    "not-connected": "Aguardando a chave da IA",
+    "not-connected": "Análise automática ainda indisponível",
     "retry": "Análise temporariamente indisponível; posições preservadas",
     "quota": "Limite gratuito atingido; aguardando nova janela",
     "poll-open": "Votação em andamento",
@@ -154,7 +154,7 @@ class PanelRenderer:
                 updated_at=publication["created_at"],
                 media_revision=media_revision,
                 total_units=total_units,
-                footer=True,
+                footer=False,
             )
             if len(blob) > 8 * 1024 * 1024:
                 raise ValueError(
@@ -172,7 +172,6 @@ def ranking_text(publication, catalog):
     lines = [
         "ANIME ADVENTURES · CLASSIFICAÇÃO GLOBAL",
         moment(publication["created_at"]),
-        f"Versão {publication['id']}",
         "Ordem dentro de cada tier: da esquerda para a direita.",
         "",
     ]
@@ -191,11 +190,14 @@ def ranking_text(publication, catalog):
     return ("\n".join(lines) + "\n").encode()
 
 
-def index_text(store, panel, *, wiki_status="cache", media_pending=0):
+def index_text(store, panel, *, wiki_status="cache", media_pending=0, ai_enabled=None):
     thread = store.thread(panel["guild_id"])
-    status = STATUS.get(
-        store.get("analysis_status") or "waiting", "Aguardando a próxima análise"
-    )
+    activity = store.get("analysis_status") or "waiting"
+    if ai_enabled is True and activity == "not-connected":
+        activity = "waiting"
+    elif ai_enabled is False and activity not in ("poll-open", "poll-queued"):
+        activity = "not-connected"
+    status = STATUS.get(activity, "Aguardando a próxima análise")
     source = (
         "Fontes em cache"
         if wiki_status in ("cache", "unavailable")
@@ -332,9 +334,7 @@ def poll_embed(store, catalog, proposal):
             value="10 minutos a partir da publicação confirmada.",
             inline=False,
         )
-    embed.set_footer(
-        text=f"Proposta #{proposal['id']} · classificação #{proposal['base_publication']} · fontes verificáveis"
-    )
+    embed.set_footer(text=f"Proposta #{proposal['id']} · decisão da comunidade")
     return embed
 
 

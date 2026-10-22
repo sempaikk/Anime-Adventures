@@ -16,7 +16,8 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 - Reutilização do painel/tópico em execuções concorrentes; recuperação de
   reinício, arquivamento e mensagens apagadas com instruções claras.
 - PNG com arte original, Meta/S/A/B/C/D/E, ordem esquerda→direita, linhas
-  expansíveis, horário da última classificação aprovada e revisão de mídia.
+  expansíveis e sem rodapé técnico. A data fica no índice; versões e contadores
+  ficam no diagnóstico exclusivo do dono.
   Formas sem avaliação não são colocadas em E. Sem descrição ALT de ponto.
 
 ## Análise e fontes
@@ -80,3 +81,8 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 - Relatório distingue isolado/real/não testado. Um clique humano passa pelo
   callback de voto com banco temporário, sem fabricar votos públicos.
 - Encerramento cancela verificações/subprocessos antes de fechar o estado.
+- Ajuda contextual privada para jogadores; conferência do próprio painel para
+  administradores, sem expor banco, chave, orçamento ou controles do dono.
+- Demonstração visual exclusiva do dono, com dez etapas e reprodução automática;
+  arquivos recebidos do Discord comparados aos enviados. Usa somente estado
+  temporário. Testes da API criam tópico privado, sem fallback público.

@@ -46,7 +46,11 @@ current=[f for f in files if f.startswith('test_tier')]
 archived=[f for f in files if f not in current]
 middle=len(archived)//2
 groups=[current,archived[:middle],archived[middle:]]
-suite=unittest.TestSuite(unittest.defaultTestLoader.discover('tests',pattern=name) for name in groups[int(sys.argv[1])])
+selected=groups[int(sys.argv[1])]
+if not selected:
+    print('Nenhum arquivo nesta parte.')
+    raise SystemExit(0)
+suite=unittest.TestSuite(unittest.defaultTestLoader.discover('tests',pattern=name) for name in selected)
 result=unittest.TextTestRunner(verbosity=1).run(suite)
 raise SystemExit(not result.wasSuccessful())
 """
@@ -62,6 +66,16 @@ async def isolated_suite():
         environment["DATA_DIR"] = directory
         environment["HOME"] = directory
         environment["PYTHONDONTWRITEBYTECODE"] = "1"
+        # Hosts may install with --prefix=.local and expose packages through
+        # user-site/PYTHONPATH. Changing HOME must not hide the loaded runtime.
+        # Rebuild the import path from trusted parent paths, never inherit secrets.
+        paths = []
+        for entry in sys.path:
+            path = Path(entry or ROOT).resolve()
+            if path.is_dir() or (path.is_file() and path.suffix in (".zip", ".egg")):
+                if str(path) not in paths:
+                    paths.append(str(path))
+        environment["PYTHONPATH"] = os.pathsep.join(paths)
         chunks = []
         succeeded = True
         deadline = asyncio.get_running_loop().time() + 180
@@ -92,7 +106,7 @@ async def isolated_suite():
                 f"Parte {group + 1}/3\n" + output[-65000:].decode(errors="replace")
             )
     text = "\n".join(chunks)
-    count = sum(int(n) for n in re.findall(r"Ran (\d+) tests", text))
+    count = sum(int(n) for n in re.findall(r"Ran (\d+) tests?\b", text))
     return succeeded and count > 0, count, text
 
 
@@ -171,9 +185,7 @@ class VerificationClick(GuardedView):
             }
         )
         self.bot.store.set("last_verified_click", time.time())
-        for item in self.children:
-            item.disabled = True
-        self.stop()
+        button.disabled = True
         await i.edit_original_response(
             content="**Interação confirmada.** O Discord entregou seu clique ao mesmo código que registra votos. O registro foi feito num banco temporário; nenhuma posição ou voto global foi alterado."
         )
@@ -192,6 +204,14 @@ class VerificationClick(GuardedView):
             )
         finally:
             file.close()
+
+    @discord.ui.button(label="Ver alterações de personagens")
+    async def visual(self, i, button):
+        if not await self.interaction_check(i):
+            return
+        from tier_preview import open_demo
+
+        await open_demo(self.bot, i)
 
 
 def summary(report):
@@ -255,6 +275,13 @@ async def _verify(bot, i):
                     "name": f"Cenários automatizados: {count} testes",
                     "result": "passed" if passed else "failed",
                     "level": "isolated",
+                    **(
+                        {
+                            "detail": "A suíte não iniciou. O relatório contém o erro de carregamento."
+                        }
+                        if not passed and count == 0
+                        else {}
+                    ),
                 }
             )
             if not passed:
@@ -312,17 +339,31 @@ async def _verify(bot, i):
                     "level": "Discord real",
                 }
             )
+            private = bool(
+                getattr(
+                    channel.permissions_for(channel.guild.me),
+                    "create_private_threads",
+                    False,
+                )
+            )
+            if not private:
+                raise ValueError(
+                    "Para verificar publicações sem expor testes aos membros, conceda Criar tópicos privados ao bot neste canal. A demonstração visual privada continua disponível."
+                )
             thread = await channel.create_thread(
                 name="Verificação técnica · temporária",
-                type=discord.ChannelType.public_thread,
+                type=discord.ChannelType.private_thread,
+                invitable=False,
                 auto_archive_duration=60,
                 reason="Verificação solicitada pelo responsável pelo bot",
             )
+            await thread.add_user(i.user)
             report["checks"].append(
                 {
                     "name": "Criação real de tópico",
                     "result": "passed",
                     "level": "Discord real",
+                    "detail": "Tópico privado, com convite ao responsável.",
                 }
             )
             blob, _ = await bot.picture()
@@ -361,6 +402,16 @@ async def _verify(bot, i):
                     "name": "Edição real da mesma imagem",
                     "result": "passed",
                     "level": "Discord real",
+                }
+            )
+            from tier_preview import check_visual_sequence
+
+            report["visual_steps"] = await check_visual_sequence(bot, message)
+            report["checks"].append(
+                {
+                    "name": "Personagens, ordem, tiers e substituição de retratos: 10 etapas",
+                    "result": "passed",
+                    "level": "Discord real + dados isolados",
                 }
             )
             view = PollView(bot, closed=True)
