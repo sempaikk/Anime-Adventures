@@ -235,3 +235,32 @@ comunidade pode completar as 71 fotos ao longo do uso.
 Essa etapa comprova o funcionamento nos ambientes exercitados. A qualidade dos
 argumentos sobre o jogo, aparência no cliente e carga real continuam sendo
 validações de uso, sem novos módulos obrigatórios para lançar o piloto.
+
+## Correção do verificador na hospedagem — 2026.10.22.3
+
+O relatório real da versão 2026.10.22.2 confirmou o pacote, a Groq, os comandos
+e a publicação do PNG. A edição seguinte falhou: a mensagem técnica já usava
+Components V2, mas aquela chamada ainda enviava texto no campo legado. A API
+real reproduziu a recusa com HTTP 400, código 50035. A edição agora usa o mesmo
+conversor V2 das demais mensagens. O adaptador de testes também recusa essa
+mistura, impedindo que um ensaio local a aceite silenciosamente.
+
+A suíte isolada passa de três para cinco minutos de orçamento total. O processo
+filho registra cada teste concluído. No limite, o pai encerra e recolhe o
+processo, preserva contagem, falhas e último teste em vez de descartar a saída.
+Os registros intermediários são condensados para não esconder os rastros de
+erro. Suíte incompleta permanece atenção, ou falha se já houver um erro; não
+vira aprovação. Os testes reais continuam após esse limite. Uma falha da API
+agora identifica etapa, HTTP e código Discord, sem copiar o corpo da resposta.
+
+O clique humano confirmado pelo dono na hospedagem é evidência própria do
+callback de voto. O ensaio por HTTP não o substitui nem usa token de pessoa.
+
+Na versão corrigida, **582 testes isolados passaram**. O mesmo `verify` chamado
+pelo painel foi executado com HTTP real no servidor autorizado, banco
+temporário e resposta privada simulada: registro dos comandos, tópico privado,
+envio/leitura/edição do PNG, dez etapas de personagens, cinco de retratos/TXT,
+botões, arquivamento/retomada e limpeza passaram. O pacote foi identificado como
+`2026.10.22.3 · 9c7ebe36b61a`. Não houve Gateway adicional, chamada à Groq ou
+alteração de posições oficiais. O limite de tempo foi reproduzido com processo
+real controlado; contagem parcial e encerramento do filho foram conferidos.

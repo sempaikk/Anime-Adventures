@@ -98,6 +98,14 @@ Use **Testar personagens na imagem** nos controles do dono, ou **Ver alteraçõe
 
 Baixe `verificacao-tierlist.json` para acompanhar falhas. O relatório diferencia isolado, Discord real, Groq real e não testado. A suíte roda com credenciais removidas, importação de `.env` desativada, rede externa bloqueada e estado temporário. Falha não é escondida como aprovação. Uma interrupção cancela o subprocesso antes de fechar o banco.
 
+A suíte isolada tem orçamento total de cinco minutos, compartilhado pelos três
+processos sequenciais. Se a hospedagem não terminar nesse prazo, o relatório
+mostra a quantidade de testes concluídos, conserva o progresso e identifica a
+execução como incompleta. Falhas já encontradas continuam marcadas como falha;
+os testes reais do Discord seguem em seguida. Um limite de tempo não comprova
+que todos os testes passaram. Erros da API mostram a etapa, o status HTTP e o
+código do Discord, sem incluir o corpo da resposta ou dados de autenticação.
+
 ## O que observar na interface
 
 - Somente `/tierlist` e `/chatglobal`, sem campos adicionais. Chat global responde **Em breve.**

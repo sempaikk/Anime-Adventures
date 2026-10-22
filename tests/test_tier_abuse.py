@@ -399,6 +399,129 @@ class HostingCase(unittest.TestCase):
             "Confirmar teste de interação",
         )
 
+    async def test_native_image_edit_rejects_legacy_text_and_verifier_uses_v2(self):
+        message = self.env.partial(self.env.thread, 700)
+        message.exists = True
+        message.flags.components_v2 = True
+        with self.assertRaises(discord.HTTPException):
+            await message.edit(content="Legacy text is invalid on a V2 message")
+        message.exists = False
+        i = self.interaction()
+        i.edit_original_response = AsyncMock()
+        with patch(
+            "tier_verify.isolated_suite",
+            new_callable=AsyncMock,
+            return_value=(True, 100, "OK"),
+        ):
+            report = await verify(self.app, i)
+        self.assertTrue(
+            any(
+                row["name"] == "Edição real da mesma imagem"
+                and row["result"] == "passed"
+                for row in report["checks"]
+            ),
+            report,
+        )
+        self.assertEqual(len(report["visual_steps"]), 10)
+        self.assertEqual(len(report["portrait_steps"]), 5)
+
+    async def test_discord_failure_identifies_stage_and_codes_without_response_body(
+        self,
+    ):
+        error = discord.HTTPException(
+            SimpleNamespace(status=400, reason="Bad Request"),
+            {"code": 50035, "message": "SYNTHETIC_PRIVATE_RESPONSE_BODY"},
+        )
+
+        async def rejected(message, **kwargs):
+            raise error
+
+        i = self.interaction()
+        i.edit_original_response = AsyncMock()
+        with (
+            patch.object(fixtures.FakeMessage, "_edit", new=rejected),
+            patch(
+                "tier_verify.isolated_suite",
+                new_callable=AsyncMock,
+                return_value=(True, 100, "OK"),
+            ),
+        ):
+            report = await verify(self.app, i)
+        failed = next(row for row in report["checks"] if row["result"] == "failed")
+        self.assertEqual(failed["stage"], "Edição real da mesma imagem")
+        self.assertEqual(failed["http_status"], 400)
+        self.assertEqual(failed["discord_code"], 50035)
+        self.assertNotIn("SYNTHETIC_PRIVATE_RESPONSE_BODY", json.dumps(report))
+        self.assertNotIn("visual_steps", report)
+        self.assertTrue(all(not m.exists for m in self.env.messages.values()))
+
+    async def test_partial_suite_keeps_counts_and_does_not_hide_known_failures(self):
+        from tier_verify import SuiteTimeout
+
+        i = self.interaction()
+        i.edit_original_response = AsyncMock()
+        output = 'TIER_SUITE_PROGRESS {"group":0,"completed":12,"failures":1,"errors":0,"last_test":"synthetic.failure"}\n'
+        with patch("tier_verify.isolated_suite", side_effect=SuiteTimeout(output)):
+            report = await verify(self.app, i)
+        check = next(row for row in report["checks"] if row["level"] == "isolated")
+        self.assertEqual(check["result"], "failed")
+        self.assertIn("12 testes concluídos", check["name"])
+        self.assertIn("incompleta", check["detail"])
+        self.assertEqual(report["isolated_progress"]["failures"], 1)
+        self.assertIn("synthetic.failure", report["isolated_output"])
+        self.assertEqual(len(report["visual_steps"]), 10)
+
+    async def test_timeout_collects_completed_tests_and_reaps_child(self):
+        from tier_verify import isolated_suite, SuiteTimeout
+
+        launch = asyncio.create_subprocess_exec
+        processes = []
+
+        async def tracked(*args, **kwargs):
+            process = await launch(*args, **kwargs)
+            processes.append(process)
+            return process
+
+        bootstrap = """
+import json,time
+print('TIER_SUITE_PROGRESS '+json.dumps({'group':0,'completed':7,'failures':0,'errors':0,'last_test':'synthetic.completed'}),flush=True)
+time.sleep(60)
+"""
+        with (
+            patch("tier_verify.BOOTSTRAP", bootstrap),
+            patch("tier_verify.SUITE_TIMEOUT", 0.3),
+            patch("tier_verify.asyncio.create_subprocess_exec", side_effect=tracked),
+        ):
+            with self.assertRaises(SuiteTimeout) as caught:
+                await isolated_suite()
+        self.assertEqual(caught.exception.progress["completed"], 7)
+        self.assertIn("synthetic.completed", caught.exception.output)
+        self.assertEqual(len(processes), 1)
+        self.assertIsNotNone(processes[0].returncode)
+
+    async def test_progress_does_not_crowd_failure_tracebacks_out_of_report(self):
+        from tier_verify import suite_output, suite_progress
+
+        records = [
+            "TIER_SUITE_PROGRESS "
+            + json.dumps(
+                {
+                    "group": 0,
+                    "completed": number,
+                    "failures": 1,
+                    "errors": 0,
+                    "last_test": "synthetic.completed",
+                }
+            )
+            for number in range(1, 1001)
+        ]
+        raw = "SYNTHETIC_FAILURE_TRACEBACK\n" + "\n".join(records)
+        concise = suite_output(raw.encode())
+        self.assertIn("SYNTHETIC_FAILURE_TRACEBACK", concise)
+        self.assertEqual(concise.count("TIER_SUITE_PROGRESS "), 1)
+        self.assertEqual(suite_progress(concise)["completed"], 1000)
+        self.assertEqual(suite_progress(concise)["failures"], 1)
+
     async def test_non_owner_cannot_start_full_verification(self):
         i = self.interaction(user=8)
         with self.assertRaises(ValueError):

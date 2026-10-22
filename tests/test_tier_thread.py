@@ -67,6 +67,13 @@ class FakeMessage:
     async def _edit(self, **kwargs):
         if not self.exists:
             raise missing()
+        if self.flags.components_v2 and (
+            kwargs.get("content") or kwargs.get("embed") or kwargs.get("embeds")
+        ):
+            raise discord.HTTPException(
+                SimpleNamespace(status=400, reason="Bad Request"),
+                {"code": 50035, "message": "Components V2 forbids content and embeds"},
+            )
         if "content" in kwargs:
             self.content = kwargs["content"] or ""
         if "embed" in kwargs:

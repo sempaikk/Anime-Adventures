@@ -19,9 +19,12 @@ from tier_store import TierStore
 from tier_views import GuardedView, PollView, reply
 from tier_release import build_info, label as build_label
 
+SUITE_TIMEOUT = 300
+PROGRESS_MARKER = "TIER_SUITE_PROGRESS "
+
 # The subprocess has no production credentials, dotenv imports or external network.
 BOOTSTRAP = """
-import socket,unittest,sys
+import json,socket,unittest,sys
 from pathlib import Path
 import dotenv
 dotenv.load_dotenv=lambda *a,**k:False
@@ -53,9 +56,52 @@ if not selected:
     print('Nenhum arquivo nesta parte.')
     raise SystemExit(0)
 suite=unittest.TestSuite(unittest.defaultTestLoader.discover('tests',pattern=name) for name in selected)
-result=unittest.TextTestRunner(verbosity=1).run(suite)
+class ProgressResult(unittest.TextTestResult):
+    def stopTest(self,test):
+        super().stopTest(test)
+        print('\\nTIER_SUITE_PROGRESS '+json.dumps({
+            'group':int(sys.argv[1]),'completed':self.testsRun,
+            'failures':len(self.failures),'errors':len(self.errors),
+            'last_test':test.id(),
+            'failed_tests':[t.id() for t,_ in (self.failures+self.errors)][-10:],
+        }),flush=True)
+result=unittest.TextTestRunner(verbosity=1,resultclass=ProgressResult).run(suite)
 raise SystemExit(not result.wasSuccessful())
 """
+
+
+def suite_progress(output):
+    groups = {}
+    for line in output.splitlines():
+        if line.startswith(PROGRESS_MARKER):
+            row = json.loads(line[len(PROGRESS_MARKER) :])
+            groups[row["group"]] = row
+    return {
+        "completed": sum(row["completed"] for row in groups.values())
+        if groups
+        else sum(int(n) for n in re.findall(r"Ran (\d+) tests?\b", output)),
+        "failures": sum(row["failures"] for row in groups.values()),
+        "errors": sum(row["errors"] for row in groups.values()),
+        "groups": list(groups.values()),
+    }
+
+
+def suite_output(output):
+    """Keep the last progress record without crowding failure tracebacks out."""
+    lines, progress = [], ""
+    for line in output.decode(errors="replace").splitlines():
+        if line.startswith(PROGRESS_MARKER):
+            progress = line
+        else:
+            lines.append(line)
+    return "\n".join(lines)[-65000:] + "\n" + progress
+
+
+class SuiteTimeout(TimeoutError):
+    def __init__(self, output):
+        super().__init__("Isolated verification reached its time budget")
+        self.output = output
+        self.progress = suite_progress(output)
 
 
 async def isolated_suite():
@@ -80,7 +126,7 @@ async def isolated_suite():
         environment["PYTHONPATH"] = os.pathsep.join(paths)
         chunks = []
         succeeded = True
-        deadline = asyncio.get_running_loop().time() + 180
+        deadline = asyncio.get_running_loop().time() + SUITE_TIMEOUT
         # Sequential processes release Pillow/legacy caches between groups, keeping
         # the verification alongside the live bot within the small hosting budget.
         for group in range(3):
@@ -94,21 +140,24 @@ async def isolated_suite():
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.STDOUT,
             )
+            communication = asyncio.create_task(process.communicate())
             try:
                 output, _ = await asyncio.wait_for(
-                    process.communicate(),
+                    asyncio.shield(communication),
                     timeout=max(0.1, deadline - asyncio.get_running_loop().time()),
                 )
-            except (TimeoutError, asyncio.CancelledError):
-                process.kill()
-                await process.communicate()
+            except (TimeoutError, asyncio.CancelledError) as error:
+                if process.returncode is None:
+                    process.kill()
+                output, _ = await communication
+                if isinstance(error, TimeoutError):
+                    chunks.append(f"Parte {group + 1}/3\n" + suite_output(output))
+                    raise SuiteTimeout("\n".join(chunks)) from None
                 raise
             succeeded = succeeded and process.returncode == 0
-            chunks.append(
-                f"Parte {group + 1}/3\n" + output[-65000:].decode(errors="replace")
-            )
+            chunks.append(f"Parte {group + 1}/3\n" + suite_output(output))
     text = "\n".join(chunks)
-    count = sum(int(n) for n in re.findall(r"Ran (\d+) tests?\b", text))
+    count = suite_progress(text)["completed"]
     return succeeded and count > 0, count, text
 
 
@@ -239,6 +288,32 @@ def summary(report):
     return "\n".join(lines)[:1950]
 
 
+def discord_failure(error, stage):
+    row = {
+        "name": "Fluxo real do Discord",
+        "result": "failed",
+        "stage": stage,
+        "level": "Discord real",
+    }
+    if isinstance(error, discord.HTTPException):
+        row.update(http_status=error.status, discord_code=error.code)
+        if error.status == 403:
+            hint = "Confira as permissões do bot neste canal e tópico."
+        elif error.status == 404:
+            hint = "A mensagem ou o tópico ficou indisponível durante o teste."
+        elif error.status == 400:
+            hint = "O Discord recusou o formato enviado; encaminhe este JSON ao responsável pelo código."
+        else:
+            hint = "Não foi possível concluir a chamada; tente novamente em instantes."
+        # Do not serialize the response body: it can echo message text, CDN URLs
+        # or uploads. The stage and numeric API codes identify the failure safely.
+        row["detail"] = f"{stage}: HTTP {error.status}, código {error.code}. {hint}"
+    else:
+        detail = str(error) if isinstance(error, ValueError) else type(error).__name__
+        row["detail"] = f"{stage}: {detail}"
+    return row
+
+
 async def verify(bot, i):
     bot.require_owner(i)
     task = asyncio.current_task()
@@ -289,10 +364,11 @@ async def _verify(bot, i):
             await edit(i, content="### Verificação em andamento\n" + text, view=None)
 
         await progress(
-            "Executando os cenários de interface, disputa e falhas em bancos isolados. Pode levar alguns minutos na hospedagem gratuita."
+            "Executando os cenários de interface, disputa e falhas em bancos isolados. Esta etapa tem até cinco minutos na hospedagem gratuita; depois seguem os testes reais do Discord."
         )
         try:
             passed, count, output = await isolated_suite()
+            report["isolated_progress"] = suite_progress(output)
             report["checks"].append(
                 {
                     "name": f"Cenários automatizados: {count} testes",
@@ -309,13 +385,28 @@ async def _verify(bot, i):
             )
             if not passed:
                 report["isolated_output"] = output[-40000:]
-        except (TimeoutError, OSError):
+        except SuiteTimeout as error:
+            state = error.progress
+            report["isolated_progress"] = state
+            report["isolated_output"] = error.output[-40000:]
+            report["checks"].append(
+                {
+                    "name": f"Cenários automatizados: {state['completed']} testes concluídos",
+                    "result": "failed"
+                    if state["failures"] or state["errors"]
+                    else "warning",
+                    "level": "isolated",
+                    "detail": "Suíte incompleta: atingiu o limite de cinco minutos da verificação. O JSON conserva o progresso e as falhas encontradas; as etapas reais seguem abaixo.",
+                }
+            )
+        except (TimeoutError, OSError) as error:
             report["checks"].append(
                 {
                     "name": "Cenários automatizados",
                     "result": "warning",
                     "level": "isolated",
-                    "detail": "Não concluídos dentro do limite da hospedagem.",
+                    "detail": "A hospedagem não conseguiu concluir a execução isolada. Confira os arquivos e recursos disponíveis; as etapas reais seguem abaixo.",
+                    "error_type": type(error).__name__,
                 }
             )
         await progress(
@@ -345,6 +436,7 @@ async def _verify(bot, i):
         channel = (
             i.channel.parent if isinstance(i.channel, discord.Thread) else i.channel
         )
+        stage = "Registro real dos dois comandos"
         try:
             if not isinstance(channel, discord.TextChannel):
                 raise ValueError("Use a verificação a partir de um canal de texto.")
@@ -372,6 +464,7 @@ async def _verify(bot, i):
                     "detail": "/tierlist registrado com permissão padrão de Gerenciar servidor.",
                 }
             )
+            stage = "Criação real de tópico privado"
             private = bool(
                 getattr(
                     channel.permissions_for(channel.guild.me),
@@ -399,6 +492,7 @@ async def _verify(bot, i):
                     "detail": "Tópico privado, com convite ao responsável.",
                 }
             )
+            stage = "Envio e leitura real da imagem"
             blob, _ = await bot.picture()
             file = image_file(blob)
             try:
@@ -422,11 +516,15 @@ async def _verify(bot, i):
                     "level": "Discord real",
                 }
             )
+            stage = "Edição real da mesma imagem"
             file = image_file(blob)
             try:
                 await message.edit(
-                    content="**Teste técnico.** Edição da mesma mensagem confirmada.",
-                    attachments=[file],
+                    **payload(
+                        bot=bot,
+                        content="**Teste técnico.** Edição da mesma mensagem confirmada.",
+                        attachments=[file],
+                    )
                 )
             finally:
                 file.close()
@@ -442,6 +540,7 @@ async def _verify(bot, i):
             )
             from tier_preview import check_visual_sequence, check_portrait_sequence
 
+            stage = "Personagens, ordem, tiers e substituição de retratos"
             report["visual_steps"] = await check_visual_sequence(bot, message)
             report["checks"].append(
                 {
@@ -450,6 +549,7 @@ async def _verify(bot, i):
                     "level": "Discord real + dados isolados",
                 }
             )
+            stage = "Lista de retratos: envio, aprovação, rejeição e restauração"
             report["portrait_steps"] = await check_portrait_sequence(bot, message)
             report["checks"].append(
                 {
@@ -459,6 +559,7 @@ async def _verify(bot, i):
                     "detail": "Cinco etapas, incluindo remover e recolocar o TXT na mesma mensagem.",
                 }
             )
+            stage = "Publicação e edição real de botões"
             view = PollView(bot, closed=True)
             for item in view.children:
                 item.disabled = True
@@ -490,6 +591,7 @@ async def _verify(bot, i):
                     "level": "Discord real",
                 }
             )
+            stage = "Arquivamento e retomada reais"
             await thread.edit(archived=True)
             fetched = await bot.fetch_channel(thread.id)
             if not fetched.archived:
@@ -511,16 +613,7 @@ async def _verify(bot, i):
                 }
             )
         except (discord.HTTPException, ValueError, OSError, TimeoutError) as error:
-            report["checks"].append(
-                {
-                    "name": "Fluxo real do Discord",
-                    "result": "failed",
-                    "detail": str(error)
-                    if isinstance(error, ValueError)
-                    else type(error).__name__,
-                    "level": "Discord real",
-                }
-            )
+            report["checks"].append(discord_failure(error, stage))
         finally:
             cleanup = True
             for message in reversed(messages):

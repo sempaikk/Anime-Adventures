@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "version": "2026.10.22.2",
-  "fingerprint": "e9a5f78c693e34b43c9c159f2a51f7122a02d552521fc63dfb82e9f6672e3183",
+  "version": "2026.10.22.3",
+  "fingerprint": "9c7ebe36b61a94939e8db1fee49cc02fafb212b165d625819489577a75f6cd1f",
   "files": {
     "adventure_controls.py": "cdbae75539c54e1eada910fe9f04ba498e828df033e7175b917e0382b42d715a",
     "adventure_repository.py": "91c1261a0bb77c33f372ba1225ffefcc59727439a28544ac5e0e47586755d9e8",
@@ -62,7 +62,7 @@
     "tests/test_scores.py": "831338283fbeced8ae2354a8a66fb91bce5d445d1d5d31ea9c578329dcb85e0f",
     "tests/test_session.py": "846c619aba221a1eceb40c613e6e652559c6feef38aaf25c33a235fcea090e1d",
     "tests/test_storage_maintenance.py": "009200d146448b76e689aafd8b2c4d71e338e47a7a69689b2c53f7eea860bb4e",
-    "tests/test_tier_abuse.py": "24418f790698c8704e898f4cae4791a3414642274d63976ccca29229373f4f31",
+    "tests/test_tier_abuse.py": "fbff05a2366e196f39b4099665a2b6dbf96e65b2609c1976d91574136d23cf5b",
     "tests/test_tier_audit.py": "a166bfdc7d7afbea49c88b716f0d6c919725c428cf4e7b98eacd03da3c376ac6",
     "tests/test_tier_balance.py": "2602fbb18c4d3ea0fe5cbcb32e290a51ac337818ec9aaaf2d7565f9a31c70f1b",
     "tests/test_tier_build.py": "992b3cf13f4a33add040a35fbeb7557c077da89bb5dcfc3ca6e8eeee58d576f1",
@@ -74,7 +74,7 @@
     "tests/test_tier_preview.py": "7a9c30413b4ffd1aa8cb0d0c2ca4886f7095c77b55d49b8157ded6c0548e76a7",
     "tests/test_tier_release.py": "98e9f963e888d7c83c86bc2cef181570336e35ce117bb75a3d1126d9367d754c",
     "tests/test_tier_schedule.py": "5d0cd1ad7bae5411172f573c5cdfd94cf3bab9a7499c86d04508371993066601",
-    "tests/test_tier_thread.py": "fea01786c0b417d677e0053246af9118415b4bf9ef3000d7efa0380bb459433b",
+    "tests/test_tier_thread.py": "59d6ff1a8b06e234bcbf4d755b8329d2745bd8d4fd21a9690adc326ec8d33770",
     "tests/test_tier_ui.py": "45f5364b68256e98cf6270e124630bbbcbebd116cccfe5580f8d7e7a3b2d54a9",
     "tests/test_tierlist.py": "c32cd06b26c2de0699fc61eaf153c33203771a0a7a479acad72afa972ef52499",
     "tests/test_timing.py": "e939f8f8109453e48491c641297a7be11f03a4458f26561f14a32227c2f2dceb",
@@ -100,7 +100,7 @@
     "tier_store.py": "d84c4fad7b8c31b85808071415bf8acb41265e31834b8e407163deede1df5ba5",
     "tier_style.py": "5f28537c62d5ea1e0327fd8c3e4f88083c367db72d76cffa1dcc268739b0e229",
     "tier_ui.py": "f625067a099d7694394580348f3c0d2b826282187e02cca6a590c687cacfeaed",
-    "tier_verify.py": "4ba1cbeae2cbcbce61254032016e54c25a38443288f40219c99885d333027d69",
+    "tier_verify.py": "9f22299cfc7799052d4317214f5d0ce1865381505774e00fa5b77d3403844e8d",
     "tier_views.py": "9028fd97990858a824baa26bf40c4c3abbe7fcee6eda4ac742fee489da332608",
     "tier_wiki.py": "3b142e84b49d81b5f3df397a9471a09dccdcd1aa9847e7977b39001e24603bc0",
     "timing.py": "7254b194877b5935f554c5b164d51a8cc998e0fa212b334d9267f4b7c87e17e8"
