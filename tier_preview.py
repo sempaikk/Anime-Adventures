@@ -19,7 +19,7 @@ from tier_image import PanelRenderer, image_file
 from tier_media import MediaLibrary
 from tier_portraits import PortraitInventory
 from tier_store import TierStore
-from tier_categories import ROLES, make_row
+from tier_categories import make_row
 from tier_views import GuardedView, reply
 
 
@@ -39,27 +39,48 @@ class VisualScenario:
         if len(self.units) < 12:
             raise ValueError("Faltam retratos locais para a demonstração completa.")
         a, b, *others = self.units
-        row = lambda uid, tier, role="DAMAGE": make_row(uid, tier, role)
+        row = make_row
         expanded = [
-            row(b, "META"),
-            *[
-                row(u, "META", ROLES[index % len(ROLES)])
-                for index, u in enumerate(others)
-            ],
-            row(a, "DAMAGE"),
+            row(b, "META_HILL"),
+            *[row(u, "META_HILL") for u in others],
+            row(a, "GOOD_GROUND"),
         ]
+        expanded += [
+            row(u, tier)
+            for u, tier in zip(
+                others[:4], ("META_GROUND", "META_SUPPORT", "GOOD_HILL", "GOOD_SUPPORT")
+            )
+        ]
+        # Keep one assessment per form, even in the technical preview.
+        used = {r["unit_id"] for r in expanded[-4:]}
+        expanded = [r for r in expanded[:-4] if r["unit_id"] not in used] + expanded[
+            -4:
+        ]
+        # More identities exercise a wrapping row while all six labels remain visible.
+        extras = [u for u in available if u not in {r["unit_id"] for r in expanded}]
+        expanded += [row(u, "META_HILL") for u in list(dict.fromkeys(extras))[:4]]
         self.steps = [
             ("Grade vazia", [], 0, 0),
-            ("Adicionar personagem ao Meta", [row(a, "META")], 1, 0),
-            ("Inserir outro à esquerda", [row(b, "META"), row(a, "META")], 2, 0),
-            ("Trocar a ordem no mesmo tier", [row(a, "META"), row(b, "META")], 3, 0),
+            ("Adicionar personagem ao Meta", [row(a, "META_HILL")], 1, 0),
             (
-                "Retirar do Meta e manter em Damage",
-                [row(b, "META"), row(a, "DAMAGE")],
+                "Inserir outro à esquerda",
+                [row(b, "META_HILL"), row(a, "META_HILL")],
+                2,
+                0,
+            ),
+            (
+                "Trocar a ordem no mesmo tier",
+                [row(a, "META_HILL"), row(b, "META_HILL")],
+                3,
+                0,
+            ),
+            (
+                "Mover de META Hill/Hybrid para Good Ground",
+                [row(b, "META_HILL"), row(a, "GOOD_GROUND")],
                 4,
                 0,
             ),
-            ("Expandir Meta e conferir as quatro funções", expanded, 5, 0),
+            ("Expandir Meta e conferir as seis categorias", expanded, 5, 0),
             ("Substituir um retrato sem mudar posições", expanded, 5, 1),
             ("Restaurar o retrato anterior", expanded, 5, 2),
             (

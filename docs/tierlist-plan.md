@@ -23,10 +23,10 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
   participantes fica por conta da administração do servidor.
 - Reutilização do painel/tópico em execuções concorrentes; recuperação de
   reinício, arquivamento e mensagens apagadas com instruções claras.
-- PNG com arte original, Meta/Damage/Support/Buff/Farm, ordem esquerda→direita, linhas
+- PNG com arte original, META Hill/Hybrid, META Ground, META Support, Good Hill/Hybrid, Good Ground e Good Support, ordem esquerda→direita, linhas
   expansíveis e sem rodapé técnico. A data fica no índice; versões e contadores
   ficam no diagnóstico exclusivo do dono.
-  Formas sem avaliação não são colocadas em E. Sem descrição ALT de ponto.
+  Formas sem avaliação ficam fora da grade. Sem descrição ALT de ponto.
 
 ## Análise e fontes
 
@@ -127,26 +127,36 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
   banco isolado. Índice apagado é reparado; confirmação perdida não duplica
   mensagens e a recuperação publica a lista mais recente.
 
-## Interface e categorias por função
+## Interface V2, categorias e modos
 
 - Cards públicos e privados usam Components V2: Containers, Sections, TextDisplay,
-  Separators, MediaGallery, File e ActionRow; a mensagem permanente segue só PNG.
-- Textos mantêm prazo e decisão visíveis. Títulos, negrito, citações e texto de
-  apoio organizam a leitura. Spoiler fica reservado ao glossário opcional.
-- Ícones originais têm ID e nome conferidos na aplicação. Classificação e prazo
-  recebem ícones correspondentes; falta de ícone adequado deixa só o texto.
-- Modal de retrato tem cinco Labels e upload nativo. Informa revisão privada e
-  acompanhamento em Meus envios. Nenhum anexo altera a imagem sem aprovação.
-- Cada forma tem uma avaliação: tier META com função principal, ou a própria
-  função DAMAGE/SUPPORT/BUFF/FARM. Meta aparece nas duas linhas por projeção,
-  sem duplicar votos, catálogo, pendências de foto ou decisões.
-- Meta ocupa primeiro a sua função, preservando a ordem relativa; as demais
-  funções são grupos de uso e não notas de força entre si. Support é controle
-  e debuff; Buff é melhoria de aliados; Farm é economia; Damage é dano.
-- Notas antigas continuam no histórico. A migração não adivinha funções e não
-  restaura uma grade incompatível durante uma correção.
+  Separators, MediaGallery, File e ActionRow. A mensagem permanente segue só PNG.
+- Títulos, negrito, citações e apoio organizam a leitura. O spoiler é reservado
+  ao glossário opcional. Prazo e decisão ficam visíveis. Ícones originais têm
+  ID/nome conferidos na aplicação e combinam com a ação. Falha deixa só texto.
+- Modais usam Labels e FileUpload com descrições de destino e acompanhamento.
+  A reversão do dono tem seleção de modo e verifica a versão capturada ao abrir.
+- A imagem tem seções Infinite e Casual (Story/Raids/Portals/Stages), cada uma
+  com as seis categorias META/Good × Hill/Hybrid, Ground, Support. Uma forma
+  aparece uma vez por modo. Não há faixa Meta geral nem duplicação por função.
+- Relatos explícitos de outro modo não sustentam uma proposta. Relatos gerais
+  exigem fontes e condições válidas no modo proposto. Uma única análise pode
+  escolher uma mudança em um modo; mantém a cota e o limite global de uma por hora.
+- As bases, aprovações, reversões e versões atuais de cada modo são independentes.
+  Limpeza e reinício não eliminam a lista do modo menos ativo.
 
-A proposta de usar a Wiki como base inicial por modo é uma decisão posterior
-a esta revisão. A implementação atual ainda forma posições por votação. A
-fonte coletada distingue Infinite e Casual, e avisa que pode estar imprecisa;
-uma importação futura precisa identificar revisão, modo e origem das posições.
+## Referência inicial da Wiki
+
+A escolha do dono é começar pela Wiki e revisar com comentários/votos. Usa uma
+revisão fixa e atribuída da página Tier Lists: 46773, 18/04/2025. A fonte avisa
+que pode estar imprecisa; não foi possível confirmar uma revisão mais recente
+nesta execução. São 37 formas comprovadas por modo. Foram mantidas pendentes
+76 entradas (47 nomes distintos) sem correspondência exata; uma entrada de
+forma reconhecidamente retirada foi excluída. Não há associação por semelhança
+ou substituição de evolução. A ordem acompanha a fonte, sem alegar reavaliação.
+
+O tópico identifica a origem parcial e distingue a base inicial de decisões
+aprovadas. A importação é única por modo; preserva listas atuais e correções
+humanas, não cria votos nem consome IA. O artefato é reproduzível pelo script
+`build_tier_baseline.py`, a partir de fontes e identidades registradas no repo.
+Uma atualização futura não reaplica a Wiki sobre os votos existentes.

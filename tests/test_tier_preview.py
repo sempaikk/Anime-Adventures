@@ -36,7 +36,7 @@ class VisualFramesCase(unittest.TestCase):
 
         self.assertEqual(pixels(2, (139, 59, 233, 153)), pixels(3, (235, 59, 329, 153)))
         self.assertEqual(
-            pixels(3, (139, 59, 233, 153)), pixels(4, (235, 155, 329, 249))
+            pixels(3, (139, 59, 233, 153)), pixels(4, (139, 443, 233, 537))
         )
         with (
             Image.open(io.BytesIO(frames[4]["png"])) as before,

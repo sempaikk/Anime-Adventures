@@ -139,6 +139,9 @@ class CommunityBot(commands.Bot):
         return self.guild_locks.setdefault(int(guild_id), asyncio.Lock())
 
     async def setup_hook(self):
+        from tier_seed import seed_initial
+
+        seed_initial(self.store, self.catalog)
         app = await self.application_info()
         await self.ui_theme.refresh(self.http, app.id)
         self.owner_ids_set = {app.team.owner_id if app.team else app.owner.id}
@@ -357,7 +360,7 @@ class CommunityBot(commands.Bot):
 
     def diagnostics(self, i):
         self.require_owner(i)
-        latest = self.store.latest()
+        latest = self.store.board()
         key = "carregada" if self.analyzer.backend.enabled else "ausente"
         checked = self.store.get("last_connection_success")
         analysis = self.store.get("last_success")
@@ -376,6 +379,13 @@ class CommunityBot(commands.Bot):
         if budget.get("day") != day:
             budget = {}
         text += f"\n**Interface:** Components V2 · {len(self.ui_theme.available)} ícones da wiki disponíveis."
+        text += "\n**Listas:** " + " · ".join(
+            f"{mode}: {len(p['ranking'])} formas" for mode, p in latest["modes"].items()
+        )
+        reference = self.store.get("wiki_initial_reference")
+        if reference:
+            data = json.loads(reference)
+            text += f"\n**Base Wiki:** revisão {data['revision']} · {data['unresolved']} entradas antigas sem correspondência exata; importação parcial."
         text += f"\n**Relatos aguardando análise:** {pending}."
         text += f"\n**Resultados aguardando arquivo/limpeza:** {self.store.public_results_waiting()}."
         text += f"\n**Cota local do dia UTC:** {budget.get('calls', 0)}/{DAILY_CALLS} chamadas · {budget.get('tokens', 0)}/{DAILY_TOKENS} tokens."
@@ -423,7 +433,7 @@ class CommunityBot(commands.Bot):
         return bytes(blob)
 
     async def picture(self):
-        publication = self.store.latest()
+        publication = self.store.board()
         overrides = self.media.approved()
         revision = int(self.store.get("media_revision") or 0)
         async with self.render_lock:
@@ -620,7 +630,7 @@ class CommunityBot(commands.Bot):
             finally:
                 file.close()
             self.store.remember_panel(
-                i.guild_id, channel.id, message.id, self.store.latest()["id"]
+                i.guild_id, channel.id, message.id, self.store.board()["id"]
             )
         record = self.store.thread(i.guild_id)
         thread = None
@@ -901,7 +911,7 @@ class CommunityBot(commands.Bot):
                             self.store.connection.execute(
                                 "UPDATE tier_panels SET publication_id=?,last_sent=? WHERE guild_id=?",
                                 (
-                                    self.store.latest()["id"],
+                                    self.store.board()["id"],
                                     self.store.clock(),
                                     panel["guild_id"],
                                 ),

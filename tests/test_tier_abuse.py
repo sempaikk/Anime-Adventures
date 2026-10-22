@@ -167,7 +167,7 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
         await self.app.poll_loop.coro(self.app)
         receipt = self.app.store.poll_messages()[0]
         for choice in (
-            "META",
+            "META_HILL",
             None,
             "approve; DROP TABLE tier_votes",
             "",
@@ -282,8 +282,8 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
                 "changes": [
                     {
                         "unit_id": "daki",
-                        "tier": "DAMAGE",
-                        "role": "DAMAGE",
+                        "tier": "GOOD_GROUND",
+                        "mode": "infinite",
                         "before": None,
                         "confidence": 0.95,
                         "supporting_comments": ["c0"],
@@ -309,7 +309,8 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
         await self.app.panel_loop.coro(self.app)
         self.assertEqual(self.app.store.proposal(proposal["id"])["status"], "approved")
         self.assertEqual(
-            self.app.store.latest()["ranking"], [{"unit_id": "daki", "tier": "DAMAGE"}]
+            self.app.store.latest()["ranking"],
+            [{"unit_id": "daki", "tier": "GOOD_GROUND"}],
         )
         self.assertEqual(self.app.store.panels()[0]["message_id"], panel["message_id"])
         archived = self.app.store.rows(
@@ -789,7 +790,7 @@ class WikiCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_active_vote_defers_source_refresh(self):
         self.store.create_proposal(
-            [{"unit_id": "daki", "tier": "SUPPORT"}],
+            [{"unit_id": "daki", "tier": "GOOD_SUPPORT"}],
             {},
             details={},
             source_version="test",

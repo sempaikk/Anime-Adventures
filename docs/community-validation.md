@@ -21,7 +21,7 @@ Antes da divulgação geral:
    Conferir a enquete temporária no canal e o resultado completo no tópico.
    Após dois minutos, o aviso só sai do canal com o histórico confirmado.
 3. Reunir ao menos cinco participantes reais para aprovar as primeiras posições.
-   A lista começa vazia e depende de relatos válidos e propostas fundamentadas;
+   A lista começa com uma referência parcial identificada da Wiki; revisões dependem de relatos válidos e propostas fundamentadas;
    apresentar como classificação comunitária em construção, sem preencher
    posições artificiais para a divulgação.
 4. Publicar o aviso sobre a análise de comentários e a leitura inicial limitada
@@ -118,7 +118,7 @@ A verificação por API não reproduz a tela de uma pessoa. Uma olhada em celula
 | Zero testes e erro de dotenv | Atualize o bot: o verificador preserva os caminhos de dependências da hospedagem mesmo usando HOME temporário. Não é necessário reinstalar ou trocar a chave. |
 | Cota ou orçamento atingido | O bot mantém posições e espera a próxima janela. Confira a conta Groq Free; não precisa ativar cobrança. |
 | Wiki indisponível | O último conjunto válido continua em cache. Não significa consulta em tempo real ao jogo. |
-| Nenhuma proposta | Sem relato relevante e fonte suficiente, não há enquete obrigatória. A classificação inicial pode permanecer vazia. |
+| Nenhuma proposta | Sem relato relevante e fonte suficiente, não há enquete obrigatória. A referência inicial é preservada; formas ainda não avaliadas podem ficar fora da imagem. |
 | Tópico arquivado | O bot tenta retomar um tópico destrancado. Se estiver trancado, a administração precisa destrancar. |
 | Índice do tópico apagado | O bot repara automaticamente. Uma exclusão durante a desconexão é encontrada na primeira conferência após reiniciar ou na conferência periódica. |
 | Mensagem do painel apagada | Use `/tierlist` novamente. O bot informa se é preciso repetir a criação. |
@@ -154,24 +154,28 @@ relato foi aproveitado nessa amostra. Usou banco temporário, nenhuma chamada
 à Groq, nenhuma conexão Gateway e nenhuma publicação no Discord. Confirma o
 caminho de consulta, sem afirmar validação semântica de todos os relatos reais.
 
-## Atualização V2 e funções — 22/10/2026
+## Atualização final V2 e modos — 22/10/2026
 
-A suíte atual tem **534 testes**, com novas verificações de UI nativa,
-privacidade, anexos, funções e migração. A grade é Meta/Damage/Support/Buff/Farm;
-Meta aparece também na função principal sem duplicar a avaliação.
+A suíte atual tem **551 testes**, com UI nativa, privacidade, anexos, seis
+categorias, migração, separação por modo e referência inicial. O PNG reúne
+Infinite e Casual; cada modo usa META/Good × Hill/Hybrid, Ground, Support.
+Uma forma aparece uma vez em cada modo.
 
-O ensaio direto mais recente confere 13 operações pela API em espaços privados
-do servidor autorizado, com banco temporário: índice convertido na mesma
-mensagem, enquete/atalhos, atualização sem duplicação, resultado arquivado,
-PNG editado e baixado, limpeza após reinício, dez alterações visuais, cinco
-transições de TXT e cartões V2. Não envia dados à Groq nem altera a produção.
+O ensaio direto confere 14 operações pela API em espaços privados do servidor
+autorizado, com banco temporário: índice convertido na mesma mensagem, enquete
+e atalhos, atualização sem duplicação, resultado arquivado, aprovação só em
+Casual preservando Infinite, PNG editado e baixado, limpeza após reinício, dez
+alterações visuais, cinco transições de TXT e cartões V2. Não envia dados à
+Groq nem altera a produção.
 
-Components V2 podem guardar arquivos em File/MediaGallery e deixar a lista
-tradicional de anexos vazia. O verificador lê os componentes e confere os
-bytes recebidos. Não confunde um thumbnail externo com um arquivo enviado.
-As simulações de interface preservam verificações do ator, servidor e
-mensagem oficial. Modais usam Labels com descrições e FileUpload.
+V2 pode guardar arquivos em File/MediaGallery e deixar a lista tradicional
+de anexos vazia. O verificador lê componentes e confere bytes recebidos, sem
+confundir thumbnails externos com uploads. Ator/servidor/mensagem oficial
+continuam validados. Modais usam Labels e FileUpload; correção tem modo.
 
-O responsável ainda pode conferir uma interação humana real pelo botão do
-verificador. API e testes locais não comprovam aparência em cada cliente
-Discord, seleção humana de arquivo ou qualidade dos argumentos do jogo.
+A base parcial e atribuída usa 37 formas por modo da revisão Wiki 46773.
+Nomes não comprovados ficam pendentes; a fonte tem aviso de possível
+imprecisão. Validação técnica de arquivos/identidades não prova balanceamento
+ou atualidade de cada argumento. API não comprova aparência em cada cliente
+Discord nem o envio humano de arquivos. O dono pode confirmar uma interação
+humana pelo botão do verificador e conferir os primeiros relatos com jogadores.

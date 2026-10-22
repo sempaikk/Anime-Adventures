@@ -9,13 +9,13 @@ from zoneinfo import ZoneInfo
 import discord
 
 from community_domain import normalize
-from tier_categories import LABELS, primary_role, rows_for
+from tier_categories import label
 
 CRITERIA = (
     "Compare contribuição real para o time, desempenho, custo, upgrades, condições, "
-    "utilidade e limitações. Classifique a função principal: Damage (dano), Support "
-    "(controle e enfraquecimento de inimigos), Buff (melhorias aos aliados), Farm (economia). "
-    "Meta é destaque, não função: confirme também a função principal. Não conclua superioridade geral por um atributo, raridade, "
+    "utilidade e limitações. Diferencie unidades Hill/Hybrid, Ground e Support, "
+    "separando META e Good em cada grupo e o desempenho em Infinite e Casual. "
+    "Não conclua superioridade geral por um atributo, raridade, "
     "popularidade ou número de mensagens. Separe forma, evolução, skin e balanceamento."
 )
 GAME_TERMS = re.compile(
@@ -77,13 +77,7 @@ def place(ranking, unit_id):
             position = [
                 r["unit_id"] for r in ranking if r["tier"] == row["tier"]
             ].index(unit_id) + 1
-            role = primary_role(row)
-            if role in LABELS:
-                role_position = rows_for(ranking, role).index(row) + 1
-                return (
-                    f"Meta #{position} · " if row["tier"] == "META" else ""
-                ) + f"{LABELS[role]} #{role_position}"
-            return f"{position}º do {'Meta' if row['tier'] == 'META' else row['tier']}"
+            return f"{label(row['tier'])} #{position}"
     return "Sem avaliação"
 
 

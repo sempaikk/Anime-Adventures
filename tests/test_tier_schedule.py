@@ -45,7 +45,7 @@ class PollScheduleCase(unittest.TestCase):
 
     def propose(self):
         self.store.create_proposal(
-            [{"unit_id": "daki", "tier": "DAMAGE"}],
+            [{"unit_id": "daki", "tier": "GOOD_GROUND"}],
             {},
             details={},
             source_version="test",

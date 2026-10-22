@@ -1,0 +1,2665 @@
+This page is not completely updated and may be inaccurate.
+
+==Information==
+<big>This page classifies different units to different ranks depending on how good they are in '''Infinite Mode''' and '''Casual Modes''' (Story/Raids/Portals/Stages). 
+
+<big>'''TIER LIST WILL BE UPDATED SOON WHEN WIKI REVAMP IS COMPLETE'''</big>
+
+'''Units are ranked based on the following statistics:'''
+*'''DPS'''(Damage Per Second) 
+*'''TDPS'''(Total Damage Per Second) 
+*'''SPA'''(Second Per Attack) 
+*'''AoE'''(Area of Effect) 
+*'''(as well as many other properties of a unit; Cost, Abilities, Effects, etc)'''
+The ranking of each unit does not invalidate the unit in other modes, some may be better or worse in certain stages, maps,  or gamemodes. '''This tier list ranks units based on their base stats, and their potential including buffs, supports, and relics, however, disregards trait viability.'''</big>
+''For a community-based Tier List, go [[Tier List (Community)|here]].''
+
+<big>'''For the Infinity Castle Tier List, go [[Infinity Castle Tier List|here]].'''
+
+==The Tier List==
+
+==Changelog==
+{| class="wikitable mw-collapsible mw-collapsed" role="presentation"
+|<strong><u>'''Tier List Updates:'''</u></strong>
+|-
+|'''Major Updates'''
+* Added ALL Update 16.5.0 Update Units!
+* Descriptions Coming soon!
+<br>'''Minor Updates'''
+*Placement cost, max cost, total max cost and cost for abilities/buffs etc have been added.
+|}
+
+{{Tabber
+|1= {{{tab-1|Infinite Mode}}}
+|2= <h3 class="mobileonly">'''Infinite Mode'''</h3>
+
+{{TierList/Container|id=infiniti
+|Fast travel for Mobile only=
+{{TierList/Container/id|id=infiniti|META Hill/Hybrid}}
+{{TierList/Container/id|id=infiniti|META Ground}}
+{{TierList/Container/id|id=infiniti|Good Support}}
+{{TierList/Container/id|id=infiniti|Good Hill/Hybrid}}
+{{TierList/Container/id|id=infiniti|Good Ground}}
+{{TierList/Container/id|id=infiniti|META Support}}
+<!-- names must match Item Container names -->
+|1={{TierList/Item Container|color=#ff7f7f|id=infiniti|name=META Hill/Hybrid
+|
+
+{{TierList/Item|Fused Hero
+|Description={{Meta Unit}}<br>
+High-Insanely High DPS, High Range, Average SPA, 60° Cone. '''Goko (Super)''' and '''Vegita (Majin II)''' will fuse into '''Vegeto''' after reaching upgrade 7 on Goko or Vegita, taking the stats and damage type from the unit that '''Fusion''' was activated on, while taking the traits from both of them. With unique Goko and unique Vegita, Vegeto will have the highest dps in the entire game.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 107,380 - (Commander+Griffin + Mirrorblade: 354,085)'''
+<br>'''TDps: 322,140 - (Commander+Griffin + Mirrorblade: 1,062,256)''' 
+----
+'''Placement Cost:''' {{Yen|112.15K}} - '''Cost to Max:''' {{Yen|293.65K}}<br>
+'''Total cost to Max'''{{Yen|880.95K}}<br>
+----
+'''Placements: 3'''<br>
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image: Trait Unique.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Griffin (Darkness)
+|Description={{Meta Unit}}<br>
+High-Insanely High DPS, High Range, Average SPA, Full AoE. '''Griffin (Ascension)''' will transform into '''Griffin (Darkness)''' after sacrificing 100k yen worth of units that are not part of the '''BUFF''' tag, using his ability '''Sacrifice'''. You can sacrifice more than 100k yen and increase his damage exponentially as there is no limit to the amount of yen you can sacrifice to him. This unit has the highest DPS potential in the game with enough yen sacrificed.
+----
+<br>'''(Base Stats 100%)'''<br>
+'''Dps: 23,070 - (Wenda+Griffin + Time Piece: 106,271)'''
+<br>'''TDps: 69,212 - (Wenda+Griffin + Time Piece: 318,814)''' 
+----
+<br>'''(Base Stats 500%)'''<br>
+'''Dps: 49,157 - (Wenda+Griffin + Time Piece: 226,435)'''
+<br>'''TDps: 147,472 - (Wenda+Griffin + Time Piece: 679,306)'''<br>
+----
+'''Placement Cost:''' {{Yen|1K}} - '''Cost for 100%''' {{Yen|100K}}<br>
+'''Cost for Hybrid:''' {{Yen|100K}} - '''Cost for 500%''' {{Yen|500K}}<br>
+----
+'''Placements: 3'''<br>
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image: Trait Unique.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Supreme Being (Sovereign)
+|Description={{Meta Unit}}<br>
+<br>'''(Base Stats)'''<br>
+'''Dps: 34,515 - (Wenda+Griffin + Time Piece: 122,977)'''
+<br>'''Dps With Ability: 48,896 - (Wenda+Griffin + Time Piece: 166,121)'''
+<br>'''Summons Hp: 1,725,760 - (Griffin + Commander: 5,177,280)'''
+----
+'''Placement Cost:''' {{Yen|10K}} - '''Cost to Max:''' {{Yen|305K}}<br>
+'''Cost for Hybrid:''' {{Yen|130K}}<br>
+----
+'''Placements: 1'''<br>
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]]
+}}
+
+}}
+{{TierList/Item Container|color=#febf85|id=infiniti|name=META Ground
+|
+
+
+{{TierList/Item|Shinobi (Eternal)
+|Description={{Meta Unit}} {{Meta Burn Unit}}<br>
+Highest DPS in the game, High Range, Average SPA, Average AoE size. Shinobi's burn damage is equal to 100% of his displayed DMG over 10 ticks, 200% of his displayed DMG over 20 ticks with Mangekyō Eye, and 600% of his displayed DMG over 20 ticks with Mangekyō Eye, 100% Wenda/Leafy buff, and Griffin. His burn can stack with itself, allowing for much higher DPS than displayed.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 34,279 - (Wenda+Griffin + Mangekyō Eye: 371,161)'''
+<br>'''TDps: 102,838 - (Wenda+Griffin + Mangekyō Eye: 1,113,485)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|83.85K}}<br>
+'''Total cost to Max''' {{Yen|251.55K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mangakeyo.png|18px]] '''Mangekyō Eye'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Dracula (Unholy King)
+|Description={{Meta Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Insanely High DPS, Average Range, High SPA, Average AoE Size. Upon reaching upgrade 10, Dracula unlocks the ability '''Soul Restraint: Level 0''', which summons 5 Ghoul Riders with 1,287,278 HP each (6,436,390 total) and 15 Ghouls with 386,570 each (5,798,550 total) every 2 minutes. Dracula has higher damage on his summons than shown due to the fact that they can run through an enemy while at a low amount of yellow HP  and they will only use that yellow HP and continue going forwards
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 42,952 - (Wenda+Griffin + Time Piece: 148,399)'''
+<br>'''TDps: 128,856 - (Wenda+Griffin + Time Piece: 445,199)'''<br>
+<br>'''Summons Hp: 12,234,940 - (Griffin + Commander: 36,704,820)'''
+----
+'''Placement Cost:''' {{Yen|2.0K}} - '''Cost to Max:''' {{Yen|118K}}<br>
+'''Cost for Ability:''' {{Yen|118K}} - '''Total cost to Max''' {{Yen|354,000}}'''<br>
+----
+'''Placements: 3'''<br>
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Death Ninja (Immortal Butcher)
+|Description={{Meta Unit}}{{Meta Bleed Unit}}{{Story Meta Unit}}<br>
+Very High DPS, Average Range, Average SPA,  Large AoE Size. Hido bleeds, making him heavily buffed by Bleed Amplification. Hido has an ability, '''Blood Curse ''', which does his displayed damage 3 times to every bleeding enemy in his aoe with a 20 second (Non Global) cooldown.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,328 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 151,980 )'''
+<br>'''TDps: 57,984 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 455,940)'''
+<br>'''Dps With Ability: 33,824 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 199,784)'''
+<br>'''TDps With Ability: 101,472 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 599,354)'''<br>
+----
+'''Placement Cost:''' {{Yen|1.75K}} - '''Cost to Max:''' {{Yen|83.25K}}<br>
+'''Cost for Ability:''' {{Yen|33.75K}} - '''Total cost to Max''' {{Yen|249.75K}}'''<br>
+----
+'''Placements: 3'''<br>
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Menace (Terror)
+|Description={{Meta Unit}}{{Meta Bleed Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Very High DPS, Average Range, Average SPA,  Large AoE Size. Menace has an innate 50% CRIT chance, along with bleed, making him heavily buffed by Bleed Amplification. Menace has an ability, '''Bloodcurdle''', which does 3x his DMG to every bleeding enemy in his aoe. This ability can CRIT for 4.5x his DMG, stuns for 2 seconds (10 second cooldown), and has a 20 second (Non Global) cooldown.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,824 - (Commander+Griffin+Bleed Amplification + Nail: 137,850 )'''
+<br>'''TDps: 59,473 - (Commander+Griffin+Bleed Amplification + Nail: 413,551 )'''
+<br>'''Dps With Ability: 34,692 - (Commander+Griffin+Bleed Amplification + Nail: 181,206)'''
+<br>'''TDps With Ability: 104,076  - (Commander+Griffin+Bleed Amplification + Nail: 543,618 )'''<br>
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|66.6K}}<br>
+'''Cost for Ability:''' {{Yen|29.6K}} - '''Total cost to Max''' {{Yen|199.8K}}'''<br>
+----
+'''Placements: 3'''<br>
+----
+Recommended Relics: [[Image:Nail.png|18px]] '''Nail''' [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Flame Hero (Hellfire)
+|Description={{Meta Unit}} {{Meta Burn Unit}}<br>
+High DPS, Average Range, High SPA, 60° Cone AoE. Flame Hero does 50% of his displayed DMG over 6 ticks, 100% of his displayed DMG over 12 ticks with Mangekyō Eye, and 300% of his displayed DMG over 12 ticks with Mangekyō Eye, 100% Wenda/Leafy buff, and Griffin. His burn can stack with itself, allowing for much higher DPS than displayed.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 22,780 - (Wenda+Griffin + Mangekyō Eye: 187,593 )'''
+<br>'''TDps: 68,340 - (Wenda+Griffin + Mangekyō Eye: 562,781)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|97K}}<br>
+'''Total cost to Max''' {{Yen|291K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mangakeyo.png|18px]] '''Mangekyō Eye'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Izo (Samurai)
+|Description={{Meta Unit}} {{Meta Burn Unit}}<br>
+Average DPS, High Range, Average SPA, 50° Cone AoE. Izo's burn damage is equal to 100% of his displayed DMG over 10 ticks, 200% of his displayed DMG over 20 ticks with Mangekyō Eye, and 600% of his displayed DMG over 20 ticks with Mangekyō Eye, 100% Wenda/Leafy buff, and Griffin. His burn can stack with itself, allowing for much higher DPS than displayed.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,625 - (Wenda+Griffin + Mangekyō Eye: 152,640) '''
+<br>'''TDps: 58,877 - (Wenda+Griffin + Mangekyō Eye: 637,498)'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|89.6K}}<br>
+'''Total cost to Max''' {{Yen|268.8K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mangakeyo.png|18px]] '''Mangekyō Eye'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Asushi (Moonlight Beast)
+|Description={{Meta Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Very High DPS, Average Range, Average SPA, Large AoE Size. Asushi (Moonlight Beast) bleeds, making his damage spike immensely with Bleed Amplification/Shallta
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 28,762 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 213,251)'''
+<br>'''TDps: 115,048 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 853,006)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|56.1K}}<br>
+'''Total cost to Max''' {{Yen|224.4K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Gas (Toxic)
+|Description={{Meta Unit}}<br>
+Average DPS, Average Range, High SPA, Average AoE Size. Gas needs his damage to stack up over a long period of time to begin doing noticeable DPS.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps after 60 seconds: 19,725 - (Wenda+Griffin + Time Piece: 230,430)'''
+<br>'''TDps after 60 seconds: 78,901- (Wenda+Griffin + Time Piece: 921,721)'''
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|50.5K}}<br>
+'''Total cost to Max''' {{Yen|202K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Noruto (Six Tails)
+|Description={{Meta Unit}}<br>
+Very High DPS, Average Range, Average SPA, Large AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 45,362 - (Wenda+Griffin + Time Piece: 153,587)'''
+<br>'''TDps: 136,086-  (Wenda+Griffin + Time Piece: 460,762)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|100.5K}}<br>
+'''Total cost to Max''' {{Yen|301.5K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Ashborn (Decay)
+|Description={{Meta Unit}}<br>
+High DPS, Average Range, Average SPA, Full AoE. At max, every time Ashborn (Decay) attacks, he does 120% of his displayed damage over 18 ticks (3 ticks per second), and 240% of his displayed damage over 18 ticks with Griffin.
+<br>'''(Base Stats)'''<br>
+'''Dps: 21,868 - (Wenda+Griffin + Time Piece: 122,127)
+<br>'''TDps: 65,605 - (Wenda+Griffin + Time Piece: 366,382)'''
+----
+'''Placement Cost:''' {{Yen|1.6K}} - '''Cost to Max:''' {{Yen|85.1K}}<br>
+'''Total cost to Max''' {{Yen|255.3K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Daky (Obi)
+|Description={{Meta Unit}} {{Meta Bleed Unit}}<br>
+<br>'''(Base Stats)'''<br>
+'''Dps: 15,221 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 136,233)'''
+<br>'''TDps: 60,884 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 544,935)'''
+----
+'''Placement Cost:''' {{Yen|1.450K}} - '''Cost to Max:''' {{Yen|58.950K}}<br>
+'''Total cost to Max''' {{Yen|235.8K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Vego (Mage II)
+|Description={{Meta Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Insanely High DPS, High SPA, Average Range, Full AoE. 
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 35,142 - (Commander+Griffin + Mirrorblade: 127,4706)'''
+<br>'''TDps: 105,426 - (Commander+Griffin + Mirrorblade: 382,4120)'''
+----
+'''Placement Cost:''' {{Yen|1.35K}} - '''Cost to Max:''' {{Yen|99.85K}}<br>
+'''Total cost to Max''' {{Yen|299.55K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+}}
+}}
+{{TierList/Item Container|color=#ffdf87|id=infiniti|name=META Support
+|
+
+{{TierList/Item|Griffin (Reincarnation)
+|Description={{Meta Support Unit}}<br>
+Has arguably '''THE BEST''' support ability for infinites, which grants every unit on the map a 100% damage boost. This form can be activated by sacrificing 100k Yen worth of units with the '''BUFF''' tag with his ability, '''Sacrifice'''.
+----
+'''Placement Cost:''' {{Yen|1K}}<br> 
+'''Cost for Buff:''' {{Yen|100K}} Worth of units with the '''BUFF''' tag<br>
+----
+'''Placements: 1'''
+----
+}}
+
+{{TierList/Item|Elfy (Sylph)
+|Description={{Meta Support Unit}}<br>
+Elfy is cheap to place and has an ability that increases the magic damage of allies in range. She gives a 50% damage increase to magic units and you can cycle these buffs to reach up to a 100% damage increase on magic units. Elfy also has the '''BUFF tag''', making it a perfect partner for '''Griffin(Acension)''' to reach his '''Griffin(Reincarnation)''' form, allowing you to reach a 3.5x damage increase.<br>
+----
+'''Placement Cost:''' {{Yen|1K}} - '''Cost to Max:''' {{Yen|30K}}<br>
+'''Total cost to Max''' {{Yen|180K}}'''<br>
+----
+'''Placements: 6'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+
+{{TierList/Item|Wenda
+|Description={{Meta Support Unit}}<br>
+Wenda is cheap to place and has an ability that increases the magic damage of allies in range. She gives a 30% damage increase to magic units and you can cycle these buffs to reach up to a 100% damage increase on magic units. Wenda also has the '''BUFF tag''', making it a perfect partner for '''Griffin(Acension)''' to reach his '''Griffin(Reincarnation)''' form, allowing you to reach a 3.5x damage increase.<br>
+----
+'''Placement Cost:''' {{Yen|800}} - '''Cost to Max:''' {{Yen|24.250K}}<br>
+'''Total cost to Max''' {{Yen|145.5K}}'''<br>
+----
+'''Placements: 6'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+
+{{TierList/Item|Commander
+|Description={{Meta Support Unit}}<br>
+Commander is cheap to place and has an ability that increases the physical damage of allies in range. He gives a 25% damage increase to physical units and you can cycle these buffs to reach up to a 100% damage increase on physical units. Commander also has the '''BUFF''' tag, making it a perfect partner for '''Griffin(Acension)''' to reach his '''Griffin(Reincarnation)''' form, allowing you to reach a 3.5x damage increase.<br>
+----
+'''Placement Cost:''' {{Yen|775}} - '''Cost to Max:''' {{Yen|21.775K}}<br>
+'''Total cost to Max''' {{Yen|130.650K}}'''<br>
+----
+'''Placements: 6'''
+----
+Recommended Traits:  [[Image:Trait Sniper.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+
+{{TierList/Item|Lao (ROOM)
+|Description={{Meta Support Unit}}<br>
+Average DPS, Average Range, Average SPA, Average AoE Size. Has one of the best support abilities in the game, '''Shambles''', which teleports all enemies in Law's range back equal to half of his range. Shambles can only be used three times per enemy.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,824 - (Wenda+Griffin + Time Piece: 67,203)'''
+<br>'''TDps: 59,472 - (Wenda+Griffin + Time Piece: 201,610)'''
+----
+'''Placement Cost:''' {{Yen|1.6K}} - '''Cost to Max:''' {{Yen|73.150K}}<br>
+'''Total cost to Max''' {{Yen|219.450K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Sniper.png|18px]]
+}}
+
+{{TierList/Item|Shadowgirl (Time Traveller)
+|Description={{Meta Support Unit}}<br>
+Average DPS, Average Range, Average SPA. On placement, Shadowgirl (Time Traveller) has a full AoE timestop (42 second cooldown, 4 second duration). At upgrade 3, her timestop cooldown is 14 seconds shorter (28 seconds total), and at upgrade 7, her timestop cooldown is reduced by 13 seconds and also lasts 1 second longer.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,190 - (Commander+Griffin + Mirrorblade: 63,279)'''
+<br>'''TDps: 57,571 - (Commander+Griffin + Mirrorblade: 189,839)'''
+----
+'''Placement Cost:''' {{Yen|1.6K}} - '''Cost to Max:''' {{Yen|74.1K}}<br>
+'''Cost for Hybrid:''' {{Yen|39.1K}} - '''Total cost to Max''' {{Yen|222.3K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade''' [[Image:5-Leaf Clover.png|18px]] '''5-Leaf Clover'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Sniper.png|18px]]
+}}
+
+{{TierList/Item|Bloodcry (Bloodfallen)
+|Description={{Meta Support Unit}}<br>
+Average Dps, Average Range, Average Spa, Average Aoe Size. Every time Bloodcry attacks, she applies '''Bleed Amplification ''', which increases all bleed damage by 5x for the duration of the debuff (5 seconds upg 0-2, 10 seconds upg 3-5, and 15 seconds upg 6-7).
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 13,978 - (Commander+Griffin + Mirrorblade: 64,232)'''
+<br>'''TDps: 55,914 - (Commander+Griffin + Mirrorblade: 256,928)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|60.8K}}<br>
+'''Total cost to Max''' {{Yen|243.2K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Traits: [[Image:Trait Godspeed.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Sniper.png|18px]]
+}}
+
+{{TierList/Item|Blood (Unleashed)
+|Description={{Meta Support Unit}}<br>
+Low Dps, Average Range, Average Spa, Average Aoe Size. Every time Blood (Unleashed) attacks, she applies '''Bleed Amplification ''', which increases all bleed damage by 5x for the duration of the debuff (5 seconds upg 0-2, 10 seconds upg 3-6, 15 seconds upg 7-9). Blood (Unleashed) is normally kept at upgrade 7 due to the lower SPA.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 8,232'''
+<br>'''TDps: 32,929'''<br>
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|61K}}<br>
+'''Total cost to Max''' {{Yen|244K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Traits: [[Image:Trait Godspeed.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Sniper.png|18px]]
+}}
+
+{{TierList/Item|Reliable Student (Echoes)
+|Description={{Meta Support Unit}}<br>
+Average DPS, Average SPA, Average Range, Average AoE Size. On placement, Reliable Student slows enemies each hit by 50% (65% at upg 2, 80% at upg 5). Upon reaching upgrade 5, Reliable Student becomes a hybrid unit, allowing him to slow airs. Reliable Student should be kept at 7.0 SPA on placement so he attacks/slows when the slow is off cooldown at max upgrade.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 13,978 - (Commander+Griffin + Mirrorblade: 48,776)'''
+<br>'''TDps: 55,914 - (Commander+Griffin + Mirrorblade: 195,107)'''
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|55.7K}}<br>
+'''Cost for Hybrid:''' {{Yen|18.2K}} - '''Total cost to Max''' {{Yen|222.8K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Trickster (Release)
+|Description={{Meta Support Unit}}<br>
+Low DPS, Average SPA, Average Range. Upon reaching upgrade 6, Kisuke unlocks his ability, '''Kannonbiraki Benihime Aratame''', which buffs range by 20% and SPA by 10% to everyone inside of Kisuke's range. This ability does not have a global cooldown can be infinitely chained by keeping him at upgrade 7 and waiting 5 seconds in between each buff.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 3,865'''
+<br>'''TDps: 11,597'''<br>
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|60.5K}}<br>
+'''Cost for Ability:''' {{Yen|25.5K}} - '''Total cost to Max''' {{Yen|181.5K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Sniper.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+
+{{TierList/Item|Devil Boss
+|Description={{Meta Support Unit}}<br>
+Low DPS, Low Range, Average SPA, No AoE size (Single target). Once Devil Boss is maxed, he unlocks the ability, '''Time Erase''', which slows all enemies and makes all units on the map do 50% more damage for 8 seconds (90 second cooldown).
+<br>'''(Base Stats)'''<br>
+'''Dps: 2,301'''
+<br>'''TDps: 11,505'''
+----
+'''Placement Cost:''' {{Yen|1.1K}} - '''Cost to Max:''' {{Yen|36.9K}}<br>
+'''Cost for Ability:''' {{Yen|36.9K}} - '''Total cost to Max''' {{Yen|184.5K}}<br>
+----
+'''Placements: 5'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image: Trait Divine.png|18px]] 
+}}
+
+{{TierList/Item|Priest (Heaven)
+|Description={{Meta Support Unit}}<br>
+Average DPS, High Range, Low SPA, Large AoE Size. Upon reaching upgrade 9, Priest unlocks his ability, '''Time Acceleration''', which reduces the SPA of all units on the map by 50% for 30 seconds. with a 5 minute cooldown. This ability does not stack with Trickster, meaning that you have to use it when Trickster ability is not active.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 13,148 - (Wenda+Griffin + Time Piece: 43,048)'''
+<br>'''TDps: 39,445 - (Wenda+Griffin + Time Piece: 129,145)'''
+----
+'''Placement Cost:''' {{Yen|1.753K}} - '''Cost to Max:''' {{Yen|94.821K}}<br>
+'''Cost for Ability:''' {{Yen|69.454K}} - '''Total cost to Max:''' {{Yen|284.463K}}
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+
+{{TierList/Item|Lulu (Emperor)
+|Description={{Meta Support Unit}}<br>
+Upon reaching max upgrade, Lulu (Emperor) unlocks the ability, '''Mind Control''', which makes all enemies in his range (including bosses) walk back for 5 seconds on a 40 second cooldown. THIS ABILITY DOES NOT HAVE A MAX AMOUNT OF USES PER ENEMY.
+<br>'''(Base Stats)'''<br>
+'''Dps: 836
+<br>'''Summons Hp: 7,363
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|49K}}<br>
+'''Cost for Ability:''' {{Yen|49K}}
+----
+'''Placements: 1'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+
+{{TierList/Item|Kiro (Bites the Dust)
+|Description={{Meta Support Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}}<br>
+Very High DPS, High Range, Average SPA, Average AoE Size. Upon reaching upgrade 8, Kiro unlocks his ability, '''Bites the Dust''', which rewinds all enemies on the map (including bosses) for 5 seconds with a 60 second cooldown. This ability can only be used 3 times per enemy.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 35,757 - (Wenda+Griffin + Time Piece: 123,543)'''
+<br>'''TDps: 107,273 - (Wenda+Griffin + Time Piece: 370,629)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|104.4K}}<br>
+'''Cost for Ability:''' {{Yen|59.4K}} - '''Total cost to Max''' {{Yen|313.2K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Red Scar (Conqueror)
+|Description={{Meta Support Unit}}<br>
+Upon reaching max upgrade Red Scar (Conqueror) unlocks the ability, '''Conqueror's Haki''', which makes every enemy in his range Unconscious (stacks with timestop/stun) for 3 seconds on a 15 second cooldown.
+<br>'''(Base Stats)'''<br>
+'''Dps: 2,761
+<br>'''TDps: 8,283
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|63K}}<br>
+'''Cost for Ability:''' {{Yen|48K}} - '''Total cost to Max''' {{Yen|189K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+
+{{TierList/Item|InHuman (Nullifier)
+|Description={{Meta Support Unit}}<br>
+High Dps, High SPA, Average Range, Full AoE. Upon placement, InHuman (Nullifier) unlocks the ability, '''Nullifier''', which removes enemy attributes (Flying, Fire, Ice, Armored, Regen) for 20 seconds on every enemy in his range with a 90 second cooldown.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 22,591 - (Wenda+Griffin + Mirrorblade: 80,494)'''
+<br>'''TDps: 67,773 - (Wenda+Griffin + Time Piece: 241,482)'''
+----
+'''Placement Cost:''' {{Yen|1.35K}} - '''Cost to Max:''' {{Yen|90.05K}}<br>
+'''Total cost to Max''' {{Yen|270,150}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Tamiki (Tornado)
+|Description={{Meta Support Unit}}<br>
+Average DPS, Very High Range,  Very High SPA, High AoE Size. Upon reaching upgrade 6, all of Tamiki's attacks will push back enemies hit (30 second cooldown). Tamiki is normally kept at upgrade 8, due to the lower SPA and having more coverage as a cone.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 10,124'''
+<br>'''TDps: 30,373'''
+----
+'''Placement Cost:''' {{Yen|1.750K}} - '''Cost to Max:''' {{Yen|85.450K}}<br>
+'''Cost for Ability+Hybrid:''' {{Yen|29.450K}} - '''Total cost to Max''' {{Yen|256.350K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Traits: [[Image: Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]] [[Image:Trait Sniper.png|18px]]
+}}
+
+{{TierList/Item|Agony (Divine)
+|Description={{Meta Support Unit}}<br>
+High DPS, Average Range,  Very High SPA, Massive AoE Size. Upon reaching upgrade 6, all of Agony (Divine)'s attacks will push back enemies hit (30 second cooldown). 
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 25,806 (Commander+Griffin + Mirrorblade: 85,097)'''
+<br>'''TDps: 77,418 (Commander+Griffin + Mirrorblade: 255,291)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|89.65K}}<br>
+'''Cost for Ability+Hybrid:''' {{Yen|27.15K}} - '''Total cost to Max''' {{Yen|268.950K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Traits: [[Image: Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]] [[Image:Trait Unique.png|18px]]
+}}
+
+
+{{TierList/Item|JIO (Over Heaven)
+|Description=
+Very High DPS, High Range, Average SPA, Large AoE Size. On placement. JIO Over Heaven has an ability called, "'''This is.. The World over Heaven!'''", which stops all enemy spawns, the wave timer, and timestops all enemies on the map for 20 seconds.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 32,568- (Wenda+Griffin + Time Piece: 110,406)'''
+<br>
+----
+'''Placement Cost:''' {{Yen|10K}} - '''Cost to Max:''' {{Yen|125.5K}}<br>
+'''Cost for Ability:''' {{Yen|10K}}
+----
+'''Placements: 1'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]]
+}}
+
+
+{{TierList/Item|Ice Lily
+|Description={{Meta Support Unit}}<br>
+Low Dps, Average Range, Average Spa, Average Aoe. Every time Ice Lily attacks, she slows for 4 seconds with a cooldown of 7 seconds. Ice Lily is always kept at upgrade 0, due to being able to have a perfect 7.0 SPA to align with her slow cooldown (Requires the correct SPA stat to be 7.0 SPA).
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|57K}}<br>
+'''Total cost to Max''' {{Yen|285K}}<br>
+----
+'''Placements: 5'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+
+}}
+{{TierList/Item Container|color=#82fe89|id=infiniti|name=Good Hill/Hybrid
+|
+
+{{TierList/Item|Berserker (Rage)
+|Description={{Meta Unit}} {{Meta Bleed Unit}}<br>
+High DPS, Average Range, Very High Spa, Full AoE. Hits airs at upgrade 8. DPS spikes HEAVILY with Blood (Unleashed)/Bloodcry (Bloodfallen). 
+----
+<br>'''(Base Stats)'''<br> 
+'''Dps: 25,222 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 187,005)'''
+<br>'''TDps: 75,667 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 561,017)'''
+----
+'''Placement Cost:''' {{Yen|1.450K}} - '''Cost to Max:''' {{Yen|125.950K}}<br>
+'''Cost for Hybrid:''' {{Yen|65.950K}} - '''Total cost to Max''' {{Yen|377.850K}}'''<br>
+----
+'''Placements: 3'''<br>
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Bubblegum (Ultimate)
+|Description=<br>
+High DPS, Average Range, Average SPA, Full AoE. 
+<br>'''(Base Stats)'''<br>
+'''Dps: 26,921 - (Wenda+Griffin + Time Piece: 93,015)'''
+<br>'''TDps: 80,763 - (Wenda+Griffin + Time Piece: 279,045)'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|110.8K}}<br>
+'''Cost for Hybrid:''' {{Yen|55.8K}} - '''Total cost to Max''' {{Yen|332.4K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Golden King (Lord of Heroes)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Very High DPS, High Range, High SPA, Large Circle. 
+<br>'''(Base Stats)'''<br>
+'''Dps: 37,583 - (Wenda+Griffin + Time Piece: 133,908)'''
+<br>'''TDps: 112,749 - (Wenda+Griffin + Time Piece: 401,727)'''
+----
+'''Placement Cost:''' {{Yen|2.5K}} - '''Cost to Max:''' {{Yen|118K}}<br>
+'''Cost for Hybrid:''' {{Yen|27.3K}} - '''Total cost to Max''' {{Yen|354k}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Carrot (Ultra)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+High DPS, High Range, Average SPA, Large Circle. 
+<br>'''(Base Stats)'''<br>
+'''Dps: 24,850 - (Commander+Griffin + Mirrorblade: 81,945)'''
+<br>'''TDps: 99,400 - (Commander+Griffin + Mirrorblade: 327,781)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|59.8K}}<br>
+'''Total cost to Max''' {{Yen|239.2K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Hubris (The One)
+|Description=
+Average DPS, High Range, Average SPA, Full AoE. Every wave that Hubris (The One) is placed, he gains an increasing buff for 15 waves, up to 125% more DMG and 67.5% Range. Hubris (The One) is above Poseidon (Tyrant of the Seas) because while having lower DPS than Poseidon, he has much more range, making him much better for leaderboard runs where enemies will be very spread out across the entire map.
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,862 - (Commander+Griffin + Mirrorblade: 65,661)'''
+<br>'''TDps: 59,587 - (Commander+Griffin + Mirrorblade: 196,984)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|100K}}<br>
+'''Cost for Hybrid:''' {{Yen|47.5K}} - '''Total cost to Max''' {{Yen|300K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Umbra (Nuclear)
+|Description=
+Very High DPS, High Range, High SPA, Full AoE, True Damage.
+<br>'''(Base Stats)'''<br>
+'''Dps: 32,214 - (Griffin: 64,428)'''
+<br>'''TDps: 96,642- (Griffin: 193,284)'''
+----
+'''Placement Cost:''' {{Yen|2.3K}} - '''Cost to Max:''' {{Yen|107.8K}}<br>
+'''Cost for Hybrid:''' {{Yen|59.8K}} - '''Total cost to Max''' {{Yen|323.4K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Poseidon (Tyrant of the Seas)
+|Description={{Story Meta Unit}}<br>
+High DPS, Average Range, High SPA, Full AoE. Hits airs at upgrade 7.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 24,850 - (Commander+Griffin + Mirrorblade: 81,945)'''
+<br>'''TDps: 74,552 - (Commander+Griffin + Mirrorblade: 245,836)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|117.5K}}<br>
+'''Cost for Hybrid:''' {{Yen|62.5K}} - '''Total cost to Max''' {{Yen|352.5K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Aizo (Final)
+|Description=Information soon!
+<br>'''(Base Stats)'''<br>
+'''Dps: 14,726 - (Wenda+Griffin + Time Piece: 55,666)'''
+<br>'''TDps: 44,179 - (Wenda+Griffin + Time Piece: 166,998)'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|134.8K}}<br>
+'''Cost for Hybrid:''' {{Yen|59.8K}} - '''Total cost to Max''' {{Yen|404.4K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+
+}}
+
+{{TierList/Item|Tango (Flash God)
+|Description=Information soon!
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,803 - (Commander+Griffin + Nail: 57,745)'''
+<br>'''TDps: 59,409 - (Commander+Griffin + Nail: 173,236)'''
+----
+'''Placement Cost:''' {{Yen|1.6K}} - '''Cost to Max:''' {{Yen|92.7K}}<br>
+'''Cost for Hybrid:''' {{Yen|55.7K}} - '''Total cost to Max''' {{Yen|278.1K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Nail.png|18px]] '''Nail'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Archer (Heroic Spirit)
+|Description={{Story Meta Unit}}
+
+
+High DPS, High Range, Average SPA, Average AoE Size
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 26,626 - (Commander+Griffin + Mirrorblade: 87,798)'''
+<br>'''TDps: 106,504 - (Commander+Griffin + Mirrorblade: 351,194)'''
+----
+'''Placement Cost:''' {{Yen|1.35K}} - '''Cost to Max:''' {{Yen|62.55K}}<br>
+'''Cost for Hybrid:''' {{Yen|48.55k}} - '''Total cost to Max''' {{Yen|250.2K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Komon (Paper Angel)
+|Description={{Story Meta Unit}}
+High DPS, High Range, Average SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 20,709 - (Commander+Griffin + Mirrorblade: 68,287)'''
+<br>'''TDps: 82,836 - (Commander+Griffin + Mirrorblade: 273,150)'''
+----
+'''Placement Cost:''' {{Yen|1K}} - '''Cost to Max:''' {{Yen|41K}}<br>
+'''Total cost to Max''' {{Yen|160.4K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+
+{{TierList/Item|Fiend Girl (Butterfly)
+|Description={{Story Meta Unit}}
+
+
+High DPS, High Range, Average SPA, Average AoE Size, Hybrid on Placement
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 23,667 - (Commander+Griffin + Mirrorblade: 78,043)'''
+<br>'''TDps: 94,668- (Commander+Griffin + Mirrorblade: 312,173)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|56.1K}}<br>
+'''Total cost to Max''' {{Yen|224,400}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Chuyo (Corruption)
+|Description={{Story Meta Unit}}
+
+
+High DPS, High Range, High SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 20,709 - (Wenda+Griffin + Time Piece: 71,549)'''
+<br>'''TDps: 82,836 - (Wenda+Griffin + Time Piece: 286,199)'''
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|50K}}<br>
+'''Total cost to Max''' {{Yen|200K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Luffo (Gear IV)
+|Description={{Story Meta Unit}}
+<br>'''(Base Stats)'''<br>
+'''Dps: 23,075 - (Commander+Griffin + Lostvayne: 76,092)'''
+<br>'''TDps: 92,303 - (Commander+Griffin + Lostvayne: 304,368)'''
+----
+'''Placement Cost:''' {{Yen|1.7K}} - '''Cost to Max:''' {{Yen|71.7K}}<br>
+'''Cost for Hybrid:''' {{Yen|49.7k}} - '''Total cost to Max''' {{Yen|286.8K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Medae (Witch of Betrayal)
+|Description=Information soon!
+<br>'''(Base Stats)'''<br>
+'''Dps: 15,975 - (Wenda+Griffin + Time Piece: 55,195)'''
+<br>'''TDps: 79,875 - (Wenda+Griffin + Time Piece: 275,977)'''
+----
+'''Placement Cost:''' {{Yen|1K}} - '''Cost to Max:''' {{Yen|44.25K}}<br>
+'''Total cost to Max''' {{Yen|221.25K}}<br>
+----
+'''Placements: 5''' 
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]] 
+}}
+
+{{TierList/Item|Demiurge (Demon Emperor)
+|Description=Information soon!
+<br>'''(Base Stats)'''<br>
+'''Dps: 18,566 - (Commander+Griffin + Mangekyō Eye: 139,139)'''
+<br>'''TDps: 74,264 - (Commander+Griffin + Mangekyō Eye: 556,559)'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|73.4K}}<br>
+'''Cost for Hybrid:''' {{Yen|40.9K}} - '''Total cost to Max''' {{Yen|293.6K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mangakeyo.png|18px]] '''Mangekyō Eye'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Golden Tyrant (Emperor)
+|Description={{Raid Meta Unit}}<br>
+<br>'''(Base Stats)'''<br>
+'''Dps: 21,366 - (Wenda+Griffin + Time Piece: 76,129)'''
+<br>'''TDps: 64,099 - (Wenda+Griffin + Time Piece: 228,387)''' 
+----
+'''Placement Cost:''' {{Yen|1.750K}} - '''Cost to Max:''' {{Yen|119.750K}}<br>
+'''Total cost to Max''' {{Yen|359.250K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Conrod (Wizard King)
+|Description=Information soon!
+<br>'''(Base Stats)'''<br>
+'''Dps: 23,194 - (Wenda+Griffin + Time Piece: 82,640)'''
+<br>'''TDps: 69,582 - (Wenda+Griffin + Time Piece: 247,922)''' 
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|104.5K}}<br>
+'''Total cost to Max''' {{Yen|313.5K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Captain (God)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+<br>'''(Base Stats)'''<br>
+'''Dps: 82,836 - (Griffin: 165,672)'''
+<br>'''TDps: 248,509 - (Griffin: 497,019)'''
+----
+'''Placement Cost:''' {{Yen|1K}} - '''Cost to Max:''' {{Yen|68.5K}}<br>
+'''Total cost to Max''' {{Yen|205.5K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Clover Of The Wind.png|18px]] ''' Clover Of The Wind'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Reaper.png|18px]] [[Image:Trait Celestial.png|18px]] 
+}}
+
+}}
+{{TierList/Item Container|color=#82fffe|id=infiniti|name=Good Ground
+|
+
+{{TierList/Item|Roger (Pirate King)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Insanely High DPS, Average SPA, High Range, Average AoE Size. Every time Roger attacks, he stuns enemies for .5 seconds with a 5 second cooldown.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 40,999 - (Commander+Griffin + Mirrorblade: 135,196)'''
+<br>'''TDps: 122,999 - (Commander+Griffin + Mirrorblade: 405,588)'''
+----
+'''Placement Cost:''' {{Yen|1.750K}} - '''Cost to Max:''' {{Yen|109.250K}}<br>
+'''Total cost to Max''' {{Yen|327.750K}}'''<br>
+----
+'''Placements: 3'''
+---- 
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Saber (Promised Sword)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Very High DPS, High Range, High SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 38,288 - (Commander+Griffin + Mirrorblade: 126,260)'''
+<br>'''TDps: 114,864 - (Commander+Griffin + Mirrorblade: 378,780)'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|74.8K}}<br>
+'''Total cost to Max''' {{Yen|224.4K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Albedo (Overseer)
+|Description={{Raid Meta Unit}}<br>
+High DPS, Average Range, Average SPA, Full AoE.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 29,584 - (Commander+Griffin + Mirrorblade: 97,554)'''
+<br>'''TDps: 88,753 - (Commander+Griffin + Mirrorblade: 292,662)'''
+----
+'''Placement Cost:''' {{Yen|1.650K}} - '''Cost to Max:''' {{Yen|110.650K}}<br>
+'''Total cost to Max''' {{Yen|331.950K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Izu (Demon Snow)
+|Description={{Story Meta Unit}}
+
+
+Very High DPS, Average Range, High SPA, Average AoE Size, Crits.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 38,979 - (Commander+Griffin + Nail: 113,663)'''
+<br>'''TDps: 116,937 - (Commander+Griffin + Nail: 340,989)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|83.3K}}<br>
+'''Total cost to Max''' {{Yen|249.9K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Nail.png|18px]] '''Nail'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Lancer (Child of Light) 
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+
+
+Very High DPS, Average Range, Average SPA, Average AoE Size, Crits.
+----
+<br>'''(Base Stats)'''<br> '''Dps: 32,717- (Commander+Griffin + Nail: 95,404)''' 
+<br>'''TDps: 130,868 - (Commander+Griffin + Nail: 381,616)''' 
+---- 
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|48.7K}}<br> 
+'''Total cost to Max''' {{Yen|194.8K}}'''<br> 
+----
+'''Placements: 4''' 
+----
+ Recommended Relics: [[Image:Nail.png|18px]] '''Nail'''<br> 
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Illy (Homunculus)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+<br>'''(Base Stats)'''<br>
+'''Dps: 38,350 - (Wenda+Griffin + Time Piece: 132,500)'''
+<br>'''TDps: 115,050 - (Wenda+Griffin + Time Piece: 397,500)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|98K}}<br>
+'''Total cost to Max''' {{Yen|294K}}'''<br>
+----
+'''Placements: 3'''
+---- 
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Mircale Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]]
+}}
+
+
+{{TierList/Item|Aku (Rashamon)
+|Description={{Raid Meta Unit}}<br>
+
+Very High DPS, High Range, High SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br> '''Dps: 36,079- (Commander+Griffin + Mirrorblade: 118,972)''' 
+<br>'''TDps: 108,237- (Commander+Griffin + Mirrorblade: 356,918)''' 
+---- 
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|100.1K}}<br> 
+'''Total cost to Max''' {{Yen|300.3K}}'''<br> 
+----
+'''Placements: 3''' 
+----
+ Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br> 
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Senbodu (Buddha)
+|Description={{Raid Meta Unit}}<br>
+
+
+High DPS, High Range, Very High SPA, Large AoE Size. 
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 24,568 - (Wenda+Griffin + Time Piece: 89,675)'''
+<br>'''TDps: 73,706 - (Wenda+Griffin + Time Piece: 269,026)'''
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|77.4K}}<br>
+'''Total cost to Max''' {{Yen|232.2K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+
+{{TierList/Item|Flamingo (Awakened)
+|Description=
+Very High DPS, High Range, Average SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 36,241 - (Wenda+Griffin + Time Piece: 125,212)'''
+<br>'''TDps: 108,723 - (Wenda+Griffin + Time Piece: 375,637)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|120K}}<br>
+'''Total cost to Max''' {{Yen|360K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Kiroto (Dual)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+High DPS, Average Range, High SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 25,260 - (Commander+Griffin + Mirrorblade: 83,294)'''
+<br>'''TDps: 101,040 - (Commander+Griffin + Mirrorblade: 333,177)'''
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|72.2K}}<br>
+'''Total cost to Max''' {{Yen|288.8K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits:  [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Heathcliff (Admin)
+|Description={{Story Meta Unit}}<br>
+High DPS, Average Range, High SPA, Large AoE Size. 
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 29,452 - (Commander+Griffin + Mirrorblade: 97,119)'''
+<br>'''TDps: 88,357 - (Commander+Griffin + Mirrorblade: 291,357)'''
+----
+'''Placement Cost:''' {{Yen|1.8K}} - '''Cost to Max:''' {{Yen|76.3K}}<br>
+'''Total cost to Max''' {{Yen|228.9K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Avdo (Magician's Red)
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 23,754 - (Wenda+Griffin + Mangekyō Eye: 157,721) '''
+<br>'''TDps: 71,263 - (Wenda+Griffin + Mangekyō Eye: 473,164)'''
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|81.7K}}<br>
+'''Total cost to Max''' {{Yen|245.1K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mangakeyo.png|18px]] '''Mangekyō Eye'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Skull Knight (King)
+|Description={{Raid Meta Unit}}
+<br>'''(Base Stats)'''<br>
+'''Dps: 43,613 - (Commander+Griffin + Mirrorblade: 143,813)'''
+<br>'''TDps: 87,226 - (Commander+Griffin + Mirrorblade: 287,626)'''
+----
+'''Placement Cost:''' {{Yen|1.6K}} - '''Cost to Max:''' {{Yen|122.350K}}<br>
+'''Total cost to Max''' {{Yen|244.7K}}'''<br>
+----
+'''Placements: 2'''
+---- 
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Josuka (Unbreakable)
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 24,482 - (Commander+Griffin + Mirrorblade: 87,985)'''
+<br>'''TDps: 73,448 - (Commander+Griffin + Mirrorblade: 263,957)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|76.4K}}<br>
+'''Total cost to Max''' {{Yen|229.2K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+
+}}
+{{TierList/Item Container|color=#80bffc|id=infiniti|name=Good Support
+|
+
+{{TierList/Item|Jirayo (Toad Sage)
+|Description=
+Average DPS, Average Range, Average SPA, 60° Cone AoE. Slow.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 17,947'''
+<br>'''TDps: 71788'''<br>
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|71.7K}}<br>
+'''Total cost to Max''' {{Yen|215100}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Nimble.png|18px]]
+}}
+
+
+{{TierList/Item|Merlyn (Infinity)
+|Description=
+Average DPS, High Range, Average SPA, Average AoE Size. Every time Merlyn attacks from upgrade 4 onwards, she has a 20% chance (25% after upgrade 7) to '''Hex '''enemies, causing them to take 30% more magic damage permanently. As of Update 17, Hex only increases base damage, meaning the 30% magic damage increase is actually 10%.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 10,354'''
+<br>'''TDps: 31,063'''<br>
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|62.7K}}<br>
+'''Cost for HEX:''' {{Yen|13.0K}} - '''Total cost to Max''' {{Yen|188.1K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Traits: [[Image:Trait Godspeed.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Nimble.png|18px]]
+}}
+
+{{TierList/Item|Sukuno
+|Description=
+Average Dps, Average Spa, Average Range, Average Aoe, Ground. Upon reaching upgrade 4, Sukuno has a 25% chance to apply '''Dismembered''' to enemies, causing them to take 20% more physical damage. Sukuno is usually kept at upgrade 7, due to Malevolent Shrine having double the SPA and still being single hit. As of Update 17, Dismember only increases base damage, meaning the 20% physical damage increase is actually 6%.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 11,217'''
+<br>'''TDps: 33,652'''
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|62.5K}}<br>
+'''Cost for Ability:''' {{Yen|14.5K}} - '''Total cost to Max''' {{Yen|187.5K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Traits: [[Image:Trait Godspeed.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Nimble.png|18px]]
+}}
+
+{{TierList/Item|Megomu (Chimera Shadow)
+|Description=
+Low DPS, Average Range, Average SPA, Average AoE Size. Every time Megomu attacks, he applies '''Cursed''', which increases all magic damage dealt to enemies by 30% for 5 seconds. THIS EFFECT STACKS WITH MERLYN'S HEX. As of Update 17, Cursed only increases base damage, meaning the 30% magic damage increase is actually 10%.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 4,832'''
+<br>'''TDps: 19,328'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|61.850K}}<br>
+'''Total cost to Max''' {{Yen|247.4K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Traits: [[Image:Trait Godspeed.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Nimble.png|18px]]
+}}
+
+
+
+{{TierList/Item|Mochi Charlot
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 4,672'''
+<br>'''TDps:  18,691'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|67.750K}}<br>
+'''Total cost to Max''' {{Yen|271K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Traits: [[Image:Trait Vas.png |18px]] [[Image:Trait Range.png|18px]]
+}}
+
+
+}}
+
+
+|3={{{tab-2|Story/Raid/Portals/Stages}}}
+|4=<h3 class="mobileonly">'''Story/Raid/Portals/Stages'''</h3>
+
+{{TierList/Container|id=Story_Mode
+|Fast travel for Mobile only=
+{{TierList/Container/id|id=Story_Mode|META Hill/Hybrid}}
+{{TierList/Container/id|id=Story_Mode|META Ground}}
+{{TierList/Container/id|id=Story_Mode|META Support}}
+{{TierList/Container/id|id=Story_Mode|Good Hill/Hybrid}}
+{{TierList/Container/id|id=Story_Mode|Good Ground}}
+{{TierList/Container/id|id=Story_Mode|Good Support}}
+<!-- names must match Item Container names -->
+|1=
+{{TierList/Item Container|color=#ff7f7f|id=Story_Mode|name=META Hill/Hybrid
+|
+
+{{TierList/Item|Usoap (God)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Information soon!
+<br>'''(Base Stats)'''<br>
+'''Dps: 82,836 - (Griffin: 165,672)'''
+<br>'''TDps: 248,509 - (Griffin: 497,019)'''
+----
+'''Placement Cost:''' {{Yen|1K}} - '''Cost to Max:''' {{Yen|68.5K}}<br>
+'''Total cost to Max''' {{Yen|205.5K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Clover Of The Wind.png|18px]] ''' Clover Of The Wind'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Reaper.png|18px]] [[Image:Trait Celestial.png|18px]] 
+}}
+
+{{TierList/Item|Shadowgirl (Time Traveller)
+|Description={{Meta Support Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Average DPS, Average Range, Average SPA. On placement, Shadowgirl (Time Traveller) has a full AoE timestop (42 second cooldown, 4 second duration). At upgrade 3, her timestop cooldown is 14 seconds shorter (28 seconds total), and at upgrade 7, her timestop cooldown is reduced by 13 seconds and also lasts 1 second longer.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,190 - (Commander+Griffin + Mirrorblade: 63,279)'''
+<br>'''TDps: 57,571 - (Commander+Griffin + Mirrorblade: 189,839)'''
+----
+'''Placement Cost:''' {{Yen|1.6K}} - '''Cost to Max:''' {{Yen|74.1K}}<br>
+'''Cost for Hybrid:''' {{Yen|39.1K}} - '''Total cost to Max''' {{Yen|222.3K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade''' [[Image:5-Leaf Clover.png|18px]] '''5-Leaf Clover'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Sniper.png|18px]]
+}}
+
+{{TierList/Item|Fused Hero
+|Description={{Meta Unit}}<br>
+High-Insanely High DPS, High Range, Average SPA, 60° Cone. '''Goko (Super)''' and '''Vegita (Majin II)''' will fuse into '''Vegeto''' after reaching upgrade 7 on Goko or Vegita, taking the stats and damage type from the unit that '''Fusion''' was activated on, while taking the traits from both of them. With unique Goko and unique Vegita, Vegeto will have the highest dps in the entire game.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 107,380 - (Commander+Griffin + Mirrorblade: 354,085)'''
+<br>'''TDps: 322,140 - (Commander+Griffin + Mirrorblade: 1,062,256)''' 
+----
+'''Placement Cost:''' {{Yen|112.15K}} - '''Cost to Max:''' {{Yen|293.65K}}<br>
+'''Total cost to Max'''{{Yen|880.95K}}<br>
+----
+'''Placements: 3'''<br>
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image: Trait Unique.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Carrot (Ultra)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+High DPS, High Range, Average SPA, Large Circle. 
+<br>'''(Base Stats)'''<br>
+'''Dps: 24,850 - (Commander+Griffin + Mirrorblade: 81,945)'''
+<br>'''TDps: 99,400 - (Commander+Griffin + Mirrorblade: 327,781)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|59.8K}}<br>
+'''Total cost to Max''' {{Yen|239.2K}}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Golden King (Lord of Heroes)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Very High DPS, High Range, High SPA, Large Circle. 
+<br>'''(Base Stats)'''<br>
+'''Dps: 37,583 - (Wenda+Griffin + Time Piece: 133,908)'''
+<br>'''TDps: 112,749 - (Wenda+Griffin + Time Piece: 401,727)'''
+----
+'''Placement Cost:''' {{Yen|2.5K}} - '''Cost to Max:''' {{Yen|118K}}<br>
+'''Cost for Hybrid:''' {{Yen|27.3K}} - '''Total cost to Max''' {{Yen|354k}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Komon (Paper Angel)
+|Description={{Story Meta Unit}}
+High DPS, High Range, Average SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 20,709 - (Commander+Griffin + Mirrorblade: 68,287)'''
+<br>'''TDps: 82,836 - (Commander+Griffin + Mirrorblade: 273,150)'''
+----
+'''Placement Cost:''' {{Yen|1K}} - '''Cost to Max:''' {{Yen|41K}}<br>
+'''Total cost to Max''' {{Yen|160.4K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Fiend Girl (Butterfly)
+|Description={{Story Meta Unit}}
+
+
+High DPS, High Range, Average SPA, Average AoE Size. Above Archer due to being hybrid on placement
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 23,667 - (Commander+Griffin + Mirrorblade: 78,043)'''
+<br>'''TDps: 94,668- (Commander+Griffin + Mirrorblade: 312,173)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|56.1K}}<br>
+'''Total cost to Max''' {{Yen|224,400}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Archer (Heroic Spirit)
+|Description={{Story Meta Unit}}
+
+
+High DPS, High Range, Average SPA, Average AoE Size
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 26,626 - (Commander+Griffin + Lostvayne: 87,798)'''
+<br>'''TDps: 106,504 - (Commander+Griffin + Lostvayne: 351,194)'''
+----
+'''Placement Cost:''' {{Yen|1.35K}} - '''Cost to Max:''' {{Yen|62.55K}}<br>
+'''Cost for Hybrid:''' {{Yen|48.55K}} - '''Total cost to Max''' {{Yen|250.2K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Chuyo (Corruption)
+|Description={{Story Meta Unit}}
+
+
+High DPS, High Range, High SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 20,709 - (Wenda+Griffin + Time Piece: 71,549)'''
+<br>'''TDps: 82,836 - (Wenda+Griffin + Time Piece: 286,199)'''
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|50K}}<br>
+'''Total cost to Max''' {{Yen|200K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Medae (Witch of Betrayal)
+|Description={{Story Meta Unit}}
+<br>'''(Base Stats)'''<br>
+'''Dps: 15,975 - (Wenda+Griffin + Time Piece: 55,195)'''
+<br>'''TDps: 79,875 - (Wenda+Griffin + Time Piece: 275,977)'''
+----
+'''Placement Cost:''' {{Yen|1K}} - '''Cost to Max:''' {{Yen|44.25K}}<br>
+'''Total cost to Max''' {{Yen|221.25K}}<br>
+----
+'''Placements: 5''' 
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]] 
+}}
+
+{{TierList/Item|Luffo (Gear IV)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+
+
+Information soon!
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 23,075 - (Commander+Griffin + Lostvayne: 76,092)'''
+<br>'''TDps: 92,303 - (Commander+Griffin + Lostvayne: 304,368)'''
+----
+'''Placement Cost:''' {{Yen|1.7K}} - '''Cost to Max:''' {{Yen|71.7K}}<br>
+'''Cost for Hybrid:''' {{Yen|49.7k}} - '''Total cost to Max''' {{Yen|286.8K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Poseidon (Tyrant of the Seas)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+High DPS, Average Range, High SPA, Full AoE. Hits airs at upgrade 7.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 24,850 - (Commander+Griffin + Mirrorblade: 81,945)'''
+<br>'''TDps: 74,552 - (Commander+Griffin + Mirrorblade: 245,836)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|117.5K}}<br>
+'''Cost for Hybrid:''' {{Yen|62.5K}} - '''Total cost to Max''' {{Yen|352.5K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+
+
+}}
+
+{{TierList/Item Container|color=#febf85|id=Story_Mode|name=META Ground
+|
+{{TierList/Item|Shinobi (Eternal)
+|Description={{Meta Unit}} {{Meta Burn Unit}}<br>
+Highest DPS in the game, High Range, Average SPA, Average AoE size. Shinobi's burn damage is equal to 100% of his displayed DMG over 10 ticks, 200% of his displayed DMG over 20 ticks with Mangekyō Eye, and 600% of his displayed DMG over 20 ticks with Mangekyō Eye, 100% Wenda/Leafy buff, and Griffin. His burn can stack with itself, allowing for much higher DPS than displayed.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 34,279 - (Wenda+Griffin + Mangekyō Eye: 371,161)'''
+<br>'''TDps: 102,838 - (Wenda+Griffin + Mangekyō Eye: 1,113,485)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|83.85K}}<br>
+'''Total cost to Max''' {{Yen|251.55K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mangakeyo.png|18px]] '''Mangekyō Eye'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Menace (Terror)
+|Description={{Meta Unit}}{{Meta Bleed Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Very High DPS, Average Range, Average SPA,  Large AoE Size. Menace has an innate 50% CRIT chance, along with bleed, making him heavily buffed by Bleed Amplification. Menace has an ability, '''Bloodcurdle''', which does 3x his DMG to every bleeding enemy in his aoe. This ability can CRIT for 4.5x his DMG, stuns for 2 seconds (10 second cooldown), and has a 20 second (Non Global) cooldown.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,824 - (Commander+Griffin+Bleed Amplification + Nail: 137,850 )'''
+<br>'''TDps: 59,473 - (Commander+Griffin+Bleed Amplification + Nail: 413,551 )'''
+<br>'''Dps With Ability: 34,692 - (Commander+Griffin+Bleed Amplification + Nail: 181,206)'''
+<br>'''TDps With Ability: 104,076  - (Commander+Griffin+Bleed Amplification + Nail: 543,618 )'''<br>
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|66.6K}}<br>
+'''Cost for Ability:''' {{Yen|29.6K}} - '''Total cost to Max''' {{Yen|199.8K}}'''<br>
+----
+'''Placements: 3'''<br>
+----
+Recommended Relics: [[Image:Nail.png|18px]] '''Nail''' [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Death Ninja (Immortal Butcher)
+|Description={{Meta Unit}}{{Meta Bleed Unit}}{{Story Meta Unit}}<br>
+Very High DPS, Average Range, Average SPA,  Large AoE Size. Hido bleeds, making him heavily buffed by Bleed Amplification. Hido has an ability, '''Blood Curse ''', which does his displayed damage 3 times to every bleeding enemy in his aoe with a 20 second (Non Global) cooldown.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps:  19,328 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 151,980 )'''
+<br>'''TDps: 57,985 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 455,940)'''
+<br>'''Dps With Ability: 33,824 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 199,784)'''
+<br>'''TDps With Ability: 101,474 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 599,354)'''<br>
+----
+'''Placement Cost:''' {{Yen|1.75K}} - '''Cost to Max:''' {{Yen|83.25K}}<br>
+'''Cost for Ability:''' {{Yen|33.75K}} - '''Total cost to Max''' {{Yen|249.75K}}'''<br>
+----
+'''Placements: 3'''<br>
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Lancer (Child of Light) 
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+
+
+Very High DPS, Average Range, Average SPA, Average AoE Size, Crits.
+----
+'''(Base Stats)'''<br> '''Dps: 32,717 - (Commander+Griffin + Nail: 95,404)''' 
+<br>'''TDps: 130,868 - (Commander+Griffin + Nail: 381,616)''' 
+---- 
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|48.7K}}<br> 
+'''Total cost to Max''' {{Yen|194.8K}}'''<br> 
+----
+'''Placements: 4''' 
+----
+ Recommended Relics: [[Image:Nail.png|18px]] '''Nail'''<br> 
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Asushi (Moonlight Beast)
+|Description={{Meta Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Very High DPS, Average Range, Average SPA, Large AoE Size. Asushi (Moonlight Beast) bleeds, making his damage spike immensely with Bleed Amplification/Shallta
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 28,762- (Commander+Griffin+Bleed Amplification + Mirrorblade: 213,251)'''
+<br>'''TDps: 115.048- (Commander+Griffin+Bleed Amplification + Mirrorblade: 853,006)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|56.1K}}<br>
+'''Total cost to Max''' {{Yen|224.4K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Saber (Promised Sword)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Very High DPS, High Range, High SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 38,288 - (Commander+Griffin + Mirrorblade: 126,260)'''
+<br>'''TDps: 114,864 - (Commander+Griffin + Mirrorblade: 378,780)'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|74.8K}}<br>
+'''Total cost to Max''' {{Yen|224.4K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Fox Ninja (Six Tails)
+|Description={{Meta Unit}}{{Story Meta Unit}}<br>
+Very High DPS, Average Range, Average SPA, Large AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 45,362 - (Wenda+Griffin + Time Piece: 153,587)'''
+<br>'''TDps: 136,086-  (Wenda+Griffin + Time Piece: 460,762)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|100.5K}}<br>
+'''Total cost to Max''' {{Yen|301.5K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Dracula (Unholy King)
+|Description={{Meta Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Insanely High DPS, Average Range, High SPA, Average AoE Size. Upon reaching upgrade 10, Dracula unlocks the ability '''Soul Restraint: Level 0''', which summons 5 Ghoul Riders with 1,287,278 HP each (6,436,390 total) and 15 Ghouls with 386,570 each (5,798,550 total) every 2 minutes.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 42,952 - (Wenda+Griffin + Time Piece: 148,399)'''
+<br>'''TDps: 128,856 - (Wenda+Griffin + Time Piece: 445,199)'''<br>
+<br>'''Summons Hp: 12,234,940 - (Griffin + Commander: 36,704,820)'''
+----
+'''Placement Cost:''' {{Yen|2.0K}} - '''Cost to Max:''' {{Yen|118K}}<br>
+'''Cost for Ability:''' {{Yen|118K}} - '''Total cost to Max''' {{Yen|354,000}}'''<br>
+----
+'''Placements: 3'''<br>
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Vego (Mage II)
+|Description={{Meta Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Insanely High DPS, High SPA, Average Range, Full AoE. 
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 35,142 - (Commander+Griffin + Mirrorblade: 127,4706)'''
+<br>'''TDps: 105,426 - (Commander+Griffin + Mirrorblade: 382,4120)'''
+----
+'''Placement Cost:''' {{Yen|1.35K}} - '''Cost to Max:''' {{Yen|99.85K}}<br>
+'''Total cost to Max''' {{Yen|299.55K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+
+{{TierList/Item|Roger (Pirate King)
+|Description={{Meta Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Insanely High DPS, Average SPA, High Range, Average AoE Size. Every time Roger attacks, he stuns enemies for .5 seconds with a 5 second cooldown.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 40,999 - (Commander+Griffin + Mirrorblade: 135,196)'''
+<br>'''TDps: 122,999 - (Commander+Griffin + Mirrorblade: 405,588)'''
+----
+'''Placement Cost:''' {{Yen|1.750K}} - '''Cost to Max:''' {{Yen|109.250K}}<br>
+'''Total cost to Max''' {{Yen|327.750K}}'''<br>
+----
+'''Placements: 3'''
+---- 
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Illy (Homunculus)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+
+<br>'''(Base Stats)'''<br>
+'''Dps: 38,350 - (Wenda+Griffin + Time Piece: 132,500)'''
+<br>'''TDps: 115,050 - (Wenda+Griffin + Time Piece: 397,500)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|98K}}<br>
+'''Total cost to Max''' {{Yen|294K}}'''<br>
+----
+'''Placements: 3'''
+---- 
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Mircale Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]]
+}}
+
+{{TierList/Item|Izu (Demon Snow)
+|Description={{Story Meta Unit}}
+
+
+Very High DPS, Average Range, High SPA, Average AoE Size, Crits.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 38,979 - (Commander+Griffin + Nail: 113,663)'''
+<br>'''TDps: 116,937 - (Commander+Griffin + Nail: 340,989)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|83.3K}}<br>
+'''Total cost to Max''' {{Yen|249.9K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Nail.png|18px]] '''Nail'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Heathcliff (Admin)
+|Description={{Story Meta Unit}}
+
+
+High DPS, Average Range, High SPA, Large AoE Size. 
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 29,452 - (Commander+Griffin + Mirrorblade: 97,119)'''
+<br>'''TDps: 88,357 - (Commander+Griffin + Mirrorblade: 291,357)'''
+----
+'''Placement Cost:''' {{Yen|1.8K}} - '''Cost to Max:''' {{Yen|76.3K}}<br>
+'''Total cost to Max''' {{Yen|228.9K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Kiro (Bites the Dust)
+|Description={{Meta Support Unit}}{{Story Meta Unit}}{{Raid Meta Unit}}<br>
+Very High DPS, High Range, Average SPA, Average AoE Size. Upon reaching upgrade 8, Kiro unlocks his ability, '''Bites the Dust''', which rewinds all enemies on the map (including bosses) for 5 seconds with a 60 second cooldown. This ability can only be used 3 times per enemy.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 35,757 - (Wenda+Griffin + Time Piece: 123,543)'''
+<br>'''TDps: 107,273 - (Wenda+Griffin + Time Piece: 370,629)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|104.4K}}<br>
+'''Cost for Ability:''' {{Yen|59.4K}} - '''Total cost to Max''' {{Yen|313.2K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Kiroto (Dual)
+|Description={{Story Meta Unit}}{{Raid Meta Unit}}<br>
+High DPS, Average Range, High SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 25,260 - (Commander+Griffin + Mirrorblade: 83,294)'''
+<br>'''TDps: 101,040 - (Commander+Griffin + Mirrorblade: 333,177)'''
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|72.2K}}<br>
+'''Total cost to Max''' {{Yen|288.8K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits:  [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Saki (Cyanblade)
+|Description={{Story Meta Unit}}
+<br>'''(Base Stats)'''<br>
+'''Dps: 21,568 - (Commander+Griffin + Nail: 62,893)'''
+<br>'''TDps: 107,841 - (Commander+Griffin + Nail: 314,466)'''
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|44K}}<br>
+'''Total cost to Max''' {{Yen|220K}}'''<br>
+----
+'''Placements: 5'''
+---- 
+Recommended Relics: [[Image:Nail.png|18px]] '''Nail''' [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+}}
+{{TierList/Item Container|color=#ffdf87|id=Story_Mode|name=META Support
+|
+
+{{TierList/Item|Leafy (Sylph)
+|Description={{Meta Support Unit}}<br>
+Leafy is cheap to place and has an ability that increases the magic damage of allies in range. She gives a 50% damage increase to magic units and you can cycle these buffs to reach up to a 100% damage increase on magic units. Leafy also has the '''BUFF tag''', making it a perfect partner for '''Griffin(Acension)''' to reach his '''Griffin(Reincarnation)''' form, allowing you to reach a 4x damage increase.
+----
+'''Placement Cost:''' {{Yen|1K}} - '''Cost to Max:''' {{Yen|30K}}<br>
+'''Total cost to Max''' {{Yen|180K}}'''<br>
+----
+'''Placements: 6'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+{{TierList/Item|Wenda
+|Description={{Meta Support Unit}}<br>
+Wenda is cheap to place and has an ability that increases the magic damage of allies in range. She gives a 30% damage increase to magic units and you can cycle these buffs to reach up to a 100% damage increase on magic units. Wenda also has the '''BUFF tag''', making it a perfect partner for '''Griffin(Acension)''' to reach his '''Griffin(Reincarnation)''' form, allowing you to reach a 4x damage increase.
+----
+'''Placement Cost:''' {{Yen|800}} - '''Cost to Max:''' {{Yen|24.250K}}<br>
+'''Total cost to Max''' {{Yen|145.5K}}'''<br>
+----
+'''Placements: 6'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+
+{{TierList/Item|Commander
+|Description={{Meta Support Unit}}<br>
+Commander is cheap to place and has an ability that increases the physical damage of allies in range. He gives a 25% damage increase to physical units and you can cycle these buffs to reach up to a 100% damage increase on magic units. Commander also has the '''BUFF''' tag, making it a perfect partner for '''Griffin(Acension)''' to reach his '''Griffin(Reincarnation)''' form, allowing you to reach a 4x damage increase.
+----
+'''Placement Cost:''' {{Yen|775}} - '''Cost to Max:''' {{Yen|21.775K}}<br>
+'''Total cost to Max''' {{Yen|130.650K}}'''<br>
+----
+'''Placements: 6'''
+----
+Recommended Traits:  [[Image:Trait Sniper.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+
+{{TierList/Item|Oshy (Idol)
+|Description={{Meta Support Unit}}<br>
+On placement, Oshy (Idol) increases the damage of all of the owner's units by 5%, and reduces their cost by 5%. Each upgrade, the discount and damage percent increases (-10% cost, +7% dmg upg 1, -15% cost +10% dmg upg 2, -20% cost +15% dmg upg 3). With the Golden trait, every Oshy upgrade reduces cost by an extra 1%.
+----
+'''Placement Cost:''' {{Yen|1K}} - '''Cost to Max:''' {{Yen|16K}}<br>
+----
+'''Placements: 1'''
+----
+Recommended Traits: [[Image:Trait Golden.png|18px]]
+}}
+
+{{TierList/Item|Operator (ROOM)
+|Description={{Meta Support Unit}}<br>
+Average DPS, Average Range, Average SPA, Average AoE Size. Has one of the best support abilities in the game, '''Shambles''', which teleports all enemies in Law's range back equal to half of his range. Shambles can only be used three times per enemy.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,824 - (Wenda+Griffin + Time Piece: 67,203)'''
+<br>'''TDps: 59,472 - (Wenda+Griffin + Time Piece: 201,610)'''
+----
+'''Placement Cost:''' {{Yen|1.6K}} - '''Cost to Max:''' {{Yen|73.150K}}<br>
+'''Total cost to Max''' {{Yen|219.450K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Sniper.png|18px]]
+}}
+
+{{TierList/Item|Ice Lily
+|Description={{Meta Support Unit}}<br>
+Low Dps, Average Range, Average Spa, Average Aoe. Every time Ice Lily attacks, she slows for 4 seconds with a cooldown of 7 seconds. Ice Lily is always kept at upgrade 0, due to being able to have a perfect 7.0 SPA to align with her slow cooldown (Requires the correct SPA stat to be 7.0 SPA).
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|57K}}<br>
+'''Total cost to Max''' {{Yen|285K}}<br>
+----
+'''Placements: 5'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+
+{{TierList/Item|Jirayo (Toad Sage)
+|Description=
+Average DPS, Average Range, Average SPA, 60° Cone AoE. Slow.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 17,947'''
+<br>'''TDps: 71788'''<br>
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|71.7K}}<br>
+'''Total cost to Max''' {{Yen|215100}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Nimble.png|18px]]
+}}
+
+
+{{TierList/Item|Reliable Student (Echoes)
+|Description={{Meta Support Unit}}<br>
+Average DPS, Average SPA, Average Range, Average AoE Size. On placement, Reliable Student slows enemies each hit by 50% (65% at upg 2, 80% at upg 5). Upon reaching upgrade 5, Reliable Student becomes a hybrid unit, allowing him to slow airs. Reliable Student should be kept at 7.0 SPA on placement so he attacks/slows when the slow is off cooldown at max upgrade.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 13,978 - (Commander+Griffin + Mirrorblade: 48,776)'''
+<br>'''TDps: 55,914 - (Commander+Griffin + Mirrorblade: 195,107)'''
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|55.7K}}<br>
+'''Cost for Hybrid:''' {{Yen|18.2K}} - '''Total cost to Max''' {{Yen|222.8K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Bloodcry (Bloodfallen)
+|Description={{Meta Support Unit}}<br>
+Average Dps, Average Range, Average Spa, Average Aoe Size. Every time Bloodcry attacks, she applies '''Bleed Amplification ''', which increases all bleed damage by 5x for the duration of the debuff (5 seconds upg 0-2, 10 seconds upg 3-5, and 15 seconds upg 6-7).
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 13,978 - (Commander+Griffin + Mirrorblade: 64,232)'''
+<br>'''TDps: 55,914 - (Commander+Griffin + Mirrorblade: 256,928)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|60.8K}}<br>
+'''Total cost to Max''' {{Yen|243.2K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Traits: [[Image:Trait Godspeed.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Sniper.png|18px]]
+}}
+
+{{TierList/Item|Blood (Unleashed)
+|Description={{Meta Support Unit}}<br>
+Low Dps, Average Range, Average Spa, Average Aoe Size, This unit does '''Bleed Amplification''', '''Bleed Amplification''' Makes Bleed Ticks/Damage Do 5x Damage, On placement Last for 5 seconds, Blood Hammer(Upgrading 3) Last for 10 seconds, Blood Scythe(Upgrade 7) Last for 15 seconds total. This unit is Similar to [[Bloodcry (Bloodfallen)]]
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 8,232'''
+<br>'''TDps: 32,929'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|61K}}<br>
+'''Total cost to Max''' {{Yen|244K}}<br>
+----
+'''Placements: 4'''
+----
+
+Recommended Traits: [[Image:Trait Godspeed.png|18px]] [[Image: Trait Divine.png|18px]] [[Image:Trait Sniper.png|18px]]
+}}
+
+{{TierList/Item|Griffin (Reincarnation)
+|Description={{Meta Support Unit}}<br>
+Grants every unit on the map a 100% damage boost. This form can be activated by sacrificing 100K Yen worth of units with the '''BUFF''' tag with his ability, '''Sacrifice'''.
+----
+'''Placement Cost:''' {{Yen|1K}}<br> 
+'''Cost for Buff:''' {{Yen|100K}} Worth of units with the '''BUFF''' tag<br>
+----
+'''Placements: 1'''
+----
+}}
+
+}}
+{{TierList/Item Container|color=#82fe89|id=Story_Mode|name=Good Hill/Hybrid
+|
+
+{{TierList/Item|Harribu (Shark Empress)
+|Description={{Raid Meta Unit}}<br>
+
+
+Information soon!
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 17,093 - (Wenda+Griffin + Time Piece: 55,723)'''
+<br>'''TDps: 68,372 - (Wenda+Griffin + Time Piece: 222,894)''' 
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|63.8K}}<br>
+'''Total cost to Max''' {{Yen|255.2K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Narbera (Battle Maid)
+|Description={{Raid Meta Unit}}<br>
+
+
+Information soon!
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 22,089 - (Wenda+Griffin + Time Piece: 74,884)'''
+<br>'''TDps: 66,269- (Wenda+Griffin + Time Piece: 224,652)''' 
+----
+'''Placement Cost:''' {{Yen|1.6K}} - '''Cost to Max:''' {{Yen|72.1K}}<br>
+'''Total cost to Max''' {{Yen|216.3K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Bubblegum (Ultimate)
+|Description=<br>
+High DPS, Average Range, Average SPA, Full AoE. 
+<br>'''(Base Stats)'''<br>
+'''Dps: 26,921 - (Wenda+Griffin + Time Piece: 93,015)'''
+<br>'''TDps: 80,763 - (Wenda+Griffin + Time Piece: 279,045)'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|110.8K}}<br>
+'''Cost for Hybrid:''' {{Yen|55.8K}} - '''Total cost to Max''' {{Yen|332.4K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Agony (Divine)
+|Description={{Meta Support Unit}}<br>
+High DPS, Average Range,  Very High SPA, Massive AoE Size. Upon reaching upgrade 6, all of Agony (Divine)'s attacks will push back enemies hit (30 second cooldown). 
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 25,806 (Commander+Griffin + Mirrorblade: 85,097)'''
+<br>'''TDps: 77,418 (Commander+Griffin + Mirrorblade: 255,291)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|89.65K}}<br>
+'''Cost for Ability+Hybrid:''' {{Yen|27.15K}} - '''Total cost to Max''' {{Yen|268.950K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade''' <br>
+Recommended Traits: [[Image: Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]] [[Image:Trait Unique.png|18px]]
+}}
+
+{{TierList/Item|Fuji (Admiral)
+|Description=
+Information soon!
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 14,291 - (Commander+Griffin: 46,782)'''
+<br>'''TDps: 57,164- (Commander+Griffin + Mirrorblade: 187,129)''' 
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|66.5K}}<br>
+'''Total cost to Max''' {{Yen|266K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Metal Knight (Arsenal)
+|Description={{Raid Meta Unit}}<br>
+<br>'''(Base Stats)'''<br>
+'''Dps: 18,585 - (Wenda+Griffin + Time Piece: 63,003)'''
+<br>'''TDps: 37,170 - (Wenda+Griffin + Time Piece: 126,006)
+<br>'''Dps 1 Drone: 15,100 - (Wenda+Griffin + Time Piece: 60,587)''' 
+<br>'''TDps 3 Drones: 45,301 - (Wenda+Griffin + Time Piece: 181,762)''' 
+----
+'''Placement Cost:''' {{Yen|1.7K}} - '''Cost to Max:''' {{Yen|118.250K}}<br>
+'''Total cost to Max''' {{Yen|236.5K}}<br>
+----
+'''Placements: 2'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Golden Tyrant (Emperor)
+|Description={{Raid Meta Unit}}<br>
+<br>'''(Base Stats)'''<br>
+'''Dps: 21,366 - (Wenda+Griffin + Time Piece: 109,525)'''
+<br>'''TDps: 64,099 - (Wenda+Griffin + Time Piece: 328,575)''' 
+----
+'''Placement Cost:''' {{Yen|1.750K}} - '''Cost to Max:''' {{Yen|119.750K}}<br>
+'''Total cost to Max''' {{Yen|359.250K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Demiurge (Demon Emperor)
+|Description=Information soon!
+<br>'''(Base Stats)'''<br>
+'''Dps: 18,566 - (Commander+Griffin + Mangekyō Eye: 139,139)'''
+<br>'''TDps: 74,264 - (Commander+Griffin + Mangekyō Eye: 556,559)'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|73.4K}}<br>
+'''Cost for Hybrid:''' {{Yen|40.9K}} - '''Total cost to Max''' {{Yen|293.6K}}<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mangakeyo.png|18px]] '''Mangekyō Eye'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Berserker (Rage)
+|Description={{Meta Unit}} {{Meta Bleed Unit}}<br>
+High DPS, Average Range, Very High Spa, Full AoE. Hits airs at upgrade 8. DPS spikes HEAVILY with Blood (Unleashed)/Bloodcry (Bloodfallen).
+----
+<br>'''(Base Stats)'''<br> 
+'''Dps: 25,222 - (Commander+Griffin+Bleed Amplification+ Mirrorblade: 187,005)'''
+<br>'''TDps: 75,667 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 561,017)'''
+----
+'''Placement Cost:''' {{Yen|1.450K}} - '''Cost to Max:''' {{Yen|125.950K}}<br>
+'''Cost for Hybrid:''' {{Yen|65.950K}} - '''Total cost to Max''' {{Yen|377.850K}}'''<br>
+----
+'''Placements: 3'''<br>
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Millie (Holy)
+|Description={{Raid Meta Unit}}<br>
+<br>'''(Base Stats)'''<br>
+'''Dps: 21,476 - (Wenda+Griffin + Time Piece: 74,199)'''
+<br>'''TDps: 64,428 - (Wenda+Griffin + Time Piece: 222,599)''' 
+----
+'''Placement Cost:''' {{Yen|1.7K}} - '''Cost to Max:''' {{Yen|96.2K}}<br>
+'''Cost for Hybrid:''' {{Yen|48.7K}} - '''Total cost to Max''' {{Yen|288.6K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Conrod (Wizard King)
+|Description=Information soon!
+<br>'''(Base Stats)'''<br>
+'''Dps: 23,194 - (Wenda+Griffin + Time Piece: 82,640)'''
+<br>'''TDps: 69,582 - (Wenda+Griffin + Time Piece: 247,922)'''  
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|104.5K}}<br>
+'''Total cost to Max''' {{Yen|313.5K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Umbra (Nuclear)
+|Description=
+Very High DPS, High Range, High SPA, Full AoE, True Damage.
+<br>'''(Base Stats)'''<br>
+'''Dps: 32,214 - (Griffin: 64,428)'''
+<br>'''TDps: 96,642- (Griffin: 193,284)'''
+----
+'''Placement Cost:''' {{Yen|2.3K}} - '''Cost to Max:''' {{Yen|107.8K}}<br>
+'''Cost for Hybrid:''' {{Yen|59.8K}} - '''Total cost to Max''' {{Yen|323.4K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Tango (Flash God)
+|Description=Information soon!
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,803 - (Commander+Griffin + Nail: 57,745)'''
+<br>'''TDps: 59,409 - (Commander+Griffin + Nail: 173,236)'''
+----
+'''Placement Cost:''' {{Yen|1.6K}} - '''Cost to Max:''' {{Yen|92.7K}}<br>
+'''Cost for Hybrid:''' {{Yen|55.7K}} - '''Total cost to Max''' {{Yen|278.1K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Nail.png|18px]] '''Nail'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Hubris (The One)
+|Description=Information soon!
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,862 - (Commander+Griffin+ Mirrorblade: 65,661)'''
+<br>'''TDps: 59,587 - (Commander+Griffin+ Mirrorblade: 196,984)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|100K}}<br>
+'''Cost for Hybrid:''' {{Yen|47.5K}} - '''Total cost to Max''' {{Yen|300K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Supreme Being (Sovereign)
+|Description={{Meta Unit}}<br>
+<br>'''(Base Stats)'''<br>
+'''Dps: 34,515 - (Wenda+Griffin + Time Piece: 176,930)'''
+<br>'''Dps With Ability: 48,896 - (Wenda+Griffin + Time Piece: 234,450)'''
+<br>'''Summons Hp: 1,725,760 - (Griffin + Commander: 5,177,280)'''
+----
+'''Placement Cost:''' {{Yen|10K}} - '''Cost to Max:''' {{Yen|305K}}<br>
+'''Cost for Hybrid:''' {{Yen|130K}}<br>
+----
+'''Placements: 1'''<br>
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]]
+}}
+
+}}
+{{TierList/Item Container|color=#82fffe|id=Story_Mode|name=Good Ground
+|
+
+{{TierList/Item|Gas (Toxic)
+|Description={{Meta Unit}}<br>
+Average DPS, Average Range, High SPA, Average AoE Size. Gas needs his damage to stack up over a long period of time to begin doing noticeable DPS. Gas is only in the good tier for story due to his damage taking an extremely long time to come out.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps after 60 seconds: 19,725 - (Wenda+Griffin + Time Piece: 230,430)'''
+<br>'''TDps after 60 seconds: 78,901- (Wenda+Griffin + Time Piece: 921,721)'''
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|50.5K}}<br>
+'''Total cost to Max''' {{Yen|202K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Unique.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Senbodu (Buddha)
+|Description={{Raid Meta Unit}}<br>
+
+
+High DPS, High Range, Very High SPA, Large AoE Size. 
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 24,568 - (Wenda+Griffin + Time Piece: 89,675)'''
+<br>'''TDps: 73,706 - (Wenda+Griffin + Time Piece: 269,026)'''
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|77.4K}}<br>
+'''Total cost to Max''' {{Yen|232.2K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Albedo (Overseer)
+|Description={{Raid Meta Unit}}<br>
+High DPS, Average Range, Average SPA, Full AoE.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 29,584 - (Commander+Griffin + Mirrorblade: 97,554)'''
+<br>'''TDps: 88,753 - (Commander+Griffin + Mirrorblade: 292,662)''''
+----
+'''Placement Cost:''' {{Yen|1.650K}} - '''Cost to Max:''' {{Yen|110.650K}}<br>
+'''Total cost to Max''' {{Yen|331.950K}}'''<br>
+----
+'''Placements: 3'''
+---- 
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+
+{{TierList/Item|Skull Knight (King)
+|Description={{Raid Meta Unit}}<br>
+<br>'''(Base Stats)'''<br>
+'''Dps: 43,613 - (Commander+Griffin + Mirrorblade: 143,813)'''
+<br>'''TDps: 87,226 - (Commander+Griffin + Mirrorblade: 287,626)'''
+----
+'''Placement Cost:''' {{Yen|1.6K}} - '''Cost to Max:''' {{Yen|122.350K}}<br>
+'''Total cost to Max''' {{Yen|244.7K}}'''<br>
+----
+'''Placements: 2'''
+---- 
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Aku (Rashamon)
+|Description={{Raid Meta Unit}}<br>
+
+
+Very High DPS, High Range, High SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 36,079- (Commander+Griffin + Mirrorblade: 118,972)''' 
+<br>'''TDps: 108,237- (Commander+Griffin + Mirrorblade: 356,918)''' 
+---- 
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|100.1K}}<br> 
+'''Total cost to Max''' {{Yen|300.3K}}'''<br> 
+----
+'''Placements: 3''' 
+----
+ Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br> 
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Greed (Hunt)
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 12,307 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 98,862)'''
+<br>'''TDps: 49,228 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 395,451)'''
+<br>'''Dps With Snatch: 24,491 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 196,736)'''
+<br>'''TDps With Snatch: 97,964 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 786,947)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|63.750K}}<br>
+'''Total cost to Max''' {{Yen|255K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Evileye (Landfall)
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 15,462 - (Wenda+Griffin + Time Piece: 55,093)'''
+<br>'''TDps: 77,314 - (Wenda+Griffin + Time Piece: 275,469)'''
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|41.7K}}<br>
+'''Total cost to Max''' {{Yen|208.5K}}'''<br>
+----
+'''Placements: 5'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Saby (Flame Emperor)
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 14,133 - (Commander+Griffin + Mangekyō Eye: 105,924) '''
+<br>'''TDps: 70,669 - (Commander+Griffin + Mangekyō Eye: 529,620)'''
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|40.9K}}<br>
+'''Total cost to Max''' {{Yen|204.5K}}'''<br>
+----
+'''Placements: 5'''
+----
+Recommended Relics: [[Image:Mangakeyo.png|18px]] '''Mangekyō Eye'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Kizume (Tailless Beast)
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 20,044 - (Commander+Griffin + Mirrorblade: 81,290) '''
+<br>'''TDps: 80,176 - (Commander+Griffin + Mirrorblade: 264,381)'''
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|49.7K}}<br>
+'''Total cost to Max''' {{Yen|198.8K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]]
+}}
+
+{{TierList/Item|Rohon (Artist)
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 16,298 - (Wenda+Griffin + Time Piece: 55,253)'''
+<br>'''TDps: 65,195 - (Wenda+Griffin + Time piece: 221,012)'''
+----
+'''Placement Cost:''' {{Yen|1.2K}} - '''Cost to Max:''' {{Yen|48.7K}}<br>
+'''Total cost to Max''' {{Yen|194.8K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Josuka (Unbreakable)
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 24,482 - (Commander+Griffin + Mirrorblade: 87,985)'''
+<br>'''TDps: 73,448 - (Commander+Griffin + Mirrorblade: 263,957)'''
+----
+'''Placement Cost:''' {{Yen|1.3K}} - '''Cost to Max:''' {{Yen|76.4K}}<br>
+'''Total cost to Max''' {{Yen|229.2K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Flame Hero (Hellflame)
+|Description={{Meta Unit}} {{Meta Burn Unit}}<br>
+High DPS, Average Range, High SPA, 60° Cone AoE. Flame Hero does 50% of his displayed DMG over 6 ticks, 100% of his displayed DMG over 12 ticks with Mangekyō Eye, and 200% of his displayed DMG over 12 ticks with Mangekyō Eye and a 100% Wenda/Leafy buff. His burn can stack with itself, allowing for much higher DPS than displayed.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 22,780 - (Wenda+Griffin + Mangekyō Eye: 187,593 )'''
+<br>'''TDps: 68,340 - (Wenda+Griffin + Mangekyō Eye: 562,781)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|97K}}<br>
+'''Total cost to Max''' {{Yen|291K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mangakeyo.png|18px]] '''Mangekyō Eye'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Flamingo (Awakened)
+|Description=
+Very High DPS, High Range, Average SPA, Average AoE Size.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 36,241 - (Wenda+Griffin + Time Piece: 125,212)'''
+<br>'''TDps: 108,723 - (Wenda+Griffin + Time Piece: 375,637)'''
+----
+'''Placement Cost:''' {{Yen|2K}} - '''Cost to Max:''' {{Yen|120K}}<br>
+'''Total cost to Max''' {{Yen|360K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Avdo (Magician's Red)
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 23,754 - (Wenda+Griffin + Mangekyō Eye: 157,721) '''
+<br>'''TDps: 71,263 - (Wenda+Griffin + Mangekyō Eye: 473,164)'''
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|81.7K}}<br>
+'''Total cost to Max''' {{Yen|245.1K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mangakeyo.png|18px]] '''Mangekyō Eye'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Daky (Obi)
+|Description={{Meta Unit}} {{Meta Bleed Unit}}<br>
+<br>'''(Base Stats)'''<br>
+'''Dps: 15,221 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 136,233)'''
+<br>'''TDps: 60,884 - (Commander+Griffin+Bleed Amplification + Mirrorblade: 544,935)''''
+----
+'''Placement Cost:''' {{Yen|1.450K}} - '''Cost to Max:''' {{Yen|58.950K}}<br>
+'''Total cost to Max''' {{Yen|235.8K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Sepsis (Moon)
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 15,848 - (Commander+Griffin + Mirrorblade: 57,766)'''
+<br>'''TDps: 63,393 - (Commander+Griffin + Mirrorblade: 231,067)'''
+<br>'''Dps With Bleed: 23,772 - (Commander+Griffin + Mirrorblade: 70,186)'''
+<br>'''TDps With bleed: 95,089 - (Commander+Griffin + Mirrorblade: 280,746)'''
+----
+'''Placement Cost:''' {{Yen|1.5K}} - '''Cost to Max:''' {{Yen|61.950K}}<br>
+'''Total cost to Max''' {{Yen|247.8K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Relics: [[Image:Mirrorblade.png|18px]] '''Mirrorblade'''<br>
+Recommended Traits: [[Image:Trait Divine.png|18px]] [[Image:Trait Celestial.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Izo (Samurai)
+|Description={{Meta Unit}} {{Meta Burn Unit}}<br>
+Average DPS, High Range, Average SPA, 50° Cone AoE. Izo's burn damage is equal to 100% of his displayed DMG over 10 ticks, 200% of his displayed DMG over 20 ticks with Mangekyō Eye, and 400% of his displayed DMG over 20 ticks with Mangekyō Eye and a 100% Wenda/Leafy buff. His burn can stack with itself, allowing for much higher DPS than displayed.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 19,625 - (Wenda+Griffin + Mangekyō Eye: 152,640) '''
+<br>'''TDps: 58,877 - 588,775 (Wenda+Griffin + Mangekyō Eye: 637,498)'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|89.6K}}<br>
+'''Total cost to Max''' {{Yen|268.8K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Mangakeyo.png|18px]] '''Mangekyō Eye'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+}}
+{{TierList/Item Container|color=#80bffc|id=Story_Mode|name=Good Support
+|
+{{TierList/Item|Goju (Six Eyes)
+|Description=
+Low-Average DPS, High Range, Average SPA, Large AoE. On placement, Goju has an ability called **Domain Expansion**, which timestops every enemy on the map for 8 seconds with a 60 second cooldown, while also doubling the DMG of the Goju that used the ability. Goju can be evolved infinitely, making him more expensive which each upgrade, which can make him very useful for sacrificing to Griffin with enough Limitless upgrades.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 8,053 - (Wenda+Griffin + Time Piece: 18,417)'''
+<br>'''TDps: 24,160  (Wenda+Griffin + Time Piece: 81,904)'''
+----
+'''Placement Cost:''' {{Yen|1.6K}} - '''Cost to Max:''' {{Yen|60.6K}}<br>
+'''Total cost to Max''' {{Yen|181.8K}}'''<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|InHuman (Nullifier)
+|Description={{Meta Support Unit}}<br>
+High Dps, High SPA, Average Range, Full AoE. Upon placement, InHuman unlocks the ability, '''Nullifier''', which removes enemy attributes (Flying, Fire, Ice, Armored, Regen) for 20 seconds on every enemy in his range with a 90 second cooldown.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 22,591 - (Wenda+Griffin + Mirrorblade: 80,494)'''
+<br>'''TDps: 67,773 - (Wenda+Griffin + Time Piece: 241,482)'''
+----
+'''Placement Cost:''' {{Yen|1.35K}} - '''Cost to Max:''' {{Yen|90.05K}}<br>
+'''Total cost to Max''' {{Yen|270,150}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Priest (Heaven)
+|Description=
+Average DPS, High Range, Low SPA, Large AoE Size. Upon reaching upgrade 9, Priest unlocks his ability, '''Time Acceleration''', which reduces the SPA of all units on the map by 50% for 30 seconds. with a 5 minute cooldown. Priest is not a meta support due to Devil Boss doing the exact same thing with more uptime, while also being able to be kept on auto, unlike Time Acceleration which needs to be timed to be used when Kisuke's ability is not active.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 13,148 - (Wenda+Griffin + Time Piece: 43,048)'''
+<br>'''TDps: 39,445 - (Wenda+Griffin + Time Piece: 129,145)'''
+----
+'''Placement Cost:''' {{Yen|1.753K}} - '''Cost to Max:''' {{Yen|94.821K}}<br>
+'''Cost for Ability:''' {{Yen|69.454K}} - '''Total cost to Max:''' {{Yen|284.463K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]] [[Image:Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]]
+}}
+
+{{TierList/Item|Mochi Charlot
+|Description=
+<br>'''(Base Stats)'''<br>
+'''Dps: 4,672'''
+<br>'''TDps:  18,691'''
+----
+'''Placement Cost:''' {{Yen|1.4K}} - '''Cost to Max:''' {{Yen|67.750K}}<br>
+'''Total cost to Max''' {{Yen|271K}}'''<br>
+----
+'''Placements: 4'''
+----
+Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image:Trait Range.png|18px]]
+}}
+
+{{TierList/Item|JIO (Over Heaven)
+|Description=
+Very High DPS, High Range, Average SPA, Large AoE Size. On placement. JIO Over Heaven has an ability called, "'''This is.. The World over Heaven!'''", which stops all enemy spawns, the wave timer, and timestops all enemies on the map for 20 seconds. 
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 32,568- (Wenda+Griffin + Time Piece: 110,406)'''
+<br>
+----
+'''Placement Cost:''' {{Yen|10K}} - '''Cost to Max:''' {{Yen|125.5K}}<br>
+'''Cost for Ability:''' {{Yen|10K}}
+----
+'''Placements: 1'''
+----
+Recommended Relics: [[Image:Miracle Timepiece.png|18px]] '''Miracle Timepiece'''<br>
+Recommended Traits: [[Image:Trait Unique.png|18px]]
+}}
+
+{{TierList/Item|Tamiki (Tornado)
+|Description={{Meta Support Unit}}<br>
+Average DPS, Very High Range,  Very High SPA, High AoE Size. Upon reaching upgrade 6, all of Tamiki's attacks will push back enemies hit (30 second cooldown). Tamiki is normally kept at upgrade 8, due to the lower SPA and having more coverage as a cone.
+----
+<br>'''(Base Stats)'''<br>
+'''Dps: 10,124'''
+<br>'''TDps: 30,373'''
+----
+'''Placement Cost:''' {{Yen|1.750K}} - '''Cost to Max:''' {{Yen|85.450K}}<br>
+'''Cost for Ability+Hybrid:''' {{Yen|29.450K}} - '''Total cost to Max''' {{Yen|256.350K}}<br>
+----
+'''Placements: 3'''
+----
+Recommended Traits: [[Image: Trait Divine.png|18px]] [[Image:Trait Godspeed.png|18px]] [[Image:Trait Sniper.png|18px]]
+}}
+
+
+{{TierList/Item|Devil Boss
+|Description={{Meta Support Unit}}<br>
+Low DPS, Low Range, Average SPA, No AoE size (Single target). Once Devil Boss is maxed, he unlocks the ability, '''Time Erase''', which slows all enemies and makes all units on the map do 50% more damage for 8 seconds (90 second cooldown).
+<br>'''(Base Stats)'''<br>
+'''Dps: 2,301'''
+<br>'''TDps: 11,505'''
+----
+'''Placement Cost:''' {{Yen|1.1K}} - '''Cost to Max:''' {{Yen|36.9K}}<br>
+'''Cost for Ability:''' {{Yen|36.9K}} - '''Total cost to Max''' {{Yen|184.5K}}<br>
+----
+'''Placements: 5'''
+----Recommended Traits: [[Image:Trait Sniper.png|18px]] [[Image: Trait Divine.png|18px]] 
+}}
+
+}}
+
+}}
+
+}}
+
+
+<br>
+'''DPS''' Calculations are based off of DMG (Damage) of the unit divided by SPA (Attack Speed) of the unit, and only considers '''One Placement'''.
+          
+'''TDPS''' Calculations are based same calculations as '''DPS''', but considers the '''Maximum Placements''' a character can have. 
+
+The Total '''DPS/TDPS''' of a unit can be higher or lower based on '''Passive Abilities'''(like Sepsis (Moon)), or abilities that cause DMG (Supreme Being (Sovereign)) or (Julio(Wizard King))
+
+
+==Stat Rankings==
+''The following info is what is used to describe statistics in the unit descriptions''
+{| class="fandom-table"
+|+'''Lists basic statistics of units and how good they are compared to each other.'''
+!DPS
+!TDPS
+!SPA
+!Range 
+!AoE Size
+!Ranking
+|-
+|~9,999
+|~39,999
+|~4.9
+|~24.9
+|~8
+|Low
+
+|-
+|10,000-19,999 
+|40,000-64,999
+|5-8.9
+|25-34.9
+|9-14
+|Average
+|-
+|20,000-29,999
+|65,000-89,999
+|9-12.9
+|35-44.9
+|15-20
+| High
+|-
+|30,000-39,999
+|90,000-114,999
+|13-20 
+|45-49.9
+|21-30 
+|Very High
+|-
+|40,000+
+|115,000+
+|20+
+|50+ 
+|31+
+|Insanely High
+|}
+
+
+
+__NOEDITSECTION____NOTOC__

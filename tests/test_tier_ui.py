@@ -281,6 +281,7 @@ class NativeRuntimeCase(unittest.IsolatedAsyncioTestCase):
     ):
         self.app.catalog.merge_units([{"id": "daki", "name": "*" * 150, "aliases": []}])
         proposal = self.propose()
+        proposal["mode"] = "casual"
         detail = proposal["details"]["daki"]
         detail.update(reason="😀" * 700, conditions="😀" * 300, caveat="😀" * 300)
         detail["sources"] = [

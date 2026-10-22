@@ -51,8 +51,8 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
                 cid,
                 [
                     "Daki e Gyutaro têm comparações de sangramento nesta avaliação de teste.",
-                    "Neste ensaio verificamos o alcance entre Gyutaro e Daki no modo infinito.",
-                    "Daki oferece suporte para um time com Gyutaro nesta simulação de raid.",
+                    "Neste ensaio verificamos o alcance entre Gyutaro e Daki nesta partida de teste.",
+                    "Daki oferece suporte para um time com Gyutaro nesta simulação de partida.",
                 ][index],
                 {"daki", "gyutaro"},
             )
@@ -82,7 +82,7 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
         self.store.close()
         self.tmp.cleanup()
 
-    def output(self, *, uid="daki", tier="META", before=None):
+    def output(self, *, uid="daki", tier="META_HILL", before=None):
         evidence = [{"source_id": uid + ":article", "quote": QUOTE}]
         if before:
             evidence.append({"source_id": before + ":article", "quote": QUOTE})
@@ -91,7 +91,7 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
                 {
                     "unit_id": uid,
                     "tier": tier,
-                    "role": "DAMAGE" if tier == "META" else tier,
+                    "mode": "infinite",
                     "before": before,
                     "confidence": 0.95,
                     "supporting_comments": ["c0", "c1", "c2"],
@@ -115,7 +115,7 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
                 ],
             }
             for r in ranking
-            if r["tier"] == "META"
+            if r["tier"] == "META_HILL"
         }
         self.store.publish(
             ranking, reasons, source_version="test", model="test", comments=[]
@@ -140,21 +140,21 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
         self.approve_poll()
         self.assertEqual(
             self.store.latest()["ranking"],
-            [{"unit_id": "daki", "tier": "META", "role": "DAMAGE"}],
+            [{"unit_id": "daki", "tier": "META_HILL"}],
         )
         self.assertEqual(self.store.latest()["explanations"]["daki"]["reason"], REASON)
         self.assertEqual(len(self.store.history()), 1)
 
     async def test_relative_order_moves_right_without_demoting_the_previous_meta(self):
-        self.publish_fixture([{"unit_id": "gyutaro", "tier": "META", "role": "DAMAGE"}])
+        self.publish_fixture([{"unit_id": "gyutaro", "tier": "META_HILL"}])
         self.backend.analyze.return_value = (self.output(before="gyutaro"), 300)
         await self.analyzer.run()
         self.approve_poll()
         self.assertEqual(
             self.store.latest()["ranking"],
             [
-                {"unit_id": "daki", "tier": "META", "role": "DAMAGE"},
-                {"unit_id": "gyutaro", "tier": "META", "role": "DAMAGE"},
+                {"unit_id": "daki", "tier": "META_HILL"},
+                {"unit_id": "gyutaro", "tier": "META_HILL"},
             ],
         )
         self.assertEqual(self.store.history()[0]["to_position"], 2)
@@ -166,7 +166,7 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.store.latest()["id"], 0)
 
     async def test_quota_keeps_the_previous_ranking_and_pending_evidence(self):
-        self.publish_fixture([{"unit_id": "gyutaro", "tier": "META", "role": "DAMAGE"}])
+        self.publish_fixture([{"unit_id": "gyutaro", "tier": "META_HILL"}])
         old = self.store.latest()
         self.backend.analyze.side_effect = QuotaReached("quota")
         self.assertFalse(await self.analyzer.run())
@@ -249,7 +249,7 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
                 self.analyzer.validate(output, self.packet, self.comments)
 
     def test_order_requires_competitor_evidence_and_same_tier(self):
-        self.publish_fixture([{"unit_id": "gyutaro", "tier": "DAMAGE"}])
+        self.publish_fixture([{"unit_id": "gyutaro", "tier": "GOOD_GROUND"}])
         output = self.output(before="gyutaro")
         with self.assertRaises(ValueError):
             self.analyzer.validate(output, self.packet, self.comments)
@@ -297,7 +297,7 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
 
     def test_detailed_explanations_only_exist_for_meta_units(self):
         ranking, explanations, details = self.analyzer.validate(
-            self.output(tier="SUPPORT"), self.packet, self.comments
+            self.output(tier="GOOD_SUPPORT"), self.packet, self.comments
         )
         self.assertEqual(explanations, {})
         self.store.publish(
@@ -311,9 +311,9 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.store.history(), [])
 
     def test_leaving_meta_keeps_a_detailed_change_log(self):
-        self.publish_fixture([{"unit_id": "daki", "tier": "META", "role": "DAMAGE"}])
+        self.publish_fixture([{"unit_id": "daki", "tier": "META_HILL"}])
         ranking, explanations, details = self.analyzer.validate(
-            self.output(tier="DAMAGE"), self.packet, self.comments
+            self.output(tier="GOOD_GROUND"), self.packet, self.comments
         )
         self.store.publish(
             ranking,
@@ -323,7 +323,9 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
             comments=self.comments,
             change_details=details,
         )
-        self.assertIn("Saiu do Meta para Damage", self.store.history()[0]["reason"])
+        self.assertIn(
+            "Saiu do Meta para Good Ground", self.store.history()[0]["reason"]
+        )
         self.assertNotIn("daki", self.store.latest()["explanations"])
 
     def test_packet_fits_the_free_model_limit_and_omits_discord_identifiers(self):
@@ -387,7 +389,7 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.store.recent(), [])
 
     def test_published_rank_and_settings_survive_restart(self):
-        self.publish_fixture([{"unit_id": "daki", "tier": "META", "role": "DAMAGE"}])
+        self.publish_fixture([{"unit_id": "daki", "tier": "META_HILL"}])
         self.store.set_interval(60)
         self.store.close()
         self.store = TierStore(self.root / "tierlist.sqlite3", clock=lambda: self.now)
@@ -417,7 +419,7 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(self.store.is_update_channel("200", "102"))
 
     def test_history_ui_has_no_invitation_to_old_commands(self):
-        self.publish_fixture([{"unit_id": "daki", "tier": "META", "role": "DAMAGE"}])
+        self.publish_fixture([{"unit_id": "daki", "tier": "META_HILL"}])
         embed = log_embed(self.store, self.catalog)
         raw = json.dumps(embed.to_dict())
         self.assertNotIn("/avaliar", raw)
@@ -429,16 +431,23 @@ class ImageCase(unittest.TestCase):
     def test_reference_rows_and_unfilled_layout(self):
         blob = render([])
         with Image.open(io.BytesIO(blob)) as image:
-            self.assertEqual(image.height, 5 * 96)
+            self.assertEqual(image.height, 6 * 96)
             self.assertEqual(image.getpixel((4, 4)), (146, 7, 0))
-            self.assertEqual(image.getpixel((4, 100)), (33, 137, 0))
-        self.assertEqual(TIERS, ("META", "DAMAGE", "SUPPORT", "BUFF", "FARM"))
+            self.assertEqual(image.getpixel((4, 100)), (93, 70, 0))
+        self.assertEqual(
+            TIERS,
+            (
+                "META_HILL",
+                "META_GROUND",
+                "META_SUPPORT",
+                "GOOD_HILL",
+                "GOOD_GROUND",
+                "GOOD_SUPPORT",
+            ),
+        )
 
     def test_row_expands_when_characters_exceed_one_line(self):
-        rows = [
-            {"unit_id": "absent" + str(i), "tier": "META", "role": "DAMAGE"}
-            for i in range(11)
-        ]
+        rows = [{"unit_id": "absent" + str(i), "tier": "META_HILL"} for i in range(11)]
         with Image.open(io.BytesIO(render(rows, media={}))) as image:
             self.assertEqual(image.height, 7 * 96)
 
@@ -452,8 +461,8 @@ class ImageCase(unittest.TestCase):
             with patch("tier_image.ROOT", root):
                 blob = render(
                     [
-                        {"unit_id": "a", "tier": "META", "role": "DAMAGE"},
-                        {"unit_id": "b", "tier": "META", "role": "DAMAGE"},
+                        {"unit_id": "a", "tier": "META_HILL"},
+                        {"unit_id": "b", "tier": "META_HILL"},
                     ],
                     media=media,
                 )

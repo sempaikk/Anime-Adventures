@@ -15,7 +15,7 @@ from pathlib import Path
 from contextlib import nullcontext
 from urllib.parse import urlsplit
 
-from tier_categories import TIERS as TIERS, POLICY, LABELS, valid_ranking
+from tier_categories import TIERS as TIERS, POLICY, MODES, label, is_meta, valid_ranking
 
 REQUIRED_TABLES = {
     "tier_meta",
@@ -111,6 +111,8 @@ class TierStore:
             key TEXT PRIMARY KEY,channel_id TEXT NOT NULL,message_id TEXT NOT NULL,created_at REAL NOT NULL);
         """)
         self._column("tier_proposals", "opened_at", "REAL")
+        self._column("tier_proposals", "mode", "TEXT NOT NULL DEFAULT 'infinite'")
+        self._column("tier_publications", "mode", "TEXT NOT NULL DEFAULT 'infinite'")
         self._column("tier_comments", "attempts", "INTEGER NOT NULL DEFAULT 0")
         self._column("tier_comments", "sent_at", "REAL")
         # Opening times of pre-migration polls are already running; never reset their clock.
@@ -129,42 +131,51 @@ class TierStore:
                 self.connection.execute(
                     "INSERT OR IGNORE INTO tier_meta VALUES(?,?)", (k, v)
                 )
-            self.connection.execute("UPDATE tier_meta SET value='3' WHERE key='schema'")
+            self.connection.execute("UPDATE tier_meta SET value='4' WHERE key='schema'")
         self._migrate_categories()
 
     def _migrate_categories(self):
-        """Grades never imply roles. Keep old snapshots/votes, publish an audited boundary."""
+        """Never infer placement from old grades or roles; keep the original snapshots."""
         if self.get("category_policy") == POLICY:
             return
         with self.connection:
             self.connection.execute("BEGIN IMMEDIATE")
-            latest = self.latest()
-            incompatible = not valid_ranking(latest["ranking"])
-            if incompatible:
+            changed = False
+            for mode in MODES:
+                latest = self.latest(mode)
+                if valid_ranking(latest["ranking"]):
+                    continue
+                changed = True
                 cursor = self.connection.execute(
-                    "INSERT INTO tier_publications(created_at,ranking,explanations,source_version,model) VALUES(?,?,?,?,?)",
+                    "INSERT INTO tier_publications(created_at,ranking,explanations,source_version,model,mode) VALUES(?,?,?,?,?,?)",
                     (
                         self.clock(),
                         "[]",
                         "{}",
                         latest["source_version"],
                         "category-migration",
+                        mode,
                     ),
                 )
                 self.audit(
                     "category-migration",
                     "system",
-                    "A imagem agora separa Meta, Damage, Support, Buff e Farm. Meta também aparece na função principal. "
-                    "As classificações por letras foram preservadas no histórico; não equivalem a funções. "
-                    "As novas posições precisam de propostas e votos, sem atribuições automáticas.",
+                    MODES[mode]
+                    + ": novas categorias META e Good para Hill/Hybrid, Ground e Support. "
+                    "As classificações anteriores continuam no histórico. A referência inicial da Wiki será identificada; alterações seguintes passam por propostas e votos.",
                     cursor.lastrowid,
                 )
+            if changed:
                 self.connection.execute("UPDATE tier_comments SET processed=0")
             for row in self.rows(
                 "SELECT id FROM tier_proposals WHERE status IN ('open','queued')"
             ):
                 proposal = self.proposal(row["id"])
-                if incompatible or not valid_ranking(proposal["ranking"]):
+                if (
+                    not valid_ranking(proposal["ranking"])
+                    or proposal["base_publication"]
+                    != self.latest(proposal["mode"])["id"]
+                ):
                     self.connection.execute(
                         "UPDATE tier_proposals SET status='outdated',outcome=? WHERE id=?",
                         (json.dumps(self.poll_counts(row["id"])), row["id"]),
@@ -191,38 +202,44 @@ class TierStore:
             return
         with self.connection:
             self.connection.execute("BEGIN IMMEDIATE")
-            latest = self.latest()
-            ranking = [r for r in latest["ranking"] if r["unit_id"] not in retired]
-            if ranking != latest["ranking"]:
-                removed = [
-                    r["unit_id"] for r in latest["ranking"] if r["unit_id"] in retired
-                ]
-                explanations = {
-                    u: d for u, d in latest["explanations"].items() if u not in retired
-                }
-                cursor = self.connection.execute(
-                    "INSERT INTO tier_publications(created_at,ranking,explanations,source_version,model) VALUES(?,?,?,?,?)",
-                    (
-                        self.clock(),
-                        json.dumps(ranking),
-                        json.dumps(explanations),
-                        latest["source_version"],
-                        "catalog-maintenance",
-                    ),
-                )
-                self.audit(
-                    "catalog-retired",
-                    "system",
-                    "Formas retiradas do catálogo ativo: "
-                    + ", ".join(catalog.display_name(u) for u in removed)
-                    + ". A ordem relativa das demais formas foi preservada.",
-                    cursor.lastrowid,
-                )
+            for mode in MODES:
+                latest = self.latest(mode)
+                ranking = [r for r in latest["ranking"] if r["unit_id"] not in retired]
+                if ranking != latest["ranking"]:
+                    removed = [
+                        r["unit_id"]
+                        for r in latest["ranking"]
+                        if r["unit_id"] in retired
+                    ]
+                    explanations = {
+                        u: d
+                        for u, d in latest["explanations"].items()
+                        if u not in retired
+                    }
+                    cursor = self.connection.execute(
+                        "INSERT INTO tier_publications(created_at,ranking,explanations,source_version,model,mode) VALUES(?,?,?,?,?,?)",
+                        (
+                            self.clock(),
+                            json.dumps(ranking),
+                            json.dumps(explanations),
+                            latest["source_version"],
+                            "catalog-maintenance",
+                            mode,
+                        ),
+                    )
+                    self.audit(
+                        "catalog-retired",
+                        "system",
+                        "Formas retiradas do catálogo ativo: "
+                        + ", ".join(catalog.display_name(u) for u in removed)
+                        + ". A ordem relativa das demais formas foi preservada.",
+                        cursor.lastrowid,
+                    )
             for row in self.rows(
                 "SELECT id FROM tier_proposals WHERE status IN ('open','queued')"
             ):
                 proposal = self.proposal(row["id"])
-                if proposal["base_publication"] != self.latest()[
+                if proposal["base_publication"] != self.latest(proposal["mode"])[
                     "id"
                 ] or self._inactive(proposal["ranking"], proposal["details"]):
                     self.connection.execute(
@@ -278,7 +295,7 @@ class TierStore:
     def _require_active(self, ranking, details=None):
         if not valid_ranking(ranking):
             raise ValueError(
-                "A classificação precisa usar funções válidas, sem formas repetidas; Meta exige função principal."
+                "A classificação precisa usar as seis categorias válidas, sem formas repetidas no mesmo modo."
             )
         if self._inactive(ranking, details):
             raise ValueError(
@@ -601,8 +618,13 @@ class TierStore:
             for c in comments
         )
 
-    def latest(self):
-        rows = self.rows("SELECT * FROM tier_publications ORDER BY id DESC LIMIT 1")
+    def latest(self, mode="infinite"):
+        if mode not in MODES:
+            raise ValueError("Modo de jogo inválido.")
+        rows = self.rows(
+            "SELECT * FROM tier_publications WHERE mode=? ORDER BY id DESC LIMIT 1",
+            (mode,),
+        )
         if not rows:
             return {
                 "id": 0,
@@ -611,11 +633,20 @@ class TierStore:
                 "explanations": {},
                 "source_version": "",
                 "model": "",
+                "mode": mode,
             }
         row = rows[0]
         row["ranking"] = json.loads(row["ranking"])
         row["explanations"] = json.loads(row["explanations"])
         return row
+
+    def board(self):
+        modes = {mode: self.latest(mode) for mode in MODES}
+        return {
+            "id": max(p["id"] for p in modes.values()),
+            "ranking": modes["infinite"]["ranking"],
+            "modes": modes,
+        }
 
     def publish(
         self,
@@ -627,13 +658,14 @@ class TierStore:
         comments,
         change_details=None,
         transactional=True,
+        mode="infinite",
     ):
         self._require_active(ranking, change_details)
         if not self.still_allowed(comments):
             raise ValueError(
                 "A participação ou o canal mudou durante a análise. O lote foi descartado."
             )
-        old = self.latest()
+        old = self.latest(mode)
         now = self.clock()
         old_positions = {
             r["unit_id"]: (i, r["tier"]) for i, r in enumerate(old["ranking"])
@@ -642,13 +674,14 @@ class TierStore:
             same = old["ranking"] == ranking and old["explanations"] == explanations
             if not same:
                 cursor = self.connection.execute(
-                    "INSERT INTO tier_publications(created_at,ranking,explanations,source_version,model) VALUES(?,?,?,?,?)",
+                    "INSERT INTO tier_publications(created_at,ranking,explanations,source_version,model,mode) VALUES(?,?,?,?,?,?)",
                     (
                         now,
                         json.dumps(ranking),
                         json.dumps(explanations),
                         source_version,
                         model,
+                        mode,
                     ),
                 )
                 publication = cursor.lastrowid
@@ -656,8 +689,8 @@ class TierStore:
                 for pos, row in enumerate(ranking):
                     uid = row["unit_id"]
                     previous = old_positions.get(uid)
-                    was_meta = previous is not None and previous[1] == "META"
-                    if (row["tier"] == "META" or was_meta) and (
+                    was_meta = previous is not None and is_meta(previous[1])
+                    if (is_meta(row["tier"]) or was_meta) and (
                         previous != (pos, row["tier"])
                         or old["explanations"].get(uid) != explanations.get(uid)
                     ):
@@ -668,8 +701,8 @@ class TierStore:
                             continue
                         reason = (
                             detail["reason"]
-                            if row["tier"] == "META"
-                            else f"Saiu do Meta para {LABELS[row['tier']]}. "
+                            if is_meta(row["tier"])
+                            else f"Saiu do Meta para {label(row['tier'])}. "
                             + detail["reason"]
                         )
                         self.connection.execute(
@@ -794,7 +827,7 @@ class TierStore:
                 )
             # Keep recent snapshots, and the detailed META history separately.
             self.connection.execute(
-                "DELETE FROM tier_publications WHERE id NOT IN (SELECT id FROM tier_publications ORDER BY id DESC LIMIT 20)"
+                "DELETE FROM tier_publications WHERE id NOT IN (SELECT id FROM tier_publications ORDER BY id DESC LIMIT 20) AND id NOT IN (SELECT MAX(id) FROM tier_publications GROUP BY mode) AND id NOT IN (SELECT base_publication FROM tier_proposals)"
             )
             self.connection.execute(
                 "DELETE FROM tier_history WHERE id NOT IN (SELECT id FROM tier_history ORDER BY id DESC LIMIT 2000)"
@@ -842,9 +875,19 @@ class TierStore:
         )
 
     def create_proposal(
-        self, ranking, explanations, *, details, source_version, model, comments
+        self,
+        ranking,
+        explanations,
+        *,
+        details,
+        source_version,
+        model,
+        comments,
+        mode="infinite",
     ):
         self._require_active(ranking, details)
+        if any(detail.get("mode", mode) != mode for detail in details.values()):
+            raise ValueError("A proposta mistura modos de jogo diferentes.")
         if not self.still_allowed(comments):
             raise ValueError("As fontes de participação mudaram durante a análise.")
         if (
@@ -857,7 +900,7 @@ class TierStore:
             raise ValueError(
                 "A proposta excede o limite de armazenamento e foi preservada sem publicação."
             )
-        latest = self.latest()
+        latest = self.latest(mode)
         now = self.clock()
         if latest["ranking"] == ranking:
             with self.connection:
@@ -873,8 +916,8 @@ class TierStore:
                 return False
             for uid, detail in details.items():
                 last = self.rows(
-                    "SELECT * FROM tier_proposals WHERE status='approved' AND created_at>? ORDER BY id DESC LIMIT 24",
-                    (now - 86400,),
+                    "SELECT * FROM tier_proposals WHERE status='approved' AND created_at>? AND mode=? ORDER BY id DESC LIMIT 24",
+                    (now - 86400, mode),
                 )
                 for row in last:
                     old_detail = json.loads(row["details"]).get(uid)
@@ -889,8 +932,8 @@ class TierStore:
                         return False
             # Do not repeat the same unresolved comparison every hour without a new outcome.
             for previous in self.rows(
-                "SELECT ranking,status,details FROM tier_proposals WHERE created_at>?",
-                (now - 86400,),
+                "SELECT ranking,status,details FROM tier_proposals WHERE created_at>? AND mode=?",
+                (now - 86400, mode),
             ):
                 if (
                     json.loads(previous["ranking"]) == ranking
@@ -910,8 +953,8 @@ class TierStore:
                     return False
             self.connection.execute(
                 """INSERT INTO tier_proposals
-              (created_at,closes_at,base_publication,ranking,explanations,details,source_version,model,status)
-              VALUES(?,?,?,?,?,?,?,?,'queued')""",
+              (created_at,closes_at,base_publication,ranking,explanations,details,source_version,model,mode,status)
+              VALUES(?,?,?,?,?,?,?,?,?,'queued')""",
                 (
                     now,
                     0,
@@ -921,6 +964,7 @@ class TierStore:
                     json.dumps(details),
                     source_version,
                     model,
+                    mode,
                 ),
             )
             for c in comments:
@@ -1038,7 +1082,7 @@ class TierStore:
                 counts = self.poll_counts(proposal["id"])
                 total = sum(counts.values())
                 if (
-                    proposal["base_publication"] != self.latest()["id"]
+                    proposal["base_publication"] != self.latest(proposal["mode"])["id"]
                     or proposal["source_version"] != source_version
                     or self._inactive(proposal["ranking"], proposal["details"])
                 ):
@@ -1069,6 +1113,7 @@ class TierStore:
                             model=proposal["model"],
                             comments=[],
                             transactional=False,
+                            mode=proposal["mode"],
                         )
                         or changed
                     )
@@ -1084,11 +1129,12 @@ class TierStore:
 
     def decisions(self):
         rows = self.rows(
-            "SELECT id,status,outcome,details FROM tier_proposals WHERE status NOT IN ('open','queued') ORDER BY id DESC LIMIT 2"
+            "SELECT id,status,outcome,details,mode FROM tier_proposals WHERE status NOT IN ('open','queued') ORDER BY id DESC LIMIT 2"
         )
         return [
             {
                 "status": r["status"],
+                "mode": r["mode"],
                 "votes": json.loads(r["outcome"]),
                 "units": list(json.loads(r["details"])),
             }
@@ -1145,17 +1191,17 @@ class TierStore:
         )
         return cursor.lastrowid
 
-    def rollback(self, expected_publication, actor_id, reason):
+    def rollback(self, expected_publication, actor_id, reason, *, mode="infinite"):
         if not 20 <= len(reason.strip()) <= 700:
             raise ValueError("Explique a correção em 20 a 700 caracteres.")
         with self.connection:
             self.connection.execute("BEGIN IMMEDIATE")
-            current = self.latest()
+            current = self.latest(mode)
             if current["id"] != expected_publication:
                 raise ValueError("A classificação mudou. Abra a revisão novamente.")
             rows = self.rows(
-                "SELECT * FROM tier_publications WHERE id<? ORDER BY id DESC LIMIT 1",
-                (current["id"],),
+                "SELECT * FROM tier_publications WHERE id<? AND mode=? ORDER BY id DESC LIMIT 1",
+                (current["id"], mode),
             )
             previous = (
                 rows[0]
@@ -1170,7 +1216,7 @@ class TierStore:
             previous_explanations = json.loads(previous["explanations"])
             if not valid_ranking(previous_ranking):
                 raise ValueError(
-                    "Essa versão usa as antigas notas por letras. O histórico foi preservado, mas não pode substituir a classificação por função."
+                    "Essa versão usa categorias antigas. O histórico foi preservado, mas não pode substituir a classificação atual."
                 )
             if self.catalog is not None:
                 retired = set(getattr(self.catalog, "retired", {}))
@@ -1189,16 +1235,23 @@ class TierStore:
                 model="human-correction",
                 comments=[],
                 transactional=False,
+                mode=mode,
             )
             for proposal in self.rows(
-                "SELECT id FROM tier_proposals WHERE status IN ('open','queued')"
+                "SELECT id FROM tier_proposals WHERE status IN ('open','queued') AND mode=?",
+                (mode,),
             ):
                 self.connection.execute(
                     "UPDATE tier_proposals SET status='outdated',outcome=? WHERE id=?",
                     (json.dumps(self.poll_counts(proposal["id"])), proposal["id"]),
                 )
-            self.audit("rollback", actor_id, reason.strip(), self.latest()["id"])
-        return self.latest()
+            self.audit(
+                "rollback",
+                actor_id,
+                MODES[mode] + ": " + reason.strip(),
+                self.latest(mode)["id"],
+            )
+        return self.latest(mode)
 
     def cancel_proposal(self, proposal_id, actor_id, reason):
         if not 20 <= len(reason.strip()) <= 700:

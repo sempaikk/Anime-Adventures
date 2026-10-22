@@ -159,45 +159,54 @@ as posições e o prazo já encerrado. A organização dessa entrega ficou em
 - O [resultado privado de demonstração](https://discord.com/channels/1561531259484901489/1562890170913792051)
   permanece arquivado para o dono conferir conforme as permissões do Discord.
 
-## Complemento: interface V2 e classificação por função
+## Complemento final: interface V2, seis categorias e dois modos
 
-A grade agora tem **Meta, Damage, Support, Buff e Farm**. Cada forma continua
-com um único registro: Meta também aparece na função principal. As funções
-não são notas de força. O renderer preserva ordem, pixels originais e linhas
-expansíveis. O ensaio visual de dez etapas inclui as quatro funções, destaque
-Meta, mudança de ordem, retirada de Meta e troca/restauração de retrato.
+Esta é a decisão final do dono e substitui a grade intermediária por função.
+Cada modo tem **META Hill/Hybrid, META Ground, META Support, Good Hill/Hybrid,
+Good Ground e Good Support**. Um PNG reúne Infinite e Casual em seções
+identificadas. Cada forma ocupa uma única categoria por modo. As listas são
+independentes, com ordem esquerda→direita e linhas expansíveis.
 
-A migração cria uma fronteira auditada quando há notas antigas: preserva os
-snapshots, votos, painéis e histórico; cancela propostas incompatíveis e
-aguarda decisões por função. Não converte S/A/B/C/D/E em papéis do time.
-Reinícios não repetem a operação e uma reversão não restaura o formato antigo.
+A migração preserva snapshots/votos e cancela propostas incompatíveis; não
+adivinha colocação/função a partir de letras ou da antiga grade. Reversões
+respeitam modo/versão e não atravessam formatos incompatíveis. A retenção
+sempre conserva a versão atual de cada modo, mesmo com inatividade prolongada.
 
-Enquetes, resultados, índice, ajuda, confirmações, controles privados e
-verificação usam **Components V2**, com seções, separadores, retratos, botões,
-galerias e anexos nativos. O PNG principal continua sem cartão nem rodapé.
-Títulos/negrito/citações organizam o texto; o glossário opcional pode ficar
-em spoiler. Informações necessárias ao voto ficam visíveis. Os ícones da
-wiki são verificados na aplicação e usados pelo significado. Sem verificação,
-o bot mantém os rótulos em texto. Formulários usam Labels e FileUpload e
-explicam destino e acompanhamento das sugestões.
+O ponto de partida é **a referência parcial da Wiki**, revisão 46773 de
+18/04/2025: **37 formas em cada modo**. Não foi confirmada como a revisão mais
+recente nesta execução. A página avisa que pode estar imprecisa. Existem
+76 entradas (47 nomes distintos) sem correspondência exata comprovada; não
+foram associadas por aproximação. Uma entrada de forma retirada foi excluída.
+A origem e a limitação aparecem no tópico. A importação é única e não cria
+votos; listas existentes e correções humanas não são substituídas. O script
+reproduz a base com os snapshots, identidades e redirecionamentos registrados.
 
-- **534 testes automatizados aprovados**, incluindo 21 novos cenários de
-  protocolo/UI e dez de categorias, projeção e migração.
-- **13 verificações na API real** em dois espaços privados autorizados:
-  migração do índice na mesma mensagem, enquete, botões/atalhos, participantes,
-  arquivo do resultado, edição/download do PNG, retenção/limpeza após reinício,
-  dez etapas visuais, cinco transições de TXT e cartões do dono/ajuda.
-- O ensaio de API usa a nova grade, com uma proposta Meta/Buff artificial
-  apenas em banco temporário. Não altera o estado oficial, não abre Gateway e
-  não faz chamadas à Groq. Os anexos V2 são lidos dos componentes, inclusive
-  quando a API deixa Message.attachments vazio; os bytes/hash são conferidos.
-- A entrega pela API não reproduz a tela do aplicativo nem um envio humano
-  de formulário. Clique humano, aparência no celular e seleção de arquivos
-  continuam distinguíveis das verificações de protocolo.
+Os cards usam Components V2 com seções, separadores, galerias, arquivos e
+controles nativos. O PNG não tem cartão nem rodapé. Ícones originais só são
+usados pelo significado, após conferir ID/nome; falha mantém o texto. Modais
+usam Labels, upload e seleção de modo na correção. Os dados técnicos ficam
+privados. Os anexos V2 são lidos dos componentes mesmo quando a API deixa
+Message.attachments vazio; os bytes/hash são conferidos.
 
-A importação inicial de posições da Wiki e a divisão por modo continuam uma
-proposta a definir; esta revisão não apresenta posições da Wiki como votos
-da comunidade. A página coletada avisa que sua lista pode estar imprecisa.
+- **551 testes automatizados**, incluindo categorias/migração, protocolo V2,
+  separação por modo, retenção, referência inicial e pacote de IA com fontes
+  reais dentro da mesma cota de entrada. O prompt foi compactado, preservando
+  as verificações locais e sem aumentar o orçamento gratuito.
+- **14 verificações na API real**, em dois espaços privados autorizados:
+  índice convertido na mesma mensagem, enquete/atalhos, atualização sem
+  duplicação, participantes, resultado arquivado, alteração só em Casual, PNG
+  editado/baixado, retenção/limpeza após reinício, dez etapas visuais, cinco
+  transições de TXT e cartões V2.
+- Estado temporário com votos artificiais identificados, sem Gateway extra,
+  chamadas à Groq ou mudanças na classificação oficial. API não reproduz
+  aparência nos aplicativos, seleção humana de arquivo ou qualidade dos
+  argumentos do jogo. O clique humano continua uma etapa separada.
+
+No ensaio local extremo com 524 formas artificiais em cada modo (1.048
+posições visuais), a imagem foi de **5.640.666 bytes**, **1098×11244**, cerca
+de **6,61 s**, e o processo atingiu **168,9 MiB**. Cabeu no limite local de
+8 MiB por PNG. Isso não mede a hospedagem, outros processos ou concorrência
+real de servidores; a base inicial é bem menor.
 
 ## O que ainda depende da estreia
 
@@ -206,7 +215,7 @@ reinicie o bot na hospedagem e rode Verificação completa nos controles privado
 Os administradores dos outros servidores não precisam repetir `/tierlist`.
 
 Antes de ampliar a divulgação, guarde um backup completo fora da hospedagem e
-observe o uso em um a três servidores. As primeiras posições exigem propostas
+observe o uso em um a três servidores. As primeiras revisões da base da Wiki exigem propostas
 fundamentadas e cinco participantes reais; testes não fabricam essa votação.
 Confira os argumentos e os retratos das primeiras formas classificadas. A
 comunidade pode completar as 71 fotos ao longo do uso.

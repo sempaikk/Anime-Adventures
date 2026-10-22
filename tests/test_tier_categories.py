@@ -1,4 +1,4 @@
-"""Category projection, legacy migration and atomic role-aware decisions."""
+"""Six exclusive categories, legacy boundaries and exact portrait placement."""
 
 import io
 import json
@@ -9,70 +9,60 @@ from unittest.mock import patch
 
 from PIL import Image
 
+import test_tierlist as fixtures
 from tier_categories import TIERS, make_row, rows_for, valid_ranking
 from tier_domain import place
 from tier_image import render, index_text
 from tier_store import TierStore
-import test_tierlist as fixtures
 
 
 class CategoryCase(unittest.TestCase):
-    def test_meta_is_stored_once_and_displayed_in_its_role_too(self):
-        ranking = [make_row("a", "META", "BUFF"), make_row("b", "BUFF", "BUFF")]
+    def test_one_form_occupies_exactly_one_category(self):
+        ranking = [make_row("a", "META_SUPPORT"), make_row("b", "GOOD_SUPPORT")]
         self.assertTrue(valid_ranking(ranking))
-        self.assertEqual(len(ranking), 2)
-        self.assertEqual([r["unit_id"] for r in rows_for(ranking, "META")], ["a"])
-        self.assertEqual([r["unit_id"] for r in rows_for(ranking, "BUFF")], ["a", "b"])
-        self.assertEqual(rows_for(ranking, "DAMAGE"), [])
-        self.assertEqual(place(ranking, "a"), "Meta #1 · Buff #1")
-        self.assertEqual(place(ranking, "b"), "Buff #2")
+        self.assertEqual(sum(len(rows_for(ranking, tier)) for tier in TIERS), 2)
+        self.assertEqual(place(ranking, "a"), "META Support #1")
+        self.assertEqual(place(ranking, "b"), "Good Support #1")
 
-    def test_all_roles_have_stable_order_with_meta_first(self):
-        for role in TIERS[1:]:
-            ranking = [
-                make_row("c", role, role),
-                make_row("a", "META", role),
-                make_row("b", role, role),
-            ]
+    def test_each_category_has_stable_left_to_right_order(self):
+        for tier in TIERS:
+            ranking = [make_row(uid, tier) for uid in ("c", "a", "b")]
             self.assertEqual(
-                [r["unit_id"] for r in rows_for(ranking, role)], ["a", "c", "b"]
+                [r["unit_id"] for r in rows_for(ranking, tier)], ["c", "a", "b"]
             )
 
-    def test_invalid_duplicate_ambiguous_or_mismatched_roles_are_rejected(self):
+    def test_invalid_duplicate_or_previous_categories_are_rejected(self):
         for ranking in (
             [{"unit_id": "a", "tier": "S"}],
             [{"unit_id": "a", "tier": "META"}],
-            [{"unit_id": "a", "tier": "META", "role": "META"}],
-            [{"unit_id": "a", "tier": "DAMAGE", "role": "BUFF"}],
-            [make_row("a", "META", "DAMAGE"), make_row("a", "DAMAGE", "DAMAGE")],
-            [{"unit_id": [], "tier": "META"}],
+            [{"unit_id": "a", "tier": "META", "role": "DAMAGE"}],
+            [{"unit_id": "a", "tier": "DAMAGE"}],
+            [make_row("a", "META_HILL"), make_row("a", "GOOD_HILL")],
+            [{"unit_id": [], "tier": "META_HILL"}],
             [{"unit_id": "a", "tier": []}],
         ):
             with self.subTest(ranking=ranking):
                 self.assertFalse(valid_ranking(ranking))
         with self.assertRaises(ValueError):
-            make_row("a", "BUFF", "SUPPORT")
+            make_row("a", "UNKNOWN")
 
-    def test_original_pixels_repeat_only_in_meta_and_the_correct_role(self):
+    def test_original_pixels_appear_in_only_their_exact_category(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             (root / "assets").mkdir()
             Image.new("RGB", (88, 88), "red").save(root / "assets/a.png")
             Image.new("RGB", (88, 88), "blue").save(root / "assets/b.png")
-            ranking = [
-                make_row("a", "META", "SUPPORT"),
-                make_row("b", "DAMAGE", "DAMAGE"),
-            ]
+            ranking = [make_row("a", "META_SUPPORT"), make_row("b", "GOOD_GROUND")]
             with patch("tier_image.ROOT", root):
                 blob = render(
                     ranking, media={u: {"path": f"assets/{u}.png"} for u in ("a", "b")}
                 )
             with Image.open(io.BytesIO(blob)) as image:
-                self.assertEqual(image.size, (1098, 480))
-                self.assertEqual(image.getpixel((180, 48)), (255, 0, 0))
-                self.assertEqual(image.getpixel((180, 144)), (0, 0, 255))
+                self.assertEqual(image.size, (1098, 576))
+                self.assertEqual(image.getpixel((180, 48)), (17, 20, 21))
                 self.assertEqual(image.getpixel((180, 240)), (255, 0, 0))
-                self.assertEqual(image.getpixel((180, 336)), (17, 20, 21))
+                self.assertEqual(image.getpixel((180, 432)), (0, 0, 255))
+                self.assertEqual(image.getpixel((180, 528)), (17, 20, 21))
 
 
 class CategoryMigrationCase(unittest.TestCase):
@@ -89,11 +79,16 @@ class CategoryMigrationCase(unittest.TestCase):
         self.store.close()
         self.store = TierStore(self.path, clock=lambda: 2000000001)
 
-    def test_legacy_snapshot_votes_and_panel_survive_a_single_audited_boundary(self):
-        ranking = [make_row("a", "DAMAGE", "DAMAGE")]
-        self.store.publish(ranking, {}, source_version="old", model="old", comments=[])
+    def test_old_grades_votes_and_panel_survive_a_single_audited_boundary(self):
+        self.store.publish(
+            [make_row("a", "GOOD_GROUND")],
+            {},
+            source_version="old",
+            model="old",
+            comments=[],
+        )
         self.store.create_proposal(
-            [make_row("b", "DAMAGE", "DAMAGE")],
+            [make_row("b", "GOOD_GROUND")],
             {},
             details={},
             source_version="old",
@@ -119,7 +114,7 @@ class CategoryMigrationCase(unittest.TestCase):
         self.assertEqual(self.store.latest()["ranking"], [])
         self.assertEqual(self.store.latest()["model"], "category-migration")
         self.assertIn(
-            "Aguardando a primeira classificação por função",
+            "aguardando novas categorias",
             index_text(self.store, self.store.panels()[0]),
         )
         self.assertEqual(
@@ -140,81 +135,79 @@ class CategoryMigrationCase(unittest.TestCase):
             1,
         )
         publication = self.store.latest()["id"]
-        with self.assertRaisesRegex(ValueError, "antigas notas"):
+        with self.assertRaisesRegex(ValueError, "categorias antigas"):
             self.store.rollback(
                 publication, 4, "Tentativa de reverter à classificação antiga de teste."
             )
         self.reopen()
         self.assertEqual(self.store.latest()["id"], publication)
-        self.assertEqual(
-            len(
-                self.store.rows(
-                    "SELECT * FROM tier_audit WHERE kind='category-migration'"
-                )
-            ),
-            1,
+
+    def test_new_category_survives_restart_and_old_role_schema_is_archived(self):
+        self.store.publish(
+            [make_row("a", "META_SUPPORT")],
+            {},
+            source_version="v",
+            model="test",
+            comments=[],
         )
-
-    def test_new_role_snapshot_is_preserved_across_restart(self):
-        ranking = [make_row("a", "META", "FARM")]
-        self.store.publish(ranking, {}, source_version="v", model="test", comments=[])
         self.reopen()
-        self.assertEqual(self.store.latest()["ranking"], ranking)
-        self.assertEqual(self.store.rows("SELECT * FROM tier_audit"), [])
+        self.assertEqual(
+            self.store.latest()["ranking"], [make_row("a", "META_SUPPORT")]
+        )
+        with self.store.connection:
+            self.store.connection.execute(
+                "UPDATE tier_publications SET ranking=?",
+                (json.dumps([{"unit_id": "a", "tier": "META", "role": "BUFF"}]),),
+            )
+            self.store.connection.execute(
+                "DELETE FROM tier_meta WHERE key='category_policy'"
+            )
+        self.reopen()
+        self.assertEqual(self.store.latest()["ranking"], [])
+        self.assertEqual(self.store.latest()["model"], "category-migration")
 
-    def test_store_rejects_duplicate_role_and_meta_records_before_writing(self):
-        ranking = [make_row("a", "META", "FARM"), make_row("a", "FARM", "FARM")]
+    def test_store_rejects_duplicate_forms_before_writing(self):
         with self.assertRaises(ValueError):
             self.store.publish(
-                ranking, {}, source_version="v", model="test", comments=[]
+                [make_row("a", "META_HILL"), make_row("a", "GOOD_GROUND")],
+                {},
+                source_version="v",
+                model="test",
+                comments=[],
             )
         self.assertEqual(self.store.latest()["id"], 0)
 
 
-class RoleAnalysisCase(unittest.IsolatedAsyncioTestCase):
+class CategoryAnalysisCase(unittest.IsolatedAsyncioTestCase):
     asyncSetUp = fixtures.TierCase.asyncSetUp
     asyncTearDown = fixtures.TierCase.asyncTearDown
     output = fixtures.TierCase.output
     publish_fixture = fixtures.TierCase.publish_fixture
 
-    async def test_meta_support_is_one_record_and_changes_its_role_on_new_evidence(
-        self,
-    ):
-        self.publish_fixture([make_row("daki", "META", "DAMAGE")])
-        output = self.output()
-        output["changes"][0]["role"] = "SUPPORT"
+    async def test_meta_can_change_group_without_duplicating_the_form(self):
+        self.publish_fixture([make_row("daki", "META_HILL")])
         ranking, explanations, details = self.analyzer.validate(
-            output, self.packet, self.comments
+            self.output(tier="META_SUPPORT"), self.packet, self.comments
         )
-        self.assertEqual(ranking, [make_row("daki", "META", "SUPPORT")])
-        self.assertEqual(details["daki"]["role"], "SUPPORT")
-        self.assertEqual(explanations["daki"]["role"], "SUPPORT")
-        self.assertEqual(rows_for(ranking, "DAMAGE"), [])
+        self.assertEqual(ranking, [make_row("daki", "META_SUPPORT")])
+        self.assertEqual(details["daki"]["tier"], "META_SUPPORT")
+        self.assertIn("daki", explanations)
 
-    async def test_mismatched_or_missing_role_never_reaches_a_proposal(self):
-        for role in (None, "META", "UNKNOWN", [], "FARM"):
-            output = self.output(tier="SUPPORT")
-            output["changes"][0]["role"] = role
-            with self.subTest(role=role), self.assertRaises(ValueError):
+    async def test_missing_or_unknown_game_mode_never_creates_a_proposal(self):
+        for mode in (None, "unknown", [], False):
+            output = self.output()
+            output["changes"][0]["mode"] = mode
+            with self.subTest(mode=mode), self.assertRaises(ValueError):
                 self.analyzer.validate(output, self.packet, self.comments)
         output = self.output()
-        del output["changes"][0]["role"]
+        del output["changes"][0]["mode"]
         with self.assertRaises(ValueError):
             self.analyzer.validate(output, self.packet, self.comments)
         self.assertIsNone(self.store.active_proposal())
 
-    async def test_cross_role_meta_order_preserves_each_primary_role(self):
-        self.publish_fixture([make_row("gyutaro", "META", "SUPPORT")])
-        ranking, _, _ = self.analyzer.validate(
-            self.output(before="gyutaro"), self.packet, self.comments
-        )
-        self.assertEqual(
-            ranking,
-            [
-                make_row("daki", "META", "DAMAGE"),
-                make_row("gyutaro", "META", "SUPPORT"),
-            ],
-        )
-        self.assertEqual(len(rows_for(ranking, "META")), 2)
-        self.assertEqual(len(rows_for(ranking, "DAMAGE")), 1)
-        self.assertEqual(len(rows_for(ranking, "SUPPORT")), 1)
+    async def test_comparison_cannot_move_before_another_category(self):
+        self.publish_fixture([make_row("gyutaro", "META_SUPPORT")])
+        with self.assertRaisesRegex(ValueError, "mesmo tier"):
+            self.analyzer.validate(
+                self.output(before="gyutaro"), self.packet, self.comments
+            )

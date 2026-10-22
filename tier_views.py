@@ -11,11 +11,12 @@ from community_domain import ROOT
 from tier_domain import safe
 from tier_style import decorate_controls
 from tier_ui import payload, edit, edit_response
+from tier_categories import MODES
 
 log = logging.getLogger("tierlist.ui")
 
 PLAYER_GUIDE = """## Como funciona a tier list
-**Leia a imagem:** Meta destaca os melhores. Damage é dano; Support é controle/debuff; Buff melhora aliados; Farm gera recursos. Cada forma tem uma função principal. Os Meta aparecem também nessa função, à frente dos demais. Dentro de cada linha, a ordem é da esquerda para a direita. No celular, toque para ampliar.
+**Leia a imagem:** cada modo tem seis linhas: META Hill/Hybrid, META Ground, META Support, Good Hill/Hybrid, Good Ground e Good Support. Hill/Hybrid é colocação elevada/híbrida; Ground é chão; Support é suporte. META indica destaque no grupo. Cada forma aparece uma vez por modo. A ordem da linha vai da esquerda para a direita. No celular, toque para ampliar.
 
 **Sem avaliação não significa ruim.** Uma forma só aparece na grade depois de uma decisão aprovada. As formas ainda sem avaliação ficam fora da imagem.
 
@@ -501,6 +502,23 @@ class CorrectionModal(BoundModal):
         self.bind(bot, i)
         self.proposal_id = proposal_id
         self.publication = bot.store.latest()["id"]
+        self.publications = {mode: bot.store.latest(mode)["id"] for mode in MODES}
+        self.mode_select = discord.ui.Select(
+            options=[
+                discord.SelectOption(
+                    label=title, value=mode, default=mode == "infinite"
+                )
+                for mode, title in MODES.items()
+            ]
+        )
+        if proposal_id is None:
+            self.add_item(
+                discord.ui.Label(
+                    text="Modo que será restaurado",
+                    description="A outra lista será preservada.",
+                    component=self.mode_select,
+                )
+            )
         self.reason = discord.ui.TextInput(
             style=discord.TextStyle.paragraph,
             min_length=20,
@@ -519,7 +537,10 @@ class CorrectionModal(BoundModal):
             return
         self.bot.require_owner(i)
         if self.proposal_id is None:
-            self.bot.store.rollback(self.publication, i.user.id, str(self.reason))
+            mode = self.mode_select.values[0] if self.mode_select.values else "infinite"
+            self.bot.store.rollback(
+                self.publications[mode], i.user.id, str(self.reason), mode=mode
+            )
             text = "Classificação anterior restaurada em uma nova revisão. O motivo ficará no tópico."
         else:
             self.bot.store.cancel_proposal(

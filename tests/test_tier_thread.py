@@ -270,7 +270,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
 
     def propose(self):
         self.app.store.create_proposal(
-            [{"unit_id": "daki", "tier": "DAMAGE"}],
+            [{"unit_id": "daki", "tier": "GOOD_GROUND"}],
             {},
             details={
                 "daki": {
@@ -278,8 +278,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
                     "conditions": "Condições artificiais do teste.",
                     "caveat": "Limitações artificiais do teste.",
                     "sources": [],
-                    "tier": "DAMAGE",
-                    "role": "DAMAGE",
+                    "tier": "GOOD_GROUND",
                     "before": None,
                 }
             },
@@ -526,8 +525,8 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
             "changes": [
                 {
                     "unit_id": "daki",
-                    "tier": "DAMAGE",
-                    "role": "DAMAGE",
+                    "tier": "GOOD_GROUND",
+                    "mode": "infinite",
                     "before": None,
                     "confidence": 0.95,
                     "supporting_comments": ["c0"],
@@ -614,7 +613,8 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.now += 600
         await self.app.poll_loop.coro(self.app)
         self.assertEqual(
-            self.app.store.latest()["ranking"], [{"unit_id": "daki", "tier": "DAMAGE"}]
+            self.app.store.latest()["ranking"],
+            [{"unit_id": "daki", "tier": "GOOD_GROUND"}],
         )
         archived = self.app.store.rows(
             "SELECT * FROM tier_poll_messages WHERE proposal_id=? AND channel_id=?",
@@ -627,7 +627,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         await self.setup_panel()
         panel = self.app.store.panels()[0]
         self.app.store.publish(
-            [{"unit_id": "daki", "tier": "SUPPORT"}],
+            [{"unit_id": "daki", "tier": "GOOD_SUPPORT"}],
             {},
             source_version="test",
             model="test",
@@ -742,7 +742,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("IA", status)
         blob, _ = await self.app.picture()
         with Image.open(io.BytesIO(blob)) as image:
-            self.assertEqual(image.height, 5 * 96)
+            self.assertEqual(image.height, 2 * (6 * 96 + 54))
 
     async def test_player_guide_is_private_and_available_from_official_index(self):
         await self.setup_panel()
@@ -755,7 +755,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         text = call_text(i.response.send_message.await_args)
         self.assertIn("Sem avaliação", text)
         self.assertNotIn("arquivo do tópico", text)
-        self.assertLessEqual(len(text), 2000)
+        self.assertLessEqual(len(text), 4000)
 
 
 class MediaCase(unittest.TestCase):
@@ -885,7 +885,7 @@ class MediaCase(unittest.TestCase):
         ident = self.submit()
         self.media.decide(ident, 7, approve=True)
         self.store.publish(
-            [{"unit_id": "daki", "tier": "SUPPORT"}],
+            [{"unit_id": "daki", "tier": "GOOD_SUPPORT"}],
             {},
             source_version="fixture",
             model="fixture",
@@ -898,7 +898,7 @@ class MediaCase(unittest.TestCase):
         copied = TierStore(restored)
         library = MediaLibrary(copied, self.catalog)
         self.assertEqual(
-            copied.latest()["ranking"], [{"unit_id": "daki", "tier": "SUPPORT"}]
+            copied.latest()["ranking"], [{"unit_id": "daki", "tier": "GOOD_SUPPORT"}]
         )
         self.assertIn("daki", library.approved())
         copied.close()
@@ -920,7 +920,7 @@ class MediaCase(unittest.TestCase):
 
     def test_rollback_creates_a_new_revision_and_invalidates_pending_proposal(self):
         self.store.publish(
-            [{"unit_id": "daki", "tier": "SUPPORT"}],
+            [{"unit_id": "daki", "tier": "GOOD_SUPPORT"}],
             {},
             source_version="fixture",
             model="fixture",

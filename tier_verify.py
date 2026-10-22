@@ -143,11 +143,11 @@ class VerificationClick(GuardedView):
             store = TierStore(Path(directory) / "tierlist.sqlite3")
             try:
                 store.create_proposal(
-                    [{"unit_id": "daki", "tier": "DAMAGE"}],
+                    [{"unit_id": "daki", "tier": "GOOD_GROUND"}],
                     {},
                     details={
                         "daki": {
-                            "tier": "DAMAGE",
+                            "tier": "GOOD_GROUND",
                             "before": None,
                             "reason": "Dados artificiais exclusivos da verificação, sem avaliação real.",
                             "sources": [],
@@ -259,7 +259,7 @@ async def _verify(bot, i):
             "started_at": time.time(),
             "checks": [],
             "writes_production_ranking": False,
-            "ranking_before": bot.store.latest()["id"],
+            "ranking_before": bot.store.board()["id"],
         }
 
         async def progress(text):
@@ -533,7 +533,7 @@ async def _verify(bot, i):
                     }
                 )
         report["finished_at"] = time.time()
-        report["ranking_after"] = bot.store.latest()["id"]
+        report["ranking_after"] = bot.store.board()["id"]
         report["checks"] += [
             {
                 "name": "Clique humano entregue ao callback de voto",

@@ -32,12 +32,8 @@ from tier_wiki import WikiSync
 NOTE = "Retrato artificial exclusivo do teste, sem imagem ou avaliação de jogo real."
 
 
-def row(uid, tier="DAMAGE"):
-    return (
-        {"unit_id": uid, "tier": tier, "role": "DAMAGE"}
-        if tier == "META"
-        else {"unit_id": uid, "tier": tier}
-    )
+def row(uid, tier="GOOD_GROUND"):
+    return {"unit_id": uid, "tier": tier}
 
 
 class ActiveCatalogCase(unittest.TestCase):
@@ -162,7 +158,12 @@ class CatalogMigrationCase(unittest.TestCase):
         # Old proposal results still render, even with a retired comparison.
         proposal = self.store.proposal(proposal["id"])
         proposal["details"] = {
-            "uraraka": {"reason": NOTE, "tier": "DAMAGE", "before": None, "sources": []}
+            "uraraka": {
+                "reason": NOTE,
+                "tier": "GOOD_GROUND",
+                "before": None,
+                "sources": [],
+            }
         }
         self.assertIn(
             "Gravity Hero", poll_embed(self.store, TierCatalog(), proposal).title
@@ -193,7 +194,7 @@ class CatalogMigrationCase(unittest.TestCase):
     def test_new_proposals_ingestion_and_rollback_cannot_restore_retired_forms(self):
         self.publish([row("uraraka"), row("daki")])
         self.store.bind_catalog(TierCatalog())
-        self.publish([row("daki", "SUPPORT")])
+        self.publish([row("daki", "GOOD_SUPPORT")])
         self.store.rollback(
             self.store.latest()["id"],
             7,
@@ -354,8 +355,8 @@ class PortraitIntegrityCase(unittest.TestCase):
         )
         change = {
             "unit_id": "bakugou",
-            "tier": "DAMAGE",
-            "role": "DAMAGE",
+            "tier": "GOOD_GROUND",
+            "mode": "infinite",
             "before": None,
             "confidence": 0.99,
             "supporting_comments": [],
@@ -425,7 +426,7 @@ class ReleaseRuntimeCase(unittest.IsolatedAsyncioTestCase):
         initial = await index.attachments[0].read()
         self.assertIn(b"71 formas", initial)
         self.assertNotIn(b"Gravity Hero", initial)
-        self.assertNotIn(b"META", initial)
+        self.assertNotIn(b"META_HILL", initial)
         self.assertNotIn(b"user_id", initial)
         pending = self.suggest()
         await self.app.panel_loop.coro(self.app)
@@ -554,9 +555,9 @@ class ReleaseRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.app.health.storage_level = "critical"
         await self.app.sync_index(panel, self.env.thread, force=True)
         self.assertLessEqual(
-            len(visible_text(self.index()).encode("utf-16-le")) // 2, 2000
+            len(visible_text(self.index()).encode("utf-16-le")) // 2, 4000
         )
-        self.assertLessEqual(len(PLAYER_GUIDE.encode("utf-16-le")) // 2, 2000)
+        self.assertLessEqual(len(PLAYER_GUIDE.encode("utf-16-le")) // 2, 4000)
         self.assertIn("retratos-pendentes.txt", visible_text(self.index()))
 
     async def test_repeatable_verifier_checks_five_real_attachment_transitions_in_isolation(

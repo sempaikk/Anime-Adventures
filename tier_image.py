@@ -13,7 +13,7 @@ from community_domain import ROOT
 from community_ui import font, portraits
 from tier_domain import safe, moment, place
 from tier_store import TIERS
-from tier_categories import COLORS, LABELS, rows_for
+from tier_categories import COLORS, LABELS, MODES, rows_for, label
 from tier_schedule import poll_progress, progress_text
 
 ROW_COLORS = COLORS
@@ -55,12 +55,20 @@ def render(
         band = max(1, math.ceil(len(rows) / columns)) * tile
         draw.rectangle((0, top, label, top + band), fill=ROW_COLORS[tier])
         title = LABELS[tier]
-        box = draw.textbbox((0, 0), title, font=font(25))
-        draw.text(
-            ((label - box[2]) / 2, top + (band - 30) / 2),
+        face = font(22)
+        box = draw.multiline_textbbox(
+            (0, 0), title, font=face, spacing=4, align="center"
+        )
+        draw.multiline_text(
+            (
+                (label - (box[2] - box[0])) / 2 - box[0],
+                top + (band - (box[3] - box[1])) / 2 - box[1],
+            ),
             title,
-            font=font(25),
+            font=face,
             fill="#eeeeee",
+            spacing=4,
+            align="center",
         )
         draw.line((0, top, width, top), fill="#626569", width=1)
         draw.line((label, top, label, top + band), fill="#626569", width=1)
@@ -115,6 +123,30 @@ def render(
     return output.getvalue()
 
 
+def render_modes(publications, **kwargs):
+    """One persistent PNG with independently ranked, clearly labelled game modes."""
+    frames = []
+    for mode, title in MODES.items():
+        blob = render(publications[mode]["ranking"], **kwargs)
+        with Image.open(io.BytesIO(blob)) as image:
+            frame = Image.new("RGB", (image.width, image.height + 54), "#202735")
+            frame.paste(image, (0, 54))
+        ImageDraw.Draw(frame).text((16, 14), title, font=font(23), fill="#f1f3f5")
+        frames.append(frame)
+    canvas = Image.new(
+        "RGB", (frames[0].width, sum(f.height for f in frames)), "#111415"
+    )
+    top = 0
+    for frame in frames:
+        canvas.paste(frame, (0, top))
+        top += frame.height
+        frame.close()
+    output = io.BytesIO()
+    canvas.save(output, format="PNG", optimize=True)
+    canvas.close()
+    return output.getvalue()
+
+
 class PanelRenderer:
     def __init__(self, media_root):
         self.media_root = media_root
@@ -128,7 +160,12 @@ class PanelRenderer:
         roots = [(ROOT / "assets").resolve()]
         if self.media_root:
             roots.append(Path(self.media_root).resolve())
-        for row in publication["ranking"]:
+        all_rows = (
+            [r for p in publication["modes"].values() for r in p["ranking"]]
+            if "modes" in publication
+            else publication["ranking"]
+        )
+        for row in all_rows:
             item = media.get(row["unit_id"])
             stamp = None
             if item:
@@ -162,11 +199,12 @@ class PanelRenderer:
             ),
         )
         if key != self.key:
-            blob = render(
-                publication["ranking"],
+            renderer = render_modes if "modes" in publication else render
+            blob = renderer(
+                publication.get("modes", publication["ranking"]),
                 media=media,
                 media_root=self.media_root,
-                updated_at=publication["created_at"],
+                updated_at=publication.get("created_at"),
                 media_revision=media_revision,
                 total_units=total_units,
                 footer=False,
@@ -200,23 +238,33 @@ def index_text(
         if wiki_status in ("cache", "unavailable")
         else "Referências sincronizadas"
     )
-    publication = store.latest()
-    classification = (
-        "Aguardando a primeira classificação por função; versões anteriores no histórico"
-        if publication["model"] == "category-migration" and not publication["ranking"]
-        else moment(publication["created_at"])
+    classification = " · ".join(
+        f"{('Infinite' if mode == 'infinite' else 'Casual')}: "
+        + (
+            "base inicial da Wiki"
+            if publication["model"] == "wiki-baseline"
+            else "aguardando novas categorias"
+            if publication["model"] == "category-migration"
+            and not publication["ranking"]
+            else moment(publication["created_at"])
+        )
+        for mode, publication in store.board()["modes"].items()
     )
     lines = [
         "## Votações e histórico",
         "**A imagem no canal mostra a classificação atual. As enquetes abertas aparecem junto dela; os resultados ficam aqui.**",
         "Propostas com motivos, condições e fontes. Você escolhe **Aprovar**, **Manter** ou **Precisa de mais testes**.",
-        "**Leitura:** Meta destaca os melhores; Damage, Support, Buff e Farm separam funções. Um Meta também aparece na sua função. A ordem de cada linha vai da esquerda para a direita.",
+        "**Leitura:** Infinite e Casual têm posições independentes. Em cada modo, META e Good se dividem em Hill/Hybrid, Ground e Support. A ordem da linha vai da esquerda para a direita.",
         "\n**Regras:** 10 minutos · mínimo de 5 participantes · dois terços a favor · um voto por conta na rede. Você pode trocar até o prazo. As escolhas aparecem no resultado final.",
         "No máximo uma proposta por hora; sem evidência suficiente, a classificação é preservada.",
         "\n" + progress_text(progress),
         f"**Wiki:** {source}.",
         f"**Última classificação:** {classification}.",
     ]
+    if store.get("wiki_initial_reference"):
+        lines.append(
+            "**Base inicial:** [Wiki · revisão de 18/04/2025](https://animeadventures.fandom.com/wiki/Tier_Lists?oldid=46773), importada parcialmente por identidade exata. A página avisa que pode estar imprecisa. Essas posições são referência; revisões seguintes dependem de votação."
+        )
     proposal = store.active_proposal()
     if proposal and thread:
         receipt = store.connection.execute(
@@ -267,13 +315,14 @@ def poll_embed(store, catalog, proposal):
     question = (
         f"{name} deve passar {catalog.display_name(before)}?"
         if before
-        else f"{name} deve ficar em {LABELS.get(detail['tier'], detail['tier'])}?"
+        else f"{name} deve ficar em {label(detail['tier'])}?"
     )
     state = POLL_STATES.get(proposal["status"], "Encerrada")
     active = proposal["status"] in ("open", "queued")
     embed = discord.Embed(
         title=safe(question if active else f"{state} · {name}", 250),
-        description=safe(detail["reason"], 700),
+        description=f"**Modo: {MODES.get(proposal.get('mode', 'infinite'), 'Infinite')}**\n"
+        + safe(detail["reason"], 700),
         color=(
             0xA283E8
             if active
