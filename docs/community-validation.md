@@ -4,7 +4,7 @@
 
 O fechamento atual está em [tierlist-launch-review.md](tierlist-launch-review.md):
 catálogo ativo, lista dinâmica de retratos, proteções de envio e recuperação,
-457 testes locais e ensaio real no Discord. Abaixo ficam os passos de operação
+testes locais e ensaio real no Discord. Abaixo ficam os passos de operação
 e os registros das verificações anteriores.
 
 A recomendação é uma estreia beta em um a três servidores, sem esperar por
@@ -18,7 +18,8 @@ Antes da divulgação geral:
    O verificador também valida essa permissão no registro real do Discord.
 2. Conferir a visão de um membro: ler a imagem e o tópico, votar, consultar
    Como funciona, enviar retratos e abrir Meus envios; sem controles do dono.
-   Manter o canal principal reservado ao painel e a discussão no tópico.
+   Conferir a enquete temporária no canal e o resultado completo no tópico.
+   Após dois minutos, o aviso só sai do canal com o histórico confirmado.
 3. Reunir ao menos cinco participantes reais para aprovar as primeiras posições.
    A lista começa vazia e depende de relatos válidos e propostas fundamentadas;
    apresentar como classificação comunitária em construção, sem preencher
@@ -51,8 +52,8 @@ da experiência e da operação, em vez de acrescentar funcionalidades sem fim.
   uma imagem genérica ou de outra evolução não resolve a pendência. O índice
   oferece retratos-pendentes.txt, atualizado pelas aprovações e restaurações;
   esse arquivo não exporta a classificação.
-- **Interface dos membros:** manter o canal com a imagem, o tópico com decisões
-  e a ajuda privada. Ampliar pelo visualizador do Discord no celular. Confirmar
+- **Interface dos membros:** imagem permanente e enquetes temporárias no canal,
+  decisões no tópico e ajuda privada. Ampliar pelo visualizador no celular. Confirmar
   que uma pessoa nova entende o sentido esquerda→direita, o voto, o resultado
   e o andamento de seu envio. Os controles de diagnóstico continuam privados.
 - **Qualidade das decisões:** observar as primeiras propostas reais com
@@ -85,7 +86,7 @@ site e outros módulos continuam no planejamento posterior.
 
 1. No Bot-Hosting.net, confirme **Python 3.12**, **`bot.py`**, pull automático e as variáveis já cadastradas: `DISCORD_TOKEN`, `GROQ_API_KEY` e `DATA_DIR=./state`. Reinicie após a atualização do GitHub. Não recrie a implantação nem apague `state`.
 2. Habilite **Message Content Intent** no Developer Portal. No canal de texto, confira Ver canal, Enviar mensagens, Ler histórico, Inserir links, Anexar arquivos, Criar tópicos públicos e Enviar mensagens em tópicos.
-3. Como administrador, use **`/tierlist`**. O resultado público deve ser uma imagem e o tópico **Votações e histórico**. A confirmação e os controles são privados. Não há seleção de canais de análise ou confirmação individual de participação.
+3. Como administrador, use **`/tierlist`**. O resultado público deve ser uma imagem e o tópico **Votações e histórico**. Enquetes válidas aparecem temporariamente no mesmo canal; o resultado completo permanece no tópico. A confirmação e os controles são privados. Não há seleção de canais de análise ou confirmação individual de participação.
 4. Como responsável pelo aplicativo, clique **Verificação completa** na confirmação privada e aguarde o relatório. Administradores recebem **Conferir painel**, sem informações técnicas globais.
 5. Clique **Confirmar teste de interação** no relatório. Um clique real passa pelo código de voto com banco temporário. Não reúne cinco jogadores nem altera a votação global.
 

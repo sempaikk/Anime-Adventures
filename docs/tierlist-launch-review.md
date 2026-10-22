@@ -6,8 +6,9 @@ Esta revisão fecha o catálogo ativo, a colaboração com retratos e os caminho
 de recuperação. Mantém somente `/tierlist` e `/chatglobal`, sem novos comandos
 ou configuração obrigatória. O chat global continua em breve.
 
-- O canal principal continua com um PNG, sem legenda, botões ou rodapé técnico.
-- O tópico reúne propostas, votos, resultados e histórico. Membros usam
+- A mensagem permanente continua com um PNG, sem legenda, botões ou rodapé técnico.
+  Enquetes temporárias aparecem no mesmo canal enquanto há uma proposta.
+- O tópico reúne resultados completos, revisões e histórico. Membros usam
   Sugerir imagem, Meus envios e Como funciona. Respostas pessoais são privadas.
 - Administradores preparam ou conferem o próprio painel. Revisão global,
   correções, diagnóstico e testes continuam exclusivos do dono do aplicativo.
@@ -119,6 +120,44 @@ reiniciar e não exige novas chamadas de IA nem edições por segundo.
 - Estado temporário, sem Gateway adicional, chamadas à Groq ou posições/votos
   oficiais alterados. A API confirma a entrega dos horários relativos, sem
   reproduzir a tela de uma conta humana.
+
+## Complemento: enquete visível no canal
+
+A enquete aberta aparece no canal da tier list para facilitar a participação.
+Mostra a mudança proposta, condições, ressalva, fontes, prazo e participantes,
+com atalhos para a imagem e o histórico. As escolhas continuam ocultas até
+encerrar. A confirmação do voto é privada e informa o prazo para trocar.
+Resultados encerrados têm título e cor próprios. Não há ping coletivo nem
+configuração obrigatória adicional.
+
+Após a apuração, a proposta completa e a contagem final são guardadas no tópico.
+O aviso do canal permanece por dois minutos; antes de apagá-lo, o bot confirma
+o resultado salvo e a identidade da própria mensagem. Falha, acesso ausente,
+arquivo removido por moderação ou cópia antiga ainda sem edição final preservam
+o aviso encerrado. Reinícios retomam a limpeza sem renovar o prazo. O dono
+acompanha pendências globais no diagnóstico privado; o ADM recebe orientação
+do próprio servidor em Conferir painel. Votações antigas abertas no tópico
+terminam no local original.
+
+A apuração também consulta a API antes de aceitar uma cópia como disponível.
+Exclusão ocorrida sem evento Gateway não permite aplicar a mudança usando uma
+mensagem inexistente. Se a API estiver incerta, a decisão é adiada, preservando
+as posições e o prazo já encerrado. A organização dessa entrega ficou em
+`tier_delivery.py`; os registros de votos e prazos existentes são preservados.
+
+- **503 testes automatizados**, incluindo 24 cenários novos de publicação,
+  limpeza, moderação, API incerta, reinício e visão de membros. O índice com
+  votação aberta, aprovação anterior, revisão, manutenção e todos os atalhos
+  foi conferido no limite de mensagem do Discord.
+- **Nove verificações pela API real**, usando dois espaços privados no servidor
+  autorizado: enquete, atalhos, repetição sem duplicar, participantes ocultando
+  escolhas, arquivo completo, PNG original editado e comparado ao download,
+  espera de dois minutos, reabertura do banco e limpeza idempotente.
+- O ensaio usou votos e posições artificiais apenas no banco temporário, sem
+  Gateway adicional, chamadas à Groq ou alteração da classificação oficial.
+  Não reproduz a tela ou cliques de uma conta humana.
+- O [resultado privado de demonstração](https://discord.com/channels/1561531259484901489/1562890170913792051)
+  permanece arquivado para o dono conferir conforme as permissões do Discord.
 
 ## O que ainda depende da estreia
 

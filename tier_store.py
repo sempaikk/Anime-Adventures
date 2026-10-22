@@ -972,12 +972,15 @@ class TierStore:
                 (proposal_id, str(user_id), str(guild_id), choice, self.clock()),
             )
 
-    def resolve_due(self, *, source_version):
+    def resolve_due(self, *, source_version, proposal_ids=None):
         changed = False
+        eligible = None if proposal_ids is None else set(proposal_ids)
         for item in self.rows(
             "SELECT id FROM tier_proposals WHERE status='open' AND closes_at<=?",
             (self.clock(),),
         ):
+            if eligible is not None and item["id"] not in eligible:
+                continue
             with self.connection:
                 self.connection.execute("BEGIN IMMEDIATE")
                 proposal = self.proposal(item["id"])
@@ -1045,6 +1048,14 @@ class TierStore:
 
     def poll_messages(self):
         return self.rows("SELECT * FROM tier_poll_messages")
+
+    def public_results_waiting(self, guild_id=None):
+        sql = "SELECT COUNT(*) AS total FROM tier_poll_messages m JOIN tier_proposals v ON v.id=m.proposal_id JOIN tier_panels p ON p.guild_id=m.guild_id AND p.channel_id=m.channel_id WHERE m.status!='removed' AND v.status NOT IN ('open','queued') AND m.updated_at<?"
+        args = [self.clock() - 180]
+        if guild_id is not None:
+            sql += " AND m.guild_id=?"
+            args.append(str(guild_id))
+        return self.rows(sql, args)[0]["total"]
 
     def report(self, proposal_id, user_id, guild_id, reason):
         if not self.proposal(proposal_id) or not 15 <= len(reason.strip()) <= 800:

@@ -548,7 +548,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(self.app.store.active_proposal())
         self.assertEqual(self.app.store.latest()["ranking"], [])
 
-    async def test_poll_is_in_thread_only_and_clock_starts_after_publication(self):
+    async def test_poll_is_visible_in_channel_and_clock_starts_after_publication(self):
         await self.setup_panel()
         self.propose()
         self.now += 400
@@ -557,8 +557,8 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(proposal["closes_at"], self.now + 600)
         receipts = self.app.store.poll_messages()
         self.assertEqual(len(receipts), 1)
-        self.assertEqual(receipts[0]["channel_id"], str(self.env.thread.id))
-        self.assertEqual(len([p for cid, p in self.env.payloads if cid == 10]), 1)
+        self.assertEqual(receipts[0]["channel_id"], str(self.env.channel.id))
+        self.assertEqual(len([p for cid, p in self.env.payloads if cid == 10]), 2)
         await self.app.poll_loop.coro(self.app)
         self.assertEqual(len(self.app.store.poll_messages()), 1)
 
@@ -613,7 +613,13 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             self.app.store.latest()["ranking"], [{"unit_id": "daki", "tier": "S"}]
         )
-        result = self.env.partial(self.env.thread, int(receipt["message_id"])).embeds[0]
+        archived = self.app.store.rows(
+            "SELECT * FROM tier_poll_messages WHERE proposal_id=? AND channel_id=?",
+            (proposal["id"], str(self.env.thread.id)),
+        )[0]
+        result = self.env.partial(self.env.thread, int(archived["message_id"])).embeds[
+            0
+        ]
         self.assertIn(
             "**Aprovar:** 5", json.dumps(result.to_dict(), ensure_ascii=False)
         )

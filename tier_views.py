@@ -25,7 +25,7 @@ PLAYER_GUIDE = """## Como funciona a tier list
 
 **Próxima enquete:** o tópico mostra quando uma nova análise ficará disponível e se já existe proposta pronta. O contador não garante uma votação: a análise pode concluir que as posições devem continuar iguais.
 
-**Resultados:** aparecem na própria proposta ao encerrar. A distribuição dos votos fica oculta durante a votação. Sinalizar problema envia um relato para revisão, sem acrescentar votos.
+**Onde votar:** a enquete aparece no canal da imagem. Após encerrar, o resultado fica no tópico; o aviso do canal sai depois de dois minutos e somente com o histórico confirmado. Os votos ficam ocultos até o fim. Sinalizar problema pede revisão, sem acrescentar votos.
 
 **Retratos:** quando houver fotos pendentes, o tópico terá retratos-pendentes.txt com as formas exatas. Sugerir imagem envia a contribuição para revisão do responsável. Trocar um retrato não muda posições. Consulte Meus envios para acompanhar em particular."""
 
@@ -265,12 +265,28 @@ class ReportModal(BoundModal):
 
 
 class PollView(GuardedView):
-    def __init__(self, bot, *, closed=False):
+    def __init__(self, bot, *, closed=False, panel=None, thread_id=None):
         super().__init__(timeout=None)
         self.bot = bot
         for item in self.children:
             if item.custom_id != "tier:v3:report":
                 item.disabled = closed
+        if panel:
+            self.add_item(
+                discord.ui.Button(
+                    label="Ver tier list",
+                    url=f"https://discord.com/channels/{panel['guild_id']}/{panel['channel_id']}/{panel['message_id']}",
+                    row=1,
+                )
+            )
+            if thread_id:
+                self.add_item(
+                    discord.ui.Button(
+                        label="Histórico",
+                        url=f"https://discord.com/channels/{panel['guild_id']}/{thread_id}",
+                        row=1,
+                    )
+                )
 
     async def cast(self, i, choice):
         self.bot.require_human(i)
@@ -290,9 +306,10 @@ class PollView(GuardedView):
             "keep": "Manter como está",
             "test": "Precisa de mais testes",
         }
+        proposal = self.bot.store.proposal(receipt["proposal_id"])
         await reply(
             i,
-            f"Seu voto: **{labels[choice]}**. Você pode trocar até o prazo. Sua conta conta uma vez em toda a rede.",
+            f"Voto registrado: **{labels[choice]}**. Encerra <t:{int(proposal['closes_at'])}:R>. Você pode trocar pelos mesmos botões até o prazo. Sua conta conta uma vez em toda a rede.",
         )
 
     @discord.ui.button(

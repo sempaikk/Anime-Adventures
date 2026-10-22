@@ -24,10 +24,11 @@ from runtime_health import RuntimeHealth
 from tier_analysis import DAILY_CALLS, DAILY_TOKENS, TierAnalyzer
 from tier_backup import acquire_lease, maintain_tier_storage
 from tier_domain import digest, relevant_units, safe, moment
-from tier_image import PanelRenderer, image_file, index_text, poll_embed
+from tier_image import PanelRenderer, image_file, index_text
 from tier_media import MediaLibrary, MAX_UPLOAD
 from tier_portraits import PortraitInventory
 from tier_schedule import poll_progress
+from tier_delivery import sync_polls
 from tier_store import TierStore
 from tier_views import AdminView, PollView, ThreadView, reply
 from tier_wiki import WikiSync
@@ -343,6 +344,11 @@ class CommunityBot(commands.Bot):
             )
             + "\n**Histórico do jogo:** "
             + history_status(self.store, i.guild_id)
+            + (
+                "\nHá resultado encerrado aguardando arquivo ou limpeza. Confira o acesso ao canal e ao tópico; o aviso é preservado até confirmar o histórico."
+                if self.store.public_results_waiting(i.guild_id)
+                else ""
+            )
         )
 
     def diagnostics(self, i):
@@ -366,6 +372,7 @@ class CommunityBot(commands.Bot):
         if budget.get("day") != day:
             budget = {}
         text += f"\n**Relatos aguardando análise:** {pending}."
+        text += f"\n**Resultados aguardando arquivo/limpeza:** {self.store.public_results_waiting()}."
         text += f"\n**Cota local do dia UTC:** {budget.get('calls', 0)}/{DAILY_CALLS} chamadas · {budget.get('tokens', 0)}/{DAILY_TOKENS} tokens."
         thread = self.store.thread(i.guild_id)
         if thread:
@@ -834,109 +841,7 @@ class CommunityBot(commands.Bot):
         await self.wait_until_ready()
 
     async def _poll_cycle(self):
-        self.store.resolve_due(source_version=self.analyzer.evidence.version)
-        proposal = self.store.active_proposal()
-        if proposal:
-            for panel in self.store.thread_targets():
-                if self.store.rows(
-                    "SELECT 1 FROM tier_poll_messages WHERE proposal_id=? AND channel_id=?",
-                    (proposal["id"], panel["thread_id"]),
-                ):
-                    continue
-                try:
-                    async with self.guild_lock(panel["guild_id"]):
-                        proposal = self.store.proposal(proposal["id"])
-                        if proposal["status"] not in ("queued", "open") or (
-                            proposal["status"] == "open"
-                            and self.store.clock() >= proposal["closes_at"]
-                        ):
-                            continue
-                        if (
-                            proposal["status"] == "open"
-                            and proposal["closes_at"] - self.store.clock() < 60
-                        ):
-                            continue
-                        thread = await self.active_thread(panel)
-                        number = proposal["id"]
-                        message = await self.deliver(
-                            thread,
-                            f"poll:{number}:{thread.id}",
-                            embed=poll_embed(self.store, self.catalog, proposal),
-                            view=PollView(self),
-                            marker=lambda m: any(
-                                e.footer.text
-                                and e.footer.text.startswith(f"Proposta #{number} ·")
-                                for e in m.embeds
-                            ),
-                        )
-                        published = None
-                        if message.id > 10**15:
-                            published = discord.utils.snowflake_time(
-                                message.id
-                            ).timestamp()
-                        self.store.remember_poll(
-                            number,
-                            panel["guild_id"],
-                            thread.id,
-                            message.id,
-                            published_at=published,
-                        )
-                except (discord.HTTPException, ValueError, TimeoutError) as error:
-                    log.warning("Enquete adiada: %s", type(error).__name__)
-        self.store.resolve_due(source_version=self.analyzer.evidence.version)
-        now = self.store.clock()
-        for receipt in self.store.poll_messages():
-            if receipt["status"] == "removed":
-                continue
-            proposal = self.store.proposal(receipt["proposal_id"])
-            if not proposal:
-                continue
-            if receipt["status"] == proposal["status"] and (
-                proposal["status"] not in ("open", "queued")
-                or now - receipt["updated_at"] < 60
-            ):
-                continue
-            panel = next(
-                (
-                    p
-                    for p in self.store.panels()
-                    if p["guild_id"] == receipt["guild_id"]
-                ),
-                None,
-            )
-            if not panel:
-                continue
-            try:
-                async with self.guild_lock(panel["guild_id"]):
-                    record = self.store.thread(panel["guild_id"])
-                    if record and record["thread_id"] == receipt["channel_id"]:
-                        thread = await self.active_thread(panel)
-                    else:
-                        # Finish pre-migration polls where they were originally published.
-                        thread = await self.channel(receipt["channel_id"])
-                        if str(thread.guild.id) != receipt["guild_id"]:
-                            continue
-                    await thread.get_partial_message(int(receipt["message_id"])).edit(
-                        embed=poll_embed(self.store, self.catalog, proposal),
-                        view=PollView(
-                            self, closed=proposal["status"] not in ("open", "queued")
-                        ),
-                    )
-                    self.store.remember_poll(
-                        proposal["id"],
-                        receipt["guild_id"],
-                        receipt["channel_id"],
-                        receipt["message_id"],
-                        proposal["status"],
-                    )
-            except discord.NotFound:
-                with self.store.connection:
-                    self.store.connection.execute(
-                        "UPDATE tier_poll_messages SET status='removed' WHERE proposal_id=? AND channel_id=?",
-                        (proposal["id"], receipt["channel_id"]),
-                    )
-            except (discord.HTTPException, ValueError, TimeoutError) as error:
-                log.warning("Resultado adiado: %s", type(error).__name__)
+        await sync_polls(self)
 
     @tasks.loop(seconds=15)
     async def poll_loop(self):
@@ -1082,8 +987,9 @@ class CommunityBot(commands.Bot):
             async with self.guild_lock(i.guild_id):
                 panel, thread = await self.ensure_panel(i)
             url = f"https://discord.com/channels/{i.guild_id}/{thread.id}"
+            image_url = f"https://discord.com/channels/{i.guild_id}/{panel['channel_id']}/{panel['message_id']}"
             await i.followup.send(
-                f"**Painel pronto.** A imagem fica no canal; propostas, votos e resultados ficam no [tópico]({url}). Membros participam pelos botões, sem precisar de comandos. Os comentários sobre o jogo são identificados automaticamente nos canais acessíveis ao bot.",
+                f"**Painel pronto.** [Ver tier list]({image_url}). As enquetes abertas aparecem no canal desse painel; os resultados ficam no [tópico]({url}). Membros participam pelos botões, sem precisar de comandos. Os comentários sobre o jogo são identificados automaticamente nos canais acessíveis ao bot.",
                 view=AdminView(self, i),
                 ephemeral=True,
             )

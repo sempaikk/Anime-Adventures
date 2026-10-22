@@ -9,8 +9,10 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 - `/tierlist` é exclusivo de Administrador/Gerenciar servidor, com permissão
   padrão do Discord e validação na execução. Membros veem a imagem, votam,
   sugerem retratos e consultam Meus envios pelos botões do tópico.
-- Um painel oficial por servidor: somente PNG, sem embed ou botões públicos.
-- Um tópico público ligado à mensagem: propostas, votos, resultados e histórico.
+- Um painel oficial por servidor: mensagem permanente somente PNG, sem legenda
+  ou botões. Enquetes temporárias aparecem no mesmo canal para facilitar o voto.
+- Um tópico público ligado à imagem: resultados, revisões e histórico. Enquetes
+  antigas já abertas no tópico terminam no local original.
 - Índice editado no tópico: regras, situação real da análise, proposta aberta,
   última mudança e envio de imagens. A classificação aparece somente no PNG,
   sem exportação textual de posições. O TXT retratos-pendentes.txt é somente
@@ -67,6 +69,12 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
   e fontes, recusar mensagens/votos falsificados ou vencidos.
 - Resultado edita a própria proposta, mantendo histórico no tópico. Aprovação
   atualiza o PNG; rejeição/testes/ausência de votos preservam posições.
+- Ao encerrar, salvar a proposta e o resultado no tópico; manter o aviso no
+  canal por dois minutos e removê-lo somente após conferir o histórico e a
+  identidade da mensagem. Reinício retoma a limpeza; falhas preservam o aviso.
+- Confirmar uma cópia real da votação antes da apuração, inclusive após
+  desconexão. API incerta adia a decisão sem renovar o prazo. Exclusões por
+  moderação não criam novas cópias votáveis. Sem ping coletivo.
 - Botão Sinalizar problema com motivo e revisão privada pelo responsável.
 - Reversão emergencial restrita ao responsável, com justificativa pública,
   preservação de histórico e invalidação de propostas incompatíveis.

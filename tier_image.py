@@ -209,7 +209,7 @@ def index_text(
     )
     lines = [
         "## Votações e histórico",
-        "**A imagem no canal mostra a classificação atual. Aqui ficam as decisões.**",
+        "**A imagem no canal mostra a classificação atual. As enquetes abertas aparecem junto dela; os resultados ficam aqui.**",
         "Propostas com motivos, condições e fontes. Você escolhe **Aprovar**, **Manter** ou **Precisa de mais testes**.",
         "\n**Regras:** 10 minutos · mínimo de 5 participantes · dois terços a favor · um voto por conta na rede. Você pode trocar até o prazo. As escolhas aparecem no resultado final.",
         "No máximo uma proposta por hora; sem evidência suficiente, a classificação é preservada.",
@@ -220,12 +220,12 @@ def index_text(
     proposal = store.active_proposal()
     if proposal and thread:
         receipt = store.connection.execute(
-            "SELECT message_id FROM tier_poll_messages WHERE proposal_id=? AND channel_id=?",
-            (proposal["id"], thread["thread_id"]),
+            "SELECT message_id,channel_id FROM tier_poll_messages WHERE proposal_id=? AND guild_id=? AND status!='removed' ORDER BY channel_id=? DESC LIMIT 1",
+            (proposal["id"], panel["guild_id"], panel["channel_id"]),
         ).fetchone()
         if receipt:
             lines.append(
-                f"**Proposta atual:** [abrir votação](https://discord.com/channels/{panel['guild_id']}/{thread['thread_id']}/{receipt[0]})."
+                f"**Proposta atual:** [abrir votação](https://discord.com/channels/{panel['guild_id']}/{receipt[1]}/{receipt[0]})."
             )
     if thread:
         approved = store.rows(
@@ -269,10 +269,18 @@ def poll_embed(store, catalog, proposal):
         if before
         else f"{name} deve ficar no tier {'Meta' if detail['tier'] == 'META' else detail['tier']}?"
     )
+    state = POLL_STATES.get(proposal["status"], "Encerrada")
+    active = proposal["status"] in ("open", "queued")
     embed = discord.Embed(
-        title=safe(question, 250),
+        title=safe(question if active else f"{state} · {name}", 250),
         description=safe(detail["reason"], 700),
-        color=0x960D16,
+        color=(
+            0x960D16
+            if active
+            else 0x27864A
+            if proposal["status"] == "approved"
+            else 0x68727E
+        ),
     )
     base = store.rows(
         "SELECT ranking FROM tier_publications WHERE id=?",
@@ -326,11 +334,15 @@ def poll_embed(store, catalog, proposal):
         if proposal["status"] in ("open", "queued")
         else proposal["outcome"]
     )
-    state = POLL_STATES.get(proposal["status"], "Encerrada")
     if proposal["status"] in ("open", "queued"):
-        value = (
-            f"**{sum(counts.values())} participantes.** Escolhas reveladas ao encerrar."
+        total = sum(counts.values())
+        remaining = max(0, 5 - total)
+        participation = (
+            f"Faltam {remaining} para o mínimo."
+            if remaining
+            else "Mínimo de participantes atingido."
         )
+        value = f"**{total} participantes.** {participation} Escolhas reveladas ao encerrar."
     else:
         value = f"**Aprovar:** {counts.get('approve', 0)} · **Manter:** {counts.get('keep', 0)} · **Mais testes:** {counts.get('test', 0)}"
     embed.add_field(name=state, value=value, inline=False)

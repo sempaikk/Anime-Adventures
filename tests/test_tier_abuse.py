@@ -45,7 +45,7 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
         view = PollView(self.app)
 
         async def click(n):
-            i = self.interaction(admin=False, user=8, channel=self.env.thread)
+            i = self.interaction(admin=False, user=8, channel=self.env.channel)
             i.message = SimpleNamespace(id=int(receipt["message_id"]))
             await view.cast(i, ("approve", "keep", "test")[n % 3])
 
@@ -76,7 +76,7 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
         await self.app.poll_loop.coro(self.app)
         receipt = self.app.store.poll_messages()[0]
         self.now += 600
-        i = self.interaction(admin=False, user=8, channel=self.env.thread)
+        i = self.interaction(admin=False, user=8, channel=self.env.channel)
         i.message = SimpleNamespace(id=int(receipt["message_id"]))
         with self.assertRaisesRegex(ValueError, "terminou"):
             await PollView(self.app).cast(i, "approve")
@@ -298,7 +298,7 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
         proposal = self.app.store.active_proposal()
         receipt = self.app.store.poll_messages()[0]
         for user in range(8, 13):
-            i = self.interaction(admin=False, user=user, channel=self.env.thread)
+            i = self.interaction(admin=False, user=user, channel=self.env.channel)
             i.message = SimpleNamespace(id=int(receipt["message_id"]))
             await PollView(self.app).cast(i, "approve")
         self.now += 600
@@ -309,7 +309,11 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
             self.app.store.latest()["ranking"], [{"unit_id": "daki", "tier": "S"}]
         )
         self.assertEqual(self.app.store.panels()[0]["message_id"], panel["message_id"])
-        result = self.env.partial(self.env.thread, int(receipt["message_id"]))
+        archived = self.app.store.rows(
+            "SELECT * FROM tier_poll_messages WHERE proposal_id=? AND channel_id=?",
+            (proposal["id"], str(self.env.thread.id)),
+        )[0]
+        result = self.env.partial(self.env.thread, int(archived["message_id"]))
         self.assertIn("Aprovada", str(result.embeds[0].to_dict()))
         self.app.store.rollback(
             self.app.store.latest()["id"],
@@ -318,7 +322,7 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
         )
         await self.app.panel_loop.coro(self.app)
         self.assertEqual(self.app.store.latest()["ranking"], [])
-        self.assertEqual(len([p for cid, p in self.env.payloads if cid == 10]), 1)
+        self.assertEqual(len([p for cid, p in self.env.payloads if cid == 10]), 2)
         self.assertEqual(
             len(self.app.store.rows("SELECT * FROM tier_audit_messages")), 1
         )

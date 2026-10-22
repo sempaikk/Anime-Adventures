@@ -2,14 +2,16 @@
 
 Tier list global com retratos originais, análise de relatos e decisões da comunidade. **Somente dois comandos, sem argumentos:**
 
-- **`/tierlist`** — exclusivo de quem tem **Administrador** ou **Gerenciar servidor**; publica ou confere o painel. Membros acompanham a imagem e participam pelos botões do tópico.
+- **`/tierlist`** — exclusivo de quem tem **Administrador** ou **Gerenciar servidor**; publica ou confere o painel. Membros votam no canal da imagem e usam o tópico para histórico, ajuda e sugestões de retrato.
 - **`/chatglobal`** — responde **Em breve.** Nenhuma conversa é apagada ou retransmitida por esse comando.
 
 ## Um canal, uma imagem e um tópico
 
-O administrador usa `/tierlist` em um canal de texto. O bot publica **somente um PNG**, sem texto, embed ou botões na mensagem pública, e cria o tópico **Votações e histórico** ligado a ela. Repetir o comando reutiliza esse conjunto, inclusive quando várias pessoas executam juntas. O painel oficial existente é preservado se o comando for usado em outro canal.
+O administrador usa `/tierlist` em um canal de texto. A mensagem permanente é **somente um PNG**, sem texto, embed ou botões, com o tópico **Votações e histórico** ligado a ela. Quando há uma proposta válida, uma enquete temporária aparece no mesmo canal, com motivo, posições antes/depois, condições, ressalva, fontes, prazo e botões para votar. Oferece atalhos para a imagem e o histórico, sem ping coletivo. Repetir o comando reutiliza o conjunto, inclusive em execuções concorrentes. O painel oficial existente é preservado se o comando for usado em outro canal.
 
-O tópico contém um índice editável, propostas, votações, resultados e revisões. O índice oferece **Sugerir imagem**, **Meus envios**, **Como funciona** e atalhos para decisões recentes. A classificação é apresentada somente na imagem, sem exportação textual de posições. O único TXT público é **retratos-pendentes.txt**, com as formas que precisam de foto; ele se atualiza após aprovações/restaurações e desaparece quando não há pendências. O resultado aparece na própria proposta encerrada. O canal principal continua com a mesma imagem editada; não há botão de histórico nela nem segundo canal obrigatório.
+O tópico contém o índice editável, resultados completos e revisões. O índice oferece **Sugerir imagem**, **Meus envios**, **Como funciona** e atalhos para a votação aberta e decisões recentes. Ao encerrar, o bot desativa os votos e salva a proposta completa e seu resultado no tópico. O aviso do canal permanece por dois minutos e só é removido após confirmar o histórico. Falha de arquivo, acesso ou limpeza preserva o aviso encerrado para uma nova tentativa. Enquetes anteriores a essa atualização terminam no local original, sem duplicar votos ou renovar o prazo.
+
+A classificação é apresentada somente na imagem, sem exportação textual de posições. O único TXT público é **retratos-pendentes.txt**, com as formas que precisam de foto; ele se atualiza após aprovações/restaurações e desaparece quando não há pendências. O canal retorna à imagem depois da limpeza das enquetes; a própria imagem não recebe botão de histórico e não há segundo canal obrigatório.
 
 Os retratos mantêm os pixels originais, sem ampliação artificial ou geração de personagens. A grade segue **Meta, S, A, B, C, D e E**, com ordem da esquerda para a direita e linhas que crescem. **A imagem não tem rodapé técnico.** A data da classificação fica no índice; contadores, versões e conexão ficam no diagnóstico exclusivo do dono. O arquivo não recebe a descrição artificial de ponto que causava um indicador ALT desnecessário.
 
@@ -34,6 +36,8 @@ O filtro local identifica nomes/formas e contexto do jogo. A IA confirma se a co
 3. **Aprovar / Manter / Mais testes.** São necessários pelo menos **cinco participantes e dois terços a favor** para publicar. Outras situações preservam a lista.
 4. Uma conta conta uma vez na rede e pode trocar seu voto até o prazo. A conta precisa ter pelo menos sete dias. Durante a votação aparece somente o total de participantes; a distribuição é revelada ao encerrar.
 5. Uma aprovação edita a imagem sem esperar o fim da hora. Reiniciar não apaga votos nem renova o prazo. Registro e publicação são atômicos, evitando aplicar uma aprovação duas vezes.
+
+Antes de apurar, a entrega confere pela API que pelo menos uma cópia da votação continua disponível e corresponde à proposta. Isso cobre exclusão ocorrida durante uma desconexão. Indisponibilidade incerta adia a apuração, sem renovar o prazo ou aceitar novos votos. Avisos só são apagados quando o resultado salvo e a própria mensagem do bot passam pela conferência; cópias removidas por moderação não são republicadas como votações. Pendências de arquivo/limpeza aparecem nos controles privados do dono e na conferência do painel do respectivo ADM.
 
 O índice do tópico mostra **quando uma nova análise ficará disponível**, se há relatos aguardando, análise em andamento ou proposta pronta. Com uma votação aberta, mostra também quanto falta para encerrá-la. Os horários usam a contagem relativa do próprio Discord e os prazos persistidos no banco, sem edições por segundo nem chamadas extras à IA. **O contador não garante uma enquete:** sem proposta fundamentada, as posições são preservadas. Pausas de análise não impedem concluir uma votação já aberta.
 
