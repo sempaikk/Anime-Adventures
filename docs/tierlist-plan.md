@@ -26,8 +26,17 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 
 ## Análise e fontes
 
-- Coletar apenas mensagens futuras relevantes de humanos nos canais de texto
-  acessíveis ao bot; sem DMs, webhooks, leitura histórica ou retransmissão.
+- Coletar mensagens novas relevantes de humanos nos canais acessíveis ao bot;
+  sem DMs, webhooks ou retransmissão. Fazer uma leitura inicial automática e
+  limitada de até dez canais públicos, mil mensagens e vinte relatos, sem novo
+  comando, botão de confirmação ou exportação pelo ADM.
+- Usar 09/03/2025 como limite inferior provisório documentado na wiki (Update 20;
+  a entrada posterior 20.4.1 está sem data). Preservar a data original e verificar
+  compatibilidade por conteúdo; idade não determina validade. Retenção de sete
+  dias após a coleta, deduplicação e até três tentativas de leitura interrompida.
+- Registrar leitura concluída para não repetir no reinício; serializar leituras,
+  conferir permissões em andamento, ignorar texto editado/apagado durante a
+  consulta e cancelar o trabalho antes de fechar o banco. Estado privado do ADM.
 - Pré-filtro local de unidades e contexto do jogo; IA confirma relevância.
 - Deduplicação, limites por pessoa/servidor, fila justa e orçamento gratuito.
 - Critérios: contribuição real para o time, custo, condições, funções,

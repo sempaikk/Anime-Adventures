@@ -18,8 +18,9 @@ Antes da divulgação geral:
    A lista começa vazia e depende de relatos válidos e propostas fundamentadas;
    apresentar como classificação comunitária em construção, sem preencher
    posições artificiais para a divulgação.
-4. Publicar o aviso sobre a análise de comentários nos canais acessíveis ao bot
-   e informar que wiki, IA e votos comunitários podem precisar de correção.
+4. Publicar o aviso sobre a análise de comentários e a leitura inicial limitada
+   do histórico público; informar que wiki, IA e votos comunitários podem precisar
+   de correção.
 5. Exportar um backup completo para fora da hospedagem. No primeiro período,
    acompanhar diariamente cota gratuita, disponibilidade, pendências de revisão
    e eventuais relatos; expandir após observar uso estável.
@@ -75,14 +76,27 @@ A verificação por API não reproduz a tela de uma pessoa. Uma olhada em celula
 
 ## Primeira votação e persistência
 
-Os comentários relevantes são identificados nos canais acessíveis ao bot, fora do próprio painel/tópico. A administração informa esse funcionamento aos membros. Não é preciso compartilhar dados pessoais ou enviar comentários artificiais para provocar posições.
+Os comentários relevantes são identificados nos canais acessíveis ao bot, fora do próprio painel/tópico. A leitura inicial do histórico público ocorre automaticamente, sem botão ou arquivo enviado pelo ADM: até dez canais, mil mensagens e vinte relatos aproveitados. O ponto de partida provisório é 09/03/2025 (Update 20 explicitamente datado na wiki; a entrada posterior 20.4.1 está sem data). Uma execução concluída não se repete no reinício. Conferir painel/Diagnóstico mostra o estado privado. A administração informa esse funcionamento aos membros. Não é preciso compartilhar dados pessoais ou enviar comentários artificiais para provocar posições.
 
 Uma proposta real precisa de fonte, condições e ressalva. A votação dura dez minutos desde a primeira publicação confirmada, no máximo uma por hora. Menos de cinco participantes, aprovação abaixo de dois terços ou pedido predominante de mais testes preservam o ranking. O responsável pode revisar um problema e reverter publicação incorreta com justificativa pública.
 
 Reiniciar preserva prazos, votos, classificação e retratos aprovados. Não execute duas instâncias. Confirme que `state` continua após reiniciar e exporte uma geração de backup inteira, incluindo `manifest.json` e `media/`. A restauração offline está no README e é coberta pela suíte.
+
+Os painéis públicos e seus botões permanentes são retomados automaticamente. Não
+é necessário pedir aos administradores que executem `/tierlist` a cada reinício.
+Somente controles privados temporários precisam ser reabertos quando vencem.
 
 ## Limites da validação fora da produção
 
 A suíte local e o GitHub validam o código com APIs simuladas. O ensaio de capacidade compôs os 549 lugares usando posições artificiais apenas fora da produção: aproximadamente 4 MB de PNG. Isso não mede carga simultânea de todos os servidores nem garante os limites de memória específicos da hospedagem.
 
 Na validação de 22/10/2026, o relatório fornecido pelo dono confirmou a conexão real da Groq e os testes da API; a captura de tela confirmou um clique humano no callback de voto. Depois, uma execução direta pela API do Discord, sem outra conexão Gateway, confirmou dez mudanças visuais e o download de cada PNG em tópico privado do servidor de teste autorizado. A classificação oficial foi preservada. A falha de carregamento das bibliotecas do subprocesso foi reproduzida por teste de regressão. Após atualizar a hospedagem, rode Verificação completa para registrar o resultado da nova versão naquele ambiente. A chave Groq permanece somente na hospedagem.
+
+O ajuste de permissões, ferramentas de membros e leitura automática passou em
+**421 testes locais**, incluindo migração do banco, retenção após a coleta,
+histórico de 2025, ausência/perda de permissões, deduplicação, edição/exclusão,
+reinício, limites de leitura, timeout e encerramento. Um teste adicional leu
+**uma mensagem real de um canal público** do servidor de teste pela API: nenhum
+relato foi aproveitado nessa amostra. Usou banco temporário, nenhuma chamada
+à Groq, nenhuma conexão Gateway e nenhuma publicação no Discord. Confirma o
+caminho de consulta, sem afirmar validação semântica de todos os relatos reais.

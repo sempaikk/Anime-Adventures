@@ -69,6 +69,8 @@ class CommunityBot(commands.Bot):
         self.analysis_lock = asyncio.Lock()
         self.verification_lock = asyncio.Lock()
         self.verification_tasks = set()
+        self.history_import_lock = asyncio.Lock()
+        self.active_history_import = None
         self.image_slots = asyncio.Semaphore(1)
         self.upload_slots = self.image_slots
         self.guild_locks = {}
@@ -144,6 +146,7 @@ class CommunityBot(commands.Bot):
         )
         await self.tree.sync()
         for loop in (
+            self.history_loop,
             self.analysis_loop,
             self.poll_loop,
             self.panel_loop,
@@ -199,6 +202,9 @@ class CommunityBot(commands.Bot):
         self.guild_locks.pop(guild.id, None)
 
     async def on_message(self, message):
+        self.collect_message(message)
+
+    def collect_message(self, message):
         if (
             not message.guild
             or message.author.bot
@@ -233,16 +239,20 @@ class CommunityBot(commands.Bot):
         if not units:
             return
         self.store.register_guild(message.guild.id)
-        self.store.ingest(
+        created_at = getattr(message, "created_at", None)
+        return self.store.ingest(
             message.id,
             message.author.id,
             message.guild.id,
             channel.id,
             message.content,
             units,
+            sent_at=created_at.timestamp() if created_at is not None else None,
         )
 
     async def on_raw_message_delete(self, event):
+        if self.active_history_import:
+            self.active_history_import.invalidate(event)
         with self.store.connection:
             self.store.connection.execute(
                 "DELETE FROM tier_comments WHERE message_id=?", (str(event.message_id),)
@@ -259,6 +269,8 @@ class CommunityBot(commands.Bot):
 
     async def on_raw_message_edit(self, event):
         if "content" in event.data:
+            if self.active_history_import:
+                self.active_history_import.invalidate(event)
             with self.store.connection:
                 self.store.connection.execute(
                     "DELETE FROM tier_comments WHERE message_id=?",
@@ -304,6 +316,8 @@ class CommunityBot(commands.Bot):
             if channel
             and not getattr(channel.permissions_for(channel.guild.me), flag, False)
         ]
+        from tier_history import history_status
+
         return (
             "**Painel deste servidor**\n"
             + f"[Ver imagem](https://discord.com/channels/{i.guild_id}/{panel['channel_id']}/{panel['message_id']}) · [Votações e histórico](https://discord.com/channels/{i.guild_id}/{thread['thread_id']})\n"
@@ -312,6 +326,8 @@ class CommunityBot(commands.Bot):
                 if missing
                 else "Painel preparado. Se o tópico estiver trancado, destranque para continuar as votações."
             )
+            + "\n**Histórico do jogo:** "
+            + history_status(self.store, i.guild_id)
         )
 
     def diagnostics(self, i):
@@ -321,6 +337,9 @@ class CommunityBot(commands.Bot):
         checked = self.store.get("last_connection_success")
         analysis = self.store.get("last_success")
         text = f"### Diagnóstico\n**Classificação:** versão {latest['id']} · {len(latest['ranking'])} unidades.\n**IA:** chave {key}.\n**Último teste de conexão válido:** {moment(float(checked)) if checked else 'ainda não realizado'}.\n**Última análise válida:** {moment(float(analysis)) if analysis else 'ainda não realizada'}.\n**Wiki:** {self.wiki.status}; {len(self.analyzer.evidence.sources)} referências.\n**Imagens para revisão:** {len(self.media.pending())}.\n**Banco:** {self.store.path.stat().st_size // 1024} KB.\n**Armazenamento:** {self.health.storage_level}."
+        from tier_history import history_status
+
+        text += "\n**Histórico do jogo:** " + history_status(self.store, i.guild_id)
         thread = self.store.thread(i.guild_id)
         if thread:
             text += f"\n**Tópico:** {thread['status']}."
@@ -657,6 +676,7 @@ class CommunityBot(commands.Bot):
             self.health.storage_level == "critical"
             or not self.store.thread_targets()
             or self.analysis_lock.locked()
+            or self.history_import_lock.locked()
         ):
             return
         try:
@@ -668,6 +688,19 @@ class CommunityBot(commands.Bot):
 
     @analysis_loop.before_loop
     async def analysis_ready(self):
+        await self.wait_until_ready()
+
+    @tasks.loop(seconds=30)
+    async def history_loop(self):
+        from tier_history import scan_next
+
+        try:
+            await scan_next(self)
+        except Exception as error:
+            log.warning("Leitura inicial adiada: %s", type(error).__name__)
+
+    @history_loop.before_loop
+    async def history_ready(self):
         await self.wait_until_ready()
 
     @tasks.loop(minutes=15)
@@ -973,6 +1006,7 @@ class CommunityBot(commands.Bot):
         if checks:
             await asyncio.gather(*checks, return_exceptions=True)
         for loop in (
+            self.history_loop,
             self.analysis_loop,
             self.poll_loop,
             self.panel_loop,

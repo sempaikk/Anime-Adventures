@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import math
 import hmac
 import json
 import secrets
@@ -107,6 +108,7 @@ class TierStore:
         """)
         self._column("tier_proposals", "opened_at", "REAL")
         self._column("tier_comments", "attempts", "INTEGER NOT NULL DEFAULT 0")
+        self._column("tier_comments", "sent_at", "REAL")
         # Opening times of pre-migration polls are already running; never reset their clock.
         self.connection.execute(
             "UPDATE tier_proposals SET opened_at=created_at WHERE status='open' AND opened_at IS NULL"
@@ -149,6 +151,9 @@ class TierStore:
 
     def remove_guild(self, guild_id):
         with self.connection:
+            self.connection.execute(
+                "DELETE FROM tier_meta WHERE key=?", (f"history-import:{guild_id}",)
+            )
             for table in (
                 "tier_guilds",
                 "tier_threads",
@@ -312,7 +317,9 @@ class TierStore:
                 "DELETE FROM tier_comments WHERE user_id=?", (str(user_id),)
             )
 
-    def ingest(self, message_id, user_id, guild_id, channel_id, body, units):
+    def ingest(
+        self, message_id, user_id, guild_id, channel_id, body, units, *, sent_at=None
+    ):
         if not self.guild_registered(guild_id) or not units:
             return False
         if not 12 <= len(body) <= 4000:
@@ -322,6 +329,13 @@ class TierStore:
         if shutil.disk_usage(self.path.parent).free < 16 * 1024 * 1024:
             return False
         now = self.clock()
+        sent_at = now if sent_at is None else sent_at
+        if (
+            type(sent_at) not in (int, float)
+            or not math.isfinite(sent_at)
+            or not 0 <= sent_at <= now
+        ):
+            return False
         if (
             self.connection.execute("SELECT COUNT(*) FROM tier_comments").fetchone()[0]
             >= 10000
@@ -367,7 +381,7 @@ class TierStore:
         ).hexdigest()[:24]
         with self.connection:
             cursor = self.connection.execute(
-                "INSERT OR IGNORE INTO tier_comments(message_id,user_id,actor_key,guild_id,channel_id,body,units,created_at,processed) VALUES(?,?,?,?,?,?,?,?,0)",
+                "INSERT OR IGNORE INTO tier_comments(message_id,user_id,actor_key,guild_id,channel_id,body,units,created_at,sent_at,processed) VALUES(?,?,?,?,?,?,?,?,?,0)",
                 (
                     str(message_id),
                     str(user_id),
@@ -377,6 +391,7 @@ class TierStore:
                     body,
                     json.dumps(sorted(units)),
                     now,
+                    sent_at,
                 ),
             )
             if cursor.rowcount:
