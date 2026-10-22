@@ -405,6 +405,39 @@ class HostingCase(unittest.TestCase):
             await verify(self.app, i)
         self.assertEqual(self.env.payloads, [])
 
+    async def test_host_report_distinguishes_running_code_from_files_changed_without_restart(
+        self,
+    ):
+        self.backend.enabled = True
+        self.backend.analyze.return_value = ({"changes": []}, 50)
+        i = self.interaction()
+        i.edit_original_response = AsyncMock()
+        installed = {
+            "version": "synthetic-new-version",
+            "fingerprint": self.app.build["fingerprint"],
+            "verified": True,
+            "files_checked": 100,
+            "changed_files": [],
+        }
+        with (
+            patch("tier_verify.build_info", return_value=installed),
+            patch(
+                "tier_verify.isolated_suite",
+                new_callable=AsyncMock,
+                return_value=(True, 100, "OK"),
+            ),
+        ):
+            report = await verify(self.app, i)
+        check = next(
+            c
+            for c in report["checks"]
+            if c["name"] == "Versão e integridade dos arquivos"
+        )
+        self.assertEqual(check["result"], "failed")
+        self.assertEqual(report["build"], self.app.build)
+        self.assertEqual(report["installed_build"], installed)
+        self.assertIn("reinicie", check["detail"])
+
     async def test_private_technical_thread_is_preferred_and_owner_is_invited(self):
         self.env.permissions.create_private_threads = True
         i = self.interaction()

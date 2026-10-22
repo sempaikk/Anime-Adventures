@@ -196,16 +196,19 @@ usam Labels, upload e seleção de modo na correção. Os dados técnicos ficam
 privados. Os anexos V2 são lidos dos componentes mesmo quando a API deixa
 Message.attachments vazio; os bytes/hash são conferidos.
 
-- **562 testes automatizados**, incluindo categorias/migração, protocolo V2,
+- **577 testes automatizados**, incluindo categorias/migração, protocolo V2,
   separação por modo, retenção, referência inicial e pacote de IA com fontes
   reais dentro da mesma cota de entrada. O prompt foi compactado, preservando
   as verificações locais e sem aumentar o orçamento gratuito.
-- **17 verificações na API real**, em dois espaços privados autorizados:
+- **20 etapas de verificação**, com a API real em dois espaços privados autorizados
+  e identificação local do pacote:
   índice convertido na mesma mensagem, enquete/atalhos, atualização sem
   duplicação, participantes, resultado arquivado, alteração só em Casual, PNG
   editado/baixado, retenção/limpeza após reinício, dez etapas visuais, cinco
   transições de TXT e cartões V2. A nova conferência removeu cópias administrativas
   legadas/V2, preservou auditoria/posições/votos e confirmou o índice sem links técnicos.
+  O ensaio adicional identificou o pacote e simulou cancelamento/retomada após
+  balanceamento, com resultado no Discord e dados anteriores ao corte rejeitados.
 - Estado temporário com votos artificiais identificados, sem Gateway extra,
   chamadas à Groq ou mudanças na classificação oficial. API não reproduz
   aparência nos aplicativos, seleção humana de arquivo ou qualidade dos

@@ -156,18 +156,28 @@ caminho de consulta, sem afirmar validação semântica de todos os relatos reai
 
 ## Atualização final V2 e modos — 22/10/2026
 
-A suíte atual tem **562 testes**, com UI nativa, privacidade, anexos, seis
+A suíte atual tem **577 testes**, com UI nativa, privacidade, anexos, seis
 categorias, migração, separação por modo e referência inicial. O PNG reúne
 Infinite e Casual; cada modo usa META/Good × Hill/Hybrid, Ground, Support.
 Uma forma aparece uma vez em cada modo.
 
-O ensaio direto confere 17 operações pela API em espaços privados do servidor
+O ensaio direto reúne 20 etapas, com a API real em espaços privados do servidor
 autorizado, com banco temporário: índice convertido na mesma mensagem, enquete
 e atalhos, atualização sem duplicação, resultado arquivado, aprovação só em
 Casual preservando Infinite, PNG editado e baixado, limpeza após reinício, dez
 alterações visuais, cinco transições de TXT, cartões V2 e limpeza de avisos
 administrativos preservando registros internos, posições e votos. Não envia dados à
 Groq nem altera a produção.
+
+Uma etapa identifica o pacote local; as demais exercitam os cenários de integração.
+O fechamento acrescenta registro privado de balanceamentos, pausa persistente,
+corte pela data original dos relatos, cancelamento de enquetes em andamento e
+descarte de resposta da IA iniciada antes da mudança. A simulação na API confirmou
+o resultado cancelado, os votos preservados e a retomada em banco temporário.
+O relatório privado identifica o pacote instalado e a versão em execução;
+divergência de arquivos ou falta de reinício impede aprovar essa conferência.
+O relatório executado pelo dono na hospedagem ainda precisa ser conferido após
+instalar esta versão. Testes diretos da API não executam o processo da hospedagem.
 
 V2 pode guardar arquivos em File/MediaGallery e deixar a lista tradicional
 de anexos vazia. O verificador lê componentes e confere bytes recebidos, sem

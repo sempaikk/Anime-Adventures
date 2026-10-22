@@ -43,6 +43,10 @@ def load_reference(path=REFERENCE):
 
 
 def seed_initial(store, catalog, *, reference=None):
+    from tier_balance import revision
+
+    if revision(store):
+        return  # A pre-update reference must never be reapplied after a game update.
     data = load_reference() if reference is None else reference
     # Validate both lists completely before making any write.
     for rows in data["modes"].values():

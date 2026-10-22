@@ -26,6 +26,7 @@ POLL_STATES = {
     "outdated": "Cancelada · a referência mudou",
     "unavailable": "Cancelada · publicação indisponível",
     "suspended": "Suspensa pelo responsável · posição preservada",
+    "game-updated": "Cancelada · atualização do jogo",
 }
 
 
@@ -355,14 +356,28 @@ def poll_embed(store, catalog, proposal):
     else:
         value = f"**Aprovar:** {counts.get('approve', 0)} · **Manter:** {counts.get('keep', 0)} · **Mais testes:** {counts.get('test', 0)}"
     embed.add_field(name=state, value=value, inline=False)
+    result_text = {
+        "approved": "A proposta atingiu o mínimo de participantes e dois terços a favor. A mudança foi aplicada à imagem.",
+        "maintained": "A proposta não atingiu dois terços a favor. A classificação foi mantida.",
+        "needs-tests": "O resultado pede mais testes. A mudança não foi aplicada à imagem.",
+        "not-enough-votes": f"Participaram {sum(counts.values())} de pelo menos 5 pessoas necessárias. A classificação foi mantida.",
+        "outdated": "A classificação ou as fontes mudaram antes da conclusão. Esta proposta não foi aplicada.",
+        "unavailable": "A publicação da enquete deixou de estar disponível. Esta proposta não foi aplicada.",
+        "suspended": "O responsável suspendeu esta proposta. A classificação foi mantida.",
+        "game-updated": "O jogo recebeu uma atualização. Esta proposta foi cancelada para evitar uma decisão com dados anteriores. A classificação foi preservada.",
+    }.get(proposal["status"])
+    if result_text:
+        embed.add_field(name="Resultado", value=result_text, inline=False)
     if proposal["status"] == "open":
-        embed.add_field(
+        embed.insert_field_at(
+            0,
             name="Prazo",
             value=f"Encerra <t:{int(proposal['closes_at'])}:R> · <t:{int(proposal['closes_at'])}:t>\nMínimo de 5 participantes e dois terços a favor.",
             inline=False,
         )
     elif proposal["status"] == "queued":
-        embed.add_field(
+        embed.insert_field_at(
+            0,
             name="Prazo",
             value="10 minutos a partir da publicação confirmada.",
             inline=False,

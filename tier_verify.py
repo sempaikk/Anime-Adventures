@@ -17,6 +17,7 @@ from community_domain import ROOT
 from tier_image import image_file
 from tier_store import TierStore
 from tier_views import GuardedView, PollView, reply
+from tier_release import build_info, label as build_label
 
 # The subprocess has no production credentials, dotenv imports or external network.
 BOOTSTRAP = """
@@ -218,6 +219,8 @@ class VerificationClick(GuardedView):
 
 def summary(report):
     lines = ["## Verificação da tier list"]
+    if report.get("build"):
+        lines.append("**Versão em execução:** " + build_label(report["build"]))
     labels = {
         "passed": "Passou",
         "failed": "Falhou",
@@ -261,6 +264,26 @@ async def _verify(bot, i):
             "writes_production_ranking": False,
             "ranking_before": bot.store.board()["id"],
         }
+        installed = build_info()
+        running = getattr(bot, "build", installed)
+        report["build"] = running
+        report["installed_build"] = installed
+        healthy_build = (
+            installed["verified"]
+            and running["verified"]
+            and installed.get("fingerprint") == running.get("fingerprint")
+            and installed["version"] == running["version"]
+        )
+        report["checks"].append(
+            {
+                "name": "Versão e integridade dos arquivos",
+                "result": "passed" if healthy_build else "failed",
+                "level": "hospedagem",
+                "detail": f"{build_label(installed)} · {installed['files_checked']} arquivos conferidos."
+                if healthy_build
+                else f"Em execução: {build_label(running)}; instalado: {build_label(installed)}. Atualize o conjunto completo de arquivos e reinicie; o pacote ou a versão carregada diverge.",
+            }
+        )
 
         async def progress(text):
             await edit(i, content="### Verificação em andamento\n" + text, view=None)

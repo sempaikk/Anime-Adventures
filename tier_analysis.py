@@ -211,6 +211,10 @@ class TierAnalyzer:
         self.running = False
 
     def packet(self):
+        import tier_balance
+
+        if tier_balance.paused(self.store):
+            return None, []
         pending = [
             c
             for c in self.store.pending(64)
@@ -270,6 +274,13 @@ class TierAnalyzer:
             },
             "past_decisions": self.store.decisions(),
         }
+        update = tier_balance.state(self.store)
+        if update:
+            packet["game_update"] = {
+                "label": update["label"],
+                "effective_at": update["effective_at"],
+            }
+            packet["game_revision"] = update["revision"]
 
         # Tighten excerpts and comment text, rather than truncate JSON or drop citations silently.
         def size():
@@ -289,6 +300,12 @@ class TierAnalyzer:
         return packet, selected
 
     def validate(self, response, packet, comments):
+        import tier_balance
+
+        if tier_balance.paused(self.store) or packet.get(
+            "game_revision", ""
+        ) != tier_balance.revision(self.store):
+            raise ValueError("A atualização do jogo mudou durante a análise.")
         if (
             not isinstance(response, dict)
             or set(response) != {"changes"}
@@ -466,6 +483,11 @@ class TierAnalyzer:
         return ranking, explanations, details
 
     async def run(self):
+        import tier_balance
+
+        if tier_balance.paused(self.store):
+            self.store.set("analysis_status", "game-update")
+            return False
         now = self.store.clock()
         if not self.backend.enabled:
             self.store.set("analysis_status", "not-connected")
@@ -501,6 +523,14 @@ class TierAnalyzer:
             result, usage = await self.backend.analyze(packet)
             budget["tokens"] += usage - worst
             self.store.set("budget", json.dumps(budget))
+            if tier_balance.paused(self.store) or packet.get(
+                "game_revision", ""
+            ) != tier_balance.revision(self.store):
+                self.store.set(
+                    "analysis_status",
+                    "game-update" if tier_balance.paused(self.store) else "waiting",
+                )
+                return False
             if packet.get("source_version") != self.evidence.version:
                 raise ValueError("As fontes mudaram durante a análise.")
             if self.source_guard is not None:
@@ -514,6 +544,7 @@ class TierAnalyzer:
                 comments=comments,
                 details=details,
                 mode=next(iter(details.values()))["mode"] if details else "infinite",
+                game_revision=packet.get("game_revision", ""),
             )
             if not changed:
                 self.store.set("analysis_status", "no-proposal")

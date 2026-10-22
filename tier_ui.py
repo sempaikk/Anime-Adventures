@@ -211,8 +211,11 @@ class Card(discord.ui.LayoutView):
                         else "Administração deste servidor",
                         1: "Correções",
                         2: "Testes",
+                        3: "Atualizações do jogo",
                     }
-                    controls.add_item(discord.ui.TextDisplay("### " + titles[row]))
+                    controls.add_item(
+                        discord.ui.TextDisplay("### " + titles.get(row, "Outras ações"))
+                    )
                 controls.add_item(discord.ui.ActionRow(*rows[row]))
             if rows:
                 self.add_item(controls)

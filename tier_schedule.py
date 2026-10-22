@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+import tier_balance
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
@@ -48,6 +49,8 @@ def poll_progress(
     last_result = store.get("analysis_status") or "waiting"
     enabled = ai_enabled if ai_enabled is not None else last_result != "not-connected"
     proposal = store.active_proposal()
+    if tier_balance.paused(store):
+        return PollProgress("game-update")
     if proposal and proposal["status"] == "queued":
         return PollProgress("queued")
     if not proposal and analyzing:
@@ -68,6 +71,8 @@ def poll_progress(
 
 
 def progress_text(progress):
+    if progress.stage == "game-update":
+        return "**Análise:** pausada para conferir as mudanças da atualização do jogo.\n**Classificação:** posições anteriores preservadas; novas enquetes voltam após a conferência das fontes."
     if progress.stage == "queued":
         return "**Próxima enquete:** proposta pronta; preparando a publicação."
     if progress.stage in ("open", "closing"):

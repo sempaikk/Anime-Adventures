@@ -16,6 +16,7 @@ from contextlib import nullcontext
 from urllib.parse import urlsplit
 
 from tier_categories import TIERS as TIERS, POLICY, MODES, label, is_meta, valid_ranking
+import tier_balance
 
 REQUIRED_TABLES = {
     "tier_meta",
@@ -503,6 +504,7 @@ class TierStore:
             type(sent_at) not in (int, float)
             or not math.isfinite(sent_at)
             or not 0 <= sent_at <= now
+            or sent_at < tier_balance.cutoff(self)
         ):
             return False
         if (
@@ -572,8 +574,8 @@ class TierStore:
 
     def pending(self, limit=16):
         rows = self.rows(
-            "SELECT * FROM (SELECT c.*,ROW_NUMBER() OVER(PARTITION BY c.guild_id ORDER BY c.attempts,c.created_at,c.message_id) AS guild_order FROM tier_comments c JOIN tier_guilds g USING(guild_id) WHERE c.processed=0 AND c.attempts<3 AND c.created_at>=?) WHERE guild_order<=? ORDER BY guild_order,guild_id LIMIT 1000",
-            (self.clock() - 7 * 86400, max(4, limit)),
+            "SELECT * FROM (SELECT c.*,ROW_NUMBER() OVER(PARTITION BY c.guild_id ORDER BY c.attempts,c.created_at,c.message_id) AS guild_order FROM tier_comments c JOIN tier_guilds g USING(guild_id) WHERE c.processed=0 AND c.attempts<3 AND c.created_at>=? AND COALESCE(c.sent_at,c.created_at)>=?) WHERE guild_order<=? ORDER BY guild_order,guild_id LIMIT 1000",
+            (self.clock() - 7 * 86400, tier_balance.cutoff(self), max(4, limit)),
         )
         grouped = {}
         for row in rows:
@@ -605,15 +607,16 @@ class TierStore:
 
     def recent(self):
         return self.rows(
-            "SELECT * FROM tier_comments WHERE created_at>=? ORDER BY created_at DESC LIMIT 200",
-            (self.clock() - 7 * 86400,),
+            "SELECT * FROM tier_comments WHERE created_at>=? AND COALESCE(sent_at,created_at)>=? ORDER BY created_at DESC LIMIT 200",
+            (self.clock() - 7 * 86400, tier_balance.cutoff(self)),
         )
 
     def still_allowed(self, comments):
         return all(
             self.guild_registered(c["guild_id"])
             and self.connection.execute(
-                "SELECT 1 FROM tier_comments WHERE message_id=?", (c["message_id"],)
+                "SELECT 1 FROM tier_comments WHERE message_id=? AND COALESCE(sent_at,created_at)>=?",
+                (c["message_id"], tier_balance.cutoff(self)),
             ).fetchone()
             for c in comments
         )
@@ -849,7 +852,7 @@ class TierStore:
         return self.proposal(rows[0]["id"]) if rows else None
 
     def may_propose(self):
-        if self.active_proposal():
+        if tier_balance.paused(self) or self.active_proposal():
             return False
         return self.clock() >= self.next_proposal_at()
 
@@ -868,8 +871,8 @@ class TierStore:
     def has_pending_comments(self):
         return (
             self.connection.execute(
-                "SELECT 1 FROM tier_comments c JOIN tier_guilds g USING(guild_id) WHERE c.processed=0 AND c.attempts<3 AND c.created_at>=? LIMIT 1",
-                (self.clock() - 7 * 86400,),
+                "SELECT 1 FROM tier_comments c JOIN tier_guilds g USING(guild_id) WHERE c.processed=0 AND c.attempts<3 AND c.created_at>=? AND COALESCE(c.sent_at,c.created_at)>=? LIMIT 1",
+                (self.clock() - 7 * 86400, tier_balance.cutoff(self)),
             ).fetchone()
             is not None
         )
@@ -884,7 +887,14 @@ class TierStore:
         model,
         comments,
         mode="infinite",
+        game_revision=None,
     ):
+        if tier_balance.paused(self) or (
+            game_revision is not None and game_revision != tier_balance.revision(self)
+        ):
+            raise ValueError(
+                "O jogo foi atualizado. Aguarde a conferência das fontes para novas propostas."
+            )
         self._require_active(ranking, details)
         if any(detail.get("mode", mode) != mode for detail in details.values()):
             raise ValueError("A proposta mistura modos de jogo diferentes.")
@@ -912,12 +922,23 @@ class TierStore:
             return False
         with self.connection:
             self.connection.execute("BEGIN IMMEDIATE")
+            if tier_balance.paused(self) or (
+                game_revision is not None
+                and game_revision != tier_balance.revision(self)
+            ):
+                raise ValueError(
+                    "A atualização do jogo mudou antes de registrar a proposta."
+                )
             if not self.may_propose():
                 return False
             for uid, detail in details.items():
                 last = self.rows(
-                    "SELECT * FROM tier_proposals WHERE status='approved' AND created_at>? AND mode=? ORDER BY id DESC LIMIT 24",
-                    (now - 86400, mode),
+                    "SELECT * FROM tier_proposals WHERE status='approved' AND created_at>? AND mode=? AND id>? ORDER BY id DESC LIMIT 24",
+                    (
+                        max(now - 86400, tier_balance.decision_cutoff(self)),
+                        mode,
+                        tier_balance.previous_proposal(self),
+                    ),
                 )
                 for row in last:
                     old_detail = json.loads(row["details"]).get(uid)
@@ -932,8 +953,12 @@ class TierStore:
                         return False
             # Do not repeat the same unresolved comparison every hour without a new outcome.
             for previous in self.rows(
-                "SELECT ranking,status,details FROM tier_proposals WHERE created_at>? AND mode=?",
-                (now - 86400, mode),
+                "SELECT ranking,status,details FROM tier_proposals WHERE created_at>? AND mode=? AND id>?",
+                (
+                    max(now - 86400, tier_balance.decision_cutoff(self)),
+                    mode,
+                    tier_balance.previous_proposal(self),
+                ),
             ):
                 if (
                     json.loads(previous["ranking"]) == ranking
@@ -1129,7 +1154,8 @@ class TierStore:
 
     def decisions(self):
         rows = self.rows(
-            "SELECT id,status,outcome,details,mode FROM tier_proposals WHERE status NOT IN ('open','queued') ORDER BY id DESC LIMIT 2"
+            "SELECT id,status,outcome,details,mode FROM tier_proposals WHERE status NOT IN ('open','queued','game-updated') AND id>? ORDER BY id DESC LIMIT 2",
+            (tier_balance.previous_proposal(self),),
         )
         return [
             {

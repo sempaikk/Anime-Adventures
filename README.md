@@ -23,6 +23,22 @@ As mensagens de enquete, resultado, ajuda e controles usam **Components V2**, co
 
 ## Análise e votação global
 
+Os resultados explicam por que a proposta foi aplicada, mantida, cancelada ou
+encerrada sem participantes suficientes. O prazo aparece antes dos detalhes
+da enquete. Mensagens de falha de confirmação orientam conferir o estado antes
+de reenviar, sem afirmar incorretamente que uma ação já salva foi desfeita.
+
+O responsável tem **Atualizações do jogo** nos controles privados. Registrar
+um balanceamento exige conferir uma prévia; pausa propostas, cancela enquetes
+em andamento e impede relatos anteriores ao corte de sustentar novas análises.
+Posições, retratos e votos são preservados. A retomada exige conferência das
+fontes. ADMs dos servidores não precisam configurar esse processo. Consulte
+[o procedimento de atualização e verificação da hospedagem](docs/game-updates.md).
+
+A **Verificação completa** identifica a versão do programa e confere os arquivos
+do pacote e a versão carregada ao iniciar. O manifesto fica no repositório;
+tokens, `.env` e bancos dos jogadores não entram nessa identificação.
+
 O bot considera **mensagens novas** sobre Anime Adventures nos canais aos quais tem acesso. Ao entrar no servidor, também faz **uma leitura inicial automática e limitada do histórico público**. Não exige exportar arquivos, escolher canais nem confirmar uma importação. A administração comunica esse funcionamento à comunidade e controla o acesso do bot pelas permissões do Discord.
 
 Na leitura inicial, o bot busca as mensagens mais recentes em até **dez canais públicos**, até **cem mensagens por canal**, **mil mensagens lidas** e **vinte relatos aproveitados**. Ignora canais adultos, canais privados, tópicos e o canal do painel. Aplica os mesmos filtros de relevância, identidade, repetição e frequência das mensagens novas; não envia todo o histórico à IA nem altera posições por coletar um relato. A data original acompanha os comentários na análise; antiguidade, sozinha, não significa desatualização.

@@ -22,6 +22,8 @@ from tier_views import (
     ReportModal,
 )
 from tier_image import poll_embed
+from tier_balance_views import BalancePanel, UpdateModal, ResumeModal
+import tier_balance
 
 
 class NativeProtocolCase(unittest.IsolatedAsyncioTestCase):
@@ -259,11 +261,75 @@ class NativeRuntimeCase(unittest.IsolatedAsyncioTestCase):
             ReportModal(self.app, self.interaction(), 1),
             CorrectionModal(self.app, self.interaction()),
             CorrectionModal(self.app, self.interaction(), proposal_id=1),
+            UpdateModal(self.app, self.interaction()),
+            ResumeModal(self.app, self.interaction()),
         ):
             self.assertEqual(form.to_components()[0]["type"], 18)
             for part in form.to_components():
                 self.assertLessEqual(len(part["label"]), 45)
                 self.assertLessEqual(len(part.get("description", "")), 100)
+
+    async def test_game_update_controls_are_owner_only_and_preview_changes_before_writing(
+        self,
+    ):
+        i = self.interaction()
+        controls = AdminView(self.app, i)
+        self.assertTrue(BalancePanel(self.app, i).resume.disabled)
+        self.assertTrue(
+            any(item.custom_id == "game-update" for item in controls.children)
+        )
+        admin = AdminView(self.app, self.interaction(user=8))
+        self.assertFalse(
+            any(item.custom_id == "game-update" for item in admin.children)
+        )
+        modal = UpdateModal(self.app, i)
+        modal.name._value = "Atualização artificial"
+        modal.date._value = "22/10/2026 18:00"
+        modal.reason._value = (
+            "Motivo artificial exclusivamente para testar esta confirmação."
+        )
+        await modal.on_submit(i)
+        self.assertEqual(tier_balance.state(self.app.store), {})
+        self.assertTrue(i.response.send_message.await_args.kwargs["ephemeral"])
+        preview = i.response.send_message.await_args.kwargs["view"].controller
+        with self.assertRaises(ValueError):
+            await preview.confirm.callback(self.interaction(user=8))
+        own = self.interaction()
+        own.response.edit_message = AsyncMock()
+        await preview.confirm.callback(own)
+        self.assertTrue(tier_balance.paused(self.app.store))
+        self.assertFalse(BalancePanel(self.app, own).resume.disabled)
+        with self.assertRaisesRegex(ValueError, "encerrada"):
+            await preview.cancel.callback(own)
+        self.assertEqual(self.app.store.rows("SELECT * FROM tier_audit_messages"), [])
+
+    async def test_resume_refuses_sources_changed_while_the_form_was_open(self):
+        tier_balance.register(
+            self.app.store,
+            expected="",
+            label="Teste de atualização",
+            effective_at=self.now - 10,
+            reason="Motivo artificial da atualização para o teste.",
+            actor=7,
+        )
+        modal = ResumeModal(self.app, self.interaction())
+        modal.reason._value = (
+            "Conferência artificial das fontes neste teste de retomada."
+        )
+        self.app.analyzer.evidence.version = "changed-during-form"
+        with self.assertRaisesRegex(ValueError, "fontes mudaram"):
+            await modal.on_submit(self.interaction())
+        self.assertTrue(tier_balance.paused(self.app.store))
+
+    async def test_unexpected_modal_error_does_not_claim_a_committed_action_was_undone(
+        self,
+    ):
+        modal = UpdateModal(self.app, self.interaction())
+        i = self.interaction()
+        await modal.on_error(i, RuntimeError("artificial confirmation failure"))
+        text = visible_text(i.response.send_message.await_args.kwargs["view"])
+        self.assertIn("confira o estado", text)
+        self.assertNotIn("Nenhuma alteração foi aplicada", text)
 
     async def test_confirmation_is_private_native_and_keeps_vote_deadline(self):
         await self.setup_panel()

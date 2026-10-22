@@ -102,7 +102,9 @@ class HistoryReader:
         report = self.report
         start = report["started_at"]
         before = datetime.fromtimestamp(start, timezone.utc)
-        after = datetime.fromtimestamp(SINCE, timezone.utc)
+        from tier_balance import cutoff
+
+        after = datetime.fromtimestamp(max(SINCE, cutoff(self.bot.store)), timezone.utc)
         for channel in self.channels:
             current = self.current_channel(channel.id)
             if current is None:

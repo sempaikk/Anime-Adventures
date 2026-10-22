@@ -94,6 +94,9 @@ class CommunityBot(commands.Bot):
         self.health = RuntimeHealth(self.is_ready, lambda: self.store.connection)
         self.owner_ids_set = set()
         self.ui_theme = GameTheme()
+        from tier_release import build_info
+
+        self.build = build_info()
         self.register_commands()
 
     def is_owner_id(self, actor):
@@ -142,6 +145,15 @@ class CommunityBot(commands.Bot):
         from tier_seed import seed_initial
 
         seed_initial(self.store, self.catalog)
+        from tier_release import label
+
+        log.info(
+            "Versão %s; arquivos %s.",
+            label(self.build),
+            "conferidos"
+            if self.build["verified"]
+            else "divergentes; confira o diagnóstico",
+        )
         app = await self.application_info()
         await self.ui_theme.refresh(self.http, app.id)
         self.owner_ids_set = {app.team.owner_id if app.team else app.owner.id}
@@ -359,6 +371,8 @@ class CommunityBot(commands.Bot):
         )
 
     def diagnostics(self, i):
+        from tier_release import label
+
         self.require_owner(i)
         latest = self.store.board()
         key = "carregada" if self.analyzer.backend.enabled else "ausente"
@@ -393,6 +407,24 @@ class CommunityBot(commands.Bot):
         if thread:
             text += f"\n**Tópico:** {thread['status']}."
         if self.is_owner_id(i.user.id):
+            text += (
+                "\n**Versão em execução:** "
+                + label(self.build)
+                + (
+                    " · arquivos conferidos na inicialização."
+                    if self.build["verified"]
+                    else " · confira a atualização dos arquivos."
+                )
+            )
+            import tier_balance
+
+            update = tier_balance.state(self.store)
+            if update:
+                text += f"\n**Atualização do jogo:** {safe(update['label'], 80)} · " + (
+                    "aguardando conferência das fontes."
+                    if update["paused"]
+                    else "análise retomada após conferência."
+                )
             text += f"\n**Catálogo:** {len(self.catalog.units)} formas · {max(0, len(self.catalog.units) - len(latest['ranking']))} sem avaliação.\n**Retratos:** revisão {int(self.store.get('media_revision') or 0)}."
             text += f"\n**Pendências de retrato:** {self.portrait_inventory.get().count}; {len(self.catalog.retired)} formas retiradas do catálogo ativo."
             text += f"\n**Backup:** {'falha na última tentativa; confira o armazenamento e exporte a cópia anterior' if self.health.backup_error else 'sem falha registrada'}."

@@ -28,6 +28,8 @@ PLAYER_GUIDE = """## Como funciona a tier list
 
 **Próxima enquete:** o tópico mostra quando uma nova análise ficará disponível e se já existe proposta pronta. O contador não garante uma votação: a análise pode concluir que as posições devem continuar iguais.
 
+**Atualizações do jogo:** as posições anteriores ficam preservadas enquanto as fontes são conferidas. Uma enquete em andamento pode ser cancelada para evitar uma decisão baseada em dados anteriores ao balanceamento.
+
 **Onde votar:** a enquete aparece no canal da imagem. Após encerrar, o resultado fica no tópico; o aviso do canal sai depois de dois minutos e somente com o histórico confirmado. Os votos ficam ocultos até o fim. Sinalizar problema pede revisão, sem acrescentar votos.
 
 **Retratos:** quando houver fotos pendentes, o tópico terá retratos-pendentes.txt com as formas exatas. Sugerir imagem envia a contribuição para revisão do responsável. Trocar retrato não muda posições. Acompanhe em Meus envios.
@@ -47,9 +49,17 @@ class GuardedView(discord.ui.View):
     async def on_error(self, i, error, item):
         if isinstance(error, ValueError):
             await reply(i, str(error))
+        elif isinstance(error, discord.Forbidden):
+            await reply(
+                i,
+                "O Discord negou uma permissão necessária. Peça à administração para conferir o acesso do bot ao canal e ao tópico.",
+            )
         else:
             log.warning("Interface indisponível: %s", type(error).__name__)
-            await reply(i, "Não consegui concluir agora. Tente novamente em instantes.")
+            await reply(
+                i,
+                "Não consegui confirmar o resultado desta ação. Confira o estado nos controles antes de repetir.",
+            )
 
 
 class BoundModal(discord.ui.Modal):
@@ -77,7 +87,8 @@ class BoundModal(discord.ui.Modal):
         else:
             log.warning("Formulário indisponível: %s", type(error).__name__)
             await reply(
-                i, "Não consegui concluir agora. Nenhuma alteração foi aplicada."
+                i,
+                "Não consegui confirmar o resultado do formulário. Reabra os controles e confira o estado antes de reenviar.",
             )
 
 
@@ -403,6 +414,7 @@ class AdminView(PrivateView):
                     "connection-test",
                     "full-verification",
                     "visual-test",
+                    "game-update",
                 ):
                     self.remove_item(item)
             self.diagnosis.label = "Conferir painel"
@@ -476,6 +488,14 @@ class AdminView(PrivateView):
         from tier_preview import open_demo
 
         await open_demo(self.bot, i)
+
+    @discord.ui.button(label="Atualizações do jogo", custom_id="game-update", row=3)
+    async def game_update(self, i, button):
+        self.bot.require_owner(i)
+        from tier_balance_views import BalancePanel
+
+        panel = BalancePanel(self.bot, i)
+        await reply(i, panel.text(), view=panel)
 
 
 class UndoImage(PrivateView):
