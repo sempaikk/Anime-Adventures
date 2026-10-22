@@ -10,6 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import discord
+from tier_ui import edit, payload, message_files
 from PIL import Image, ImageDraw
 
 from community_domain import ROOT
@@ -18,6 +19,7 @@ from tier_image import PanelRenderer, image_file
 from tier_media import MediaLibrary
 from tier_portraits import PortraitInventory
 from tier_store import TierStore
+from tier_categories import ROLES, make_row
 from tier_views import GuardedView, reply
 
 
@@ -37,15 +39,27 @@ class VisualScenario:
         if len(self.units) < 12:
             raise ValueError("Faltam retratos locais para a demonstração completa.")
         a, b, *others = self.units
-        row = lambda uid, tier: {"unit_id": uid, "tier": tier}
-        expanded = [row(b, "META"), *[row(u, "META") for u in others], row(a, "S")]
+        row = lambda uid, tier, role="DAMAGE": make_row(uid, tier, role)
+        expanded = [
+            row(b, "META"),
+            *[
+                row(u, "META", ROLES[index % len(ROLES)])
+                for index, u in enumerate(others)
+            ],
+            row(a, "DAMAGE"),
+        ]
         self.steps = [
             ("Grade vazia", [], 0, 0),
             ("Adicionar personagem ao Meta", [row(a, "META")], 1, 0),
             ("Inserir outro à esquerda", [row(b, "META"), row(a, "META")], 2, 0),
             ("Trocar a ordem no mesmo tier", [row(a, "META"), row(b, "META")], 3, 0),
-            ("Mover um personagem para S", [row(b, "META"), row(a, "S")], 4, 0),
-            ("Expandir a linha para mais de dez retratos", expanded, 5, 0),
+            (
+                "Retirar do Meta e manter em Damage",
+                [row(b, "META"), row(a, "DAMAGE")],
+                4,
+                0,
+            ),
+            ("Expandir Meta e conferir as quatro funções", expanded, 5, 0),
             ("Substituir um retrato sem mudar posições", expanded, 5, 1),
             ("Restaurar o retrato anterior", expanded, 5, 2),
             (
@@ -156,7 +170,8 @@ class VisualDemoView(GuardedView):
         self.previous.disabled = self.index == 0
         self.next.disabled = self.index == len(self.scenario.steps) - 1
         try:
-            await i.edit_original_response(
+            await edit(
+                i,
                 content=f"**Teste visual privado · {self.index + 1}/{len(self.scenario.steps)}**\n{frame['title']}. As posições são artificiais; o ranking e os retratos oficiais continuam preservados.",
                 attachments=[file],
                 view=self,
@@ -211,23 +226,22 @@ async def check_visual_sequence(bot, message):
         file = image_file(frame["png"])
         try:
             await message.edit(
-                content=f"**SIMULAÇÃO · {index + 1}/{len(scenario.steps)}**\n{frame['title']}. Nenhuma posição global foi alterada.",
-                attachments=[file],
+                **payload(
+                    bot=bot,
+                    content=f"**SIMULAÇÃO · {index + 1}/{len(scenario.steps)}**\n{frame['title']}. Nenhuma posição global foi alterada.",
+                    attachments=[file],
+                )
             )
         finally:
             file.close()
         received = await message.channel.fetch_message(message.id)
-        if (
-            received.id != message.id
-            or len(received.attachments) != 1
-            or received.attachments[0].size != len(frame["png"])
-        ):
+        if received.id != message.id or len(message_files(received)) != 1:
             raise ValueError(
                 f"A imagem da etapa {index + 1} não foi confirmada pelo Discord."
             )
-        payload = await received.attachments[0].read()
+        received_bytes = await message_files(received)[0].read()
         checksum = hashlib.sha256(frame["png"]).hexdigest()
-        if hashlib.sha256(payload).hexdigest() != checksum:
+        if hashlib.sha256(received_bytes).hexdigest() != checksum:
             raise ValueError(
                 f"O arquivo recebido na etapa {index + 1} difere da imagem enviada."
             )
@@ -275,24 +289,26 @@ async def check_portrait_sequence(bot, message):
                 )
                 try:
                     await message.edit(
-                        content=f"**SIMULAÇÃO · retratos**\n{title}. Estado temporário, sem alterar imagens ou posições oficiais.",
-                        attachments=[file] if file else [],
+                        **payload(
+                            bot=bot,
+                            content=f"**SIMULAÇÃO · retratos**\n{title}. Estado temporário, sem alterar imagens ou posições oficiais.",
+                            attachments=[file] if file else [],
+                        )
                     )
                 finally:
                     if file:
                         file.close()
                 received = await message.channel.fetch_message(message.id)
-                if received.id != message.id or len(received.attachments) != bool(
+                if received.id != message.id or len(message_files(received)) != bool(
                     expected
                 ):
                     raise ValueError(
                         "A atualização do anexo de retratos não foi confirmada."
                     )
                 if expected:
-                    attachment = received.attachments[0]
+                    attachment = message_files(received)[0]
                     if (
                         attachment.filename != "retratos-pendentes.txt"
-                        or attachment.size != len(needs.blob)
                         or hashlib.sha256(await attachment.read()).hexdigest()
                         != needs.checksum
                     ):

@@ -8,6 +8,8 @@ import discord
 
 from tier_image import poll_embed
 from tier_views import PollView
+from tier_ui import payload, visible_text
+from tier_style import theme_for
 
 log = logging.getLogger("tierlist.delivery")
 PUBLIC_RESULT_SECONDS = 120
@@ -15,9 +17,10 @@ ACTIVE = ("open", "queued")
 
 
 def poll_marker(number, message):
+    marker = f"Proposta #{number} · decisão da comunidade"
     return any(
-        embed.footer.text and embed.footer.text.startswith(f"Proposta #{number} ·")
-        for embed in message.embeds
+        line.strip().removeprefix("-# ") == marker
+        for line in visible_text(message).splitlines()
     )
 
 
@@ -127,6 +130,7 @@ async def publish_pending(bot):
                     published_at=published,
                 )
         except (discord.HTTPException, ValueError, TimeoutError) as error:
+            theme_for(bot).observe_error(error)
             log.warning("Enquete adiada: %s", type(error).__name__)
 
 
@@ -204,12 +208,15 @@ async def sync_polls(bot):
                         await channel.get_partial_message(
                             int(receipt["message_id"])
                         ).edit(
-                            embed=poll_embed(store, bot.catalog, proposal),
-                            view=PollView(
-                                bot,
-                                closed=closed,
-                                panel=panel,
-                                thread_id=record["thread_id"] if record else None,
+                            **payload(
+                                bot=bot,
+                                embed=poll_embed(store, bot.catalog, proposal),
+                                view=PollView(
+                                    bot,
+                                    closed=closed,
+                                    panel=panel,
+                                    thread_id=record["thread_id"] if record else None,
+                                ),
                             ),
                         )
                     except discord.NotFound:
@@ -230,6 +237,7 @@ async def sync_polls(bot):
                 if public_result:
                     await archive_and_clean(bot, panel, receipt, proposal)
         except (discord.HTTPException, ValueError, TimeoutError) as error:
+            theme_for(bot).observe_error(error)
             log.warning(
                 "Resultado preservado, entrega adiada: %s", type(error).__name__
             )

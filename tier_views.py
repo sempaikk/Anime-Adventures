@@ -9,11 +9,13 @@ from PIL import Image, ImageDraw
 from community_ui import portraits, font
 from community_domain import ROOT
 from tier_domain import safe
+from tier_style import decorate_controls
+from tier_ui import payload, edit, edit_response
 
 log = logging.getLogger("tierlist.ui")
 
 PLAYER_GUIDE = """## Como funciona a tier list
-**Leia a imagem:** Meta é a categoria mais alta, seguida de S, A, B, C, D e E. Na mesma linha, os personagens mais bem colocados ficam à esquerda. Trocar essa ordem não precisa mudar o tier. No celular, toque na imagem para ampliar.
+**Leia a imagem:** Meta destaca os melhores. Damage é dano; Support é controle/debuff; Buff melhora aliados; Farm gera recursos. Cada forma tem uma função principal. Os Meta aparecem também nessa função, à frente dos demais. Dentro de cada linha, a ordem é da esquerda para a direita. No celular, toque para ampliar.
 
 **Sem avaliação não significa ruim.** Uma forma só aparece na grade depois de uma decisão aprovada. As formas ainda sem avaliação ficam fora da imagem.
 
@@ -27,14 +29,17 @@ PLAYER_GUIDE = """## Como funciona a tier list
 
 **Onde votar:** a enquete aparece no canal da imagem. Após encerrar, o resultado fica no tópico; o aviso do canal sai depois de dois minutos e somente com o histórico confirmado. Os votos ficam ocultos até o fim. Sinalizar problema pede revisão, sem acrescentar votos.
 
-**Retratos:** quando houver fotos pendentes, o tópico terá retratos-pendentes.txt com as formas exatas. Sugerir imagem envia a contribuição para revisão do responsável. Trocar um retrato não muda posições. Consulte Meus envios para acompanhar em particular."""
+**Retratos:** quando houver fotos pendentes, o tópico terá retratos-pendentes.txt com as formas exatas. Sugerir imagem envia a contribuição para revisão do responsável. Trocar retrato não muda posições. Acompanhe em Meus envios.
+
+**Glossário opcional:** ||DPS: dano por segundo. SPA: intervalo entre ataques. Esses valores dependem da forma e das condições de uso.||"""
 
 
 async def reply(i, text=None, **kwargs):
     kwargs.setdefault("ephemeral", True)
+    kwargs = payload(bot=getattr(i, "client", None), content=text, **kwargs)
     if i.response.is_done():
-        return await i.followup.send(text, **kwargs)
-    return await i.response.send_message(text, **kwargs)
+        return await i.followup.send(**kwargs)
+    return await i.response.send_message(**kwargs)
 
 
 class GuardedView(discord.ui.View):
@@ -79,6 +84,7 @@ class ThreadView(GuardedView):
     def __init__(self, bot):
         super().__init__(timeout=None)
         self.bot = bot
+        decorate_controls(self, bot)
 
     @discord.ui.button(label="Sugerir imagem", custom_id="tier:v3:suggest-image")
     async def suggest(self, i, button):
@@ -104,32 +110,50 @@ class ImageModal(BoundModal):
         super().__init__(title="Sugerir retrato", timeout=300)
         self.bind(bot, i)
         self.unit = discord.ui.TextInput(
-            label="Personagem e forma exatos",
             placeholder="Use o nome completo da evolução",
             max_length=150,
         )
-        self.appearance = discord.ui.TextInput(
-            label="Skin ou aparência (opcional)", required=False, max_length=150
-        )
+        self.appearance = discord.ui.TextInput(required=False, max_length=150)
         self.note = discord.ui.TextInput(
-            label="O que esta imagem corrige?",
             style=discord.TextStyle.paragraph,
             min_length=15,
             max_length=700,
         )
         self.portrait = discord.ui.FileUpload(min_values=1, max_values=1)
         self.proof = discord.ui.FileUpload(required=False, min_values=0, max_values=1)
-        self.add_item(self.unit)
-        self.add_item(self.appearance)
-        self.add_item(self.note)
         self.add_item(
             discord.ui.Label(
-                text="Retrato PNG, JPG ou WebP · até 4 MB", component=self.portrait
+                text="Personagem e forma exatos",
+                description="Vai para revisão no bot. Acompanhe em Meus envios; somente o responsável aprova.",
+                component=self.unit,
             )
         )
         self.add_item(
             discord.ui.Label(
-                text="Print do personagem no jogo (opcional)", component=self.proof
+                text="Skin ou aparência (opcional)",
+                description="Informe se é uma skin ou uma aparência diferente da forma padrão.",
+                component=self.appearance,
+            )
+        )
+        self.add_item(
+            discord.ui.Label(
+                text="O que esta imagem corrige?",
+                description="Explique a diferença: forma incorreta, skin nova, enquadramento ou qualidade.",
+                component=self.note,
+            )
+        )
+        self.add_item(
+            discord.ui.Label(
+                text="Retrato PNG, JPG ou WebP · até 4 MB",
+                description="Uma imagem estática do personagem exato, de preferência com fundo transparente.",
+                component=self.portrait,
+            )
+        )
+        self.add_item(
+            discord.ui.Label(
+                text="Print do personagem no jogo (opcional)",
+                description="Ajuda o responsável a conferir a forma e a aparência. Até 4 MB.",
+                component=self.proof,
             )
         )
 
@@ -239,13 +263,18 @@ class ReportModal(BoundModal):
         self.bind(bot, i)
         self.proposal_id = proposal_id
         self.reason = discord.ui.TextInput(
-            label="O que precisa ser corrigido?",
             style=discord.TextStyle.paragraph,
             min_length=15,
             max_length=800,
             placeholder="Forma errada, fonte antiga, comparação incompleta…",
         )
-        self.add_item(self.reason)
+        self.add_item(
+            discord.ui.Label(
+                text="Qual é o problema?",
+                description="Seu relato vai para revisão privada. Enviar não altera votos nem posições.",
+                component=self.reason,
+            )
+        )
 
     async def on_submit(self, i):
         if not await self.interaction_check(i):
@@ -287,6 +316,8 @@ class PollView(GuardedView):
                         row=1,
                     )
                 )
+
+        decorate_controls(self, bot)
 
     async def cast(self, i, choice):
         self.bot.require_human(i)
@@ -374,6 +405,7 @@ class AdminView(PrivateView):
                 ):
                     self.remove_item(item)
             self.diagnosis.label = "Conferir painel"
+        decorate_controls(self, bot)
 
     @discord.ui.button(label="Diagnóstico", row=0)
     async def diagnosis(self, i, button):
@@ -456,7 +488,8 @@ class UndoImage(PrivateView):
         self.bot.media.undo(self.row["unit_id"], self.row["suggestion_id"], i.user.id)
         for item in self.children:
             item.disabled = True
-        await i.response.edit_message(
+        await edit_response(
+            i,
             content="Retrato anterior restaurado. A revisão será registrada no tópico; as posições foram preservadas.",
             view=self,
         )
@@ -469,12 +502,17 @@ class CorrectionModal(BoundModal):
         self.proposal_id = proposal_id
         self.publication = bot.store.latest()["id"]
         self.reason = discord.ui.TextInput(
-            label="Motivo que ficará no histórico",
             style=discord.TextStyle.paragraph,
             min_length=20,
             max_length=700,
         )
-        self.add_item(self.reason)
+        self.add_item(
+            discord.ui.Label(
+                text="Motivo que ficará no histórico",
+                description="Este motivo será público. Enviar confirma a correção, após validar a classificação atual.",
+                component=self.reason,
+            )
+        )
 
     async def on_submit(self, i):
         if not await self.interaction_check(i):
@@ -532,7 +570,8 @@ class MediaReview(PrivateView):
         self.offset = min(self.offset, max(0, len(rows) - 1))
         self.selected = rows[self.offset]["id"] if rows else None
         if not rows:
-            await i.edit_original_response(
+            await edit(
+                i,
                 content="Nenhuma imagem aguardando revisão.",
                 embeds=[],
                 attachments=[],
@@ -564,7 +603,8 @@ class MediaReview(PrivateView):
             if path.is_file():
                 files.append(discord.File(path, filename="comprovacao.png"))
         try:
-            await i.edit_original_response(
+            await edit(
+                i,
                 content="Confira a forma e a skin antes de aprovar. O arquivo de comprovação, quando enviado, acompanha a comparação.",
                 embed=embed,
                 attachments=files,
@@ -634,7 +674,8 @@ class ReportReview(PrivateView):
             "SELECT * FROM tier_reports WHERE status='pending' ORDER BY id LIMIT 1"
         )
         if not rows:
-            await i.edit_original_response(
+            await edit(
+                i,
                 content="Nenhum relato aguardando revisão.",
                 embeds=[],
                 attachments=[],
@@ -643,7 +684,8 @@ class ReportReview(PrivateView):
             return
         row = rows[0]
         self.selected, self.proposal = row["id"], row["proposal_id"]
-        await i.edit_original_response(
+        await edit(
+            i,
             content=f"### Relato #{row['id']} · proposta #{row['proposal_id']}\n{safe(row['reason'], 800)}\n\nMarcar como revisado não modifica posições. Suspender exige uma justificativa pública.",
             view=self,
             embeds=[],

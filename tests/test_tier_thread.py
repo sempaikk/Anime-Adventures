@@ -8,6 +8,9 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock
 import discord
+from discord.components import _component_factory
+from tier_ui import visible_text, component_dicts
+from tier_test_ui import call_text
 from PIL import Image
 from community_bot import CommunityBot, PERMISSIONS
 from community_domain import Catalog
@@ -51,6 +54,7 @@ class FakeMessage:
         self.attachments = []
         self.nonce = None
         self.components = []
+        self.flags = discord.MessageFlags()
         self.delete = AsyncMock(side_effect=self._delete)
         self.edit = AsyncMock(side_effect=self._edit)
         self.create_thread = AsyncMock(side_effect=self._create_thread)
@@ -72,11 +76,10 @@ class FakeMessage:
         if "attachments" in kwargs:
             self.attachments = [attachment(f) for f in kwargs["attachments"]]
         if "view" in kwargs:
+            if kwargs["view"] and kwargs["view"].has_components_v2():
+                self.flags.components_v2 = True
             self.components = (
-                [
-                    SimpleNamespace(children=row["components"])
-                    for row in kwargs["view"].to_components()
-                ]
+                [_component_factory(row) for row in kwargs["view"].to_components()]
                 if kwargs["view"]
                 else []
             )
@@ -215,9 +218,9 @@ class FakeDiscord:
         message.embeds = [discord.Embed.from_dict(e) for e in payload.get("embeds", [])]
         message.attachments = [attachment(f) for f in params.files or []]
         message.nonce = payload.get("nonce")
+        message.flags = discord.MessageFlags._from_value(payload.get("flags", 0))
         message.components = [
-            SimpleNamespace(children=row["components"])
-            for row in payload.get("components", [])
+            _component_factory(row) for row in payload.get("components", [])
         ]
         if self.fail_after_send:
             self.fail_after_send = False
@@ -267,7 +270,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
 
     def propose(self):
         self.app.store.create_proposal(
-            [{"unit_id": "daki", "tier": "S"}],
+            [{"unit_id": "daki", "tier": "DAMAGE"}],
             {},
             details={
                 "daki": {
@@ -275,7 +278,8 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
                     "conditions": "Condições artificiais do teste.",
                     "caveat": "Limitações artificiais do teste.",
                     "sources": [],
-                    "tier": "S",
+                    "tier": "DAMAGE",
+                    "role": "DAMAGE",
                     "before": None,
                 }
             },
@@ -337,7 +341,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             [a.filename for a in index.attachments], ["retratos-pendentes.txt"]
         )
-        text = index.content
+        text = visible_text(index)
         self.assertIn("Votações e histórico", text)
         self.assertNotIn("Participar da análise", text)
         self.assertNotIn("arquivo abaixo", text)
@@ -370,7 +374,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
             [a.filename for a in index.edit.await_args.kwargs["attachments"]],
             ["retratos-pendentes.txt"],
         )
-        self.assertNotIn("arquivo abaixo", index.content)
+        self.assertNotIn("arquivo abaixo", visible_text(index))
         self.assertEqual(len(self.env.payloads), sent)
         self.assertEqual(image.edit.await_count, image_edit_count)
         self.assertEqual(image.attachments, image_attachments)
@@ -411,7 +415,11 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         response = i.followup.send.await_args
         self.assertTrue(response.kwargs["ephemeral"])
         self.assertEqual(
-            [button.label for button in response.kwargs["view"].children],
+            [
+                item["label"]
+                for item in component_dicts(response.kwargs["view"])
+                if item.get("type") == 2
+            ],
             ["Conferir painel"],
         )
         self.assertEqual(len(self.app.store.panels()), 1)
@@ -430,15 +438,17 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         await ThreadView(self.app).submissions.callback(i)
         response = i.response.send_message.await_args
         self.assertTrue(response.kwargs["ephemeral"])
-        self.assertIn(f"#{mine} ·", response.args[0])
-        self.assertNotIn(f"#{other} ·", response.args[0])
-        self.assertIn("aguardando revisão", response.args[0])
+        self.assertIn(f"#{mine} ·", call_text(response))
+        self.assertNotIn(f"#{other} ·", call_text(response))
+        self.assertIn("aguardando revisão", call_text(response))
         self.assertEqual(len(self.env.payloads), sent)
 
     async def test_global_chat_remains_inactive(self):
         i = self.interaction()
         await self.app.tree.get_command("chatglobal").callback(i)
-        i.response.send_message.assert_awaited_once_with("Em breve.", ephemeral=True)
+        i.response.send_message.assert_awaited_once()
+        self.assertTrue(i.response.send_message.await_args.kwargs["ephemeral"])
+        self.assertEqual(call_text(i.response.send_message.await_args), "Em breve.")
         self.assertFalse(hasattr(self.app, "delivery_loop"))
 
     async def test_automatic_collection_requires_no_consent_or_channel_selection(self):
@@ -516,7 +526,8 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
             "changes": [
                 {
                     "unit_id": "daki",
-                    "tier": "S",
+                    "tier": "DAMAGE",
+                    "role": "DAMAGE",
                     "before": None,
                     "confidence": 0.95,
                     "supporting_comments": ["c0"],
@@ -576,15 +587,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         proposal = self.app.store.active_proposal()
         self.assertEqual(proposal["opened_at"], posted)
         self.assertEqual(proposal["closes_at"], posted + 600)
-        polls = [
-            p
-            for _, p in self.env.payloads
-            if p.get("embeds")
-            and p["embeds"][0]
-            .get("footer", {})
-            .get("text", "")
-            .startswith("Proposta #")
-        ]
+        polls = [p for _, p in self.env.payloads if "Proposta #" in visible_text(p)]
         self.assertEqual(len(polls), 1)
 
     async def test_open_poll_hides_distribution_then_reveals_final_counts(self):
@@ -611,24 +614,20 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.now += 600
         await self.app.poll_loop.coro(self.app)
         self.assertEqual(
-            self.app.store.latest()["ranking"], [{"unit_id": "daki", "tier": "S"}]
+            self.app.store.latest()["ranking"], [{"unit_id": "daki", "tier": "DAMAGE"}]
         )
         archived = self.app.store.rows(
             "SELECT * FROM tier_poll_messages WHERE proposal_id=? AND channel_id=?",
             (proposal["id"], str(self.env.thread.id)),
         )[0]
-        result = self.env.partial(self.env.thread, int(archived["message_id"])).embeds[
-            0
-        ]
-        self.assertIn(
-            "**Aprovar:** 5", json.dumps(result.to_dict(), ensure_ascii=False)
-        )
+        result = self.env.partial(self.env.thread, int(archived["message_id"]))
+        self.assertIn("**Aprovar:** 5", visible_text(result))
 
     async def test_panel_update_edits_existing_image_only(self):
         await self.setup_panel()
         panel = self.app.store.panels()[0]
         self.app.store.publish(
-            [{"unit_id": "daki", "tier": "A"}],
+            [{"unit_id": "daki", "tier": "SUPPORT"}],
             {},
             source_version="test",
             model="test",
@@ -717,19 +716,21 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         await self.setup_panel()
         row = self.app.store.thread(1)
         index = self.env.partial(self.env.thread, int(row["intro_id"]))
-        self.assertNotIn("Aguardando a chave", index.content)
-        self.assertIn("Aguardando relatos relevantes", index.content)
-        self.assertNotIn("chave", index.content.lower())
+        self.assertNotIn("Aguardando a chave", visible_text(index))
+        self.assertIn("Aguardando relatos relevantes", visible_text(index))
+        self.assertNotIn("chave", visible_text(index).lower())
         self.backend.analyze.return_value = ({"changes": []}, 50)
         await self.app.analyzer.check_connection()
         await self.app.panel_loop.coro(self.app)
-        self.assertIn("Aguardando relatos relevantes", index.content)
-        self.assertNotIn("Aguardando a chave", index.content)
+        self.assertIn("Aguardando relatos relevantes", visible_text(index))
+        self.assertNotIn("Aguardando a chave", visible_text(index))
         self.backend.enabled = False
         await self.app.panel_loop.coro(self.app)
-        self.assertIn("temporariamente pausada; posições preservadas", index.content)
-        self.assertNotIn("**Nova análise:** disponível", index.content)
-        self.assertNotIn("chave", index.content.lower())
+        self.assertIn(
+            "temporariamente pausada; posições preservadas", visible_text(index)
+        )
+        self.assertNotIn("**Nova análise:** disponível", visible_text(index))
+        self.assertNotIn("chave", visible_text(index).lower())
 
     async def test_only_owner_sees_technical_diagnostics_and_image_has_no_footer(self):
         await self.setup_panel()
@@ -741,7 +742,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("IA", status)
         blob, _ = await self.app.picture()
         with Image.open(io.BytesIO(blob)) as image:
-            self.assertEqual(image.height, 7 * 96)
+            self.assertEqual(image.height, 5 * 96)
 
     async def test_player_guide_is_private_and_available_from_official_index(self):
         await self.setup_panel()
@@ -751,7 +752,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         await ThreadView(self.app).help.callback(i)
         kwargs = i.response.send_message.await_args.kwargs
         self.assertTrue(kwargs["ephemeral"])
-        text = i.response.send_message.await_args.args[0]
+        text = call_text(i.response.send_message.await_args)
         self.assertIn("Sem avaliação", text)
         self.assertNotIn("arquivo do tópico", text)
         self.assertLessEqual(len(text), 2000)
@@ -884,7 +885,7 @@ class MediaCase(unittest.TestCase):
         ident = self.submit()
         self.media.decide(ident, 7, approve=True)
         self.store.publish(
-            [{"unit_id": "daki", "tier": "A"}],
+            [{"unit_id": "daki", "tier": "SUPPORT"}],
             {},
             source_version="fixture",
             model="fixture",
@@ -896,7 +897,9 @@ class MediaCase(unittest.TestCase):
         restored = restore_snapshot(directory, self.root / "restored")
         copied = TierStore(restored)
         library = MediaLibrary(copied, self.catalog)
-        self.assertEqual(copied.latest()["ranking"], [{"unit_id": "daki", "tier": "A"}])
+        self.assertEqual(
+            copied.latest()["ranking"], [{"unit_id": "daki", "tier": "SUPPORT"}]
+        )
         self.assertIn("daki", library.approved())
         copied.close()
         original = self.media.suggestion(ident)["original_hash"]
@@ -917,7 +920,7 @@ class MediaCase(unittest.TestCase):
 
     def test_rollback_creates_a_new_revision_and_invalidates_pending_proposal(self):
         self.store.publish(
-            [{"unit_id": "daki", "tier": "A"}],
+            [{"unit_id": "daki", "tier": "SUPPORT"}],
             {},
             source_version="fixture",
             model="fixture",

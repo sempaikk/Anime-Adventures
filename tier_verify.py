@@ -12,6 +12,7 @@ import time
 from pathlib import Path
 from types import SimpleNamespace
 import discord
+from tier_ui import edit, payload, message_files, component_dicts
 from community_domain import ROOT
 from tier_image import image_file
 from tier_store import TierStore
@@ -142,11 +143,11 @@ class VerificationClick(GuardedView):
             store = TierStore(Path(directory) / "tierlist.sqlite3")
             try:
                 store.create_proposal(
-                    [{"unit_id": "daki", "tier": "S"}],
+                    [{"unit_id": "daki", "tier": "DAMAGE"}],
                     {},
                     details={
                         "daki": {
-                            "tier": "S",
+                            "tier": "DAMAGE",
                             "before": None,
                             "reason": "Dados artificiais exclusivos da verificação, sem avaliação real.",
                             "sources": [],
@@ -186,8 +187,9 @@ class VerificationClick(GuardedView):
         )
         self.bot.store.set("last_verified_click", time.time())
         button.disabled = True
-        await i.edit_original_response(
-            content="**Interação confirmada.** O Discord entregou seu clique ao mesmo código que registra votos. O registro foi feito num banco temporário; nenhuma posição ou voto global foi alterado."
+        await edit(
+            i,
+            content="**Interação confirmada.** O Discord entregou seu clique ao mesmo código que registra votos. O registro foi feito num banco temporário; nenhuma posição ou voto global foi alterado.",
         )
         self.bot.store.set(
             "last_verification_report", json.dumps(self.report, ensure_ascii=False)
@@ -199,8 +201,8 @@ class VerificationClick(GuardedView):
             filename="verificacao-tierlist.json",
         )
         try:
-            await self.origin.edit_original_response(
-                content=summary(self.report), attachments=[file], view=self
+            await edit(
+                self.origin, content=summary(self.report), attachments=[file], view=self
             )
         finally:
             file.close()
@@ -261,9 +263,7 @@ async def _verify(bot, i):
         }
 
         async def progress(text):
-            await i.edit_original_response(
-                content="### Verificação em andamento\n" + text, view=None
-            )
+            await edit(i, content="### Verificação em andamento\n" + text, view=None)
 
         await progress(
             "Executando os cenários de interface, disputa e falhas em bancos isolados. Pode levar alguns minutos na hospedagem gratuita."
@@ -380,14 +380,17 @@ async def _verify(bot, i):
             file = image_file(blob)
             try:
                 message = await thread.send(
-                    "**Teste técnico.** Esta imagem é uma cópia de verificação; nenhuma posição será alterada.",
-                    file=file,
+                    **payload(
+                        bot=bot,
+                        content="**Teste técnico.** Esta imagem é uma cópia de verificação; nenhuma posição será alterada.",
+                        file=file,
+                    ),
                 )
             finally:
                 file.close()
             messages.append(message)
             fetched = await thread.fetch_message(message.id)
-            if len(fetched.attachments) != 1:
+            if len(message_files(fetched)) != 1:
                 raise ValueError("O Discord não devolveu a imagem esperada.")
             report["checks"].append(
                 {
@@ -405,7 +408,7 @@ async def _verify(bot, i):
             finally:
                 file.close()
             fetched = await thread.fetch_message(message.id)
-            if fetched.id != message.id or not fetched.attachments:
+            if fetched.id != message.id or not message_files(fetched):
                 raise ValueError("A edição não foi confirmada.")
             report["checks"].append(
                 {
@@ -437,20 +440,25 @@ async def _verify(bot, i):
             for item in view.children:
                 item.disabled = True
             card = await thread.send(
-                embed=discord.Embed(
-                    title="Verificação de componentes",
-                    description="Botões de teste desativados. Esta mensagem não é uma proposta.",
-                ),
-                view=view,
+                **payload(
+                    bot=bot,
+                    embed=discord.Embed(
+                        title="Verificação de componentes",
+                        description="Botões de teste desativados. Esta mensagem não é uma proposta.",
+                    ),
+                    view=view,
+                )
             )
             messages.append(card)
             fetched = await thread.fetch_message(card.id)
-            if sum(len(row.children) for row in fetched.components) != 4:
+            if sum(item.get("type") == 2 for item in component_dicts(fetched)) != 4:
                 raise ValueError("Os componentes não foram confirmados pelo Discord.")
             await card.edit(
-                content="Componentes recebidos e removidos com sucesso.",
-                embeds=[],
-                view=None,
+                **payload(
+                    bot=bot,
+                    content="Componentes recebidos e removidos com sucesso.",
+                    view=None,
+                )
             )
             report["checks"].append(
                 {
@@ -465,7 +473,10 @@ async def _verify(bot, i):
                 raise ValueError("Arquivamento não confirmado.")
             await fetched.edit(archived=False)
             resumed = await fetched.send(
-                "Retomada do tópico confirmada. Encerrando a verificação."
+                **payload(
+                    bot=bot,
+                    content="Retomada do tópico confirmada. Encerrando a verificação.",
+                )
             )
             messages.append(resumed)
             thread = fetched
@@ -547,7 +558,8 @@ async def _verify(bot, i):
             filename="verificacao-tierlist.json",
         )
         try:
-            await i.edit_original_response(
+            await edit(
+                i,
                 content=summary(report),
                 attachments=[file],
                 view=VerificationClick(bot, i.user.id, i.guild_id, report, i),

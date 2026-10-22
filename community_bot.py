@@ -32,6 +32,8 @@ from tier_delivery import sync_polls
 from tier_store import TierStore
 from tier_views import AdminView, PollView, ThreadView, reply
 from tier_wiki import WikiSync
+from tier_style import GameTheme
+from tier_ui import payload as ui_payload, visible_text
 
 log = logging.getLogger("tierlist")
 PERMISSIONS = {
@@ -91,6 +93,7 @@ class CommunityBot(commands.Bot):
         self.guild_locks = {}
         self.health = RuntimeHealth(self.is_ready, lambda: self.store.connection)
         self.owner_ids_set = set()
+        self.ui_theme = GameTheme()
         self.register_commands()
 
     def is_owner_id(self, actor):
@@ -137,6 +140,7 @@ class CommunityBot(commands.Bot):
 
     async def setup_hook(self):
         app = await self.application_info()
+        await self.ui_theme.refresh(self.http, app.id)
         self.owner_ids_set = {app.team.owner_id if app.team else app.owner.id}
         self.add_view(ThreadView(self))
         self.add_view(PollView(self))
@@ -371,6 +375,7 @@ class CommunityBot(commands.Bot):
         )
         if budget.get("day") != day:
             budget = {}
+        text += f"\n**Interface:** Components V2 · {len(self.ui_theme.available)} ícones da wiki disponíveis."
         text += f"\n**Relatos aguardando análise:** {pending}."
         text += f"\n**Resultados aguardando arquivo/limpeza:** {self.store.public_results_waiting()}."
         text += f"\n**Cota local do dia UTC:** {budget.get('calls', 0)}/{DAILY_CALLS} chamadas · {budget.get('tokens', 0)}/{DAILY_TOKENS} tokens."
@@ -471,6 +476,7 @@ class CommunityBot(commands.Bot):
         return thread
 
     async def deliver(self, channel, key, *, marker=None, **kwargs):
+        kwargs = ui_payload(bot=self, **kwargs)
         receipt = self.store.rows(
             "SELECT message_id FROM tier_deliveries WHERE key=? AND channel_id=?",
             (key, str(channel.id)),
@@ -688,7 +694,14 @@ class CommunityBot(commands.Bot):
         previous = self.store.get("previous-thread:" + panel["guild_id"])
         if previous and previous != str(thread.id):
             text += f"\n[Histórico do tópico anterior](https://discord.com/channels/{panel['guild_id']}/{previous})."
-        signature = digest((text, needs.checksum, "thread-controls-v4"))
+        signature = digest(
+            (
+                text,
+                needs.checksum,
+                "thread-controls-v5",
+                tuple(sorted(self.ui_theme.available)),
+            )
+        )
         checked = self.index_checks.get(panel["guild_id"])
         if (
             record["intro_id"]
@@ -713,10 +726,12 @@ class CommunityBot(commands.Bot):
                     message = await thread.get_partial_message(
                         int(record["intro_id"])
                     ).edit(
-                        content=text,
-                        embeds=[],
-                        attachments=[file] if file else [],
-                        view=ThreadView(self),
+                        **ui_payload(
+                            bot=self,
+                            content=text,
+                            attachments=[file] if file else [],
+                            view=ThreadView(self),
+                        ),
                     )
                 except discord.NotFound:
                     if file:
@@ -746,7 +761,9 @@ class CommunityBot(commands.Bot):
                     content=text,
                     files=[file] if file else [],
                     view=ThreadView(self),
-                    marker=lambda m: m.content.startswith("## Votações e histórico"),
+                    marker=lambda m: visible_text(m).startswith(
+                        "## Votações e histórico"
+                    ),
                 )
                 if reconciling:
                     if file:
@@ -755,10 +772,12 @@ class CommunityBot(commands.Bot):
                             io.BytesIO(needs.blob), filename="retratos-pendentes.txt"
                         )
                     await message.edit(
-                        content=text,
-                        embeds=[],
-                        attachments=[file] if file else [],
-                        view=ThreadView(self),
+                        **ui_payload(
+                            bot=self,
+                            content=text,
+                            attachments=[file] if file else [],
+                            view=ThreadView(self),
+                        ),
                     )
         finally:
             if file:
@@ -828,6 +847,7 @@ class CommunityBot(commands.Bot):
         ):
             return
         try:
+            await self.ui_theme.refresh(self.http, self.application_id)
             async with self.analysis_lock:
                 units = [
                     u for c in self.store.pending(8) for u in json.loads(c["units"])
@@ -895,6 +915,7 @@ class CommunityBot(commands.Bot):
                         (panel["guild_id"],),
                     )
             except Exception as error:
+                self.ui_theme.observe_error(error)
                 log.warning(
                     "Painel preservado, atualização adiada: %s", type(error).__name__
                 )
@@ -923,8 +944,8 @@ class CommunityBot(commands.Bot):
                 f"audit:{ident}:{thread.id}",
                 embed=embed,
                 marker=lambda m: any(
-                    e.footer.text and e.footer.text.startswith(f"Revisão #{ident} ·")
-                    for e in m.embeds
+                    line.strip().removeprefix("-# ").startswith(f"Revisão #{ident} ·")
+                    for line in visible_text(m).splitlines()
                 ),
             )
             with self.store.connection:
@@ -989,8 +1010,11 @@ class CommunityBot(commands.Bot):
             url = f"https://discord.com/channels/{i.guild_id}/{thread.id}"
             image_url = f"https://discord.com/channels/{i.guild_id}/{panel['channel_id']}/{panel['message_id']}"
             await i.followup.send(
-                f"**Painel pronto.** [Ver tier list]({image_url}). As enquetes abertas aparecem no canal desse painel; os resultados ficam no [tópico]({url}). Membros participam pelos botões, sem precisar de comandos. Os comentários sobre o jogo são identificados automaticamente nos canais acessíveis ao bot.",
-                view=AdminView(self, i),
+                **ui_payload(
+                    bot=self,
+                    content=f"## Painel da tier list\n[Ver tier list]({image_url}) · [Votações e histórico]({url})\n\n**Pronto para participar.** As enquetes aparecem no canal desse painel; os resultados ficam no tópico. Membros participam pelos botões, sem precisar de comandos. Os comentários sobre o jogo são identificados automaticamente nos canais acessíveis ao bot.",
+                    view=AdminView(self, i),
+                ),
                 ephemeral=True,
             )
 
@@ -1002,6 +1026,7 @@ class CommunityBot(commands.Bot):
         @self.tree.error
         async def command_error(i, error):
             cause = getattr(error, "original", error)
+            self.ui_theme.observe_error(cause)
             if isinstance(cause, (ValueError, app_commands.CheckFailure)):
                 await reply(i, str(cause))
             else:

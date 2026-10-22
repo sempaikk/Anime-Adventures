@@ -153,3 +153,25 @@ reinício, limites de leitura, timeout e encerramento. Um teste adicional leu
 relato foi aproveitado nessa amostra. Usou banco temporário, nenhuma chamada
 à Groq, nenhuma conexão Gateway e nenhuma publicação no Discord. Confirma o
 caminho de consulta, sem afirmar validação semântica de todos os relatos reais.
+
+## Atualização V2 e funções — 22/10/2026
+
+A suíte atual tem **534 testes**, com novas verificações de UI nativa,
+privacidade, anexos, funções e migração. A grade é Meta/Damage/Support/Buff/Farm;
+Meta aparece também na função principal sem duplicar a avaliação.
+
+O ensaio direto mais recente confere 13 operações pela API em espaços privados
+do servidor autorizado, com banco temporário: índice convertido na mesma
+mensagem, enquete/atalhos, atualização sem duplicação, resultado arquivado,
+PNG editado e baixado, limpeza após reinício, dez alterações visuais, cinco
+transições de TXT e cartões V2. Não envia dados à Groq nem altera a produção.
+
+Components V2 podem guardar arquivos em File/MediaGallery e deixar a lista
+tradicional de anexos vazia. O verificador lê os componentes e confere os
+bytes recebidos. Não confunde um thumbnail externo com um arquivo enviado.
+As simulações de interface preservam verificações do ator, servidor e
+mensagem oficial. Modais usam Labels com descrições e FileUpload.
+
+O responsável ainda pode conferir uma interação humana real pelo botão do
+verificador. API e testes locais não comprovam aparência em cada cliente
+Discord, seleção humana de arquivo ou qualidade dos argumentos do jogo.

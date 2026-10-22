@@ -13,17 +13,10 @@ from community_domain import ROOT
 from community_ui import font, portraits
 from tier_domain import safe, moment, place
 from tier_store import TIERS
+from tier_categories import COLORS, LABELS, rows_for
 from tier_schedule import poll_progress, progress_text
 
-ROW_COLORS = {
-    "META": "#920700",
-    "S": "#218900",
-    "A": "#588800",
-    "B": "#008c91",
-    "C": "#777900",
-    "D": "#886000",
-    "E": "#985000",
-}
+ROW_COLORS = COLORS
 POLL_STATES = {
     "queued": "Preparando votação",
     "open": "Votação aberta",
@@ -49,7 +42,7 @@ def render(
 ):
     media = portraits() if media is None else media
     columns, tile, label = 10, 96, 138
-    groups = [(t, [r for r in ranking if r["tier"] == t]) for t in TIERS]
+    groups = [(t, rows_for(ranking, t)) for t in TIERS]
     width = label + columns * tile
     height = sum(max(1, math.ceil(len(rows) / columns)) * tile for _, rows in groups)
     canvas = Image.new("RGB", (width, height + (60 if footer else 0)), "#111415")
@@ -61,7 +54,7 @@ def render(
     for tier, rows in groups:
         band = max(1, math.ceil(len(rows) / columns)) * tile
         draw.rectangle((0, top, label, top + band), fill=ROW_COLORS[tier])
-        title = "Meta" if tier == "META" else tier
+        title = LABELS[tier]
         box = draw.textbbox((0, 0), title, font=font(25))
         draw.text(
             ((label - box[2]) / 2, top + (band - 30) / 2),
@@ -207,15 +200,22 @@ def index_text(
         if wiki_status in ("cache", "unavailable")
         else "Referências sincronizadas"
     )
+    publication = store.latest()
+    classification = (
+        "Aguardando a primeira classificação por função; versões anteriores no histórico"
+        if publication["model"] == "category-migration" and not publication["ranking"]
+        else moment(publication["created_at"])
+    )
     lines = [
         "## Votações e histórico",
         "**A imagem no canal mostra a classificação atual. As enquetes abertas aparecem junto dela; os resultados ficam aqui.**",
         "Propostas com motivos, condições e fontes. Você escolhe **Aprovar**, **Manter** ou **Precisa de mais testes**.",
+        "**Leitura:** Meta destaca os melhores; Damage, Support, Buff e Farm separam funções. Um Meta também aparece na sua função. A ordem de cada linha vai da esquerda para a direita.",
         "\n**Regras:** 10 minutos · mínimo de 5 participantes · dois terços a favor · um voto por conta na rede. Você pode trocar até o prazo. As escolhas aparecem no resultado final.",
         "No máximo uma proposta por hora; sem evidência suficiente, a classificação é preservada.",
         "\n" + progress_text(progress),
         f"**Wiki:** {source}.",
-        f"**Última classificação:** {moment(store.latest()['created_at'])}.",
+        f"**Última classificação:** {classification}.",
     ]
     proposal = store.active_proposal()
     if proposal and thread:
@@ -267,7 +267,7 @@ def poll_embed(store, catalog, proposal):
     question = (
         f"{name} deve passar {catalog.display_name(before)}?"
         if before
-        else f"{name} deve ficar no tier {'Meta' if detail['tier'] == 'META' else detail['tier']}?"
+        else f"{name} deve ficar em {LABELS.get(detail['tier'], detail['tier'])}?"
     )
     state = POLL_STATES.get(proposal["status"], "Encerrada")
     active = proposal["status"] in ("open", "queued")
@@ -275,7 +275,7 @@ def poll_embed(store, catalog, proposal):
         title=safe(question if active else f"{state} · {name}", 250),
         description=safe(detail["reason"], 700),
         color=(
-            0x960D16
+            0xA283E8
             if active
             else 0x27864A
             if proposal["status"] == "approved"
@@ -288,13 +288,27 @@ def poll_embed(store, catalog, proposal):
     )
     old = json.loads(base[0]["ranking"]) if base else []
     changes = [
-        f"**{safe(name, 100)}:** {place(old, uid)} → {place(proposal['ranking'], uid)}"
+        f"**{safe(name, 100)}:** ~~{place(old, uid)}~~ → **{place(proposal['ranking'], uid)}**"
     ]
     if before:
         changes.append(
-            f"**{safe(catalog.display_name(before), 100)}:** {place(old, before)} → {place(proposal['ranking'], before)}"
+            f"**{safe(catalog.display_name(before), 100)}:** ~~{place(old, before)}~~ → **{place(proposal['ranking'], before)}**"
         )
-    embed.add_field(name="O que muda", value="\n".join(changes), inline=False)
+    proposal_label = (
+        "**Se aprovada:**"
+        if active
+        else "**Mudança aprovada:**"
+        if proposal["status"] == "approved"
+        else "**Proposta avaliada; não aplicada:**"
+    )
+    embed.add_field(
+        name="O que muda",
+        value=proposal_label + "\n" + "\n".join(changes),
+        inline=False,
+    )
+    portrait = portraits().get(uid) if uid in catalog.units else None
+    if portrait and portrait.get("url"):
+        embed.set_thumbnail(url=portrait["url"])
     if detail.get("conditions"):
         embed.add_field(
             name="Quando essa vantagem se aplica",
@@ -309,7 +323,7 @@ def poll_embed(store, catalog, proposal):
         )
     for source in detail["sources"][:2]:
         url = source["url"].replace("(", "%28").replace(")", "%29")
-        if len(url) > 500:
+        if len(url) > 200:
             revision = parse_qs(urlsplit(url).query).get("oldid", [""])[0]
             url = (
                 (
@@ -321,7 +335,8 @@ def poll_embed(store, catalog, proposal):
             )
         embed.add_field(
             name="Referência na wiki",
-            value=safe(source["quote"], 350)
+            value="> "
+            + safe(source["quote"], 300).replace("\n", "\n> ")
             + (
                 f"\n[Conferir a revisão]({url})"
                 if url

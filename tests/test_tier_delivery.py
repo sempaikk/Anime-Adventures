@@ -1,3 +1,6 @@
+from tier_ui import visible_text, component_dicts
+from tier_test_ui import call_text
+
 """Member journeys and failure recovery for visible, temporary poll notices."""
 
 import asyncio
@@ -67,19 +70,14 @@ class VisiblePollCase(unittest.IsolatedAsyncioTestCase):
         await PollView(self.app).cast(i, "approve")
         response = i.response.send_message.await_args
         self.assertTrue(response.kwargs["ephemeral"])
-        self.assertIn(f"<t:{int(proposal['closes_at'])}:R>", response.args[0])
+        self.assertIn(f"<t:{int(proposal['closes_at'])}:R>", call_text(response))
         self.assertEqual(self.app.store.poll_counts(proposal["id"])["approve"], 1)
         self.assertIsNone(self.receipt(self.env.thread))
 
     async def test_poll_has_direct_links_to_image_and_history_without_pings(self):
         await self.open()
         payload = self.env.payloads[-1][1]
-        links = [
-            item
-            for row in payload["components"]
-            for item in row["components"]
-            if item.get("url")
-        ]
+        links = [item for item in component_dicts(payload) if item.get("url")]
         self.assertEqual(
             {item["label"] for item in links}, {"Ver tier list", "Histórico"}
         )
@@ -95,8 +93,8 @@ class VisiblePollCase(unittest.IsolatedAsyncioTestCase):
             self.env.thread, int(self.app.store.thread(1)["intro_id"])
         )
         receipt = self.receipt(self.env.channel)
-        self.assertIn(f"/1/10/{receipt['message_id']}", index.content)
-        self.assertIn("Enquete atual", index.content)
+        self.assertIn(f"/1/10/{receipt['message_id']}", visible_text(index))
+        self.assertIn("Enquete atual", visible_text(index))
 
     async def test_concurrent_publication_creates_one_notice_and_one_deadline(self):
         self.propose()
@@ -112,11 +110,10 @@ class VisiblePollCase(unittest.IsolatedAsyncioTestCase):
         notice, archive = self.message(self.env.channel), self.message(self.env.thread)
         self.assertEqual(proposal["status"], "approved")
         self.assertTrue(notice.exists and archive.exists)
-        self.assertIn("**Aprovar:** 5", str(archive.embeds[0].to_dict()))
+        self.assertIn("**Aprovar:** 5", visible_text(archive))
         votes = [
             c
-            for row in archive.components
-            for c in row.children
+            for c in component_dicts(archive)
             if c.get("custom_id") in {"tier:v3:approve", "tier:v3:keep", "tier:v3:test"}
         ]
         self.assertTrue(all(c["disabled"] for c in votes))
@@ -138,7 +135,7 @@ class VisiblePollCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(proposal["status"], "not-enough-votes")
         self.assertIn(
             "participação insuficiente",
-            str(self.message(self.env.thread).embeds[0].to_dict()),
+            visible_text(self.message(self.env.thread)),
         )
         self.assertEqual(self.app.store.latest()["ranking"], [])
 
@@ -192,7 +189,7 @@ class VisiblePollCase(unittest.IsolatedAsyncioTestCase):
         archived = [
             p
             for cid, p in self.env.payloads
-            if cid == self.env.thread.id and p.get("embeds")
+            if cid == self.env.thread.id and "Proposta #" in visible_text(p)
         ]
         self.assertEqual(len(archived), 1)
         self.assertTrue(self.message(self.env.thread).exists)
@@ -307,7 +304,7 @@ class VisiblePollCase(unittest.IsolatedAsyncioTestCase):
         self.now += 600 + PUBLIC_RESULT_SECONDS
         await self.app.poll_loop.coro(self.app)
         self.assertTrue(message.exists)
-        self.assertIn("participação insuficiente", str(message.embeds[0].to_dict()))
+        self.assertIn("participação insuficiente", visible_text(message))
 
     async def test_archived_result_cannot_accept_votes_but_can_be_reported(self):
         proposal = await self.finish()
@@ -373,6 +370,7 @@ class VisiblePollCase(unittest.IsolatedAsyncioTestCase):
         proposal = await self.open()
         notice = self.message(self.env.channel)
         notice.embeds = []
+        notice.components = []
         self.now += 600
         await self.app.poll_loop.coro(self.app)
         self.assertEqual(
@@ -398,11 +396,11 @@ class VisiblePollCase(unittest.IsolatedAsyncioTestCase):
         index = self.env.partial(
             self.env.thread, int(self.app.store.thread(1)["intro_id"])
         )
-        self.assertIn("Última revisão", index.content)
-        self.assertIn("Última votação aprovada", index.content)
-        self.assertIn("abrir votação", index.content)
-        self.assertIn("Histórico do tópico anterior", index.content)
-        self.assertLessEqual(len(index.content.encode("utf-16-le")) // 2, 2000)
+        self.assertIn("Última revisão", visible_text(index))
+        self.assertIn("Última votação aprovada", visible_text(index))
+        self.assertIn("abrir votação", visible_text(index))
+        self.assertIn("Histórico do tópico anterior", visible_text(index))
+        self.assertLessEqual(len(visible_text(index).encode("utf-16-le")) // 2, 2000)
 
     async def test_legacy_archive_must_receive_final_status_before_main_notice_is_removed(
         self,

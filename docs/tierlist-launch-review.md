@@ -159,6 +159,46 @@ as posições e o prazo já encerrado. A organização dessa entrega ficou em
 - O [resultado privado de demonstração](https://discord.com/channels/1561531259484901489/1562890170913792051)
   permanece arquivado para o dono conferir conforme as permissões do Discord.
 
+## Complemento: interface V2 e classificação por função
+
+A grade agora tem **Meta, Damage, Support, Buff e Farm**. Cada forma continua
+com um único registro: Meta também aparece na função principal. As funções
+não são notas de força. O renderer preserva ordem, pixels originais e linhas
+expansíveis. O ensaio visual de dez etapas inclui as quatro funções, destaque
+Meta, mudança de ordem, retirada de Meta e troca/restauração de retrato.
+
+A migração cria uma fronteira auditada quando há notas antigas: preserva os
+snapshots, votos, painéis e histórico; cancela propostas incompatíveis e
+aguarda decisões por função. Não converte S/A/B/C/D/E em papéis do time.
+Reinícios não repetem a operação e uma reversão não restaura o formato antigo.
+
+Enquetes, resultados, índice, ajuda, confirmações, controles privados e
+verificação usam **Components V2**, com seções, separadores, retratos, botões,
+galerias e anexos nativos. O PNG principal continua sem cartão nem rodapé.
+Títulos/negrito/citações organizam o texto; o glossário opcional pode ficar
+em spoiler. Informações necessárias ao voto ficam visíveis. Os ícones da
+wiki são verificados na aplicação e usados pelo significado. Sem verificação,
+o bot mantém os rótulos em texto. Formulários usam Labels e FileUpload e
+explicam destino e acompanhamento das sugestões.
+
+- **534 testes automatizados aprovados**, incluindo 21 novos cenários de
+  protocolo/UI e dez de categorias, projeção e migração.
+- **13 verificações na API real** em dois espaços privados autorizados:
+  migração do índice na mesma mensagem, enquete, botões/atalhos, participantes,
+  arquivo do resultado, edição/download do PNG, retenção/limpeza após reinício,
+  dez etapas visuais, cinco transições de TXT e cartões do dono/ajuda.
+- O ensaio de API usa a nova grade, com uma proposta Meta/Buff artificial
+  apenas em banco temporário. Não altera o estado oficial, não abre Gateway e
+  não faz chamadas à Groq. Os anexos V2 são lidos dos componentes, inclusive
+  quando a API deixa Message.attachments vazio; os bytes/hash são conferidos.
+- A entrega pela API não reproduz a tela do aplicativo nem um envio humano
+  de formulário. Clique humano, aparência no celular e seleção de arquivos
+  continuam distinguíveis das verificações de protocolo.
+
+A importação inicial de posições da Wiki e a divisão por modo continuam uma
+proposta a definir; esta revisão não apresenta posições da Wiki como votos
+da comunidade. A página coletada avisa que sua lista pode estar imprecisa.
+
 ## O que ainda depende da estreia
 
 O desenvolvimento deste fechamento está concluído. Para ativar a versão,

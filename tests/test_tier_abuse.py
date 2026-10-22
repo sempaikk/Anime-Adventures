@@ -1,3 +1,5 @@
+from tier_ui import visible_text
+
 """Player-facing stress, forged interactions, malformed uploads and provider failures."""
 
 import asyncio
@@ -280,7 +282,8 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
                 "changes": [
                     {
                         "unit_id": "daki",
-                        "tier": "S",
+                        "tier": "DAMAGE",
+                        "role": "DAMAGE",
                         "before": None,
                         "confidence": 0.95,
                         "supporting_comments": ["c0"],
@@ -306,7 +309,7 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
         await self.app.panel_loop.coro(self.app)
         self.assertEqual(self.app.store.proposal(proposal["id"])["status"], "approved")
         self.assertEqual(
-            self.app.store.latest()["ranking"], [{"unit_id": "daki", "tier": "S"}]
+            self.app.store.latest()["ranking"], [{"unit_id": "daki", "tier": "DAMAGE"}]
         )
         self.assertEqual(self.app.store.panels()[0]["message_id"], panel["message_id"])
         archived = self.app.store.rows(
@@ -314,7 +317,7 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
             (proposal["id"], str(self.env.thread.id)),
         )[0]
         result = self.env.partial(self.env.thread, int(archived["message_id"]))
-        self.assertIn("Aprovada", str(result.embeds[0].to_dict()))
+        self.assertIn("Aprovada", visible_text(result))
         self.app.store.rollback(
             self.app.store.latest()["id"],
             7,
@@ -384,7 +387,9 @@ class HostingCase(unittest.TestCase):
         self.assertTrue(all(not m.exists for m in self.env.messages.values()))
         self.assertEqual(len(self.env.payloads), 3)
         self.assertEqual(
-            i.edit_original_response.await_args.kwargs["view"].children[0].label,
+            i.edit_original_response.await_args.kwargs["view"]
+            .controller.children[0]
+            .label,
             "Confirmar teste de interação",
         )
 
@@ -784,7 +789,7 @@ class WikiCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_active_vote_defers_source_refresh(self):
         self.store.create_proposal(
-            [{"unit_id": "daki", "tier": "A"}],
+            [{"unit_id": "daki", "tier": "SUPPORT"}],
             {},
             details={},
             source_version="test",

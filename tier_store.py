@@ -15,7 +15,8 @@ from pathlib import Path
 from contextlib import nullcontext
 from urllib.parse import urlsplit
 
-TIERS = ("META", "S", "A", "B", "C", "D", "E")
+from tier_categories import TIERS as TIERS, POLICY, LABELS, valid_ranking
+
 REQUIRED_TABLES = {
     "tier_meta",
     "tier_channels",
@@ -128,7 +129,50 @@ class TierStore:
                 self.connection.execute(
                     "INSERT OR IGNORE INTO tier_meta VALUES(?,?)", (k, v)
                 )
-            self.connection.execute("UPDATE tier_meta SET value='2' WHERE key='schema'")
+            self.connection.execute("UPDATE tier_meta SET value='3' WHERE key='schema'")
+        self._migrate_categories()
+
+    def _migrate_categories(self):
+        """Grades never imply roles. Keep old snapshots/votes, publish an audited boundary."""
+        if self.get("category_policy") == POLICY:
+            return
+        with self.connection:
+            self.connection.execute("BEGIN IMMEDIATE")
+            latest = self.latest()
+            incompatible = not valid_ranking(latest["ranking"])
+            if incompatible:
+                cursor = self.connection.execute(
+                    "INSERT INTO tier_publications(created_at,ranking,explanations,source_version,model) VALUES(?,?,?,?,?)",
+                    (
+                        self.clock(),
+                        "[]",
+                        "{}",
+                        latest["source_version"],
+                        "category-migration",
+                    ),
+                )
+                self.audit(
+                    "category-migration",
+                    "system",
+                    "A imagem agora separa Meta, Damage, Support, Buff e Farm. Meta também aparece na função principal. "
+                    "As classificações por letras foram preservadas no histórico; não equivalem a funções. "
+                    "As novas posições precisam de propostas e votos, sem atribuições automáticas.",
+                    cursor.lastrowid,
+                )
+                self.connection.execute("UPDATE tier_comments SET processed=0")
+            for row in self.rows(
+                "SELECT id FROM tier_proposals WHERE status IN ('open','queued')"
+            ):
+                proposal = self.proposal(row["id"])
+                if incompatible or not valid_ranking(proposal["ranking"]):
+                    self.connection.execute(
+                        "UPDATE tier_proposals SET status='outdated',outcome=? WHERE id=?",
+                        (json.dumps(self.poll_counts(row["id"])), row["id"]),
+                    )
+            self.connection.execute(
+                "INSERT OR REPLACE INTO tier_meta VALUES('category_policy',?)",
+                (POLICY,),
+            )
 
     def _column(self, table, column, declaration):
         if column not in {
@@ -232,6 +276,10 @@ class TierStore:
         return not ids <= self.catalog.units.keys()
 
     def _require_active(self, ranking, details=None):
+        if not valid_ranking(ranking):
+            raise ValueError(
+                "A classificação precisa usar funções válidas, sem formas repetidas; Meta exige função principal."
+            )
         if self._inactive(ranking, details):
             raise ValueError(
                 "A proposta contém uma forma fora do catálogo ativo do jogo."
@@ -621,7 +669,8 @@ class TierStore:
                         reason = (
                             detail["reason"]
                             if row["tier"] == "META"
-                            else f"Saiu do Meta para {row['tier']}. " + detail["reason"]
+                            else f"Saiu do Meta para {LABELS[row['tier']]}. "
+                            + detail["reason"]
                         )
                         self.connection.execute(
                             "INSERT INTO tier_history(publication_id,unit_id,from_position,to_position,reason,sources,created_at) VALUES(?,?,?,?,?,?,?)",
@@ -1119,6 +1168,10 @@ class TierStore:
             )
             previous_ranking = json.loads(previous["ranking"])
             previous_explanations = json.loads(previous["explanations"])
+            if not valid_ranking(previous_ranking):
+                raise ValueError(
+                    "Essa versão usa as antigas notas por letras. O histórico foi preservado, mas não pode substituir a classificação por função."
+                )
             if self.catalog is not None:
                 retired = set(getattr(self.catalog, "retired", {}))
                 previous_ranking = [

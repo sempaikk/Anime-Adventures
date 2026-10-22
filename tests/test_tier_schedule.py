@@ -1,3 +1,5 @@
+from tier_ui import visible_text
+
 """Public countdowns reflect durable gates without promising unapproved polls."""
 
 import asyncio
@@ -43,7 +45,7 @@ class PollScheduleCase(unittest.TestCase):
 
     def propose(self):
         self.store.create_proposal(
-            [{"unit_id": "daki", "tier": "S"}],
+            [{"unit_id": "daki", "tier": "DAMAGE"}],
             {},
             details={},
             source_version="test",
@@ -284,7 +286,7 @@ class RuntimeCountdownCase(unittest.IsolatedAsyncioTestCase):
         await self.setup_panel()
         record = self.app.store.thread(1)
         index = self.env.partial(self.env.thread, int(record["intro_id"]))
-        self.assertIn(f"<t:{self.now + 3600}:R>", index.content)
+        self.assertIn(f"<t:{self.now + 3600}:R>", visible_text(index))
         index.edit.reset_mock()
         self.now += 30
         await self.app.panel_loop.coro(self.app)
@@ -292,8 +294,8 @@ class RuntimeCountdownCase(unittest.IsolatedAsyncioTestCase):
         self.now += 3570
         await self.app.panel_loop.coro(self.app)
         index.edit.assert_awaited_once()
-        self.assertIn("nenhuma proposta pronta", index.content)
-        self.assertNotIn("<t:", index.content)
+        self.assertIn("nenhuma proposta pronta", visible_text(index))
+        self.assertNotIn("<t:", visible_text(index))
         self.backend.analyze.assert_not_awaited()
 
     async def test_public_index_reports_inflight_analysis_without_technical_controls(
@@ -305,8 +307,8 @@ class RuntimeCountdownCase(unittest.IsolatedAsyncioTestCase):
         index = self.env.partial(
             self.env.thread, int(self.app.store.thread(1)["intro_id"])
         )
-        self.assertIn("avaliando os relatos agora", index.content)
-        self.assertIn("depende do resultado", index.content)
-        self.assertNotIn("Diagnóstico", index.content)
-        self.assertNotIn("tokens", index.content)
-        self.assertLessEqual(len(index.content.encode("utf-16-le")) // 2, 2000)
+        self.assertIn("avaliando os relatos agora", visible_text(index))
+        self.assertIn("depende do resultado", visible_text(index))
+        self.assertNotIn("Diagnóstico", visible_text(index))
+        self.assertNotIn("tokens", visible_text(index))
+        self.assertLessEqual(len(visible_text(index).encode("utf-16-le")) // 2, 2000)

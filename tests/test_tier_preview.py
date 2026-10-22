@@ -1,3 +1,6 @@
+import discord
+from tier_test_ui import call_text
+
 """Private visual scenarios and actual image-content validation."""
 
 import io
@@ -33,7 +36,7 @@ class VisualFramesCase(unittest.TestCase):
 
         self.assertEqual(pixels(2, (139, 59, 233, 153)), pixels(3, (235, 59, 329, 153)))
         self.assertEqual(
-            pixels(3, (139, 59, 233, 153)), pixels(4, (139, 155, 233, 249))
+            pixels(3, (139, 59, 233, 153)), pixels(4, (235, 155, 329, 249))
         )
         with (
             Image.open(io.BytesIO(frames[4]["png"])) as before,
@@ -53,7 +56,8 @@ class PrivateVisualCase(unittest.IsolatedAsyncioTestCase):
         await open_demo(self.app, i)
         self.assertTrue(i.response.defer.await_args.kwargs["ephemeral"])
         view = i.edit_original_response.await_args.kwargs["view"]
-        self.assertIsInstance(view, VisualDemoView)
+        self.assertIsInstance(view, discord.ui.LayoutView)
+        self.assertIsInstance(view.controller, VisualDemoView)
         self.assertFalse(await view.interaction_check(self.interaction(user=8)))
         with self.assertRaises(ValueError):
             await open_demo(self.app, self.interaction(user=8))
@@ -101,9 +105,9 @@ class PrivateVisualCase(unittest.IsolatedAsyncioTestCase):
         view = VisualDemoView(self.app, i)
         await asyncio.gather(*(view.next.callback(i) for _ in range(15)))
         self.assertEqual(view.index, 9)
-        self.assertIn("10/10", i.edit_original_response.await_args.kwargs["content"])
+        self.assertIn("10/10", call_text(i.edit_original_response.await_args))
         self.assertIn(
             "Retornar à grade vazia",
-            i.edit_original_response.await_args.kwargs["content"],
+            call_text(i.edit_original_response.await_args),
         )
         self.assertEqual(self.app.store.latest()["id"], 0)

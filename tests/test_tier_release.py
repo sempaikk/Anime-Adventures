@@ -1,3 +1,5 @@
+from tier_ui import visible_text
+
 """Release workflows: retired identities, live contribution files and durable repairs."""
 
 import hashlib
@@ -30,8 +32,12 @@ from tier_wiki import WikiSync
 NOTE = "Retrato artificial exclusivo do teste, sem imagem ou avaliação de jogo real."
 
 
-def row(uid, tier="S"):
-    return {"unit_id": uid, "tier": tier}
+def row(uid, tier="DAMAGE"):
+    return (
+        {"unit_id": uid, "tier": tier, "role": "DAMAGE"}
+        if tier == "META"
+        else {"unit_id": uid, "tier": tier}
+    )
 
 
 class ActiveCatalogCase(unittest.TestCase):
@@ -156,7 +162,7 @@ class CatalogMigrationCase(unittest.TestCase):
         # Old proposal results still render, even with a retired comparison.
         proposal = self.store.proposal(proposal["id"])
         proposal["details"] = {
-            "uraraka": {"reason": NOTE, "tier": "S", "before": None, "sources": []}
+            "uraraka": {"reason": NOTE, "tier": "DAMAGE", "before": None, "sources": []}
         }
         self.assertIn(
             "Gravity Hero", poll_embed(self.store, TierCatalog(), proposal).title
@@ -187,7 +193,7 @@ class CatalogMigrationCase(unittest.TestCase):
     def test_new_proposals_ingestion_and_rollback_cannot_restore_retired_forms(self):
         self.publish([row("uraraka"), row("daki")])
         self.store.bind_catalog(TierCatalog())
-        self.publish([row("daki", "A")])
+        self.publish([row("daki", "SUPPORT")])
         self.store.rollback(
             self.store.latest()["id"],
             7,
@@ -348,7 +354,8 @@ class PortraitIntegrityCase(unittest.TestCase):
         )
         change = {
             "unit_id": "bakugou",
-            "tier": "S",
+            "tier": "DAMAGE",
+            "role": "DAMAGE",
             "before": None,
             "confidence": 0.99,
             "supporting_comments": [],
@@ -449,7 +456,7 @@ class ReleaseRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.app.media.decide(suggestion, 7, approve=True)
         await self.app.panel_loop.coro(self.app)
         self.assertEqual(self.index().attachments, [])
-        self.assertNotIn("aguardam retrato", self.index().content)
+        self.assertNotIn("aguardam retrato", visible_text(self.index()))
         self.app.media.undo("pain", suggestion, 7)
         await self.app.panel_loop.coro(self.app)
         self.assertEqual(
@@ -483,7 +490,7 @@ class ReleaseRuntimeCase(unittest.IsolatedAsyncioTestCase):
             [
                 p
                 for _, p in self.env.payloads
-                if p.get("content", "").startswith("## Votações e histórico")
+                if visible_text(p).startswith("## Votações e histórico")
             ]
         )
         self.assertIsNone(self.app.store.thread(1)["intro_id"])
@@ -495,7 +502,7 @@ class ReleaseRuntimeCase(unittest.IsolatedAsyncioTestCase):
                 [
                     p
                     for _, p in self.env.payloads
-                    if p.get("content", "").startswith("## Votações e histórico")
+                    if visible_text(p).startswith("## Votações e histórico")
                 ]
             ),
             count_after_loss,
@@ -546,9 +553,11 @@ class ReleaseRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.app.store.set("previous-thread:1", "9999999999999999999")
         self.app.health.storage_level = "critical"
         await self.app.sync_index(panel, self.env.thread, force=True)
-        self.assertLessEqual(len(self.index().content.encode("utf-16-le")) // 2, 2000)
+        self.assertLessEqual(
+            len(visible_text(self.index()).encode("utf-16-le")) // 2, 2000
+        )
         self.assertLessEqual(len(PLAYER_GUIDE.encode("utf-16-le")) // 2, 2000)
-        self.assertIn("retratos-pendentes.txt", self.index().content)
+        self.assertIn("retratos-pendentes.txt", visible_text(self.index()))
 
     async def test_repeatable_verifier_checks_five_real_attachment_transitions_in_isolation(
         self,
