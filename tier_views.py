@@ -25,7 +25,7 @@ PLAYER_GUIDE = """## Como funciona a tier list
 
 **Resultados:** aparecem na própria proposta ao encerrar. A distribuição dos votos fica oculta durante a votação. Sinalizar problema envia um relato para revisão, sem acrescentar votos.
 
-**Retratos:** Sugerir imagem envia uma correção para revisão do responsável. Trocar um retrato não muda a posição do personagem."""
+**Retratos:** Sugerir imagem envia uma correção para revisão do responsável. Trocar um retrato não muda a posição do personagem. Consulte o andamento em Meus envios; a resposta aparece só para você."""
 
 
 async def reply(i, text=None, **kwargs):
@@ -83,6 +83,13 @@ class ThreadView(GuardedView):
         self.bot.require_thread(i, index_only=True)
         self.bot.require_human(i)
         await i.response.send_modal(ImageModal(self.bot, i))
+
+    @discord.ui.button(label="Meus envios", custom_id="tier:v3:submissions")
+    async def submissions(self, i, button):
+        self.bot.require_thread(i, index_only=True)
+        self.bot.require_human(i)
+        view = SubmissionView(self.bot, i)
+        await view.status.callback(i)
 
     @discord.ui.button(label="Como funciona", custom_id="tier:v3:help")
     async def help(self, i, button):
@@ -183,7 +190,10 @@ class SubmissionView(GuardedView):
 
     async def interaction_check(self, i):
         if i.user.id != self.actor or i.guild_id != self.guild:
-            await reply(i, "Consulte seus próprios envios com /tierlist.")
+            await reply(
+                i,
+                "Abra Meus envios no tópico oficial para consultar seus próprios envios.",
+            )
             return False
         return True
 

@@ -145,8 +145,9 @@ class PlayerAbuseCase(unittest.IsolatedAsyncioTestCase):
         await self.setup_panel()
         i = self.interaction(channel=self.env.thread)
         i.message = SimpleNamespace(id=999)
-        with self.assertRaises(ValueError):
-            await ThreadView(self.app).suggest.callback(i)
+        for button in (ThreadView(self.app).suggest, ThreadView(self.app).submissions):
+            with self.subTest(button=button.custom_id), self.assertRaises(ValueError):
+                await button.callback(i)
 
     async def test_forwarded_quotes_and_bulk_deleted_sources_are_not_evidence(self):
         message = self.source()
@@ -475,6 +476,24 @@ class HostingCase(unittest.TestCase):
         ):
             report = await verify(self.app, i)
         self.assertTrue(any(r["result"] == "failed" for r in report["checks"]))
+        self.assertEqual(self.env.payloads, [])
+
+    async def test_verification_rejects_remote_tierlist_with_unrestricted_permissions(
+        self,
+    ):
+        self.app.tree.fetch_commands.return_value[0].default_member_permissions = None
+        i = self.interaction()
+        i.edit_original_response = AsyncMock()
+        with patch(
+            "tier_verify.isolated_suite",
+            new_callable=AsyncMock,
+            return_value=(True, 100, "OK"),
+        ):
+            report = await verify(self.app, i)
+        failed = [row for row in report["checks"] if row["result"] == "failed"]
+        self.assertTrue(failed, report)
+        self.assertIn("Gerenciar servidor", str(failed))
+        self.env.channel.create_thread.assert_not_awaited()
         self.assertEqual(self.env.payloads, [])
 
     async def test_real_probe_cleanup_preserves_another_persons_message(self):

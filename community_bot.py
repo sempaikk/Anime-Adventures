@@ -8,7 +8,6 @@ import logging
 import os
 import signal
 import shutil
-import time
 from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import urlparse
@@ -26,7 +25,7 @@ from tier_domain import digest, relevant_units, safe, moment
 from tier_image import PanelRenderer, image_file, index_text, poll_embed
 from tier_media import MediaLibrary, MAX_UPLOAD
 from tier_store import TierStore
-from tier_views import AdminView, PollView, ThreadView, SubmissionView, reply
+from tier_views import AdminView, PollView, ThreadView, reply
 from tier_wiki import WikiSync
 
 log = logging.getLogger("tierlist")
@@ -75,8 +74,6 @@ class CommunityBot(commands.Bot):
         self.guild_locks = {}
         self.health = RuntimeHealth(self.is_ready, lambda: self.store.connection)
         self.owner_ids_set = set()
-        self.command_clock = time.monotonic
-        self.command_cooldowns = {}
         self.store.connection.execute(
             "CREATE TABLE IF NOT EXISTS tier_deliveries(key TEXT PRIMARY KEY,channel_id TEXT NOT NULL,message_id TEXT NOT NULL,created_at REAL NOT NULL)"
         )
@@ -510,7 +507,7 @@ class CommunityBot(commands.Bot):
             )
         if not panel and len(self.store.panels()) >= 100:
             raise ValueError(
-                "A capacidade desta instância está cheia. A consulta privada continua disponível."
+                "A capacidade desta instância está cheia. Os painéis existentes continuam disponíveis."
             )
         blob, checksum = await self.picture()
         if not message:
@@ -928,46 +925,22 @@ class CommunityBot(commands.Bot):
     def register_commands(self):
         @self.tree.command(
             name="tierlist",
-            description="Veja a classificação global e acompanhe as decisões no tópico.",
+            description="Prepare ou confira o painel da tier list global neste servidor.",
         )
         @app_commands.guild_only()
+        @app_commands.allowed_installs(guilds=True, users=False)
+        @app_commands.default_permissions(manage_guild=True)
         async def tierlist(i: discord.Interaction):
+            self.require_admin(i)
             await i.response.defer(ephemeral=True, thinking=True)
-            admin = bool(i.permissions.manage_guild)
-            if admin:
-                async with self.guild_lock(i.guild_id):
-                    panel, thread = await self.ensure_panel(i)
-                url = f"https://discord.com/channels/{i.guild_id}/{thread.id}"
-                await i.followup.send(
-                    f"**Painel pronto.** A imagem fica no canal; propostas, votos e resultados ficam no [tópico]({url}). Os comentários sobre o jogo são identificados automaticamente nos canais acessíveis ao bot.",
-                    view=AdminView(self, i),
-                    ephemeral=True,
-                )
-            else:
-                last = self.command_cooldowns.get(i.user.id)
-                if last is not None and self.command_clock() - last < 5:
-                    await reply(
-                        i, "Aguarde alguns segundos antes de consultar novamente."
-                    )
-                    return
-                self.command_cooldowns[i.user.id] = self.command_clock()
-                if len(self.command_cooldowns) > 1000:
-                    self.command_cooldowns = {
-                        u: t
-                        for u, t in self.command_cooldowns.items()
-                        if self.command_clock() - t < 60
-                    }
-                blob, _ = await self.picture()
-                file = image_file(blob)
-                view = (
-                    AdminView(self, i)
-                    if self.is_owner_id(i.user.id)
-                    else SubmissionView(self, i)
-                )
-                try:
-                    await i.followup.send(file=file, view=view, ephemeral=True)
-                finally:
-                    file.close()
+            async with self.guild_lock(i.guild_id):
+                panel, thread = await self.ensure_panel(i)
+            url = f"https://discord.com/channels/{i.guild_id}/{thread.id}"
+            await i.followup.send(
+                f"**Painel pronto.** A imagem fica no canal; propostas, votos e resultados ficam no [tópico]({url}). Membros participam pelos botões, sem precisar de comandos. Os comentários sobre o jogo são identificados automaticamente nos canais acessíveis ao bot.",
+                view=AdminView(self, i),
+                ephemeral=True,
+            )
 
         @self.tree.command(name="chatglobal", description="Em breve.")
         @app_commands.guild_only()

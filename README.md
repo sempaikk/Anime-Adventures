@@ -2,14 +2,14 @@
 
 Tier list global com retratos originais, análise de relatos e decisões da comunidade. **Somente dois comandos, sem argumentos:**
 
-- **`/tierlist`** — publica o painel para administradores; membros consultam a classificação em uma resposta privada.
+- **`/tierlist`** — exclusivo de quem tem **Administrador** ou **Gerenciar servidor**; publica ou confere o painel. Membros acompanham a imagem e participam pelos botões do tópico.
 - **`/chatglobal`** — responde **Em breve.** Nenhuma conversa é apagada ou retransmitida por esse comando.
 
 ## Um canal, uma imagem e um tópico
 
 O administrador usa `/tierlist` em um canal de texto. O bot publica **somente um PNG**, sem texto, embed ou botões na mensagem pública, e cria o tópico **Votações e histórico** ligado a ela. Repetir o comando reutiliza esse conjunto, inclusive quando várias pessoas executam juntas. O painel oficial existente é preservado se o comando for usado em outro canal.
 
-O tópico contém um índice editável, propostas, votações, resultados e revisões. O índice oferece **Sugerir imagem**, **Como funciona** e atalhos para decisões recentes. A classificação é apresentada somente na imagem, sem arquivo de texto. O resultado aparece na própria proposta encerrada. O canal principal continua com a mesma imagem editada; não há botão de histórico nela nem segundo canal obrigatório.
+O tópico contém um índice editável, propostas, votações, resultados e revisões. O índice oferece **Sugerir imagem**, **Meus envios**, **Como funciona** e atalhos para decisões recentes. A classificação é apresentada somente na imagem, sem arquivo de texto. O resultado aparece na própria proposta encerrada. O canal principal continua com a mesma imagem editada; não há botão de histórico nela nem segundo canal obrigatório.
 
 Os retratos mantêm os pixels originais, sem ampliação artificial ou geração de personagens. A grade segue **Meta, S, A, B, C, D e E**, com ordem da esquerda para a direita e linhas que crescem. **A imagem não tem rodapé técnico.** A data da classificação fica no índice; contadores, versões e conexão ficam no diagnóstico exclusivo do dono. O arquivo não recebe a descrição artificial de ponto que causava um indicador ALT desnecessário.
 
@@ -39,7 +39,7 @@ Resultados recentes entram como contexto; **isso não treina os pesos da IA** ne
 
 **Sugerir imagem** abre um formulário com personagem/forma, skin, motivo, retrato e print opcional do jogo. São aceitos PNG, JPG e WebP estáticos, até 4 MB por arquivo e quatro milhões de pixels. O processamento aplica a orientação da foto, remove metadados e limita dimensões, duplicatas, frequência e armazenamento. Não executa anexos nem busca URLs fornecidas pelo usuário.
 
-Somente o responsável pelo aplicativo aprova ou rejeita. A revisão privada compara o retrato atual com a sugestão; um recorte de fundo uniforme pode ser experimentado e desfeito antes da aprovação. Não é uma reconstrução da arte por IA. As versões anteriores são preservadas para restauração. Alterar retratos **não altera posições**. Membros consultam **Meus envios** na resposta privada de `/tierlist`.
+Somente o responsável pelo aplicativo aprova ou rejeita. A revisão privada compara o retrato atual com a sugestão; um recorte de fundo uniforme pode ser experimentado e desfeito antes da aprovação. Não é uma reconstrução da arte por IA. As versões anteriores são preservadas para restauração. Alterar retratos **não altera posições**. Membros consultam **Meus envios** no tópico; a resposta com o andamento é privada.
 
 Propostas têm **Sinalizar problema**. Os relatos entram na revisão privada, sem acrescentar votos ou modificar posições. O responsável pode suspender uma proposta aberta, reverter a última classificação e restaurar retratos, com registros públicos de correção. Administradores de outros servidores não alteram a classificação global diretamente.
 
@@ -59,7 +59,7 @@ Há um orçamento local de **48 chamadas e 150 mil tokens por dia UTC**, com ent
 
 O bot não anexa nomes, IDs do Discord ou nomes de servidores aos pedidos de análise. Menções, URLs, emails e padrões de telefone são removidos do texto antes do envio. Isso não garante anonimização de qualquer texto livre. Comentários locais ficam até sete dias; votos individuais, relatos e sugestões encerradas têm retenção limitada. Backups locais podem conservar dados removidos até sua rotação. Resultados agregados e mensagens públicas de histórico permanecem.
 
-Ative **Message Content Intent** no Developer Portal. A instalação usa `bot` e `applications.commands`. No canal do painel, conceda ao bot:
+Ative **Message Content Intent** no Developer Portal. A instalação no servidor usa `bot` e `applications.commands` e exige autorização de alguém com **Gerenciar servidor** ou **Administrador**. `/tierlist` tem permissão padrão de Gerenciar servidor e valida essa permissão novamente ao executar; habilitar o comando para outro cargo nas configurações do Discord não libera a criação do painel. Membros não precisam executar comandos para usar os botões. No canal do painel, conceda ao bot:
 
 - Ver canal, Enviar mensagens e Ler histórico;
 - Inserir links e Anexar arquivos;

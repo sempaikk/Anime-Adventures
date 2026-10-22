@@ -142,7 +142,13 @@ class FakeDiscord:
         app._connection.user = SimpleNamespace(id=42)
         app.tree.fetch_commands = AsyncMock(
             return_value=[
-                SimpleNamespace(name=name, options=[])
+                SimpleNamespace(
+                    name=name,
+                    options=[],
+                    default_member_permissions=app.tree.get_command(
+                        name
+                    ).default_permissions,
+                )
                 for name in ("tierlist", "chatglobal")
             ]
         )
@@ -306,6 +312,12 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         )
         self.assertTrue(all(not c.parameters for c in self.app.tree.get_commands()))
         self.assertIsNone(self.app.help_command)
+        command = self.app.tree.get_command("tierlist")
+        self.assertEqual(
+            command.default_permissions.value,
+            discord.Permissions(manage_guild=True).value,
+        )
+        self.assertEqual(command.allowed_installs.to_array(), [0])
 
     async def test_setup_posts_only_image_then_index_in_its_thread(self):
         i = await self.setup_panel()
@@ -373,12 +385,48 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
             await self.setup_panel()
         self.assertEqual(self.env.payloads, [])
 
-    async def test_member_consultation_does_not_create_a_panel(self):
-        i = self.interaction(admin=False, user=8)
+    async def test_tierlist_denies_non_admin_even_for_direct_or_owner_invocation(self):
+        for user in (7, 8):
+            i = self.interaction(admin=False, user=user)
+            with (
+                self.subTest(user=user),
+                self.assertRaisesRegex(ValueError, "Gerenciar servidor"),
+            ):
+                await self.app.tree.get_command("tierlist").callback(i)
+            self.assertEqual(self.env.payloads, [])
+            i.response.defer.assert_not_awaited()
+            i.followup.send.assert_not_awaited()
+        self.assertEqual(self.app.store.panels(), [])
+
+    async def test_other_server_admin_can_set_up_panel_without_owner_controls(self):
+        i = self.interaction(user=8)
         await self.app.tree.get_command("tierlist").callback(i)
-        self.assertEqual(self.env.payloads, [])
-        self.assertTrue(i.followup.send.await_args.kwargs["ephemeral"])
-        self.assertIsNone(i.followup.send.await_args.kwargs["file"].description)
+        response = i.followup.send.await_args
+        self.assertTrue(response.kwargs["ephemeral"])
+        self.assertEqual(
+            [button.label for button in response.kwargs["view"].children],
+            ["Conferir painel"],
+        )
+        self.assertEqual(len(self.app.store.panels()), 1)
+
+    async def test_member_can_reopen_only_their_own_submission_status_from_topic(self):
+        await self.setup_panel()
+        mine = self.app.media.submit(
+            "daki", 8, 1, "", "Justificativa de teste do meu retrato.", png("red")
+        )
+        other = self.app.media.submit(
+            "daki", 9, 1, "", "Justificativa de teste de outro retrato.", png("blue")
+        )
+        i = self.interaction(admin=False, user=8, channel=self.env.thread)
+        i.message = SimpleNamespace(id=int(self.app.store.thread(1)["intro_id"]))
+        sent = len(self.env.payloads)
+        await ThreadView(self.app).submissions.callback(i)
+        response = i.response.send_message.await_args
+        self.assertTrue(response.kwargs["ephemeral"])
+        self.assertIn(f"#{mine} ·", response.args[0])
+        self.assertNotIn(f"#{other} ·", response.args[0])
+        self.assertIn("aguardando revisão", response.args[0])
+        self.assertEqual(len(self.env.payloads), sent)
 
     async def test_global_chat_remains_inactive(self):
         i = self.interaction()
@@ -546,7 +594,8 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
     async def test_public_controls_have_no_consent_or_config_menus(self):
         view = ThreadView(self.app)
         self.assertEqual(
-            [item.label for item in view.children], ["Sugerir imagem", "Como funciona"]
+            [item.label for item in view.children],
+            ["Sugerir imagem", "Meus envios", "Como funciona"],
         )
         self.assertTrue(
             all(

@@ -6,6 +6,9 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 ## Interface e comandos
 
 - Somente `/tierlist` e `/chatglobal`, sem argumentos. Chat global permanece inativo.
+- `/tierlist` é exclusivo de Administrador/Gerenciar servidor, com permissão
+  padrão do Discord e validação na execução. Membros veem a imagem, votam,
+  sugerem retratos e consultam Meus envios pelos botões do tópico.
 - Um painel oficial por servidor: somente PNG, sem embed ou botões públicos.
 - Um tópico público ligado à mensagem: propostas, votos, resultados e histórico.
 - Índice editado no tópico: regras, situação real da análise, proposta aberta,

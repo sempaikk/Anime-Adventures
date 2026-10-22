@@ -219,7 +219,7 @@ def index_text(store, panel, *, wiki_status="cache", media_pending=0, ai_enabled
                 f"**Última revisão:** [ver registro](https://discord.com/channels/{panel['guild_id']}/{thread['thread_id']}/{audit[0]['message_id']})."
             )
     lines += [
-        "\nTem um retrato melhor ou uma skin atualizada? Use **Sugerir imagem**. A substituição passa por revisão.",
+        "\nTem um retrato melhor ou uma skin atualizada? Use **Sugerir imagem** e acompanhe em **Meus envios**. A substituição passa por revisão.",
     ]
     return "\n".join(lines)
 

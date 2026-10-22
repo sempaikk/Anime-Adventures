@@ -1,5 +1,35 @@
 # Estreia e verificação na hospedagem
 
+## Recomendação para lançar esta versão
+
+A recomendação é uma estreia beta em um a três servidores, sem esperar por
+chat global ou novos módulos. O núcleo já tem testes isolados e validação real
+de Discord/Groq; a carga e o comportamento de comunidades reais precisam ser
+observados nessa estreia. Não há garantia de ausência total de erros.
+
+Antes da divulgação geral:
+
+1. Atualizar/reiniciar a hospedagem e conferir a permissão padrão de `/tierlist`.
+   O verificador também valida essa permissão no registro real do Discord.
+2. Conferir a visão de um membro: ler a imagem e o tópico, votar, consultar
+   Como funciona, enviar retratos e abrir Meus envios; sem controles do dono.
+   Manter o canal principal reservado ao painel e a discussão no tópico.
+3. Reunir ao menos cinco participantes reais para aprovar as primeiras posições.
+   A lista começa vazia e depende de relatos válidos e propostas fundamentadas;
+   apresentar como classificação comunitária em construção, sem preencher
+   posições artificiais para a divulgação.
+4. Publicar o aviso sobre a análise de comentários nos canais acessíveis ao bot
+   e informar que wiki, IA e votos comunitários podem precisar de correção.
+5. Exportar um backup completo para fora da hospedagem. No primeiro período,
+   acompanhar diariamente cota gratuita, disponibilidade, pendências de revisão
+   e eventuais relatos; expandir após observar uso estável.
+
+Para esta estreia, os controles de segurança, revisão e recuperação já fazem
+parte do produto. Evitar adicionar novos comandos, painéis técnicos públicos,
+aprovação automática de retratos ou aumentar a frequência das votações antes
+de medir o uso real. Não há estimativa validada de capacidade para dezenas de
+servidores no plano gratuito.
+
 ## Caminho curto para quem cuida do bot sozinho
 
 1. No Bot-Hosting.net, confirme **Python 3.12**, **`bot.py`**, pull automático e as variáveis já cadastradas: `DISCORD_TOKEN`, `GROQ_API_KEY` e `DATA_DIR=./state`. Reinicie após a atualização do GitHub. Não recrie a implantação nem apague `state`.
@@ -19,8 +49,8 @@ Baixe `verificacao-tierlist.json` para acompanhar falhas. O relatório diferenci
 ## O que observar na interface
 
 - Somente `/tierlist` e `/chatglobal`, sem campos adicionais. Chat global responde **Em breve.**
-- Uma imagem oficial por servidor. Repetir `/tierlist`, até em outro canal, reutiliza a imagem existente. A consulta de um membro é privada.
-- O tópico tem índice, classificação textual, Sugerir imagem, propostas, resultados e revisões. A mesma proposta é editada com o encerramento.
+- `/tierlist` é restrito a Administrador/Gerenciar servidor, tanto na permissão padrão quanto na execução. Uma imagem oficial por servidor; repetir o comando, até em outro canal, reutiliza a imagem existente. Membros usam a imagem e os botões, sem comandos.
+- O tópico tem índice, Sugerir imagem, Meus envios, Como funciona, propostas, resultados e revisões. A classificação fica somente no PNG. A mesma proposta é editada com o encerramento.
 - Ninguém é classificado só para preencher a grade. **Sem avaliação** é diferente de E. A imagem não tem rodapé técnico; o índice mostra a última classificação. Contadores, conexão e revisão de mídia ficam no diagnóstico do dono.
 - Votos abertos mostram participantes, sem distribuição. Encerrados revelam os totais. A conta tem um voto na rede; trocar não soma outro.
 - O formulário pede personagem/forma exatos e aceita arquivos estáticos validados. A imagem só é substituída após revisão do responsável. Meus envios mostra o andamento em particular.

@@ -332,11 +332,21 @@ async def _verify(bot, i):
                 raise ValueError(
                     "Os comandos registrados no Discord não correspondem aos dois comandos sem opções."
                 )
+            tier_command = next(c for c in remote if c.name == "tierlist")
+            if (
+                tier_command.default_member_permissions is None
+                or tier_command.default_member_permissions.value
+                != discord.Permissions(manage_guild=True).value
+            ):
+                raise ValueError(
+                    "A permissão padrão de /tierlist no Discord precisa ser Gerenciar servidor. Atualize e reinicie o bot para sincronizar os comandos."
+                )
             report["checks"].append(
                 {
                     "name": "Registro real dos dois comandos",
                     "result": "passed",
                     "level": "Discord real",
+                    "detail": "/tierlist registrado com permissão padrão de Gerenciar servidor.",
                 }
             )
             private = bool(
