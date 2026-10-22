@@ -15,7 +15,7 @@ log = logging.getLogger("tierlist.ui")
 PLAYER_GUIDE = """## Como funciona a tier list
 **Leia a imagem:** Meta é a categoria mais alta, seguida de S, A, B, C, D e E. Na mesma linha, os personagens mais bem colocados ficam à esquerda. Trocar essa ordem não precisa mudar o tier.
 
-**Sem avaliação não significa ruim.** Uma forma só aparece na grade depois de uma decisão aprovada. O arquivo do tópico inclui os nomes completos e as formas ainda sem avaliação.
+**Sem avaliação não significa ruim.** Uma forma só aparece na grade depois de uma decisão aprovada. As formas ainda sem avaliação ficam fora da imagem.
 
 **Antes de votar:** leia o motivo, as condições, a ressalva e as referências. Considere a forma exata, o custo e as situações de uso. A wiki é comunitária e pode estar desatualizada.
 

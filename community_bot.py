@@ -3,7 +3,6 @@
 from __future__ import annotations
 import asyncio
 import hashlib
-import io
 import json
 import logging
 import os
@@ -24,7 +23,7 @@ from runtime_health import RuntimeHealth
 from tier_analysis import TierAnalyzer
 from tier_backup import acquire_lease, maintain_tier_storage
 from tier_domain import digest, relevant_units, safe, moment
-from tier_image import PanelRenderer, image_file, index_text, poll_embed, ranking_text
+from tier_image import PanelRenderer, image_file, index_text, poll_embed
 from tier_media import MediaLibrary, MAX_UPLOAD
 from tier_store import TierStore
 from tier_views import AdminView, PollView, ThreadView, SubmissionView, reply
@@ -608,44 +607,37 @@ class CommunityBot(commands.Bot):
         previous = self.store.get("previous-thread:" + panel["guild_id"])
         if previous and previous != str(thread.id):
             text += f"\n[Histórico do tópico anterior](https://discord.com/channels/{panel['guild_id']}/{previous})."
-        blob = ranking_text(self.store.latest(), self.catalog)
-        signature = digest([text, hashlib.sha256(blob).hexdigest()])
+        signature = digest(text)
         if record["intro_id"] and record["index_hash"] == signature:
             return
-        file = discord.File(io.BytesIO(blob), filename="classificacao.txt")
         key = f"index:{thread.id}"
-        try:
-            message = None
-            if record["intro_id"]:
-                try:
-                    message = await thread.get_partial_message(
-                        int(record["intro_id"])
-                    ).edit(
-                        content=text,
-                        embeds=[],
-                        attachments=[file],
-                        view=ThreadView(self),
-                    )
-                except discord.NotFound:
-                    self.forget_delivery(key)
-                    file.reset()
-            if message is None:
-                message = await self.deliver(
-                    thread,
-                    key,
+        message = None
+        if record["intro_id"]:
+            try:
+                message = await thread.get_partial_message(
+                    int(record["intro_id"])
+                ).edit(
                     content=text,
-                    file=file,
+                    embeds=[],
+                    attachments=[],
                     view=ThreadView(self),
-                    marker=lambda m: m.content.startswith("## Votações e histórico"),
                 )
-            self.store.remember_thread(panel["guild_id"], thread.id, message.id)
-            with self.store.connection:
-                self.store.connection.execute(
-                    "UPDATE tier_threads SET index_hash=? WHERE guild_id=?",
-                    (signature, panel["guild_id"]),
-                )
-        finally:
-            file.close()
+            except discord.NotFound:
+                self.forget_delivery(key)
+        if message is None:
+            message = await self.deliver(
+                thread,
+                key,
+                content=text,
+                view=ThreadView(self),
+                marker=lambda m: m.content.startswith("## Votações e histórico"),
+            )
+        self.store.remember_thread(panel["guild_id"], thread.id, message.id)
+        with self.store.connection:
+            self.store.connection.execute(
+                "UPDATE tier_threads SET index_hash=? WHERE guild_id=?",
+                (signature, panel["guild_id"]),
+            )
 
     def purge_inaccessible_sources(self):
         for row in self.store.rows(

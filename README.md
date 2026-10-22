@@ -9,11 +9,11 @@ Tier list global com retratos originais, análise de relatos e decisões da comu
 
 O administrador usa `/tierlist` em um canal de texto. O bot publica **somente um PNG**, sem texto, embed ou botões na mensagem pública, e cria o tópico **Votações e histórico** ligado a ela. Repetir o comando reutiliza esse conjunto, inclusive quando várias pessoas executam juntas. O painel oficial existente é preservado se o comando for usado em outro canal.
 
-O tópico contém um índice editável, classificação completa por nome em `.txt`, propostas, votações, resultados e revisões. O índice oferece **Sugerir imagem** e atalhos para decisões recentes. O resultado aparece na própria proposta encerrada. O canal principal continua com a mesma imagem editada; não há botão de histórico nela nem segundo canal obrigatório.
+O tópico contém um índice editável, propostas, votações, resultados e revisões. O índice oferece **Sugerir imagem**, **Como funciona** e atalhos para decisões recentes. A classificação é apresentada somente na imagem, sem arquivo de texto. O resultado aparece na própria proposta encerrada. O canal principal continua com a mesma imagem editada; não há botão de histórico nela nem segundo canal obrigatório.
 
 Os retratos mantêm os pixels originais, sem ampliação artificial ou geração de personagens. A grade segue **Meta, S, A, B, C, D e E**, com ordem da esquerda para a direita e linhas que crescem. **A imagem não tem rodapé técnico.** A data da classificação fica no índice; contadores, versões e conexão ficam no diagnóstico exclusivo do dono. O arquivo não recebe a descrição artificial de ponto que causava um indicador ALT desnecessário.
 
-O catálogo inicial tem **549 identidades/formas, 455 retratos válidos e 94 pendências**. As formas sem classificação ficam em **Sem avaliação**, no arquivo textual, e não são colocadas em E. Um retrato ausente usa um marcador, sem tomar a imagem de outra evolução. A classificação inicial é vazia: não publicamos posições fictícias.
+O catálogo inicial tem **549 identidades/formas, 455 retratos válidos e 94 pendências**. As formas sem classificação ficam fora da imagem e não são colocadas em E. Um retrato ausente usa um marcador, sem tomar a imagem de outra evolução. A classificação inicial é vazia: não publicamos posições fictícias.
 
 **Como funciona**, no tópico, explica em particular a leitura da imagem, votos, resultados, formas sem avaliação e envio de retratos. O dono recebe controles técnicos exclusivos. Outros administradores recebem **Conferir painel**, com links e orientações de permissões do próprio servidor, sem dados internos da IA, banco ou revisões globais.
 

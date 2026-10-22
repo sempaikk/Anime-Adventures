@@ -168,28 +168,6 @@ def image_file(blob):
     return discord.File(io.BytesIO(blob), filename="tierlist.png")
 
 
-def ranking_text(publication, catalog):
-    lines = [
-        "ANIME ADVENTURES · CLASSIFICAÇÃO GLOBAL",
-        moment(publication["created_at"]),
-        "Ordem dentro de cada tier: da esquerda para a direita.",
-        "",
-    ]
-    for tier in TIERS:
-        lines.append("META" if tier == "META" else tier)
-        rows = [r for r in publication["ranking"] if r["tier"] == tier]
-        lines.extend(
-            f"{i}. {catalog.units[r['unit_id']].name}" for i, r in enumerate(rows, 1)
-        )
-        if not rows:
-            lines.append("Sem classificação confirmada.")
-        lines.append("")
-    ranked = {r["unit_id"] for r in publication["ranking"]}
-    pending = sorted(u.name for u in catalog.units.values() if u.id not in ranked)
-    lines += ["SEM AVALIAÇÃO", "Falta de evidência não significa tier E.", *pending]
-    return ("\n".join(lines) + "\n").encode()
-
-
 def index_text(store, panel, *, wiki_status="cache", media_pending=0, ai_enabled=None):
     thread = store.thread(panel["guild_id"])
     activity = store.get("analysis_status") or "waiting"
@@ -241,8 +219,7 @@ def index_text(store, panel, *, wiki_status="cache", media_pending=0, ai_enabled
                 f"**Última revisão:** [ver registro](https://discord.com/channels/{panel['guild_id']}/{thread['thread_id']}/{audit[0]['message_id']})."
             )
     lines += [
-        "\nO arquivo abaixo contém a classificação completa por nome. **Sem avaliação** não é uma posição ruim.",
-        "Tem um retrato melhor ou uma skin atualizada? Use **Sugerir imagem**. A substituição passa por revisão.",
+        "\nTem um retrato melhor ou uma skin atualizada? Use **Sugerir imagem**. A substituição passa por revisão.",
     ]
     return "\n".join(lines)
 

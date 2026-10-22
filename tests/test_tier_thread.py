@@ -12,7 +12,7 @@ from PIL import Image
 from community_bot import CommunityBot, PERMISSIONS
 from community_domain import Catalog
 from tier_domain import relevant_units
-from tier_image import poll_embed, ranking_text
+from tier_image import poll_embed
 from tier_media import MediaLibrary, prepare
 from tier_store import TierStore
 from tier_views import AdminView, ThreadView, ImageModal, PrivateView
@@ -321,9 +321,43 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("description", parent[0]["attachments"][0])
         self.assertTrue(i.followup.send.await_args.kwargs["ephemeral"])
         self.assertTrue(thread["intro_id"])
-        text = self.env.partial(self.env.thread, int(thread["intro_id"])).content
+        index = self.env.partial(self.env.thread, int(thread["intro_id"]))
+        self.assertEqual(index.attachments, [])
+        text = index.content
         self.assertIn("Votações e histórico", text)
         self.assertNotIn("Participar da análise", text)
+        self.assertNotIn("arquivo abaixo", text)
+
+    async def test_existing_index_removes_legacy_text_file_without_reposting(self):
+        await self.setup_panel()
+        panel = self.app.store.panels()[0]
+        record = self.app.store.thread(1)
+        index = self.env.partial(self.env.thread, int(record["intro_id"]))
+        image = self.env.partial(self.env.channel, int(panel["message_id"]))
+        image_edit_count = image.edit.await_count
+        image_attachments = list(image.attachments)
+        index.content += "\nO arquivo abaixo contém a classificação completa por nome."
+        index.attachments = [SimpleNamespace(filename="classificacao.txt")]
+        with self.app.store.connection:
+            self.app.store.connection.execute(
+                "UPDATE tier_threads SET index_hash=? WHERE guild_id=?",
+                ("legacy-with-text-export", "1"),
+            )
+        index.edit.reset_mock()
+        sent = len(self.env.payloads)
+
+        await self.app.panel_loop.coro(self.app)
+
+        self.assertEqual(self.app.store.thread(1)["intro_id"], record["intro_id"])
+        self.assertEqual(index.attachments, [])
+        self.assertEqual(index.edit.await_args.kwargs["attachments"], [])
+        self.assertNotIn("arquivo abaixo", index.content)
+        self.assertEqual(len(self.env.payloads), sent)
+        self.assertEqual(image.edit.await_count, image_edit_count)
+        self.assertEqual(image.attachments, image_attachments)
+
+        await self.app.panel_loop.coro(self.app)
+        index.edit.assert_awaited_once()
 
     async def test_repeated_concurrent_setup_reuses_image_and_topic(self):
         await asyncio.gather(self.setup_panel(), self.setup_panel())
@@ -597,6 +631,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(kwargs["ephemeral"])
         text = i.response.send_message.await_args.args[0]
         self.assertIn("Sem avaliação", text)
+        self.assertNotIn("arquivo do tópico", text)
         self.assertLessEqual(len(text), 2000)
 
 
@@ -776,12 +811,6 @@ class MediaCase(unittest.TestCase):
             self.store.rollback(
                 version, 7, "Tentativa repetida com uma referência de versão antiga."
             )
-
-    def test_unrated_units_are_not_assigned_to_tier_e_in_text_export(self):
-        text = ranking_text(self.store.latest(), self.catalog).decode()
-        self.assertIn("SEM AVALIAÇÃO", text)
-        self.assertIn(self.catalog.units["daki"].name, text)
-        self.assertEqual(self.store.latest()["ranking"], [])
 
 
 class RelevanceCase(unittest.TestCase):

@@ -9,7 +9,8 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 - Um painel oficial por servidor: somente PNG, sem embed ou botões públicos.
 - Um tópico público ligado à mensagem: propostas, votos, resultados e histórico.
 - Índice editado no tópico: regras, situação real da análise, proposta aberta,
-  última mudança, versão textual da classificação e envio de imagens.
+  última mudança e envio de imagens. A classificação aparece somente no PNG,
+  sem exportação textual anexada ao tópico.
 - Configuração/diagnóstico privado; sem menus de escolher canais de análise,
   adesão individual ou avisos de consentimento publicados pelo bot. O aviso aos
   participantes fica por conta da administração do servidor.
