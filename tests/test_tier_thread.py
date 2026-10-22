@@ -334,7 +334,9 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(i.followup.send.await_args.kwargs["ephemeral"])
         self.assertTrue(thread["intro_id"])
         index = self.env.partial(self.env.thread, int(thread["intro_id"]))
-        self.assertEqual(index.attachments, [])
+        self.assertEqual(
+            [a.filename for a in index.attachments], ["retratos-pendentes.txt"]
+        )
         text = index.content
         self.assertIn("Votações e histórico", text)
         self.assertNotIn("Participar da análise", text)
@@ -361,8 +363,13 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         await self.app.panel_loop.coro(self.app)
 
         self.assertEqual(self.app.store.thread(1)["intro_id"], record["intro_id"])
-        self.assertEqual(index.attachments, [])
-        self.assertEqual(index.edit.await_args.kwargs["attachments"], [])
+        self.assertEqual(
+            [a.filename for a in index.attachments], ["retratos-pendentes.txt"]
+        )
+        self.assertEqual(
+            [a.filename for a in index.edit.await_args.kwargs["attachments"]],
+            ["retratos-pendentes.txt"],
+        )
         self.assertNotIn("arquivo abaixo", index.content)
         self.assertEqual(len(self.env.payloads), sent)
         self.assertEqual(image.edit.await_count, image_edit_count)

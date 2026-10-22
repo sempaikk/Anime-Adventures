@@ -3,6 +3,7 @@
 from __future__ import annotations
 import asyncio
 import hashlib
+import io
 import json
 import logging
 import os
@@ -18,13 +19,14 @@ from discord import app_commands
 from discord.ext import commands, tasks
 from discord.http import handle_message_parameters
 from dotenv import load_dotenv
-from community_domain import Catalog
+from tier_catalog import TierCatalog
 from runtime_health import RuntimeHealth
 from tier_analysis import DAILY_CALLS, DAILY_TOKENS, TierAnalyzer
 from tier_backup import acquire_lease, maintain_tier_storage
 from tier_domain import digest, relevant_units, safe, moment
 from tier_image import PanelRenderer, image_file, index_text, poll_embed
 from tier_media import MediaLibrary, MAX_UPLOAD
+from tier_portraits import PortraitInventory
 from tier_store import TierStore
 from tier_views import AdminView, PollView, ThreadView, reply
 from tier_wiki import WikiSync
@@ -52,24 +54,29 @@ class CommunityBot(commands.Bot):
             allowed_mentions=discord.AllowedMentions.none(),
         )
         self.directory = Path(data_dir or os.getenv("DATA_DIR", "state"))
-        self.lease = acquire_lease(self.directory)
-        try:
-            self.store = TierStore(self.directory / "tierlist.sqlite3")
-        except BaseException:
-            self.lease.close()
-            raise
-        self.catalog = Catalog(
+        self.catalog = TierCatalog(
             min_mention_length=3,
             extra_aliases={"gyutaro": ["Giltaro", "Gyuutaro", "Gyuutarou"]},
         )
-        self.media = MediaLibrary(self.store, self.catalog)
-        self.analyzer = TierAnalyzer(
-            self.store,
-            self.catalog,
-            backend=backend,
-            source_guard=self.purge_inaccessible_sources,
-        )
-        self.wiki = WikiSync(self.store, self.catalog, self.analyzer.evidence)
+        self.lease = acquire_lease(self.directory)
+        try:
+            self.store = TierStore(self.directory / "tierlist.sqlite3")
+            self.media = MediaLibrary(self.store, self.catalog)
+            self.analyzer = TierAnalyzer(
+                self.store,
+                self.catalog,
+                backend=backend,
+                source_guard=self.purge_inaccessible_sources,
+            )
+            self.wiki = WikiSync(self.store, self.catalog, self.analyzer.evidence)
+            self.store.bind_catalog(self.catalog)
+        except BaseException:
+            if hasattr(self, "store"):
+                self.store.close()
+            self.lease.close()
+            raise
+        self.portrait_inventory = PortraitInventory(self.catalog, self.media)
+        self.index_checks = {}
         self.renderer = PanelRenderer(self.media.root)
         self.render_lock = asyncio.Lock()
         self.analysis_lock = asyncio.Lock()
@@ -82,10 +89,6 @@ class CommunityBot(commands.Bot):
         self.guild_locks = {}
         self.health = RuntimeHealth(self.is_ready, lambda: self.store.connection)
         self.owner_ids_set = set()
-        self.store.connection.execute(
-            "CREATE TABLE IF NOT EXISTS tier_deliveries(key TEXT PRIMARY KEY,channel_id TEXT NOT NULL,message_id TEXT NOT NULL,created_at REAL NOT NULL)"
-        )
-        self.store.connection.commit()
         self.register_commands()
 
     def is_owner_id(self, actor):
@@ -206,6 +209,7 @@ class CommunityBot(commands.Bot):
     async def on_guild_remove(self, guild):
         self.store.remove_guild(guild.id)
         self.guild_locks.pop(guild.id, None)
+        self.index_checks.pop(str(guild.id), None)
 
     async def on_message(self, message):
         self.collect_message(message)
@@ -265,6 +269,10 @@ class CommunityBot(commands.Bot):
             )
             self.store.connection.execute(
                 "UPDATE tier_poll_messages SET status='removed' WHERE message_id=?",
+                (str(event.message_id),),
+            )
+            self.store.connection.execute(
+                "UPDATE tier_threads SET index_hash='' WHERE intro_id=?",
                 (str(event.message_id),),
             )
         # Deleted poll copies are respected. Panel repairs require an explicit /tierlist.
@@ -363,6 +371,7 @@ class CommunityBot(commands.Bot):
             text += f"\n**Tópico:** {thread['status']}."
         if self.is_owner_id(i.user.id):
             text += f"\n**Catálogo:** {len(self.catalog.units)} formas · {max(0, len(self.catalog.units) - len(latest['ranking']))} sem avaliação.\n**Retratos:** revisão {int(self.store.get('media_revision') or 0)}."
+            text += f"\n**Pendências de retrato:** {self.portrait_inventory.get().count}; {len(self.catalog.retired)} formas retiradas do catálogo ativo."
             text += f"\n**Backup:** {'falha na última tentativa; confira o armazenamento e exporte a cópia anterior' if self.health.backup_error else 'sem falha registrada'}."
             error = self.store.get("analysis_error")
             if error:
@@ -468,19 +477,40 @@ class CommunityBot(commands.Bot):
                     self.remember_delivery(key, channel.id, message.id)
                     return channel.get_partial_message(message.id)
         self.store.set("delivery-attempt:" + key, self.store.clock())
-        nonce = str(int(hashlib.sha256(key.encode()).hexdigest()[:15], 16))
+        nonce_key = "delivery-nonce:" + key
+        generation = int(self.store.get(nonce_key) or 0)
         with handle_message_parameters(
-            nonce=nonce, allowed_mentions=discord.AllowedMentions.none(), **kwargs
+            allowed_mentions=discord.AllowedMentions.none(), **kwargs
         ) as params:
-            if params.payload is not None:
-                params.payload["enforce_nonce"] = True
-            else:
-                for part in params.multipart:
-                    if part["name"] == "payload_json":
-                        payload = json.loads(part["value"])
-                        payload["enforce_nonce"] = True
-                        part["value"] = json.dumps(payload)
-            data = await self.http.send_message(channel.id, params=params)
+            for attempt in range(2):
+                nonce = str(
+                    int(
+                        hashlib.sha256(
+                            f"{self.store.get('salt')}:{key}:{generation}".encode()
+                        ).hexdigest()[:15],
+                        16,
+                    )
+                )
+                if params.payload is not None:
+                    params.payload.update(nonce=nonce, enforce_nonce=True)
+                else:
+                    for part in params.multipart:
+                        if part["name"] == "payload_json":
+                            payload = json.loads(part["value"])
+                            payload.update(nonce=nonce, enforce_nonce=True)
+                            part["value"] = json.dumps(payload)
+                try:
+                    data = await self.http.send_message(channel.id, params=params)
+                    break
+                except discord.NotFound as error:
+                    if error.code != 10008 or attempt:
+                        raise
+                    # Discord can retain a nonce after its message was deleted.
+                    # Retry once with a new persistent nonce, while files remain open.
+                    generation = max(generation + 1, int(self.store.clock()))
+                    self.store.set(nonce_key, generation)
+                    for file in params.files or []:
+                        file.reset()
         self.remember_delivery(key, channel.id, data["id"])
         return channel.get_partial_message(int(data["id"]))
 
@@ -610,7 +640,7 @@ class CommunityBot(commands.Bot):
         self.store.remember_thread(i.guild_id, thread.id)
         panel = next(p for p in self.store.panels() if p["guild_id"] == str(i.guild_id))
         thread = await self.active_thread(panel)
-        await self.sync_index(panel, thread)
+        await self.sync_index(panel, thread, force=True)
         # Update old images on demand as well as through the background loop.
         record = self.store.thread(i.guild_id)
         if record["panel_hash"] != checksum:
@@ -628,50 +658,103 @@ class CommunityBot(commands.Bot):
                 )
         return panel, thread
 
-    async def sync_index(self, panel, thread):
+    async def sync_index(self, panel, thread, *, force=False):
         record = self.store.thread(panel["guild_id"])
+        needs = self.portrait_inventory.get()
         text = index_text(
             self.store,
             panel,
             wiki_status=self.wiki.status,
             ai_enabled=self.analyzer.backend.enabled,
+            portrait_count=needs.count,
         )
         if self.health.storage_level == "critical":
             text += "\n**Manutenção:** novas análises e imagens temporariamente pausadas. A classificação atual foi preservada."
         previous = self.store.get("previous-thread:" + panel["guild_id"])
         if previous and previous != str(thread.id):
             text += f"\n[Histórico do tópico anterior](https://discord.com/channels/{panel['guild_id']}/{previous})."
-        signature = digest(text)
-        if record["intro_id"] and record["index_hash"] == signature:
+        signature = digest((text, needs.checksum, "thread-controls-v4"))
+        checked = self.index_checks.get(panel["guild_id"])
+        if (
+            record["intro_id"]
+            and record["index_hash"] == signature
+            and not force
+            and checked is not None
+            and self.store.clock() - checked < 900
+        ):
             return
-        key = f"index:{thread.id}"
+        generation_key = f"index-generation:{thread.id}"
+        generation = int(self.store.get(generation_key) or 0)
+        key = f"index:{thread.id}:{generation}"
+        file = (
+            discord.File(io.BytesIO(needs.blob), filename="retratos-pendentes.txt")
+            if needs.count
+            else None
+        )
         message = None
-        if record["intro_id"]:
-            try:
-                message = await thread.get_partial_message(
-                    int(record["intro_id"])
-                ).edit(
-                    content=text,
-                    embeds=[],
-                    attachments=[],
-                    view=ThreadView(self),
+        try:
+            if record["intro_id"]:
+                try:
+                    message = await thread.get_partial_message(
+                        int(record["intro_id"])
+                    ).edit(
+                        content=text,
+                        embeds=[],
+                        attachments=[file] if file else [],
+                        view=ThreadView(self),
+                    )
+                except discord.NotFound:
+                    if file:
+                        file.close()
+                        file = discord.File(
+                            io.BytesIO(needs.blob), filename="retratos-pendentes.txt"
+                        )
+                    self.forget_delivery(key)
+                    generation += 1
+                    self.store.set(generation_key, generation)
+                    key = f"index:{thread.id}:{generation}"
+                    with self.store.connection:
+                        self.store.connection.execute(
+                            "UPDATE tier_threads SET intro_id=NULL,index_hash='' WHERE guild_id=?",
+                            (panel["guild_id"],),
+                        )
+            if message is None:
+                reconciling = bool(
+                    self.store.get("delivery-attempt:" + key)
+                    or self.store.rows(
+                        "SELECT 1 FROM tier_deliveries WHERE key=?", (key,)
+                    )
                 )
-            except discord.NotFound:
-                self.forget_delivery(key)
-        if message is None:
-            message = await self.deliver(
-                thread,
-                key,
-                content=text,
-                view=ThreadView(self),
-                marker=lambda m: m.content.startswith("## Votações e histórico"),
-            )
+                message = await self.deliver(
+                    thread,
+                    key,
+                    content=text,
+                    files=[file] if file else [],
+                    view=ThreadView(self),
+                    marker=lambda m: m.content.startswith("## Votações e histórico"),
+                )
+                if reconciling:
+                    if file:
+                        file.close()
+                        file = discord.File(
+                            io.BytesIO(needs.blob), filename="retratos-pendentes.txt"
+                        )
+                    await message.edit(
+                        content=text,
+                        embeds=[],
+                        attachments=[file] if file else [],
+                        view=ThreadView(self),
+                    )
+        finally:
+            if file:
+                file.close()
         self.store.remember_thread(panel["guild_id"], thread.id, message.id)
         with self.store.connection:
             self.store.connection.execute(
                 "UPDATE tier_threads SET index_hash=? WHERE guild_id=?",
                 (signature, panel["guild_id"]),
             )
+        self.index_checks[panel["guild_id"]] = self.store.clock()
 
     def purge_inaccessible_sources(self):
         for row in self.store.rows(
@@ -949,6 +1032,10 @@ class CommunityBot(commands.Bot):
                 )
                 self.store.connection.execute(
                     "DELETE FROM tier_meta WHERE key LIKE 'delivery-attempt:%' AND CAST(value AS REAL)<?",
+                    (self.store.clock() - 7 * 86400,),
+                )
+                self.store.connection.execute(
+                    "DELETE FROM tier_meta WHERE key LIKE 'delivery-nonce:%' AND CAST(value AS REAL)<?",
                     (self.store.clock() - 7 * 86400,),
                 )
             report = await asyncio.to_thread(maintain_tier_storage, self.store.path)

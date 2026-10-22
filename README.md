@@ -9,11 +9,11 @@ Tier list global com retratos originais, análise de relatos e decisões da comu
 
 O administrador usa `/tierlist` em um canal de texto. O bot publica **somente um PNG**, sem texto, embed ou botões na mensagem pública, e cria o tópico **Votações e histórico** ligado a ela. Repetir o comando reutiliza esse conjunto, inclusive quando várias pessoas executam juntas. O painel oficial existente é preservado se o comando for usado em outro canal.
 
-O tópico contém um índice editável, propostas, votações, resultados e revisões. O índice oferece **Sugerir imagem**, **Meus envios**, **Como funciona** e atalhos para decisões recentes. A classificação é apresentada somente na imagem, sem arquivo de texto. O resultado aparece na própria proposta encerrada. O canal principal continua com a mesma imagem editada; não há botão de histórico nela nem segundo canal obrigatório.
+O tópico contém um índice editável, propostas, votações, resultados e revisões. O índice oferece **Sugerir imagem**, **Meus envios**, **Como funciona** e atalhos para decisões recentes. A classificação é apresentada somente na imagem, sem exportação textual de posições. O único TXT público é **retratos-pendentes.txt**, com as formas que precisam de foto; ele se atualiza após aprovações/restaurações e desaparece quando não há pendências. O resultado aparece na própria proposta encerrada. O canal principal continua com a mesma imagem editada; não há botão de histórico nela nem segundo canal obrigatório.
 
 Os retratos mantêm os pixels originais, sem ampliação artificial ou geração de personagens. A grade segue **Meta, S, A, B, C, D e E**, com ordem da esquerda para a direita e linhas que crescem. **A imagem não tem rodapé técnico.** A data da classificação fica no índice; contadores, versões e conexão ficam no diagnóstico exclusivo do dono. O arquivo não recebe a descrição artificial de ponto que causava um indicador ALT desnecessário.
 
-O catálogo inicial tem **549 identidades/formas, 455 retratos válidos e 94 pendências**. As formas sem classificação ficam fora da imagem e não são colocadas em E. Um retrato ausente usa um marcador, sem tomar a imagem de outra evolução. A classificação inicial é vazia: não publicamos posições fictícias.
+O catálogo ativo inicial tem **524 identidades/formas, 453 retratos e 71 pendências**. O arquivo histórico preserva 549 identidades: **25 formas com silhueta azul substituta foram retiradas por orientação expressa do dono**, incluindo Gravity Hero, que ainda tinha uma foto antiga reaproveitada. A política explícita em `data/tier_availability.json` impede a wiki/cache de reativá-las automaticamente; um personagem normal ser azul não é critério de exclusão. As formas sem classificação ficam fora da imagem e não são colocadas em E. Um retrato ausente usa um marcador, sem tomar a imagem de outra evolução. A classificação inicial é vazia: não publicamos posições fictícias.
 
 **Como funciona**, no tópico, explica em particular a leitura da imagem, votos, resultados, formas sem avaliação e envio de retratos. O dono recebe controles técnicos exclusivos. Outros administradores recebem **Conferir painel**, com links e orientações de permissões do próprio servidor, sem dados internos da IA, banco ou revisões globais.
 
@@ -43,9 +43,11 @@ Resultados recentes entram como contexto; **isso não treina os pesos da IA** ne
 
 `data/tier_evidence.json` inclui **1.038 referências** com revisão, URL e hash. São fontes comunitárias, não telemetria do jogo. O bot consulta a API oficial da wiki de maneira limitada: módulos de identidades/dados diariamente e artigos relevantes em lotes pequenos. Durante uma votação, a atualização das fontes é adiada. Falhas preservam o último cache válido e são indicadas no diagnóstico/índice. Uma sincronização parcial não significa que toda a wiki foi revisada naquele instante.
 
-**Sugerir imagem** abre um formulário com personagem/forma, skin, motivo, retrato e print opcional do jogo. São aceitos PNG, JPG e WebP estáticos, até 4 MB por arquivo e quatro milhões de pixels. O processamento aplica a orientação da foto, remove metadados e limita dimensões, duplicatas, frequência e armazenamento. Não executa anexos nem busca URLs fornecidas pelo usuário.
+**Sugerir imagem** abre um formulário com personagem/forma, skin, motivo, retrato e print opcional do jogo. São aceitos PNG, JPG e WebP estáticos, até 4 MB por arquivo e quatro milhões de pixels. Os limites de envio são conferidos antes de baixar/preparar arquivos e novamente antes do registro. O processamento aplica a orientação da foto, remove metadados e limita dimensões, duplicatas, frequência e armazenamento. Não executa anexos nem busca URLs fornecidas pelo usuário.
 
 Somente o responsável pelo aplicativo aprova ou rejeita. A revisão privada compara o retrato atual com a sugestão; um recorte de fundo uniforme pode ser experimentado e desfeito antes da aprovação. Não é uma reconstrução da arte por IA. As versões anteriores são preservadas para restauração. Alterar retratos **não altera posições**. Membros consultam **Meus envios** no tópico; a resposta com o andamento é privada.
+
+A lista de contribuição usa o catálogo ativo e os retratos disponíveis, incluindo aprovações locais. Um envio pendente ou rejeitado não remove uma solicitação. Arquivos aprovados são conferidos por hash; se estiverem ausentes ou corrompidos, não escondem a pendência. A restauração recusa uma versão anterior corrompida para preservar o retrato atual. O índice apagado é reparado automaticamente; perda de confirmação da API reaproveita a mensagem já enviada. Uma conferência periódica também encontra exclusões ocorridas enquanto o bot estava desconectado.
 
 Propostas têm **Sinalizar problema**. Os relatos entram na revisão privada, sem acrescentar votos ou modificar posições. O responsável pode suspender uma proposta aberta, reverter a última classificação e restaurar retratos, com registros públicos de correção. Administradores de outros servidores não alteram a classificação global diretamente.
 
@@ -83,6 +85,7 @@ O responsável pelo aplicativo recebe **Verificação completa** na resposta pri
 - confere os dois comandos registrados na API real;
 - cria um tópico técnico **privado**, convida o dono, publica/lê/edita uma imagem, confere botões e arquivamento/retomada;
 - testa dez etapas visuais: entrada/remoção, ordem, mudança de tier, expansão/redução da linha, troca de retrato e restauração, comparando cada PNG baixado do Discord com o arquivo enviado;
+- testa cinco etapas da lista de retratos: pendência, envio, aprovação, restauração e rejeição, incluindo remover/recolocar o TXT na mesma mensagem e conferir o arquivo baixado;
 - verifica uma resposta real da Groq, respeitando cota e intervalo;
 - limpa as próprias mensagens técnicas e entrega um relatório JSON privado;
 - oferece **Confirmar teste de interação**, usando um clique real no código de voto com banco temporário.
@@ -97,9 +100,11 @@ O subprocesso preserva os caminhos das bibliotecas carregadas pelo bot, incluind
 
 O relatório distingue **isolado, Discord real, Groq real e não testado**. Um log dizendo que a chave foi carregada não confirma a integração. Orientações de estreia e falhas comuns: [docs/community-validation.md](docs/community-validation.md).
 
+O [fechamento da versão](docs/tierlist-launch-review.md) registra a revisão do catálogo, os testes e as etapas que dependem do uso com jogadores.
+
 ## Estado, backup e restauração
 
-`tierlist.sqlite3` guarda o sistema atual; bancos do quiz e da comunidade antiga não viram ranking. As versões antigas permanecem arquivadas, sem executar seus comandos ou filas de chat global. A migração preserva classificações e votos existentes; os antigos controles individuais não fazem parte da interface ativa.
+`tierlist.sqlite3` guarda o sistema atual; bancos do quiz e da comunidade antiga não viram ranking. As versões antigas permanecem arquivadas, sem executar seus comandos ou filas de chat global. A migração de disponibilidade preserva snapshots, votos e histórico: caso uma forma retirada já estivesse classificada, cria uma revisão auditada removendo-a e mantém a ordem relativa das demais. Cancela propostas incompatíveis e impede a reversão de reintroduzir essas formas. Retratos antigos ficam registrados para histórico/backup; sugestões pendentes dessas formas deixam a fila ativa. Os antigos controles individuais não fazem parte da interface ativa.
 
 Há integridade ao iniciar, manutenção periódica, limites de coleta/votos/mídia e proteção contra espaço insuficiente. O backup diário inclui **SQLite, manifesto e arquivos de mídia verificados**, em `state/backups/tierlist-<instante>/`. `backups/latest.json` aponta a geração atual; uma geração anterior é mantida. Exporte a pasta inteira. Uma cópia no mesmo disco não protege contra exclusão da hospedagem.
 

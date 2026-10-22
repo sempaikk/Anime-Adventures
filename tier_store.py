@@ -49,6 +49,7 @@ class TierStore:
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.clock = clock
+        self.catalog = None
         self.connection = sqlite3.connect(self.path, timeout=1)
         self.connection.row_factory = sqlite3.Row
         self.connection.execute("PRAGMA busy_timeout=1000")
@@ -105,6 +106,8 @@ class TierStore:
           CREATE TABLE IF NOT EXISTS tier_audit_messages(
             audit_id INTEGER NOT NULL,guild_id TEXT NOT NULL,message_id TEXT NOT NULL,
             PRIMARY KEY(audit_id,guild_id));
+          CREATE TABLE IF NOT EXISTS tier_deliveries(
+            key TEXT PRIMARY KEY,channel_id TEXT NOT NULL,message_id TEXT NOT NULL,created_at REAL NOT NULL);
         """)
         self._column("tier_proposals", "opened_at", "REAL")
         self._column("tier_comments", "attempts", "INTEGER NOT NULL DEFAULT 0")
@@ -133,6 +136,105 @@ class TierStore:
         }:
             self.connection.execute(
                 f"ALTER TABLE {table} ADD COLUMN {column} {declaration}"
+            )
+
+    def bind_catalog(self, catalog):
+        """Apply explicit retirements once, preserving snapshots, votes and audit history."""
+        self.catalog = catalog
+        retired = set(getattr(catalog, "retired", {}))
+        signature = hashlib.sha256(json.dumps(sorted(retired)).encode()).hexdigest()
+        if self.get("catalog_policy") == signature:
+            return
+        with self.connection:
+            self.connection.execute("BEGIN IMMEDIATE")
+            latest = self.latest()
+            ranking = [r for r in latest["ranking"] if r["unit_id"] not in retired]
+            if ranking != latest["ranking"]:
+                removed = [
+                    r["unit_id"] for r in latest["ranking"] if r["unit_id"] in retired
+                ]
+                explanations = {
+                    u: d for u, d in latest["explanations"].items() if u not in retired
+                }
+                cursor = self.connection.execute(
+                    "INSERT INTO tier_publications(created_at,ranking,explanations,source_version,model) VALUES(?,?,?,?,?)",
+                    (
+                        self.clock(),
+                        json.dumps(ranking),
+                        json.dumps(explanations),
+                        latest["source_version"],
+                        "catalog-maintenance",
+                    ),
+                )
+                self.audit(
+                    "catalog-retired",
+                    "system",
+                    "Formas retiradas do catálogo ativo: "
+                    + ", ".join(catalog.display_name(u) for u in removed)
+                    + ". A ordem relativa das demais formas foi preservada.",
+                    cursor.lastrowid,
+                )
+            for row in self.rows(
+                "SELECT id FROM tier_proposals WHERE status IN ('open','queued')"
+            ):
+                proposal = self.proposal(row["id"])
+                if proposal["base_publication"] != self.latest()[
+                    "id"
+                ] or self._inactive(proposal["ranking"], proposal["details"]):
+                    self.connection.execute(
+                        "UPDATE tier_proposals SET status='outdated',outcome=? WHERE id=?",
+                        (json.dumps(self.poll_counts(row["id"])), row["id"]),
+                    )
+                    self.connection.execute(
+                        "UPDATE tier_meta SET value='outdated' WHERE key='analysis_status'"
+                    )
+            for row in self.rows("SELECT message_id,units FROM tier_comments"):
+                units = set(json.loads(row["units"])) - retired
+                if units:
+                    self.connection.execute(
+                        "UPDATE tier_comments SET units=? WHERE message_id=?",
+                        (json.dumps(sorted(units)), row["message_id"]),
+                    )
+                else:
+                    self.connection.execute(
+                        "DELETE FROM tier_comments WHERE message_id=?",
+                        (row["message_id"],),
+                    )
+            tables = {
+                r[0]
+                for r in self.connection.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table'"
+                )
+            }
+            if "tier_media_active" in tables:
+                for uid in retired:
+                    deleted = self.connection.execute(
+                        "DELETE FROM tier_media_active WHERE unit_id=?", (uid,)
+                    ).rowcount
+                    self.connection.execute(
+                        "UPDATE tier_media_suggestions SET status='unavailable' WHERE unit_id=? AND status='pending'",
+                        (uid,),
+                    )
+                    if deleted:
+                        self.connection.execute(
+                            "INSERT INTO tier_meta VALUES('media_revision','1') ON CONFLICT(key) DO UPDATE SET value=CAST(value AS INTEGER)+1"
+                        )
+            self.connection.execute(
+                "INSERT OR REPLACE INTO tier_meta VALUES('catalog_policy',?)",
+                (signature,),
+            )
+
+    def _inactive(self, ranking, details=None):
+        if self.catalog is None:
+            return False
+        ids = {r["unit_id"] for r in ranking} | set(details or {})
+        ids.update(d["before"] for d in (details or {}).values() if d.get("before"))
+        return not ids <= self.catalog.units.keys()
+
+    def _require_active(self, ranking, details=None):
+        if self._inactive(ranking, details):
+            raise ValueError(
+                "A proposta contém uma forma fora do catálogo ativo do jogo."
             )
 
     def register_guild(self, guild_id):
@@ -320,6 +422,8 @@ class TierStore:
     def ingest(
         self, message_id, user_id, guild_id, channel_id, body, units, *, sent_at=None
     ):
+        if self.catalog is not None:
+            units = set(units) & self.catalog.units.keys()
         if not self.guild_registered(guild_id) or not units:
             return False
         if not 12 <= len(body) <= 4000:
@@ -476,6 +580,7 @@ class TierStore:
         change_details=None,
         transactional=True,
     ):
+        self._require_active(ranking, change_details)
         if not self.still_allowed(comments):
             raise ValueError(
                 "A participação ou o canal mudou durante a análise. O lote foi descartado."
@@ -672,6 +777,7 @@ class TierStore:
     def create_proposal(
         self, ranking, explanations, *, details, source_version, model, comments
     ):
+        self._require_active(ranking, details)
         if not self.still_allowed(comments):
             raise ValueError("As fontes de participação mudaram durante a análise.")
         if (
@@ -864,6 +970,7 @@ class TierStore:
                 if (
                     proposal["base_publication"] != self.latest()["id"]
                     or proposal["source_version"] != source_version
+                    or self._inactive(proposal["ranking"], proposal["details"])
                 ):
                     status = "outdated"
                 elif not self.connection.execute(
@@ -981,13 +1088,21 @@ class TierStore:
                     "source_version": current["source_version"],
                 }
             )
-            if not current["id"] or (
-                current["ranking"] == json.loads(previous["ranking"])
-            ):
+            previous_ranking = json.loads(previous["ranking"])
+            previous_explanations = json.loads(previous["explanations"])
+            if self.catalog is not None:
+                retired = set(getattr(self.catalog, "retired", {}))
+                previous_ranking = [
+                    r for r in previous_ranking if r["unit_id"] not in retired
+                ]
+                previous_explanations = {
+                    u: d for u, d in previous_explanations.items() if u not in retired
+                }
+            if not current["id"] or (current["ranking"] == previous_ranking):
                 raise ValueError("Não há uma alteração disponível para reverter.")
             self.publish(
-                json.loads(previous["ranking"]),
-                json.loads(previous["explanations"]),
+                previous_ranking,
+                previous_explanations,
                 source_version=previous["source_version"],
                 model="human-correction",
                 comments=[],

@@ -13,7 +13,9 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 - Um tópico público ligado à mensagem: propostas, votos, resultados e histórico.
 - Índice editado no tópico: regras, situação real da análise, proposta aberta,
   última mudança e envio de imagens. A classificação aparece somente no PNG,
-  sem exportação textual anexada ao tópico.
+  sem exportação textual de posições. O TXT retratos-pendentes.txt é somente
+  uma lista dinâmica para contribuir com fotos, sem tier ou força; desaparece
+  quando não há pendências.
 - Configuração/diagnóstico privado; sem menus de escolher canais de análise,
   adesão individual ou avisos de consentimento publicados pelo bot. O aviso aos
   participantes fica por conta da administração do servidor.
@@ -67,14 +69,24 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 
 ## Imagens da comunidade
 
+- Catálogo ativo inicial: 524 formas, 453 retratos e 71 pendências. Excluir as
+  25 formas com silhueta azul substituta excluídas pelo critério do dono, incluindo
+  Gravity Hero apesar do retrato antigo. Preservar registros históricos e
+  impedir reativação pela wiki/cache, propostas, coleta ou reversão.
+- Manter a lista pública de fotos pendentes no índice do tópico. Remover uma
+  solicitação somente após aprovação válida; restauração e arquivos inválidos
+  podem recolocá-la. Não acrescentar exportação textual da classificação.
 - Formulário no tópico: identidade/forma/skin, motivo, retrato e print opcional.
 - Validar arquivo real, tamanho, resolução, animação, metadados e armazenamento;
-  limitar spam e duplicatas. Sem executar arquivos ou buscar URLs arbitrárias.
+  limitar spam e duplicatas antes de baixar/processar e novamente ao registrar.
+  Sem executar arquivos ou buscar URLs arbitrárias.
 - Comparação privada com imagem atual; aprovação/rejeição pelo responsável.
 - Preparar enquadramento/transparência sem inventar detalhes ou trocar formas;
   remoção de fundo uniforme opcional e revisável.
 - Preservar versão anterior e fonte; permitir desfazer. Mídia aprovada atualiza
   todos os painéis sem alterar posições ou fingir novo balanceamento.
+- Conferir hash da mídia aprovada; preservar a atual se o predecessor da
+  restauração estiver corrompido. Detectar reparo de arquivo sem alterar posições.
 
 ## Operação e aceitação
 
@@ -99,3 +111,6 @@ antigos de canais separados, adesão individual, quiz, notas e filtros.
 - Demonstração visual exclusiva do dono, com dez etapas e reprodução automática;
   arquivos recebidos do Discord comparados aos enviados. Usa somente estado
   temporário. Testes da API criam tópico privado, sem fallback público.
+- Verificador repete cinco transições de retratos/TXT no Discord real usando
+  banco isolado. Índice apagado é reparado; confirmação perdida não duplica
+  mensagens e a recuperação publica a lista mais recente.

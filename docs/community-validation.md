@@ -2,6 +2,11 @@
 
 ## Recomendação para lançar esta versão
 
+O fechamento atual está em [tierlist-launch-review.md](tierlist-launch-review.md):
+catálogo ativo, lista dinâmica de retratos, proteções de envio e recuperação,
+457 testes locais e ensaio real no Discord. Abaixo ficam os passos de operação
+e os registros das verificações anteriores.
+
 A recomendação é uma estreia beta em um a três servidores, sem esperar por
 chat global ou novos módulos. O núcleo já tem testes isolados e validação real
 de Discord/Groq; a carga e o comportamento de comunidades reais precisam ser
@@ -36,10 +41,16 @@ servidores no plano gratuito.
 Esta é a revisão completa das prioridades; o critério de conclusão é qualidade
 da experiência e da operação, em vez de acrescentar funcionalidades sem fim.
 
-- **Imagem e catálogo inicial:** há 455 retratos válidos e 94 formas sem retrato
-  aprovado. Conferir retrato, evolução e legibilidade de todos os personagens
+- **Imagem e catálogo inicial:** há 524 formas ativas, 453 retratos e 71 formas
+  sem retrato aprovado. As 25 formas com silhueta azul substituta informadas
+  excluídas pelo critério do dono estão fora da análise, inclusive Gravity Hero
+  apesar da foto antiga e Illusionist (Chrysalis), encontrado na revisão visual.
+  O catálogo bruto e os históricos ficam preservados.
+  Conferir retrato, evolução e legibilidade de todos os personagens
   que entrarem na classificação da estreia. Priorizar essas formas na revisão;
-  uma imagem genérica ou de outra evolução não resolve a pendência.
+  uma imagem genérica ou de outra evolução não resolve a pendência. O índice
+  oferece retratos-pendentes.txt, atualizado pelas aprovações e restaurações;
+  esse arquivo não exporta a classificação.
 - **Interface dos membros:** manter o canal com a imagem, o tópico com decisões
   e a ajuda privada. Ampliar pelo visualizador do Discord no celular. Confirmar
   que uma pessoa nova entende o sentido esquerda→direita, o voto, o resultado
@@ -91,6 +102,7 @@ Baixe `verificacao-tierlist.json` para acompanhar falhas. O relatório diferenci
 - Somente `/tierlist` e `/chatglobal`, sem campos adicionais. Chat global responde **Em breve.**
 - `/tierlist` é restrito a Administrador/Gerenciar servidor, tanto na permissão padrão quanto na execução. Uma imagem oficial por servidor; repetir o comando, até em outro canal, reutiliza a imagem existente. Membros usam a imagem e os botões, sem comandos.
 - O tópico tem índice, Sugerir imagem, Meus envios, Como funciona, propostas, resultados e revisões. A classificação fica somente no PNG. A mesma proposta é editada com o encerramento.
+- retratos-pendentes.txt contém somente as formas que precisam de foto. Envios pendentes/rejeitados não diminuem a lista; uma aprovação válida diminui, e uma restauração pode recolocar a solicitação. Ao completar todas as fotos, o anexo desaparece.
 - Ninguém é classificado só para preencher a grade. **Sem avaliação** é diferente de E. A imagem não tem rodapé técnico; o índice mostra a última classificação. Contadores, conexão e revisão de mídia ficam no diagnóstico do dono.
 - Votos abertos mostram participantes, sem distribuição. Encerrados revelam os totais. A conta tem um voto na rede; trocar não soma outro.
 - O formulário pede personagem/forma exatos e aceita arquivos estáticos validados. A imagem só é substituída após revisão do responsável. Meus envios mostra o andamento em particular.
@@ -107,6 +119,7 @@ A verificação por API não reproduz a tela de uma pessoa. Uma olhada em celula
 | Wiki indisponível | O último conjunto válido continua em cache. Não significa consulta em tempo real ao jogo. |
 | Nenhuma proposta | Sem relato relevante e fonte suficiente, não há enquete obrigatória. A classificação inicial pode permanecer vazia. |
 | Tópico arquivado | O bot tenta retomar um tópico destrancado. Se estiver trancado, a administração precisa destrancar. |
+| Índice do tópico apagado | O bot repara automaticamente. Uma exclusão durante a desconexão é encontrada na primeira conferência após reiniciar ou na conferência periódica. |
 | Mensagem do painel apagada | Use `/tierlist` novamente. O bot informa se é preciso repetir a criação. |
 | Tópico original apagado, imagem existente | O Discord pode impedir outro tópico na mesma mensagem. Apague somente a imagem antiga do bot e execute `/tierlist` novamente, conforme a instrução privada. |
 | Botão privado venceu ou veio de outra pessoa | Abra seus próprios controles usando `/tierlist`. |

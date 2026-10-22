@@ -25,7 +25,7 @@ PLAYER_GUIDE = """## Como funciona a tier list
 
 **Resultados:** aparecem na própria proposta ao encerrar. A distribuição dos votos fica oculta durante a votação. Sinalizar problema envia um relato para revisão, sem acrescentar votos.
 
-**Retratos:** Sugerir imagem envia uma correção para revisão do responsável. Trocar um retrato não muda a posição do personagem. Consulte o andamento em Meus envios; a resposta aparece só para você."""
+**Retratos:** quando houver fotos pendentes, o tópico terá retratos-pendentes.txt com as formas exatas. Sugerir imagem envia a contribuição para revisão do responsável. Trocar um retrato não muda posições. Consulte Meus envios para acompanhar em particular."""
 
 
 async def reply(i, text=None, **kwargs):
@@ -149,12 +149,16 @@ class ImageModal(BoundModal):
             raise ValueError(text)
         if len(self.portrait.values) != 1 or len(self.proof.values) > 1:
             raise ValueError("Envie um retrato e, se quiser, um print de comprovação.")
+        self.bot.media.check_submission(
+            unit.id, i.user.id, i.guild_id, str(self.appearance), str(self.note)
+        )
         await i.response.defer(ephemeral=True, thinking=True)
         if self.bot.upload_slots.locked():
             raise ValueError(
                 "Outras imagens estão sendo preparadas. Tente novamente em instantes."
             )
         async with self.bot.upload_slots:
+            self.bot.media.begin_upload(i.user.id, i.guild_id)
             portrait = await self.bot.read_upload(self.portrait.values[0])
             proof = (
                 await self.bot.read_upload(self.proof.values[0])
@@ -166,6 +170,8 @@ class ImageModal(BoundModal):
             portrait = await asyncio.to_thread(prepare, portrait)
             if proof:
                 proof = await asyncio.to_thread(prepare, proof, proof=True)
+            self.bot.require_thread(i)
+            self.bot.media_available()
             ident = self.bot.media.submit(
                 unit.id,
                 i.user.id,
@@ -209,11 +215,11 @@ class SubmissionView(GuardedView):
             "rejected": "não aprovado",
             "reverted": "versão anterior restaurada",
             "expired": "prazo de revisão encerrado",
+            "unavailable": "forma retirada do catálogo ativo",
         }
         text = "### Seus envios\n"
         for row in rows:
-            unit = self.bot.catalog.units.get(row["unit_id"])
-            text += f"**#{row['id']} · {safe(unit.name if unit else row['unit_id'], 150)}:** {labels.get(row['status'], 'revisado')}.\n"
+            text += f"**#{row['id']} · {safe(self.bot.catalog.display_name(row['unit_id']), 150)}:** {labels.get(row['status'], 'revisado')}.\n"
         reports = self.bot.store.rows(
             "SELECT id,status FROM tier_reports WHERE user_id=? ORDER BY id DESC LIMIT 5",
             (str(i.user.id),),

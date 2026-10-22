@@ -125,6 +125,7 @@ class MediaLibrary:
         self.store, self.catalog = store, catalog
         self.root = store.path.parent / "media"
         self.root.mkdir(exist_ok=True)
+        self._verified = {}
         self.store.connection.executescript("""
           CREATE TABLE IF NOT EXISTS tier_media_assets(
             digest TEXT PRIMARY KEY,bytes INTEGER NOT NULL,created_at REAL NOT NULL);
@@ -135,6 +136,10 @@ class MediaLibrary:
             created_at REAL NOT NULL,status TEXT NOT NULL DEFAULT 'pending');
           CREATE TABLE IF NOT EXISTS tier_media_active(
             unit_id TEXT PRIMARY KEY,suggestion_id INTEGER NOT NULL);
+          CREATE TABLE IF NOT EXISTS tier_upload_attempts(
+            user_id TEXT NOT NULL,guild_id TEXT NOT NULL,created_at REAL NOT NULL);
+          CREATE INDEX IF NOT EXISTS tier_upload_actor_time ON tier_upload_attempts(user_id,created_at);
+          CREATE INDEX IF NOT EXISTS tier_upload_guild_time ON tier_upload_attempts(guild_id,created_at);
         """)
 
     def path(self, digest):
@@ -145,6 +150,34 @@ class MediaLibrary:
         ):
             raise ValueError("Referência de imagem inválida.")
         return self.root / (digest + ".png")
+
+    def available(self, digest):
+        """Check immutable media once per file change, with bounded reads."""
+        path = self.path(digest)
+        try:
+            stat = path.stat()
+            if (
+                path.is_symlink()
+                or not path.is_file()
+                or not 0 < stat.st_size <= MAX_UPLOAD
+            ):
+                return False
+            stamp = (
+                stat.st_dev,
+                stat.st_ino,
+                stat.st_size,
+                stat.st_mtime_ns,
+                stat.st_ctime_ns,
+            )
+            if self._verified.get(digest) != stamp:
+                if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                    self._verified.pop(digest, None)
+                    return False
+                self._verified[digest] = stamp
+            return True
+        except OSError:
+            self._verified.pop(digest, None)
+            return False
 
     def put(self, blob):
         digest = hashlib.sha256(blob).hexdigest()
@@ -187,18 +220,7 @@ class MediaLibrary:
         )
         return rows[0] if rows else None
 
-    def submit(
-        self,
-        unit_id,
-        user_id,
-        guild_id,
-        appearance,
-        note,
-        portrait,
-        proof=None,
-        *,
-        _prepared=False,
-    ):
+    def check_submission(self, unit_id, user_id, guild_id, appearance, note):
         if unit_id not in self.catalog.units:
             raise ValueError("Informe a unidade e a forma exatas.")
         if not 15 <= len(note.strip()) <= 700 or len(appearance) > 150:
@@ -229,6 +251,52 @@ class MediaLibrary:
             >= 20
         ):
             raise ValueError("Este servidor atingiu o limite diário de sugestões.")
+
+    def begin_upload(self, user_id, guild_id):
+        """Reserve an attempt before network/decoding, including invalid or duplicate files."""
+        now = self.store.clock()
+        with self.store.connection:
+            self.store.connection.execute("BEGIN IMMEDIATE")
+            self.store.connection.execute(
+                "DELETE FROM tier_upload_attempts WHERE created_at<=?", (now - 600,)
+            )
+            for column, value, limit, label in (
+                ("user_id", str(user_id), 6, "Você tentou enviar muitas imagens"),
+                (
+                    "guild_id",
+                    str(guild_id),
+                    30,
+                    "Este servidor recebeu muitas tentativas de envio",
+                ),
+                (None, None, 1000, "A preparação de imagens está ocupada"),
+            ):
+                count, oldest = self.store.connection.execute(
+                    "SELECT COUNT(*),MIN(created_at) FROM tier_upload_attempts"
+                    + (f" WHERE {column}=?" if column else ""),
+                    (value,) if column else (),
+                ).fetchone()
+                if count >= limit:
+                    minutes = max(1, int((oldest + 600 - now + 59) // 60))
+                    raise ValueError(f"{label}. Tente novamente em {minutes} min.")
+            self.store.connection.execute(
+                "INSERT INTO tier_upload_attempts VALUES(?,?,?)",
+                (str(user_id), str(guild_id), now),
+            )
+
+    def submit(
+        self,
+        unit_id,
+        user_id,
+        guild_id,
+        appearance,
+        note,
+        portrait,
+        proof=None,
+        *,
+        _prepared=False,
+    ):
+        self.check_submission(unit_id, user_id, guild_id, appearance, note)
+        db, now = self.store.connection, self.store.clock()
         # Only the modal passes bytes already normalized by prepare() in a worker.
         if not _prepared:
             portrait = prepare(portrait)
@@ -268,9 +336,10 @@ class MediaLibrary:
         return cursor.lastrowid
 
     def pending(self):
-        return self.store.rows(
+        rows = self.store.rows(
             "SELECT * FROM tier_media_suggestions WHERE status='pending' ORDER BY id"
         )
+        return [r for r in rows if r["unit_id"] in self.catalog.units]
 
     def crop_background(self, suggestion_id, *, _prepared=None):
         row = self.suggestion(suggestion_id)
@@ -299,12 +368,11 @@ class MediaLibrary:
             if not row or row["status"] != "pending":
                 raise ValueError("Essa sugestão já foi revisada.")
             if approve:
-                path = self.path(row["preview_hash"])
-                if (
-                    not path.is_file()
-                    or hashlib.sha256(path.read_bytes()).hexdigest()
-                    != row["preview_hash"]
-                ):
+                if row["unit_id"] not in self.catalog.units:
+                    raise ValueError(
+                        "Essa forma foi retirada do catálogo ativo do jogo."
+                    )
+                if not self.available(row["preview_hash"]):
                     raise ValueError(
                         "A imagem está ausente ou corrompida. A atual foi preservada."
                     )
@@ -332,6 +400,8 @@ class MediaLibrary:
         )
 
     def undo(self, unit_id, expected_suggestion, actor_id):
+        if unit_id not in self.catalog.units:
+            raise ValueError("Essa forma foi retirada do catálogo ativo do jogo.")
         with self.store.connection:
             self.store.connection.execute("BEGIN IMMEDIATE")
             active = self.store.connection.execute(
@@ -344,6 +414,12 @@ class MediaLibrary:
                 "SELECT id FROM tier_media_suggestions WHERE unit_id=? AND status='approved' AND id<? ORDER BY id DESC LIMIT 1",
                 (unit_id, expected_suggestion),
             ).fetchone()
+            if previous and not self.available(
+                self.suggestion(previous[0])["preview_hash"]
+            ):
+                raise ValueError(
+                    "O retrato anterior está ausente ou corrompido. A imagem atual foi preservada."
+                )
             self.store.connection.execute(
                 "UPDATE tier_media_suggestions SET status='reverted' WHERE id=?",
                 (expected_suggestion,),
@@ -373,7 +449,9 @@ class MediaLibrary:
         result = {}
         for row in rows:
             path = self.path(row["preview_hash"])
-            if path.is_file():
+            if row["unit_id"] in self.catalog.units and self.available(
+                row["preview_hash"]
+            ):
                 result[row["unit_id"]] = {
                     "absolute_path": str(path),
                     "path": str(path),
@@ -382,7 +460,12 @@ class MediaLibrary:
         return result
 
     def cleanup(self):
+        self._verified.clear()
         with self.store.connection:
+            self.store.connection.execute(
+                "DELETE FROM tier_upload_attempts WHERE created_at<=?",
+                (self.store.clock() - 600,),
+            )
             self.store.connection.execute(
                 "UPDATE tier_media_suggestions SET status='expired' WHERE status='pending' AND created_at<?",
                 (self.store.clock() - 7 * 86400,),

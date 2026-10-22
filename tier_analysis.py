@@ -211,7 +211,11 @@ class TierAnalyzer:
         self.source_guard = source_guard
 
     def packet(self):
-        pending = self.store.pending(64)
+        pending = [
+            c
+            for c in self.store.pending(64)
+            if set(json.loads(c["units"])) & self.catalog.units.keys()
+        ]
         if not pending:
             return None, []
         # A small focused batch fits the free plan's token-per-minute allowance.
@@ -304,7 +308,12 @@ class TierAnalyzer:
             }:
                 raise ValueError("Mudança com campos inválidos.")
             uid, tier = change["unit_id"], change["tier"]
-            if uid not in packet["units"] or uid in seen or tier not in TIERS:
+            if (
+                uid not in packet["units"]
+                or uid not in self.catalog.units
+                or uid in seen
+                or tier not in TIERS
+            ):
                 raise ValueError("Unidade ou tier inválido.")
             seen.add(uid)
             confidence = change["confidence"]

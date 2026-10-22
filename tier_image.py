@@ -143,10 +143,46 @@ class PanelRenderer:
         self.blob = None
 
     def get(self, publication, overrides, media_revision, total_units):
-        key = (publication["id"], media_revision, total_units)
+        media = dict(portraits())
+        media.update(overrides)
+        files = []
+        roots = [(ROOT / "assets").resolve()]
+        if self.media_root:
+            roots.append(Path(self.media_root).resolve())
+        for row in publication["ranking"]:
+            item = media.get(row["unit_id"])
+            stamp = None
+            if item:
+                path = Path(item.get("absolute_path") or ROOT / item["path"]).resolve()
+                if any(path.is_relative_to(root) for root in roots):
+                    try:
+                        stat = path.stat()
+                        stamp = (
+                            stat.st_ino,
+                            stat.st_size,
+                            stat.st_mtime_ns,
+                            stat.st_ctime_ns,
+                        )
+                    except OSError:
+                        pass
+            files.append((row["unit_id"], stamp))
+        key = (
+            publication["id"],
+            media_revision,
+            total_units,
+            tuple(files),
+            tuple(
+                sorted(
+                    (
+                        uid,
+                        item.get("suggestion_id"),
+                        item.get("absolute_path") or item.get("path"),
+                    )
+                    for uid, item in overrides.items()
+                )
+            ),
+        )
         if key != self.key:
-            media = dict(portraits())
-            media.update(overrides)
             blob = render(
                 publication["ranking"],
                 media=media,
@@ -168,7 +204,15 @@ def image_file(blob):
     return discord.File(io.BytesIO(blob), filename="tierlist.png")
 
 
-def index_text(store, panel, *, wiki_status="cache", media_pending=0, ai_enabled=None):
+def index_text(
+    store,
+    panel,
+    *,
+    wiki_status="cache",
+    media_pending=0,
+    ai_enabled=None,
+    portrait_count=0,
+):
     thread = store.thread(panel["guild_id"])
     activity = store.get("analysis_status") or "waiting"
     if ai_enabled is True and activity == "not-connected":
@@ -221,16 +265,25 @@ def index_text(store, panel, *, wiki_status="cache", media_pending=0, ai_enabled
     lines += [
         "\nTem um retrato melhor ou uma skin atualizada? Use **Sugerir imagem** e acompanhe em **Meus envios**. A substituição passa por revisão.",
     ]
+    if portrait_count:
+        pending_text = (
+            "1 forma aguarda"
+            if portrait_count == 1
+            else f"{portrait_count} formas aguardam"
+        )
+        lines.append(
+            f"**Quer ajudar?** {pending_text} retrato. Consulte **retratos-pendentes.txt** e envie a imagem da forma exata pelo botão."
+        )
     return "\n".join(lines)
 
 
 def poll_embed(store, catalog, proposal):
     uid = next(iter(proposal["details"]))
     detail = proposal["details"][uid]
-    name = catalog.units[uid].name
+    name = catalog.display_name(uid)
     before = detail.get("before")
     question = (
-        f"{name} deve passar {catalog.units[before].name}?"
+        f"{name} deve passar {catalog.display_name(before)}?"
         if before
         else f"{name} deve ficar no tier {'Meta' if detail['tier'] == 'META' else detail['tier']}?"
     )
@@ -249,7 +302,7 @@ def poll_embed(store, catalog, proposal):
     ]
     if before:
         changes.append(
-            f"**{safe(catalog.units[before].name, 100)}:** {place(old, before)} → {place(proposal['ranking'], before)}"
+            f"**{safe(catalog.display_name(before), 100)}:** {place(old, before)} → {place(proposal['ranking'], before)}"
         )
     embed.add_field(name="O que muda", value="\n".join(changes), inline=False)
     if detail.get("conditions"):
@@ -330,7 +383,7 @@ def log_embed(store, catalog, page=1):
     embed = discord.Embed(title="Atualizações · Meta", color=0x960D16)
     for row in store.history(page):
         embed.add_field(
-            name=safe(catalog.units[row["unit_id"]].name, 150),
+            name=safe(catalog.display_name(row["unit_id"]), 150),
             value=safe(row["reason"], 700)
             + "\n"
             + " · ".join(f"[Wiki]({s['url']})" for s in json.loads(row["sources"])[:2]),

@@ -150,6 +150,11 @@ class Catalog:
             raise ValueError("Informe o nome completo da unidade e da forma.")
         return self.units[next(iter(matches))]
 
+    def display_name(self, unit_id):
+        """Historical records remain readable when an identity is no longer active."""
+        unit = self.units.get(unit_id)
+        return unit.name if unit else str(unit_id)
+
     def search(self, value, limit=25):
         query = normalize(value)
         found = [

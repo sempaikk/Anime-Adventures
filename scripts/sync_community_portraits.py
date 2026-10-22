@@ -117,6 +117,7 @@ def sync(inventory=None):
         "Falcon",
         "Flame Hero",
         "Gravity Hero",
+        "Illusionist (Chrysalis)",
         "Joykid (Bounce)",
         "Joykid (Mode IV)",
         "Lunar Hare",

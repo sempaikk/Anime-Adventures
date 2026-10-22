@@ -16,6 +16,7 @@ from community_domain import ROOT
 from community_ui import font, portraits
 from tier_image import PanelRenderer, image_file
 from tier_media import MediaLibrary
+from tier_portraits import PortraitInventory
 from tier_store import TierStore
 from tier_views import GuardedView, reply
 
@@ -244,3 +245,88 @@ async def check_visual_sequence(bot, message):
             "As mudanças visuais ou a restauração não produziram as imagens esperadas."
         )
     return frames
+
+
+async def check_portrait_sequence(bot, message):
+    """Exercise contribution states and actual TXT add/remove on the same Discord message."""
+    uid = "daki" if "daki" in bot.catalog.units else next(iter(bot.catalog.units))
+    catalog = SimpleNamespace(units={uid: bot.catalog.units[uid]})
+    steps = []
+    with tempfile.TemporaryDirectory(prefix="tier-portraits-") as folder:
+        store = TierStore(Path(folder) / "tierlist.sqlite3")
+        try:
+            library = MediaLibrary(store, catalog)
+            # An explicitly isolated, single-form fixture does not depend on whether
+            # all bundled game portraits have already been supplied in the future.
+            inventory = PortraitInventory(catalog, library, bundled={})
+            blob = io.BytesIO()
+            Image.new("RGBA", (128, 128), "#963021").save(blob, format="PNG")
+
+            async def check(title, expected):
+                needs = inventory.get()
+                if needs.count != expected:
+                    raise ValueError("A lista de retratos não acompanhou a revisão.")
+                file = (
+                    discord.File(
+                        io.BytesIO(needs.blob), filename="retratos-pendentes.txt"
+                    )
+                    if needs.count
+                    else None
+                )
+                try:
+                    await message.edit(
+                        content=f"**SIMULAÇÃO · retratos**\n{title}. Estado temporário, sem alterar imagens ou posições oficiais.",
+                        attachments=[file] if file else [],
+                    )
+                finally:
+                    if file:
+                        file.close()
+                received = await message.channel.fetch_message(message.id)
+                if received.id != message.id or len(received.attachments) != bool(
+                    expected
+                ):
+                    raise ValueError(
+                        "A atualização do anexo de retratos não foi confirmada."
+                    )
+                if expected:
+                    attachment = received.attachments[0]
+                    if (
+                        attachment.filename != "retratos-pendentes.txt"
+                        or attachment.size != len(needs.blob)
+                        or hashlib.sha256(await attachment.read()).hexdigest()
+                        != needs.checksum
+                    ):
+                        raise ValueError(
+                            "A lista recebida do Discord difere da lista enviada."
+                        )
+                steps.append(
+                    {"title": title, "pending": needs.count, "sha256": needs.checksum}
+                )
+
+            await check("Uma forma aguarda retrato", 1)
+            suggestion = library.submit(
+                uid,
+                0,
+                0,
+                "simulação",
+                "Imagem artificial exclusiva da verificação, sem correspondência visual com o jogo.",
+                blob.getvalue(),
+            )
+            await check("Envio pendente não remove a solicitação", 1)
+            library.decide(suggestion, 0, approve=True)
+            await check("Aprovação remove o último anexo pendente", 0)
+            library.undo(uid, suggestion, 0)
+            await check("Restauração recoloca a solicitação", 1)
+            rejected = library.submit(
+                uid,
+                0,
+                0,
+                "simulação",
+                "Sugestão artificial exclusiva do teste de rejeição.",
+                blob.getvalue(),
+            )
+            library.decide(rejected, 0, approve=False)
+            await check("Rejeição mantém a solicitação", 1)
+        finally:
+            store.close()
+    return steps

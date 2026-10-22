@@ -1,0 +1,117 @@
+# Fechamento da tier list — 22/10/2026
+
+## O que foi concluído
+
+Esta revisão fecha o catálogo ativo, a colaboração com retratos e os caminhos
+de recuperação. Mantém somente `/tierlist` e `/chatglobal`, sem novos comandos
+ou configuração obrigatória. O chat global continua em breve.
+
+- O canal principal continua com um PNG, sem legenda, botões ou rodapé técnico.
+- O tópico reúne propostas, votos, resultados e histórico. Membros usam
+  Sugerir imagem, Meus envios e Como funciona. Respostas pessoais são privadas.
+- Administradores preparam ou conferem o próprio painel. Revisão global,
+  correções, diagnóstico e testes continuam exclusivos do dono do aplicativo.
+- O único TXT público é **retratos-pendentes.txt**, uma solicitação de fotos
+  das formas exatas; não contém posições nem classificação por força.
+  Aprovações válidas reduzem a lista; pendência/rejeição não a reduzem.
+  Restauração pode recolocar um nome. O anexo desaparece ao completar as fotos.
+
+## Catálogo e imagens
+
+O catálogo histórico conserva **549 identidades**. A política explícita de
+disponibilidade exclui **25 formas** pelo critério do dono de descartar as
+silhuetas azuis substitutas, restando **524 formas ativas**. Há **453 retratos
+disponíveis e 71 pendências iniciais**, antes de sugestões aprovadas na hospedagem.
+
+Das exclusões, 23 já estavam entre as pendências anteriores. Gravity Hero tinha
+uma foto antiga reaproveitada. A conferência visual final encontrou também
+Illusionist (Chrysalis) com o boneco genérico azul, anteriormente contado como
+retrato válido; a imagem foi rejeitada e removida dos arquivos ativos. A cor
+azul em um personagem normal não determina exclusão. Não usamos essa cor para
+classificar automaticamente a disponibilidade de unidades futuras.
+
+A política está em `data/tier_availability.json`. Nem o cache nem uma nova
+consulta à wiki reativam esses IDs. Coleta, propostas, revisão de retratos e
+reversão respeitam o catálogo ativo. Se uma forma retirada já estiver numa
+classificação existente, a migração cria uma revisão auditada e mantém a ordem
+relativa das demais; preserva snapshots, votos e histórico anterior. Não cria
+posições para preencher a imagem de estreia.
+
+Os 453 arquivos ativos passaram por abertura/verificação e conferência de
+transparência não vazia. Isso valida os arquivos, sem comprovar balanceamento
+ou substituir a revisão da forma/skin no jogo. Retratos aprovados recebem
+conferência de hash; arquivos ausentes/corrompidos não escondem pendências. Uma
+restauração recusa predecessor corrompido e preserva a imagem atual. O renderer
+reconhece arquivo reparado sem precisar alterar posições.
+
+## Proteções e recuperação revisadas
+
+- Limites de sugestões são verificados antes do download/processamento e ao
+  registrar. Arquivos inválidos e duplicados também consomem uma reserva de
+  tentativa: seis por pessoa, trinta por servidor e mil na instância em dez
+  minutos. A janela fica no banco e sobrevive ao reinício. Os limites anteriores
+  de sugestões válidas, conta, tamanho, formato, fila e armazenamento continuam.
+- A saída do servidor durante o processamento impede gravar a sugestão. Os
+  controles permanecem vinculados ao ator, servidor e tópico corretos.
+- O índice apagado é reparado sem substituir a imagem principal. Uma
+  conferência após iniciar, e depois periodicamente, encontra exclusões que
+  aconteceram durante uma desconexão.
+- A confirmação perdida da API reaproveita a mensagem já enviada e atualiza a
+  lista para o estado mais recente, sem criar outro índice.
+- O ensaio real descobriu que o arquivo de um PATCH que falhou podia estar
+  esgotado ao ser reaproveitado num POST. A recuperação agora cria outro fluxo
+  de bytes; o teste de regressão reproduz o consumo antes do erro.
+- Nonces incluem a identidade persistente do banco. Caso o Discord retenha um
+  nonce de mensagem apagada, a entrega tenta uma nova geração uma única vez,
+  preservando os bytes e mantendo a proteção contra confirmação perdida.
+- Criação das tabelas de entrega fica na inicialização do banco, inclusive em
+  ferramentas isoladas. Migrações são transacionais e não apagam o estado.
+- Cache da wiki com estrutura inválida usa as referências de reserva sem
+  impedir a inicialização. Datas inválidas/futuras do cache são ignoradas para
+  não congelar as próximas consultas.
+
+## Evidências da revisão
+
+- **457 testes locais aprovados**, incluindo 34 novos cenários de regressão
+  do fechamento; lint de erros Python, formatação e diff conferidos.
+- A verificação isolada repete a mesma suíte em três processos sequenciais,
+  sem credenciais de produção, `.env` ou rede externa. Não são outros 455
+  cenários diferentes: é o caminho de execução usado pela hospedagem.
+- **Discord real**, no servidor de teste autorizado: dois comandos e permissão
+  padrão de `/tierlist`; índice com três botões; lista 71→70→71 na mesma
+  mensagem; reparo após exclusão; confirmação perdida sem duplicação; dez
+  mudanças visuais de PNG; cinco transições de retratos/TXT, conferindo os
+  arquivos baixados. Usou estado local temporário e nenhuma conexão Gateway
+  adicional. A classificação de produção foi preservada.
+- O relatório real ficou neste
+  [tópico privado de validação](https://discord.com/channels/1561531259484901489/1562852510442586213),
+  acessível conforme as permissões do servidor de teste. Artefatos técnicos
+  intermediários foram removidos e o tópico foi arquivado.
+- O verificador do bot inclui as cinco transições de retratos/TXT para o dono
+  repetir o ensaio depois. O clique humano no voto continua sendo uma etapa
+  própria; testes por API não se passam por uma conta humana.
+- Ensaio local com 524 posições artificiais na mesma linha expansível: PNG de
+  **2.749.300 bytes**, **1098×5664**, cerca de **2,47 s** de renderização e pico
+  do processo de **87,1 MiB**. Não mede a hospedagem gratuita, clientes móveis
+  ou vários servidores concorrentes e não determina uma capacidade garantida.
+
+A chave Groq está somente na hospedagem. Esta rodada direta não fez chamadas
+à Groq. A verificação completa, depois de reiniciar a versão atualizada, testa
+a resposta real respeitando o orçamento. A validação anterior dessa integração
+continua distinta das verificações locais desta revisão.
+
+## O que ainda depende da estreia
+
+O desenvolvimento deste fechamento está concluído. Para ativar a versão,
+reinicie o bot na hospedagem e rode Verificação completa nos controles privados.
+Os administradores dos outros servidores não precisam repetir `/tierlist`.
+
+Antes de ampliar a divulgação, guarde um backup completo fora da hospedagem e
+observe o uso em um a três servidores. As primeiras posições exigem propostas
+fundamentadas e cinco participantes reais; testes não fabricam essa votação.
+Confira os argumentos e os retratos das primeiras formas classificadas. A
+comunidade pode completar as 71 fotos ao longo do uso.
+
+Essa etapa comprova o funcionamento nos ambientes exercitados. A qualidade dos
+argumentos sobre o jogo, aparência no cliente e carga real continuam sendo
+validações de uso, sem novos módulos obrigatórios para lançar o piloto.

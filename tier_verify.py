@@ -414,7 +414,7 @@ async def _verify(bot, i):
                     "level": "Discord real",
                 }
             )
-            from tier_preview import check_visual_sequence
+            from tier_preview import check_visual_sequence, check_portrait_sequence
 
             report["visual_steps"] = await check_visual_sequence(bot, message)
             report["checks"].append(
@@ -422,6 +422,15 @@ async def _verify(bot, i):
                     "name": "Personagens, ordem, tiers e substituição de retratos: 10 etapas",
                     "result": "passed",
                     "level": "Discord real + dados isolados",
+                }
+            )
+            report["portrait_steps"] = await check_portrait_sequence(bot, message)
+            report["checks"].append(
+                {
+                    "name": "Lista de retratos: envio, aprovação, rejeição e restauração",
+                    "result": "passed",
+                    "level": "Discord real + dados isolados",
+                    "detail": "Cinco etapas, incluindo remover e recolocar o TXT na mesma mensagem.",
                 }
             )
             view = PollView(bot, closed=True)

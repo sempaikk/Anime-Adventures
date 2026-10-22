@@ -1310,12 +1310,6 @@
       "source_page": "https://animeadventures.fandom.com/wiki/File:Illusionist_(Betrayal).png",
       "path": "assets/community/57d0cccd056dfea748f7.png"
     },
-    "aizen_chrys": {
-      "name": "Illusionist (Chrysalis)",
-      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/1/18/Illusionist_%28Chrysalis%29.png/revision/latest?cb=20250413182612",
-      "source_page": "https://animeadventures.fandom.com/wiki/File:Illusionist_(Chrysalis).png",
-      "path": "assets/community/6368ed425547a6ec2bee.png"
-    },
     "aizen_hog_evolved": {
       "name": "Illusionist (Final)",
       "source_url": "https://static.wikia.nocookie.net/animeadventures/images/b/b7/Illusionist_%28Final%29.png/revision/latest?cb=20250413190108",
@@ -2827,7 +2821,8 @@
     "deku",
     "deku_vigilante_evolved",
     "deku_vigilante",
-    "nejire"
+    "nejire",
+    "aizen_chrys"
   ],
   "rejected_placeholders": {
     "todoroki_2": {
@@ -2973,6 +2968,12 @@
       "source_url": "https://static.wikia.nocookie.net/animeadventures/images/6/6e/Windspire.png/revision/latest?cb=20250415011232",
       "source_page": "https://animeadventures.fandom.com/wiki/File:Windspire.png",
       "path": "assets/community/75a7f719762de77ebc12.png"
+    },
+    "aizen_chrys": {
+      "name": "Illusionist (Chrysalis)",
+      "source_url": "https://static.wikia.nocookie.net/animeadventures/images/1/18/Illusionist_%28Chrysalis%29.png/revision/latest?cb=20250413182612",
+      "source_page": "https://animeadventures.fandom.com/wiki/File:Illusionist_(Chrysalis).png",
+      "path": "assets/community/6368ed425547a6ec2bee.png"
     }
   },
   "failures": {}

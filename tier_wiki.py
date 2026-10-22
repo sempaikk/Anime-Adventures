@@ -3,6 +3,7 @@
 from __future__ import annotations
 import hashlib
 import json
+import math
 import re
 import shutil
 from urllib.parse import quote, urlparse, parse_qs
@@ -26,6 +27,15 @@ class WikiSync:
         if self.cache.is_file() and self.cache.stat().st_size < 8 * 1024 * 1024:
             try:
                 data = json.loads(self.cache.read_text())
+                if (
+                    not isinstance(data, dict)
+                    or not isinstance(data.get("sources"), dict)
+                    or len(data["sources"]) > 6000
+                ):
+                    raise ValueError("Invalid wiki cache structure")
+                checked = data.get("checked", {})
+                if not isinstance(checked, dict) or len(checked) > 6000:
+                    raise ValueError("Invalid wiki cache timestamps")
                 self.catalog.merge_units(data.get("units", []))
                 sources = dict(self.evidence.sources)
                 for sid, item in data["sources"].items():
@@ -34,7 +44,15 @@ class WikiSync:
                         if not old or item["revision"] >= old.get("revision", 0):
                             sources[sid] = item
                 self.evidence.replace(sources)
-                self.checked = data.get("checked", {})
+                self.checked = {
+                    title: timestamp
+                    for title, timestamp in checked.items()
+                    if isinstance(title, str)
+                    and 1 <= len(title) <= 200
+                    and type(timestamp) in (int, float)
+                    and math.isfinite(timestamp)
+                    and 0 <= timestamp <= self.store.clock()
+                }
             except (ValueError, KeyError, TypeError, OSError):
                 self.status = "unavailable"
 
