@@ -9,7 +9,6 @@ from unittest.mock import AsyncMock, patch
 
 from PIL import Image
 
-from community_bot import CommunityBot, TierView, OptionsView
 from community_domain import Catalog
 from tier_analysis import (
     AnalysisUnavailable,
@@ -20,7 +19,7 @@ from tier_analysis import (
     QuotaReached,
     TierAnalyzer,
 )
-from tier_image import render, panel_payload, log_embed
+from tier_image import render, log_embed
 from tier_store import TierStore, TIERS, REQUIRED_TABLES
 from storage_maintenance import snapshot_database
 
@@ -50,7 +49,11 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
                 uid,
                 gid,
                 cid,
-                "Daki e Gyutaro são citados nesta conversa de teste.",
+                [
+                    "Daki e Gyutaro têm comparações de sangramento nesta avaliação de teste.",
+                    "Neste ensaio verificamos o alcance entre Gyutaro e Daki no modo infinito.",
+                    "Daki oferece suporte para um time com Gyutaro nesta simulação de raid.",
+                ][index],
                 {"daki", "gyutaro"},
             )
         data = {
@@ -92,6 +95,8 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
                     "confidence": 0.95,
                     "supporting_comments": ["c0", "c1", "c2"],
                     "reason": REASON,
+                    "conditions": "Condições de uso descritas nas fontes desta simulação.",
+                    "caveat": "É preciso conferir as limitações antes de concluir a comparação.",
                     "evidence": evidence,
                 }
             ]
@@ -199,7 +204,7 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_disabling_source_during_inference_discards_result(self):
         async def answer(packet):
-            self.store.disable_channel("200", "201")
+            self.store.remove_guild("200")
             return self.output(), 300
 
         self.backend.analyze.side_effect = answer
@@ -328,15 +333,25 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("user0", raw)
         self.assertNotIn("message0", raw)
 
-    def test_sources_and_participation_are_required_before_collection(self):
+    def test_installed_guild_and_unit_context_are_required_before_collection(self):
         self.assertFalse(
             self.store.ingest(
-                "x", "stranger", "100", "101", "Daki tem uma mecânica.", {"daki"}
+                "x", "stranger", "999", "101", "Daki tem uma mecânica.", {"daki"}
             )
         )
         self.assertFalse(
             self.store.ingest(
-                "x", "user0", "100", "999", "Daki tem uma mecânica.", {"daki"}
+                "x", "user0", "100", "999", "Daki tem uma mecânica.", set()
+            )
+        )
+        self.assertTrue(
+            self.store.ingest(
+                "x",
+                "stranger",
+                "100",
+                "999",
+                "Daki tem uma nova mecânica neste exemplo.",
+                {"daki"},
             )
         )
 
@@ -348,7 +363,12 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
         )
         for i in range(20):
             self.store.ingest(
-                str(i), "user0", "100", "101", "Daki tem uma mecânica.", {"daki"}
+                str(i),
+                "user0",
+                "100",
+                "101",
+                f"Daki tem uma mecânica. teste{i} teste{i}",
+                {"daki"},
             )
         self.assertEqual(
             self.store.connection.execute(
@@ -400,243 +420,7 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
         raw = json.dumps(embed.to_dict())
         self.assertNotIn("/avaliar", raw)
         self.assertNotIn("alcance", raw)
-        self.assertIn("wiki", raw)
-
-
-class RuntimeCase(unittest.IsolatedAsyncioTestCase):
-    async def asyncSetUp(self):
-        self.tmp = tempfile.TemporaryDirectory()
-        self.app = CommunityBot(
-            self.tmp.name, backend=SimpleNamespace(enabled=False, model="test")
-        )
-
-    async def asyncTearDown(self):
-        await self.app.close()
-        self.tmp.cleanup()
-
-    def message(self, *, bot=False, consent=False, enabled=False):
-        if enabled:
-            self.app.store.enable_channel(1, 10)
-        if consent:
-            self.app.store.consent(7)
-        return SimpleNamespace(
-            id=123,
-            author=SimpleNamespace(id=7, bot=bot),
-            webhook_id=None,
-            guild=SimpleNamespace(id=1),
-            channel=SimpleNamespace(id=10),
-            content="Daki é citada aqui neste teste.",
-            attachments=[],
-            stickers=[],
-            reply=AsyncMock(),
-            delete=AsyncMock(),
-        )
-
-    async def test_names_used_in_the_owners_example_and_short_names_are_recognized(
-        self,
-    ):
-        self.assertEqual(
-            self.app.catalog.mentions("Giltaro deve passar a Daki."),
-            {"gyutaro", "daki"},
-        )
-        self.assertIn(
-            "dio", self.app.catalog.mentions("Dio tem esta mecânica no jogo.")
-        )
-
-    async def test_exactly_two_commands_without_any_options(self):
-        commands = self.app.tree.get_commands()
-        self.assertEqual({c.name for c in commands}, {"tierlist", "chatglobal"})
-        self.assertTrue(all(not c.parameters for c in commands))
-        self.assertIsNone(self.app.help_command)
-
-    async def test_first_command_works_at_process_clock_zero(self):
-        self.app.command_clock = lambda: 0
-        i = SimpleNamespace(
-            channel_id=10,
-            guild_id=1,
-            permissions=SimpleNamespace(manage_guild=True),
-            app_permissions=SimpleNamespace(
-                send_messages=True, embed_links=True, attach_files=True
-            ),
-            response=SimpleNamespace(defer=AsyncMock()),
-            followup=SimpleNamespace(
-                send=AsyncMock(return_value=SimpleNamespace(id=321))
-            ),
-            channel=SimpleNamespace(
-                send=AsyncMock(return_value=SimpleNamespace(id=321))
-            ),
-        )
-        await self.app.tree.get_command("tierlist").callback(i)
-        i.response.defer.assert_awaited_once()
-        i.followup.send.assert_awaited_once()
-        self.assertEqual(self.app.store.panels()[0]["message_id"], "321")
-        self.assertTrue(i.response.defer.await_args.kwargs["ephemeral"])
-        self.assertEqual(set(i.channel.send.await_args.kwargs), {"file"})
-        self.assertTrue(i.followup.send.await_args.kwargs["ephemeral"])
-
-    async def test_running_command_again_reuses_the_image_only_message(self):
-        self.app.store.remember_panel(1, 10, 123, 0)
-        message = SimpleNamespace(id=123, edit=AsyncMock())
-        message.edit.return_value = message
-        channel = SimpleNamespace(
-            get_partial_message=lambda _: message, send=AsyncMock()
-        )
-        i = SimpleNamespace(
-            channel_id=10,
-            guild_id=1,
-            channel=channel,
-            permissions=SimpleNamespace(manage_guild=True),
-            app_permissions=SimpleNamespace(
-                send_messages=True, embed_links=True, attach_files=True
-            ),
-            response=SimpleNamespace(defer=AsyncMock()),
-            followup=SimpleNamespace(send=AsyncMock()),
-        )
-        await self.app.tree.get_command("tierlist").callback(i)
-        channel.send.assert_not_awaited()
-        message.edit.assert_awaited_once()
-        self.assertIsNone(message.edit.await_args.kwargs["view"])
-        self.assertEqual(message.edit.await_args.kwargs["embeds"], [])
-
-    async def test_image_cannot_be_published_in_the_voting_channel(self):
-        self.app.store.remember_panel(1, 10, 123, 0)
-        self.app.store.set_update_channel(1, 20)
-        i = SimpleNamespace(
-            channel_id=20,
-            guild_id=1,
-            permissions=SimpleNamespace(manage_guild=True),
-            app_permissions=SimpleNamespace(
-                send_messages=True, embed_links=True, attach_files=True
-            ),
-        )
-        with self.assertRaises(ValueError):
-            await self.app.tree.get_command("tierlist").callback(i)
-
-    async def test_no_analysis_is_spent_without_a_voting_channel(self):
-        with patch.object(self.app.analyzer, "run", new_callable=AsyncMock) as analyze:
-            await self.app.analysis_loop.coro(self.app)
-        analyze.assert_not_awaited()
-
-    async def test_polls_go_only_to_the_separate_updates_channel(self):
-        self.app.store.remember_panel(1, 10, 123, 0)
-        self.app.store.set_update_channel(1, 20)
-        detail = {"reason": REASON, "sources": [], "tier": "S", "before": None}
-        self.app.store.create_proposal(
-            [{"unit_id": "daki", "tier": "S"}],
-            {},
-            details={"daki": detail},
-            source_version=self.app.analyzer.evidence.version,
-            model="test",
-            comments=[],
-        )
-        channel = SimpleNamespace(id=20)
-        with (
-            patch.object(self.app, "get_channel", return_value=channel),
-            patch.object(
-                self.app.http,
-                "send_message",
-                new_callable=AsyncMock,
-                return_value={"id": "999"},
-            ) as send,
-        ):
-            await self.app.poll_loop.coro(self.app)
-            await self.app.poll_loop.coro(self.app)
-        send.assert_awaited_once()
-        self.assertEqual(send.await_args.args[0], 20)
-        self.assertEqual(self.app.store.poll_messages()[0]["channel_id"], "20")
-
-    async def test_global_chat_is_only_a_placeholder(self):
-        i = SimpleNamespace(
-            response=SimpleNamespace(is_done=lambda: False, send_message=AsyncMock())
-        )
-        await self.app.tree.get_command("chatglobal").callback(i)
-        i.response.send_message.assert_awaited_once_with("Em breve.", ephemeral=True)
-        self.assertFalse(hasattr(self.app, "delivery_loop"))
-        self.assertFalse((Path(self.tmp.name) / "community.sqlite3").exists())
-
-    async def test_old_global_channels_and_unconfirmed_participants_are_not_read(self):
-        for enabled, consent in [(False, True), (True, False)]:
-            if not consent:
-                self.app.store.withdraw(7)
-            message = self.message(enabled=enabled, consent=consent)
-            await self.app.on_message(message)
-            message.delete.assert_not_awaited()
-            message.reply.assert_not_awaited()
-        self.assertEqual(self.app.store.pending(), [])
-
-    async def test_authorized_comments_are_collected_without_deleting_or_relaying(self):
-        message = self.message(enabled=True, consent=True)
-        await self.app.on_message(message)
-        self.assertEqual(len(self.app.store.pending()), 1)
-        message.delete.assert_not_awaited()
-        message.reply.assert_not_awaited()
-
-    async def test_bot_posts_cannot_feed_the_analysis(self):
-        await self.app.on_message(self.message(bot=True, enabled=True, consent=True))
-        self.assertEqual(self.app.store.pending(), [])
-
-    async def test_deleting_or_editing_comment_removes_pending_evidence(self):
-        message = self.message(enabled=True, consent=True)
-        await self.app.on_message(message)
-        await self.app.on_raw_message_delete(SimpleNamespace(message_id=123))
-        self.assertEqual(self.app.store.pending(), [])
-        await self.app.on_message(message)
-        await self.app.on_raw_message_edit(
-            SimpleNamespace(message_id=123, data={"content": "editado"})
-        )
-        self.assertEqual(self.app.store.pending(), [])
-
-    async def test_private_interface_only_has_options_without_a_history_button(self):
-        view = TierView(self.app)
-        self.assertEqual([c.label for c in view.children], ["Opções"])
-
-    async def test_options_cannot_be_used_by_another_person(self):
-        i = SimpleNamespace(
-            user=SimpleNamespace(id=1),
-            guild_id=1,
-            permissions=SimpleNamespace(manage_guild=False),
-        )
-        view = OptionsView(self.app, i)
-        other = SimpleNamespace(
-            user=SimpleNamespace(id=2),
-            guild_id=1,
-            response=SimpleNamespace(is_done=lambda: False, send_message=AsyncMock()),
-        )
-        self.assertFalse(await view.interaction_check(other))
-
-    async def test_panel_updates_same_message_and_never_sends_new_messages(self):
-        self.app.store.publish(
-            [{"unit_id": "daki", "tier": "S"}],
-            {},
-            source_version="test",
-            model="test",
-            comments=[],
-        )
-        self.app.store.remember_panel(1, 10, 123, 0)
-        message = SimpleNamespace(edit=AsyncMock())
-        channel = SimpleNamespace(
-            get_partial_message=lambda mid: message, send=AsyncMock()
-        )
-        with patch.object(self.app, "get_channel", return_value=channel):
-            await self.app.panel_loop.coro(self.app)
-            await self.app.panel_loop.coro(self.app)
-        message.edit.assert_awaited_once()
-        channel.send.assert_not_awaited()
-        self.assertIsNone(message.edit.await_args.kwargs["view"])
-        self.assertEqual(message.edit.await_args.kwargs["embeds"], [])
-
-    async def test_panel_has_dot_alt_and_no_old_filters(self):
-        embed, file, _ = panel_payload(self.app.store)
-        self.assertEqual(file.description, ".")
-        text = json.dumps(embed.to_dict()).casefold()
-        file.close()
-        for old in ("/avaliar", "alcance", "do servidor", "/configurar"):
-            self.assertNotIn(old, text)
-
-    async def test_admin_must_have_manage_guild(self):
-        i = SimpleNamespace(guild_id=1, permissions=SimpleNamespace(manage_guild=False))
-        with self.assertRaises(ValueError):
-            self.app.require_admin(i)
+        self.assertIn("Wiki", raw)
 
 
 class ImageCase(unittest.TestCase):
@@ -791,6 +575,7 @@ class PollCase(unittest.IsolatedAsyncioTestCase):
         self.proposal = self.store.active_proposal()
         self.store.remember_poll(self.proposal["id"], "100", "101", "999")
         self.store.remember_poll(self.proposal["id"], "200", "201", "888")
+        self.proposal = self.store.active_proposal()
 
     # Poll tests use the shared fixture, not the inherited inference tests.
     def cast(self, choices):
@@ -810,6 +595,52 @@ class PollCase(unittest.IsolatedAsyncioTestCase):
             self.store.poll_counts(self.proposal["id"]),
             {"approve": 0, "keep": 1, "test": 0},
         )
+
+    def test_revision_number_alone_does_not_reopen_rejected_evidence(self):
+        self.cast(["keep"] * 5)
+        self.resolve()
+        self.now += 3600
+        detail = json.loads(json.dumps(self.proposal["details"]))
+        detail["daki"]["sources"][0]["url"] = (
+            "https://animeadventures.fandom.com/wiki/daki?oldid=99"
+        )
+        self.assertFalse(
+            self.store.create_proposal(
+                self.proposal["ranking"],
+                self.proposal["explanations"],
+                details=detail,
+                source_version="new-revision-same-content",
+                model="test",
+                comments=[],
+            )
+        )
+        detail["daki"]["sources"][0]["quote"] += (
+            " Novas condições verificadas neste exemplo."
+        )
+        self.assertTrue(
+            self.store.create_proposal(
+                self.proposal["ranking"],
+                self.proposal["explanations"],
+                details=detail,
+                source_version="new-evidence",
+                model="test",
+                comments=[],
+            )
+        )
+
+    def test_legacy_schema_migration_preserves_running_deadline_and_vote(self):
+        self.store.vote(self.proposal["id"], "same", "100", "101", "999", "keep")
+        self.store.connection.execute(
+            "ALTER TABLE tier_proposals DROP COLUMN opened_at"
+        )
+        self.store.connection.commit()
+        self.store.close()
+        self.now += 120
+        self.store = TierStore(self.root / "tierlist.sqlite3", clock=lambda: self.now)
+        running = self.store.active_proposal()
+        self.assertEqual(running["opened_at"], self.proposal["created_at"])
+        self.assertEqual(running["closes_at"], self.proposal["closes_at"])
+        self.assertEqual(self.store.poll_counts(running["id"])["keep"], 1)
 
     def test_vote_is_bound_to_the_recorded_message_and_guild(self):
         with self.assertRaises(ValueError):

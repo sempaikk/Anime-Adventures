@@ -1,78 +1,49 @@
 # Anime Adventures
 
-O bot tem **somente dois comandos, sem argumentos**:
+Tier list global com retratos originais, análise de relatos e decisões da comunidade. **Somente dois comandos, sem argumentos:**
 
-- **`/tierlist`** — imagem da tier list global e configuração privada em **Opções**.
-- **`/chatglobal`** — responde **Em breve**. O chat global não coleta, apaga nem retransmite mensagens.
+- **`/tierlist`** — publica o painel para administradores; membros consultam a classificação em uma resposta privada.
+- **`/chatglobal`** — responde **Em breve.** Nenhuma conversa é apagada ou retransmitida por esse comando.
 
-Não há tier list do servidor, formulário de notas, filtros de alcance, comandos de avaliação, configuração, moderação ou atualizações. Administradores configuram os canais de análise dentro de **Opções**. Os comandos e sistemas das versões anteriores estão arquivados, sem execução no bot atual.
+## Um canal, uma imagem e um tópico
 
-## Imagem e posições
+O administrador usa `/tierlist` em um canal de texto. O bot publica **somente um PNG**, sem texto, embed ou botões na mensagem pública, e cria o tópico **Votações e histórico** ligado a ela. Repetir o comando reutiliza esse conjunto, inclusive quando várias pessoas executam juntas. O painel oficial existente é preservado se o comando for usado em outro canal.
 
-A grade segue a referência fornecida: **Meta, S, A, B, C, D e E**. O bot compõe um PNG usando os retratos originais da wiki, sem nomes sobre os quadrados e sem gerar personagens por IA. Cada linha cresce quando precisa de mais espaço. Dentro do mesmo tier, a ordem é da esquerda para a direita; passar outro personagem não exige rebaixá-lo para a linha de baixo.
+O tópico contém um índice editável, classificação completa por nome em `.txt`, propostas, votações, resultados e revisões. O índice oferece **Sugerir imagem** e atalhos para decisões recentes. O resultado aparece na própria proposta encerrada. O canal principal continua com a mesma imagem editada; não há botão de histórico nela nem segundo canal obrigatório.
 
-Existe uma única classificação global, exibida nos servidores. Administradores usam `/tierlist` para publicar um painel que o bot edita quando uma mudança é aprovada. **No canal da tier list aparece só a imagem: sem texto, embed ou botões de histórico/configuração.** O administrador recebe a confirmação e **Opções** em uma resposta privada. Há um painel oficial por servidor; publicar em outro canal transfere as atualizações para ele. Usar o comando novamente no mesmo canal edita a imagem existente. Membros consultam a mesma lista de forma privada.
+Os retratos mantêm os pixels originais, sem ampliação artificial ou geração de personagens. A grade segue **Meta, S, A, B, C, D e E**, com ordem da esquerda para a direita e linhas que crescem. O rodapé distingue a última classificação aprovada da revisão de retratos, em horário de Brasília. O arquivo não recebe a descrição artificial de ponto que causava um indicador ALT desnecessário.
 
-Em **Opções → Canal de votações e atualizações**, o administrador escolhe um segundo canal. As propostas, fontes, votos e resultados ficam ali, formando o histórico no próprio Discord. A proposta encerrada é editada com o resultado, sem criar mensagens de resultado duplicadas. O canal da imagem não recebe essas mensagens. O banco também guarda um histórico de mudanças do Meta; unidades abaixo dele aparecem na imagem sem ficha detalhada permanente.
+O catálogo inicial tem **549 identidades/formas, 455 retratos válidos e 94 pendências**. As formas sem classificação ficam em **Sem avaliação**, no arquivo textual, e não são colocadas em E. Um retrato ausente usa um marcador, sem tomar a imagem de outra evolução. A classificação inicial é vazia: não publicamos posições fictícias.
 
-A lista começa vazia de classificações. Não usamos posições fictícias para aparentar atividade, nem importamos as antigas notas de jogadores. O catálogo contém 549 identidades/formas; há 455 retratos válidos e 94 pendências. Os placeholders azuis da própria wiki foram rejeitados. Imagem ausente é indicada sem substituir por outra evolução.
+## Análise e votação global
 
-## IA propõe, comunidade decide
+O bot considera **mensagens futuras** sobre Anime Adventures nos canais aos quais tem acesso. Não há seleção de canais de análise, confirmação individual, importação de conversas antigas ou avisos automáticos de participação. A administração comunica esse funcionamento à comunidade e controla o acesso do bot pelas permissões do Discord.
 
-O ciclo é **no máximo uma proposta por hora**, com uma votação global de **10 minutos**:
+O filtro local identifica nomes/formas e contexto do jogo. A IA confirma se a conversa realmente trata de Anime Adventures e compara relatos com fontes da wiki. DMs, bots, webhooks, mensagens encaminhadas/citações isoladas e o próprio painel/tópico são excluídos. Editar ou apagar o original retira o relato de análises futuras; isso não desfaz automaticamente uma decisão publicada.
 
-1. A IA interpreta comentários autorizados e consulta trechos identificados da wiki.
-2. Uma proposta válida aparece em uma **nova mensagem no canal de votações e atualizações**, com comparação, condições, justificativa e links das fontes. Sem um destino configurado, a análise automática não faz chamadas ao modelo.
-3. Os botões são **Aprovar**, **Manter como está** e **Precisa de mais testes**.
-4. Ao encerrar os dez minutos, são necessários **pelo menos cinco participantes** e **dois terços dos votos a favor**. Empate, participação insuficiente ou pedido predominante de testes mantêm a lista.
-5. A aprovação publica a nova classificação e o bot edita a imagem, sem esperar o fim da hora. O próximo ciclo só começa uma hora depois do início da proposta anterior: aproximadamente cinquenta minutos após seu encerramento.
+1. **No máximo uma proposta global por hora**, com motivo, condições, ressalva, fontes e posições antes/depois. Sem evidência suficiente, não aparece uma votação para preencher horário.
+2. **Dez minutos de votação**, contados da primeira publicação confirmada no Discord. Todas as cópias compartilham o prazo.
+3. **Aprovar / Manter / Mais testes.** São necessários pelo menos **cinco participantes e dois terços a favor** para publicar. Outras situações preservam a lista.
+4. Uma conta conta uma vez na rede e pode trocar seu voto até o prazo. A conta precisa ter pelo menos sete dias. Durante a votação aparece somente o total de participantes; a distribuição é revelada ao encerrar.
+5. Uma aprovação edita a imagem sem esperar o fim da hora. Reiniciar não apaga votos nem renova o prazo. Registro e publicação são atômicos, evitando aplicar uma aprovação duas vezes.
 
-As cópias da enquete nos servidores pertencem à **mesma votação**. Uma pessoa conta uma vez na rede inteira e pode trocar a escolha antes do prazo. Os botões verificam conta humana com pelo menos sete dias e a mensagem/canal/servidor vinculados à enquete. Votos atrasados são recusados mesmo antes da próxima atualização visual.
+A IA considera contribuição para o time, custo, mecânicas, funções, condições e limitações. Popularidade ou um atributo isolado não bastam. São exigidos IDs conhecidos, a forma mencionada no relato, confiança mínima, citações literais e números presentes nas citações. Passar outro personagem no mesmo tier exige referência dele também. Fontes ou classificação-base alteradas invalidam uma proposta incompatível.
 
-A votação, o prazo e os votos sobrevivem ao reinício. Aprovação e nova classificação são gravadas na mesma transação para evitar aplicação duplicada. Se a fonte da wiki ou a classificação-base mudar durante a votação, a proposta antiga não é aplicada. Propostas rejeitadas com a mesma mudança e as mesmas evidências não são repetidas por 24 horas; novas fontes podem justificar outra análise. Se não houver proposta sustentada pelas fontes, não há enquete só para preencher horário.
+Resultados recentes entram como contexto; **isso não treina os pesos da IA** nem comprova uma estatística do jogo. Comparações recentes sem evidência nova têm uma janela de estabilidade de 24 horas. O modelo não recebe ferramentas, shell, banco ou controle do Discord. Essas restrições reduzem erros; não garantem interpretação perfeita nem impedem todas as contas alternativas.
 
-Resultados agregados das votações entram como contexto nas análises seguintes. Isso **não treina nem altera os pesos do modelo de IA**. Uma votação também não transforma uma alegação em estatística oficial do jogo.
+## Wiki, retratos e revisão
 
-## Conectar a IA sem contratar API paga
+`data/tier_evidence.json` inclui **1.038 referências** com revisão, URL e hash. São fontes comunitárias, não telemetria do jogo. O bot consulta a API oficial da wiki de maneira limitada: módulos de identidades/dados diariamente e artigos relevantes em lotes pequenos. Durante uma votação, a atualização das fontes é adiada. Falhas preservam o último cache válido e são indicadas no diagnóstico/índice. Uma sincronização parcial não significa que toda a wiki foi revisada naquele instante.
 
-A integração usa **Groq**, com `openai/gpt-oss-120b` como modelo inicial. A documentação atual lista esse modelo no plano gratuito. O código faz somente chamadas de inferência: não contrata plano, não ativa cobrança e não troca para outro provedor se a cota acabar. **Mantenha a conta da Groq no plano gratuito, sem ativar cobrança.** Os limites e a disponibilidade são definidos pelo provedor e podem mudar.
+**Sugerir imagem** abre um formulário com personagem/forma, skin, motivo, retrato e print opcional do jogo. São aceitos PNG, JPG e WebP estáticos, até 4 MB por arquivo e quatro milhões de pixels. O processamento aplica a orientação da foto, remove metadados e limita dimensões, duplicatas, frequência e armazenamento. Não executa anexos nem busca URLs fornecidas pelo usuário.
 
-1. Crie uma chave em <https://console.groq.com/keys>.
-2. No **Ambiente** do Bot-Hosting.net, adicione **`GROQ_API_KEY`** com a chave e marque **Segredo**. Não publique a chave no chat ou GitHub.
-3. Recomendado: ative **Zero Data Retention** nos Data Controls da Groq antes de usar comentários da comunidade.
-4. Mantenha Python 3.12 e `bot.py`. Reinicie com o pull automático do GitHub ativado.
+Somente o responsável pelo aplicativo aprova ou rejeita. A revisão privada compara o retrato atual com a sugestão; um recorte de fundo uniforme pode ser experimentado e desfeito antes da aprovação. Não é uma reconstrução da arte por IA. As versões anteriores são preservadas para restauração. Alterar retratos **não altera posições**. Membros consultam **Meus envios** na resposta privada de `/tierlist`.
 
-A assinatura do ChatGPT não fornece uma conexão permanente desta conversa ao Discord nem crédito automático para a API da OpenAI. O bot chama seu próprio modelo pela API. Sem `GROQ_API_KEY`, a parte visual funciona, mas a análise fica aguardando conexão; não são simuladas análises de IA.
+Propostas têm **Sinalizar problema**. Os relatos entram na revisão privada, sem acrescentar votos ou modificar posições. O responsável pode suspender uma proposta aberta, reverter a última classificação e restaurar retratos, com registros públicos de correção. Administradores de outros servidores não alteram a classificação global diretamente.
 
-A integração limita pedidos e tokens por dia, usa lotes pequenos e respeita o intervalo. Cota excedida, erro, resposta inválida ou fonte insuficiente preservam a lista e os comentários pendentes para uma tentativa posterior. Não há fallback pago. A chave precisa ser de uma conta gratuita; o código não consegue determinar nem alterar o contrato de cobrança da conta do proprietário.
+## Hospedagem e IA gratuita
 
-Referências oficiais: [limites gratuitos](https://console.groq.com/docs/rate-limits), [modelos](https://console.groq.com/docs/models), [dados e ZDR](https://console.groq.com/docs/your-data).
-
-## Ativar os canais, sem outro comando
-
-1. Um administrador publica `/tierlist` no canal escolhido para o painel.
-2. Na confirmação privada, em **Opções → Canal de votações e atualizações**, escolhe outro canal para propostas, votos, resultados e histórico. Não é possível escolher o canal da imagem. Para trocar o destino durante uma enquete já publicada no servidor, aguarde seu encerramento.
-3. Em **Opções**, usa **Ativar análise em um canal** para selecionar conversas existentes sobre o jogo. O bot publica o aviso de funcionamento nesse canal antes de ativar a coleta. O canal da imagem não pode ser uma fonte de conversa.
-4. Cada participante confirma uma vez em **Opções → Participar da análise**. Só mensagens futuras dessa pessoa nos canais ativados são consideradas.
-5. Para interromper, use **Desativar análise em um canal** ou **Parar e apagar meus comentários** em Opções.
-
-O bot precisa de **Ver canal, Enviar mensagens, Inserir links, Anexar arquivos** no painel e **Ver canal, Enviar mensagens, Inserir links** no canal de votação. Nos canais de análise, precisa ver o canal, ler histórico e enviar o aviso. Habilite **Message Content Intent** no Developer Portal. A instalação usa os escopos `bot` e `applications.commands`. Não é necessário dar Administrador ou Gerenciar mensagens ao bot. Ele não cria canais nem altera permissões de membros; configure o painel e o canal de votação como somente leitura para manter a organização. Botões continuam permitindo votar sem enviar mensagens. O terceiro canal, de chat global, fica para uma etapa futura.
-
-Nomes, IDs do Discord e nomes dos servidores não são anexados ao pedido da IA. Menções, links, emails e padrões de telefone são removidos dos trechos antes do envio. Isso não é uma promessa de anonimização de todo texto livre: participantes devem evitar dados pessoais. O provedor recebe os trechos consentidos para inferência, com as condições de dados escolhidas na conta.
-
-Comentários locais duram até sete dias; edição ou exclusão do original os retira de análises futuras. Registros individuais de votos duram até trinta dias. Sair da análise apaga os próprios comentários e registros de votos; resultados agregados já encerrados permanecem. Backups locais podem conter dados apagados até serem substituídos diariamente. Os comentários não são retransmitidos entre servidores.
-
-## Verificação de fontes e limites da análise
-
-`data/tier_evidence.json` contém 1.038 fontes de texto para as 549 identidades/formas, com revisão, URL e hash. As fontes são snapshots atribuídos da wiki, **não consultas automáticas em tempo real ao jogo ou à wiki a cada mensagem**. Para atualizar o conjunto de referência, o mantenedor executa `python scripts/build_tier_evidence.py --corpus /caminho/do/corpus` a partir de uma coleta revisada e publica a atualização.
-
-O modelo recebe somente os trechos relevantes de um pequeno conjunto de unidades. Ele deve distinguir forma, condições, mecânicas e limitações; um atributo isolado não prova superioridade geral. O código exige IDs conhecidos, tier permitido, comentário de origem, confiança mínima, citação literal existente e fonte da própria forma. Para ultrapassar um concorrente, também exige fonte dele. Números da explicação precisam aparecer nas citações.
-
-Comentários e páginas são dados não confiáveis, nunca instruções de execução. O modelo não recebe ferramentas, acesso ao Discord, shell ou banco. Sua resposta só pode propor uma mudança no formato esperado. Essas verificações reduzem citações e números inventados; não provam automaticamente toda interpretação semântica. A enquete existe para revisar a recomendação, inclusive quando a wiki está incompleta ou desatualizada.
-
-## Operação
-
-Variáveis no Bot-Hosting.net:
+No Bot-Hosting.net, use **Python 3.12**, arquivo inicial **`bot.py`**, pull automático do GitHub e estas variáveis:
 
 ```dotenv
 DISCORD_TOKEN=segredo_do_bot
@@ -80,19 +51,58 @@ DATA_DIR=./state
 GROQ_API_KEY=segredo_da_conta_gratuita
 ```
 
-O estado atual fica em `tierlist.sqlite3`, separado dos bancos anteriores. `scores.sqlite3` e `community.sqlite3` não são apagados nem importados como ranking. As versões anteriores estão em `quiz_legacy.py` e `community_legacy.py`; nenhuma fila antiga do chat global é executada. Bancos arquivados precisam ser exportados ou removidos pelo proprietário conforme a política que desejar manter para aqueles dados.
+Marque as chaves como **Segredo**. Mantenha a conta Groq no plano **Free**, sem ativar cobrança. O modelo inicial é `openai/gpt-oss-120b`; a assinatura do ChatGPT não fornece esse serviço. O bot não contrata planos e não tem fallback pago. Ele não consegue determinar se o proprietário mudou o contrato de cobrança da conta.
 
-Use uma instância do bot por vez. `./state` precisa ser persistente na hospedagem; confirme com um reinício antes de depender do armazenamento. O plano gratuito da hospedagem exige renovação manual conforme as regras do provedor. A integração gratuita de IA não substitui a hospedagem.
+Há um orçamento local de **48 chamadas e 150 mil tokens por dia UTC**, com entradas limitadas e intervalo entre análises. Testes de conexão também consomem esse orçamento. Cota excedida, chave ausente, resposta inválida ou indisponibilidade preservam posições. Os limites reais são definidos pela Groq e podem mudar. Recomendamos configurar Zero Data Retention nos controles da conta.
 
-Verificação de integridade ao iniciar, encerramento por SIGTERM, manutenção e backup SQLite validado diário em `backups/tierlist-latest.sqlite3`. Uma cópia no mesmo armazenamento não protege contra exclusão da implantação: exporte-a pelo painel. Limites de coleta, votos e retenção reduzem crescimento. A primeira instância limita painéis a 100 servidores, propostas a 256 KiB e conserva até 50 snapshots de propostas encerradas, além do histórico independente do Meta. Endpoints mínimos `/health` e `/ready` usam `PORT`, depois `SERVER_PORT`, depois 8080, sem dados de pessoas.
+O bot não anexa nomes, IDs do Discord ou nomes de servidores aos pedidos de análise. Menções, URLs, emails e padrões de telefone são removidos do texto antes do envio. Isso não garante anonimização de qualquer texto livre. Comentários locais ficam até sete dias; votos individuais, relatos e sugestões encerradas têm retenção limitada. Backups locais podem conservar dados removidos até sua rotação. Resultados agregados e mensagens públicas de histórico permanecem.
 
-## Testes
+Ative **Message Content Intent** no Developer Portal. A instalação usa `bot` e `applications.commands`. No canal do painel, conceda ao bot:
+
+- Ver canal, Enviar mensagens e Ler histórico;
+- Inserir links e Anexar arquivos;
+- Criar tópicos públicos e Enviar mensagens em tópicos.
+
+**Gerenciar tópicos é opcional**, usado para apagar o tópico técnico vazio após a verificação. Sem isso, ele fica arquivado. Um tópico trancado depende da administração para destrancar. Não é necessário conceder Administrador ou Gerenciar mensagens. O bot não altera permissões do canal; a administração pode impedir mensagens no canal principal e permitir os botões/tópico.
+
+O plano gratuito da hospedagem exige renovação conforme suas regras. `./state` precisa persistir entre reinícios; exporte backups antes de excluir a implantação. Uma segunda instância com o mesmo diretório é recusada pelo bloqueio de processo.
+
+## Verificar sozinho, incluindo Discord real
+
+O responsável pelo aplicativo recebe **Verificação completa** na resposta privada de `/tierlist`. Ela:
+
+- executa a suíte automatizada em subprocesso com estado temporário, sem credenciais nem rede externa;
+- confere os dois comandos registrados na API real;
+- cria um tópico técnico separado, publica/lê/edita uma imagem, confere botões e arquivamento/retomada;
+- verifica uma resposta real da Groq, respeitando cota e intervalo;
+- limpa as próprias mensagens técnicas e entrega um relatório JSON privado;
+- oferece **Confirmar teste de interação**, usando um clique real no código de voto com banco temporário.
+
+**Não é preciso reunir cinco pessoas para os testes automatizados.** Os cenários de disputa usam participantes artificiais somente em bancos temporários, sem fabricar votos ou posições públicas. A ferramenta não se passa por uma conta humana. Aparência no celular/computador e seleção humana de anexos são identificadas como verificações do cliente ainda não executadas.
+
+O relatório distingue **isolado, Discord real, Groq real e não testado**. Um log dizendo que a chave foi carregada não confirma a integração. Orientações de estreia e falhas comuns: [docs/community-validation.md](docs/community-validation.md).
+
+## Estado, backup e restauração
+
+`tierlist.sqlite3` guarda o sistema atual; bancos do quiz e da comunidade antiga não viram ranking. As versões antigas permanecem arquivadas, sem executar seus comandos ou filas de chat global. A migração preserva classificações e votos existentes; os antigos controles individuais não fazem parte da interface ativa.
+
+Há integridade ao iniciar, manutenção periódica, limites de coleta/votos/mídia e proteção contra espaço insuficiente. O backup diário inclui **SQLite, manifesto e arquivos de mídia verificados**, em `state/backups/tierlist-<instante>/`. `backups/latest.json` aponta a geração atual; uma geração anterior é mantida. Exporte a pasta inteira. Uma cópia no mesmo disco não protege contra exclusão da hospedagem.
+
+Para restaurar, **pare o bot** e execute, usando o nome real da pasta:
+
+```bash
+python scripts/restore_tierlist.py --snapshot ./state/backups/tierlist-<instante> --data-dir ./state --replace
+```
+
+A restauração verifica banco e imagens antes de trocar o estado, recusa uma instância ativa e preserva `pre-restore.sqlite3` quando substitui um banco existente. A próxima inicialização atualiza os painéis. Também existem `/health` e `/ready`, sem dados de jogadores, usando `PORT`, depois `SERVER_PORT`, depois 8080. O workflow opcional de disponibilidade depende de `BOT_HEALTH_URL` no GitHub e de um endereço HTTP exposto pela hospedagem.
+
+## Desenvolvimento e limites da validação
 
 ```bash
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
 ```
 
-A suíte usa SQLite temporário, composições locais de imagens e respostas simuladas das APIs. **Não chama o modelo real, não usa token de produção, não sincroniza comandos nem publica mensagens de teste.** Cobre comandos exatos sem argumentos, imagem pública sem botões, configuração privada, separação do canal de votação, chat inativo, consentimento, fontes, citações, números, orçamento, cota, propostas, prazos, votos na rede, reinício, aplicação única, ordem dos retratos, crescimento das linhas e atualização da mesma mensagem.
+A suíte local/GitHub usa bancos temporários e APIs simuladas. Cobre fluxos de jogador, concorrência, fraude de interação, permissões, arquivos hostis, quota, prazos, reinício, persistência, rollback e restauração. **Passar nela não confirma acesso de produção ao Discord/Groq.** Isso é medido separadamente pelo botão de verificação na hospedagem.
 
-A validação real, após cadastrar a chave e reiniciar, está em [docs/community-validation.md](docs/community-validation.md). Até essa etapa, não considerar a integração da Groq e as permissões do Discord confirmadas em produção.
+Escopo consolidado: [docs/tierlist-plan.md](docs/tierlist-plan.md). Fontes oficiais: [tópicos do Discord](https://docs.discord.com/developers/topics/threads), [componentes e upload](https://docs.discord.com/developers/components/reference), [limites da Groq](https://console.groq.com/docs/rate-limits), [controles de dados](https://console.groq.com/docs/your-data). Retratos e trechos da wiki mantêm atribuições/URLs nos manifestos.

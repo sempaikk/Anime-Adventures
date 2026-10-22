@@ -1,4 +1,4 @@
-"""A single global ranking, opt-in analysis sources and atomic publications."""
+"""Bounded community evidence, durable voting and atomic global publications."""
 
 from __future__ import annotations
 
@@ -8,8 +8,11 @@ import json
 import secrets
 import sqlite3
 import time
+import re
+import shutil
 from pathlib import Path
 from contextlib import nullcontext
+from urllib.parse import urlsplit
 
 TIERS = ("META", "S", "A", "B", "C", "D", "E")
 REQUIRED_TABLES = {
@@ -21,7 +24,23 @@ REQUIRED_TABLES = {
     "tier_votes",
     "tier_poll_messages",
     "tier_destinations",
+    "tier_guilds",
+    "tier_threads",
+    "tier_reports",
+    "tier_audit",
 }
+
+
+def source_signature(sources):
+    from community_domain import normalize
+
+    return sorted(
+        (
+            urlsplit(s["url"])._replace(query="", fragment="").geturl(),
+            normalize(s["quote"]),
+        )
+        for s in sources
+    )
 
 
 class TierStore:
@@ -31,6 +50,7 @@ class TierStore:
         self.clock = clock
         self.connection = sqlite3.connect(self.path, timeout=1)
         self.connection.row_factory = sqlite3.Row
+        self.connection.execute("PRAGMA busy_timeout=1000")
         if self.connection.execute("PRAGMA quick_check").fetchone()[0] != "ok":
             self.connection.close()
             raise sqlite3.DatabaseError("Falha de integridade; o banco foi preservado.")
@@ -67,7 +87,30 @@ class TierStore:
             id INTEGER PRIMARY KEY AUTOINCREMENT,publication_id INTEGER NOT NULL,
             unit_id TEXT NOT NULL,from_position INTEGER,to_position INTEGER,reason TEXT NOT NULL,
             sources TEXT NOT NULL,created_at REAL NOT NULL);
+          CREATE TABLE IF NOT EXISTS tier_guilds(guild_id TEXT PRIMARY KEY,joined_at REAL NOT NULL);
+          CREATE TABLE IF NOT EXISTS tier_threads(
+            guild_id TEXT PRIMARY KEY,thread_id TEXT NOT NULL UNIQUE,intro_id TEXT,
+            index_hash TEXT NOT NULL DEFAULT '',panel_hash TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL DEFAULT 'ok');
+          CREATE TABLE IF NOT EXISTS tier_fingerprints(
+            fingerprint TEXT PRIMARY KEY,message_id TEXT NOT NULL,created_at REAL NOT NULL);
+          CREATE TABLE IF NOT EXISTS tier_reports(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,proposal_id INTEGER NOT NULL,user_id TEXT NOT NULL,
+            guild_id TEXT NOT NULL,reason TEXT NOT NULL,created_at REAL NOT NULL,status TEXT NOT NULL DEFAULT 'pending',
+            UNIQUE(proposal_id,user_id));
+          CREATE TABLE IF NOT EXISTS tier_audit(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,kind TEXT NOT NULL,actor_id TEXT NOT NULL,
+            reason TEXT NOT NULL,publication_id INTEGER,created_at REAL NOT NULL);
+          CREATE TABLE IF NOT EXISTS tier_audit_messages(
+            audit_id INTEGER NOT NULL,guild_id TEXT NOT NULL,message_id TEXT NOT NULL,
+            PRIMARY KEY(audit_id,guild_id));
         """)
+        self._column("tier_proposals", "opened_at", "REAL")
+        self._column("tier_comments", "attempts", "INTEGER NOT NULL DEFAULT 0")
+        # Opening times of pre-migration polls are already running; never reset their clock.
+        self.connection.execute(
+            "UPDATE tier_proposals SET opened_at=created_at WHERE status='open' AND opened_at IS NULL"
+        )
         with self.connection:
             for k, v in (
                 ("interval", "60"),
@@ -80,6 +123,65 @@ class TierStore:
                 self.connection.execute(
                     "INSERT OR IGNORE INTO tier_meta VALUES(?,?)", (k, v)
                 )
+            self.connection.execute("UPDATE tier_meta SET value='2' WHERE key='schema'")
+
+    def _column(self, table, column, declaration):
+        if column not in {
+            r[1] for r in self.connection.execute(f"PRAGMA table_info({table})")
+        }:
+            self.connection.execute(
+                f"ALTER TABLE {table} ADD COLUMN {column} {declaration}"
+            )
+
+    def register_guild(self, guild_id):
+        with self.connection:
+            self.connection.execute(
+                "INSERT OR IGNORE INTO tier_guilds VALUES(?,?)",
+                (str(guild_id), self.clock()),
+            )
+
+    def guild_registered(self, guild_id):
+        return bool(
+            self.connection.execute(
+                "SELECT 1 FROM tier_guilds WHERE guild_id=?", (str(guild_id),)
+            ).fetchone()
+        )
+
+    def remove_guild(self, guild_id):
+        with self.connection:
+            for table in (
+                "tier_guilds",
+                "tier_threads",
+                "tier_panels",
+                "tier_channels",
+                "tier_destinations",
+                "tier_comments",
+            ):
+                self.connection.execute(
+                    f"DELETE FROM {table} WHERE guild_id=?", (str(guild_id),)
+                )
+            self.connection.execute(
+                "UPDATE tier_poll_messages SET status='removed' WHERE guild_id=? AND status='open'",
+                (str(guild_id),),
+            )
+
+    def thread(self, guild_id):
+        rows = self.rows(
+            "SELECT * FROM tier_threads WHERE guild_id=?", (str(guild_id),)
+        )
+        return rows[0] if rows else None
+
+    def remember_thread(self, guild_id, thread_id, intro_id=None):
+        with self.connection:
+            self.connection.execute(
+                "INSERT INTO tier_threads(guild_id,thread_id,intro_id) VALUES(?,?,?) ON CONFLICT(guild_id) DO UPDATE SET intro_id=CASE WHEN tier_threads.thread_id=excluded.thread_id THEN COALESCE(excluded.intro_id,tier_threads.intro_id) ELSE excluded.intro_id END,index_hash=CASE WHEN tier_threads.thread_id=excluded.thread_id THEN tier_threads.index_hash ELSE '' END,panel_hash=CASE WHEN tier_threads.thread_id=excluded.thread_id THEN tier_threads.panel_hash ELSE '' END,thread_id=excluded.thread_id,status='ok'",
+                (str(guild_id), str(thread_id), str(intro_id) if intro_id else None),
+            )
+
+    def thread_targets(self):
+        return self.rows(
+            "SELECT t.*,p.channel_id,p.message_id FROM tier_threads t JOIN tier_panels p USING(guild_id) WHERE t.status='ok'"
+        )
 
     def close(self):
         self.connection.close()
@@ -165,6 +267,8 @@ class TierStore:
         )
 
     def enable_channel(self, guild_id, channel_id):
+        # Compatibility for archived tests/tools. The active runtime has no channel opt-in.
+        self.register_guild(guild_id)
         with self.connection:
             self.connection.execute(
                 "INSERT OR REPLACE INTO tier_channels VALUES(?,?,?)",
@@ -209,15 +313,13 @@ class TierStore:
             )
 
     def ingest(self, message_id, user_id, guild_id, channel_id, body, units):
-        if (
-            not self.consented(user_id)
-            or not self.channel_enabled(guild_id, channel_id)
-            or not units
-        ):
+        if not self.guild_registered(guild_id) or not units:
             return False
-        if not 12 <= len(body) <= 1500:
+        if not 12 <= len(body) <= 4000:
             return False
         if self.path.stat().st_size >= 64 * 1024 * 1024:
+            return False
+        if shutil.disk_usage(self.path.parent).free < 16 * 1024 * 1024:
             return False
         now = self.clock()
         if (
@@ -231,12 +333,41 @@ class TierStore:
         ).fetchone()[0]
         if recent >= 10:
             return False
+        if (
+            self.connection.execute(
+                "SELECT COUNT(*) FROM tier_comments WHERE guild_id=? AND created_at>?",
+                (str(guild_id), now - 3600),
+            ).fetchone()[0]
+            >= 60
+        ):
+            return False
+        from community_domain import normalize
+
+        canonical = normalize(re.sub(r"https?://\S+|<[@#][!&]?\d+>", "", body))
+        fingerprint = hashlib.sha256(canonical.encode()).hexdigest()
+        if self.connection.execute(
+            "SELECT 1 FROM tier_fingerprints WHERE fingerprint=? AND created_at>?",
+            (fingerprint, now - 7 * 86400),
+        ).fetchone():
+            return False
+        words = set(canonical.split())
+        for previous in self.rows(
+            "SELECT body FROM tier_comments WHERE created_at>? ORDER BY created_at DESC LIMIT 100",
+            (now - 86400,),
+        ):
+            other = set(normalize(previous["body"]).split())
+            if (
+                len(words) >= 7
+                and len(other) >= 7
+                and len(words & other) / max(1, len(words | other)) >= 0.9
+            ):
+                return False
         actor = hmac.new(
             bytes.fromhex(self.get("salt")), str(user_id).encode(), hashlib.sha256
         ).hexdigest()[:24]
         with self.connection:
             cursor = self.connection.execute(
-                "INSERT OR IGNORE INTO tier_comments VALUES(?,?,?,?,?,?,?,?,0)",
+                "INSERT OR IGNORE INTO tier_comments(message_id,user_id,actor_key,guild_id,channel_id,body,units,created_at,processed) VALUES(?,?,?,?,?,?,?,?,0)",
                 (
                     str(message_id),
                     str(user_id),
@@ -248,14 +379,45 @@ class TierStore:
                     now,
                 ),
             )
+            if cursor.rowcount:
+                self.connection.execute(
+                    "INSERT OR REPLACE INTO tier_fingerprints VALUES(?,?,?)",
+                    (fingerprint, str(message_id), now),
+                )
         return bool(cursor.rowcount)
 
     def pending(self, limit=16):
-        return self.rows(
-            """SELECT c.* FROM tier_comments c JOIN tier_channels t ON t.channel_id=c.channel_id AND t.guild_id=c.guild_id
-           JOIN tier_consents u ON u.user_id=c.user_id WHERE c.processed=0 AND c.created_at>=? ORDER BY c.created_at,c.message_id LIMIT ?""",
-            (self.clock() - 7 * 86400, limit),
+        rows = self.rows(
+            "SELECT * FROM (SELECT c.*,ROW_NUMBER() OVER(PARTITION BY c.guild_id ORDER BY c.attempts,c.created_at,c.message_id) AS guild_order FROM tier_comments c JOIN tier_guilds g USING(guild_id) WHERE c.processed=0 AND c.attempts<3 AND c.created_at>=?) WHERE guild_order<=? ORDER BY guild_order,guild_id LIMIT 1000",
+            (self.clock() - 7 * 86400, max(4, limit)),
         )
+        grouped = {}
+        for row in rows:
+            grouped.setdefault(row["guild_id"], []).append(row)
+        guilds = sorted(grouped)
+        cursor = self.get("fair_cursor")
+        if cursor in guilds:
+            i = guilds.index(cursor) + 1
+            guilds = guilds[i:] + guilds[:i]
+        result = []
+        while guilds and len(result) < limit:
+            for guild in list(guilds):
+                if len(result) >= limit:
+                    break
+                result.append(grouped[guild].pop(0))
+                if not grouped[guild]:
+                    guilds.remove(guild)
+        return result
+
+    def attempted(self, comments):
+        with self.connection:
+            for comment in comments:
+                self.connection.execute(
+                    "UPDATE tier_comments SET attempts=attempts+1 WHERE message_id=?",
+                    (comment["message_id"],),
+                )
+        if comments:
+            self.set("fair_cursor", comments[0]["guild_id"])
 
     def recent(self):
         return self.rows(
@@ -265,8 +427,7 @@ class TierStore:
 
     def still_allowed(self, comments):
         return all(
-            self.consented(c["user_id"])
-            and self.channel_enabled(c["guild_id"], c["channel_id"])
+            self.guild_registered(c["guild_id"])
             and self.connection.execute(
                 "SELECT 1 FROM tier_comments WHERE message_id=?", (c["message_id"],)
             ).fetchone()
@@ -374,6 +535,7 @@ class TierStore:
         )
 
     def remember_panel(self, guild_id, channel_id, message_id, publication):
+        self.register_guild(guild_id)
         with self.connection:
             # One official board per server; older messages remain as historical copies.
             self.connection.execute(
@@ -393,7 +555,7 @@ class TierStore:
                     "A capacidade de painéis está cheia. A consulta foi publicada sem atualização automática."
                 )
             self.connection.execute(
-                "INSERT OR REPLACE INTO tier_panels VALUES(?,?,?,?,?)",
+                "INSERT OR REPLACE INTO tier_panels(channel_id,guild_id,message_id,publication_id,last_sent) VALUES(?,?,?,?,?)",
                 (
                     str(channel_id),
                     str(guild_id),
@@ -415,7 +577,7 @@ class TierStore:
     def cleanup(self):
         with self.connection:
             self.connection.execute(
-                "DELETE FROM tier_proposals WHERE status!='open' AND id NOT IN (SELECT id FROM tier_proposals ORDER BY id DESC LIMIT 50)"
+                "DELETE FROM tier_proposals WHERE status NOT IN ('open','queued') AND id NOT IN (SELECT id FROM tier_proposals ORDER BY id DESC LIMIT 50)"
             )
             self.connection.execute(
                 "DELETE FROM tier_votes WHERE proposal_id NOT IN (SELECT id FROM tier_proposals)"
@@ -439,6 +601,28 @@ class TierStore:
                 "DELETE FROM tier_comments WHERE created_at<?",
                 (self.clock() - 7 * 86400,),
             )
+            self.connection.execute(
+                "DELETE FROM tier_fingerprints WHERE created_at<?",
+                (self.clock() - 7 * 86400,),
+            )
+            self.connection.execute(
+                "DELETE FROM tier_reports WHERE created_at<?",
+                (self.clock() - 30 * 86400,),
+            )
+            self.connection.execute(
+                "DELETE FROM tier_audit WHERE id NOT IN (SELECT id FROM tier_audit ORDER BY id DESC LIMIT 1000)"
+            )
+            self.connection.execute(
+                "DELETE FROM tier_audit_messages WHERE audit_id NOT IN (SELECT id FROM tier_audit)"
+            )
+            expired = self.connection.execute(
+                "UPDATE tier_proposals SET status='unavailable' WHERE status='queued' AND created_at<?",
+                (self.clock() - 3600,),
+            ).rowcount
+            if expired:
+                self.connection.execute(
+                    "UPDATE tier_meta SET value='retry' WHERE key='analysis_status'"
+                )
             # Keep recent snapshots, and the detailed META history separately.
             self.connection.execute(
                 "DELETE FROM tier_publications WHERE id NOT IN (SELECT id FROM tier_publications ORDER BY id DESC LIMIT 20)"
@@ -458,7 +642,7 @@ class TierStore:
 
     def active_proposal(self):
         rows = self.rows(
-            "SELECT id FROM tier_proposals WHERE status='open' ORDER BY id DESC LIMIT 1"
+            "SELECT id FROM tier_proposals WHERE status IN ('open','queued') ORDER BY id DESC LIMIT 1"
         )
         return self.proposal(rows[0]["id"]) if rows else None
 
@@ -466,7 +650,7 @@ class TierStore:
         if self.active_proposal():
             return False
         row = self.connection.execute(
-            "SELECT MAX(created_at) FROM tier_proposals"
+            "SELECT MAX(COALESCE(opened_at,created_at)) FROM tier_proposals"
         ).fetchone()[0]
         return row is None or self.clock() - row >= 3600
 
@@ -499,6 +683,22 @@ class TierStore:
             self.connection.execute("BEGIN IMMEDIATE")
             if not self.may_propose():
                 return False
+            for uid, detail in details.items():
+                last = self.rows(
+                    "SELECT * FROM tier_proposals WHERE status='approved' AND created_at>? ORDER BY id DESC LIMIT 24",
+                    (now - 86400,),
+                )
+                for row in last:
+                    old_detail = json.loads(row["details"]).get(uid)
+                    if old_detail and source_signature(
+                        old_detail["sources"]
+                    ) == source_signature(detail["sources"]):
+                        for c in comments:
+                            self.connection.execute(
+                                "UPDATE tier_comments SET processed=1 WHERE message_id=?",
+                                (c["message_id"],),
+                            )
+                        return False
             # Do not repeat the same unresolved comparison every hour without a new outcome.
             for previous in self.rows(
                 "SELECT ranking,status,details FROM tier_proposals WHERE created_at>?",
@@ -506,15 +706,13 @@ class TierStore:
             ):
                 if (
                     json.loads(previous["ranking"]) == ranking
-                    and previous["status"] != "approved"
+                    and previous["status"]
+                    in ("maintained", "needs-tests", "not-enough-votes", "suspended")
                     and {
-                        u: sorted((s["url"], s["quote"]) for s in d["sources"])
+                        u: source_signature(d["sources"])
                         for u, d in json.loads(previous["details"]).items()
                     }
-                    == {
-                        u: sorted((s["url"], s["quote"]) for s in d["sources"])
-                        for u, d in details.items()
-                    }
+                    == {u: source_signature(d["sources"]) for u, d in details.items()}
                 ):
                     for c in comments:
                         self.connection.execute(
@@ -525,10 +723,10 @@ class TierStore:
             self.connection.execute(
                 """INSERT INTO tier_proposals
               (created_at,closes_at,base_publication,ranking,explanations,details,source_version,model,status)
-              VALUES(?,?,?,?,?,?,?,?,'open')""",
+              VALUES(?,?,?,?,?,?,?,?,'queued')""",
                 (
                     now,
-                    now + 600,
+                    0,
                     latest["id"],
                     json.dumps(ranking),
                     json.dumps(explanations),
@@ -543,7 +741,7 @@ class TierStore:
                     (c["message_id"],),
                 )
             self.connection.execute(
-                "UPDATE tier_meta SET value='poll-open' WHERE key='analysis_status'"
+                "UPDATE tier_meta SET value='poll-queued' WHERE key='analysis_status'"
             )
         return True
 
@@ -557,9 +755,32 @@ class TierStore:
         return counts
 
     def remember_poll(
-        self, proposal_id, guild_id, channel_id, message_id, status="open"
+        self,
+        proposal_id,
+        guild_id,
+        channel_id,
+        message_id,
+        status="open",
+        *,
+        published_at=None,
     ):
         with self.connection:
+            proposal = self.proposal(proposal_id)
+            if status == "open" and proposal and proposal["status"] == "queued":
+                opened = max(
+                    proposal["created_at"],
+                    min(
+                        self.clock(),
+                        published_at if published_at is not None else self.clock(),
+                    ),
+                )
+                self.connection.execute(
+                    "UPDATE tier_proposals SET status='open',opened_at=?,closes_at=? WHERE id=? AND status='queued'",
+                    (opened, opened + 600, proposal_id),
+                )
+                self.connection.execute(
+                    "UPDATE tier_meta SET value='poll-open' WHERE key='analysis_status'"
+                )
             self.connection.execute(
                 "INSERT OR REPLACE INTO tier_poll_messages VALUES(?,?,?,?,?,?)",
                 (
@@ -598,10 +819,14 @@ class TierStore:
                 or receipt["status"] != "open"
             ):
                 raise ValueError("Esta mensagem não pertence à votação.")
+            existing_vote = self.connection.execute(
+                "SELECT 1 FROM tier_votes WHERE proposal_id=? AND user_id=?",
+                (proposal_id, str(user_id)),
+            ).fetchone()
             if (
                 self.connection.execute("SELECT COUNT(*) FROM tier_votes").fetchone()[0]
                 >= 50000
-            ):
+            ) and not existing_vote:
                 raise ValueError("O registro de votos precisa de manutenção.")
             self.connection.execute(
                 "INSERT INTO tier_votes VALUES(?,?,?,?,?) ON CONFLICT(proposal_id,user_id) DO UPDATE SET guild_id=excluded.guild_id,choice=excluded.choice,created_at=excluded.created_at",
@@ -626,6 +851,11 @@ class TierStore:
                     or proposal["source_version"] != source_version
                 ):
                     status = "outdated"
+                elif not self.connection.execute(
+                    "SELECT 1 FROM tier_poll_messages WHERE proposal_id=? AND status!='removed'",
+                    (proposal["id"],),
+                ).fetchone():
+                    status = "unavailable"
                 elif total < 5:
                     status = "not-enough-votes"
                 elif counts["test"] >= max(counts["approve"], counts["keep"]):
@@ -662,7 +892,7 @@ class TierStore:
 
     def decisions(self):
         rows = self.rows(
-            "SELECT id,status,outcome,details FROM tier_proposals WHERE status!='open' ORDER BY id DESC LIMIT 2"
+            "SELECT id,status,outcome,details FROM tier_proposals WHERE status NOT IN ('open','queued') ORDER BY id DESC LIMIT 2"
         )
         return [
             {
@@ -675,3 +905,103 @@ class TierStore:
 
     def poll_messages(self):
         return self.rows("SELECT * FROM tier_poll_messages")
+
+    def report(self, proposal_id, user_id, guild_id, reason):
+        if not self.proposal(proposal_id) or not 15 <= len(reason.strip()) <= 800:
+            raise ValueError(
+                "Informe o problema em 15 a 800 caracteres numa proposta recente."
+            )
+        if (
+            self.connection.execute(
+                "SELECT COUNT(*) FROM tier_reports WHERE status='pending'"
+            ).fetchone()[0]
+            >= 1000
+        ):
+            raise ValueError("A fila de revisão está cheia. Tente mais tarde.")
+        if (
+            self.connection.execute(
+                "SELECT COUNT(*) FROM tier_reports WHERE user_id=? AND created_at>?",
+                (str(user_id), self.clock() - 86400),
+            ).fetchone()[0]
+            >= 5
+        ):
+            raise ValueError("Você já enviou cinco relatos hoje. Aguarde a revisão.")
+        with self.connection:
+            self.connection.execute(
+                "INSERT INTO tier_reports(proposal_id,user_id,guild_id,reason,created_at) VALUES(?,?,?,?,?) ON CONFLICT(proposal_id,user_id) DO UPDATE SET reason=excluded.reason",
+                (
+                    proposal_id,
+                    str(user_id),
+                    str(guild_id),
+                    reason.strip(),
+                    self.clock(),
+                ),
+            )
+
+    def audit(self, kind, actor_id, reason, publication_id=None):
+        cursor = self.connection.execute(
+            "INSERT INTO tier_audit(kind,actor_id,reason,publication_id,created_at) VALUES(?,?,?,?,?)",
+            (kind, str(actor_id), reason, publication_id, self.clock()),
+        )
+        return cursor.lastrowid
+
+    def rollback(self, expected_publication, actor_id, reason):
+        if not 20 <= len(reason.strip()) <= 700:
+            raise ValueError("Explique a correção em 20 a 700 caracteres.")
+        with self.connection:
+            self.connection.execute("BEGIN IMMEDIATE")
+            current = self.latest()
+            if current["id"] != expected_publication:
+                raise ValueError("A classificação mudou. Abra a revisão novamente.")
+            rows = self.rows(
+                "SELECT * FROM tier_publications WHERE id<? ORDER BY id DESC LIMIT 1",
+                (current["id"],),
+            )
+            previous = (
+                rows[0]
+                if rows
+                else {
+                    "ranking": "[]",
+                    "explanations": "{}",
+                    "source_version": current["source_version"],
+                }
+            )
+            if not current["id"] or (
+                current["ranking"] == json.loads(previous["ranking"])
+            ):
+                raise ValueError("Não há uma alteração disponível para reverter.")
+            self.publish(
+                json.loads(previous["ranking"]),
+                json.loads(previous["explanations"]),
+                source_version=previous["source_version"],
+                model="human-correction",
+                comments=[],
+                transactional=False,
+            )
+            for proposal in self.rows(
+                "SELECT id FROM tier_proposals WHERE status IN ('open','queued')"
+            ):
+                self.connection.execute(
+                    "UPDATE tier_proposals SET status='outdated',outcome=? WHERE id=?",
+                    (json.dumps(self.poll_counts(proposal["id"])), proposal["id"]),
+                )
+            self.audit("rollback", actor_id, reason.strip(), self.latest()["id"])
+        return self.latest()
+
+    def cancel_proposal(self, proposal_id, actor_id, reason):
+        if not 20 <= len(reason.strip()) <= 700:
+            raise ValueError("Explique a suspensão em 20 a 700 caracteres.")
+        with self.connection:
+            self.connection.execute("BEGIN IMMEDIATE")
+            proposal = self.proposal(proposal_id)
+            if not proposal or proposal["status"] not in ("open", "queued"):
+                raise ValueError("Essa proposta já foi encerrada.")
+            self.connection.execute(
+                "UPDATE tier_proposals SET status='suspended',outcome=? WHERE id=?",
+                (json.dumps(self.poll_counts(proposal_id)), proposal_id),
+            )
+            self.audit(
+                "proposal-suspended",
+                actor_id,
+                f"Proposta #{proposal_id} suspensa. " + reason.strip(),
+            )

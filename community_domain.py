@@ -81,11 +81,16 @@ class Catalog:
             row["id"]: Unit(row["id"], row["name"], tuple(row["aliases"]))
             for row in self.metadata["units"]
         }
+        self.min_mention_length = min_mention_length
+        self.extra_aliases = extra_aliases or {}
+        self._index()
+
+    def _index(self):
         self.aliases = {}
         for unit in self.units.values():
             for alias in (unit.id, unit.name, *unit.aliases):
                 self.aliases.setdefault(normalize(alias), set()).add(unit.id)
-        for unit_id, aliases in (extra_aliases or {}).items():
+        for unit_id, aliases in self.extra_aliases.items():
             if unit_id not in self.units:
                 raise ValueError("Alias de unidade desconhecida.")
             for alias in aliases:
@@ -94,7 +99,7 @@ class Catalog:
         usable = [
             alias
             for alias, ids in self.aliases.items()
-            if len(alias) >= min_mention_length and len(ids) == 1
+            if len(alias) >= self.min_mention_length and len(ids) == 1
         ]
         self.mention_pattern = re.compile(
             r"(?<!\w)(?:"
@@ -102,14 +107,47 @@ class Catalog:
             + r")(?!\w)"
         )
 
+    def merge_units(self, rows):
+        if not isinstance(rows, list) or len(rows) > 3000:
+            raise ValueError("Catálogo fora dos limites.")
+        updated = dict(self.units)
+        for row in rows:
+            if not isinstance(row, dict) or not isinstance(row.get("id"), str):
+                raise ValueError("Identidade inválida no catálogo.")
+            uid, name = row["id"], row["name"]
+            aliases = row.get("aliases", [])
+            if (
+                not re.fullmatch(r"[a-zA-Z0-9_]{1,100}", uid)
+                or not isinstance(name, str)
+                or not 1 <= len(name) <= 150
+                or not isinstance(aliases, list)
+                or len(aliases) > 50
+                or any(not isinstance(a, str) or len(a) > 150 for a in aliases)
+            ):
+                raise ValueError("Identidade inválida no catálogo.")
+            old = updated.get(uid)
+            names = {name, *aliases}
+            if old:
+                names.update((old.name, *old.aliases))
+            updated[uid] = Unit(uid, name, tuple(sorted(names - {name}))[:50])
+        if len(updated) > 3000:
+            raise ValueError("Catálogo fora dos limites.")
+        self.units = updated
+        self._index()
+
     def resolve(self, value):
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError("Informe o personagem e a forma exatos.")
         if value in self.units:
             return self.units[value]
+        if not normalize(value):
+            exact = [u for u in self.units.values() if u.name == value.strip()]
+            if len(exact) == 1:
+                return exact[0]
+            raise ValueError("Informe o personagem e a forma exatos.")
         matches = self.aliases.get(normalize(value), set())
         if len(matches) != 1:
-            raise ValueError(
-                "Escolha a unidade e a forma exatas nas sugestões do comando."
-            )
+            raise ValueError("Informe o nome completo da unidade e da forma.")
         return self.units[next(iter(matches))]
 
     def search(self, value, limit=25):
@@ -125,7 +163,7 @@ class Catalog:
         )[:limit]
 
     def mentions(self, text):
-        normalized = normalize(str(text)[:1500])
+        normalized = normalize(str(text)[:4000])
         return set(
             next(iter(self.aliases[m.group()]))
             for m in self.mention_pattern.finditer(normalized)

@@ -1,14 +1,17 @@
-"""Render a normal tier list from the original character artwork, without generative art."""
+"""Deterministic tier art, original portraits and compact native Discord messages."""
 
 from __future__ import annotations
 import hashlib
 import io
 import json
 import math
+from urllib.parse import urlsplit, parse_qs
+from pathlib import Path
 import discord
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, UnidentifiedImageError
 from community_domain import ROOT
-from community_ui import font, safe, portraits
+from community_ui import font, portraits
+from tier_domain import safe, moment, place
 from tier_store import TIERS
 
 ROW_COLORS = {
@@ -20,17 +23,55 @@ ROW_COLORS = {
     "D": "#886000",
     "E": "#985000",
 }
+POLL_STATES = {
+    "queued": "Preparando votação",
+    "open": "Votação aberta",
+    "approved": "Aprovada · classificação publicada",
+    "maintained": "Encerrada · posição mantida",
+    "needs-tests": "Encerrada · precisa de mais testes",
+    "not-enough-votes": "Encerrada · participação insuficiente",
+    "outdated": "Cancelada · a referência mudou",
+    "unavailable": "Cancelada · publicação indisponível",
+    "suspended": "Suspensa pelo responsável · posição preservada",
+}
+STATUS = {
+    "not-connected": "Aguardando a chave da IA",
+    "retry": "Análise temporariamente indisponível; posições preservadas",
+    "quota": "Limite gratuito atingido; aguardando nova janela",
+    "poll-open": "Votação em andamento",
+    "poll-queued": "Preparando uma proposta",
+    "no-proposal": "Nenhuma nova proposta suficientemente fundamentada",
+    "ok": "Análise disponível",
+    "approved": "Última proposta aprovada",
+    "maintained": "Última proposta manteve a classificação",
+    "needs-tests": "Aguardando novas evidências",
+    "not-enough-votes": "Última proposta sem participantes suficientes",
+    "outdated": "Aguardando nova comparação",
+    "waiting": "Aguardando relatos relevantes sobre o jogo",
+}
 
 
-def render(ranking, *, media=None):
+def render(
+    ranking,
+    *,
+    media=None,
+    media_root=None,
+    updated_at=None,
+    media_revision=0,
+    total_units=None,
+    footer=False,
+):
     media = portraits() if media is None else media
     columns, tile, label = 10, 96, 138
     groups = [(t, [r for r in ranking if r["tier"] == t]) for t in TIERS]
     width = label + columns * tile
     height = sum(max(1, math.ceil(len(rows) / columns)) * tile for _, rows in groups)
-    canvas = Image.new("RGB", (width, height), "#111415")
+    canvas = Image.new("RGB", (width, height + (60 if footer else 0)), "#111415")
     draw = ImageDraw.Draw(canvas)
     top = 0
+    allowed = [(ROOT / "assets").resolve()]
+    if media_root:
+        allowed.append(Path(media_root).resolve())
     for tier, rows in groups:
         band = max(1, math.ceil(len(rows) / columns)) * tile
         draw.rectangle((0, top, label, top + band), fill=ROW_COLORS[tier])
@@ -48,77 +89,160 @@ def render(ranking, *, media=None):
             item = media.get(row["unit_id"])
             x = label + (index % columns) * tile
             y = top + (index // columns) * tile
-            path = (ROOT / item["path"]).resolve() if item else None
-            if path and path.is_relative_to(ROOT / "assets") and path.is_file():
-                with Image.open(path) as original:
-                    icon = original.convert("RGBA")
-                    icon.thumbnail((88, 88), Image.Resampling.LANCZOS)
-                    canvas.paste(
-                        icon,
-                        (x + (tile - icon.width) // 2, y + (tile - icon.height) // 2),
-                        icon,
-                    )
-            else:
-                draw.text((x + 8, y + 27), "Imagem", font=font(15), fill="#90969c")
-                draw.text((x + 8, y + 47), "pendente", font=font(15), fill="#90969c")
+            path = (
+                Path(item.get("absolute_path") or ROOT / item["path"]).resolve()
+                if item
+                else None
+            )
+            drawn = False
+            if path and any(path.is_relative_to(p) for p in allowed) and path.is_file():
+                try:
+                    with Image.open(path) as original:
+                        if original.width * original.height > 4_000_000:
+                            raise ValueError("oversized portrait")
+                        icon = original.convert("RGBA")
+                        icon.thumbnail((88, 88), Image.Resampling.LANCZOS)
+                        canvas.paste(
+                            icon,
+                            (
+                                x + (tile - icon.width) // 2,
+                                y + (tile - icon.height) // 2,
+                            ),
+                            icon,
+                        )
+                        drawn = True
+                except (UnidentifiedImageError, OSError, ValueError):
+                    pass
+            if not drawn:
+                draw.text((x + 8, y + 27), "Imagem", font=font(15), fill="#b7bdc3")
+                draw.text((x + 8, y + 47), "pendente", font=font(15), fill="#b7bdc3")
         top += band
-    draw.rectangle((0, 0, width - 1, height - 1), outline="#626569", width=1)
+    if footer:
+        draw.line((0, height, width, height), fill="#626569")
+        draw.text(
+            (16, height + 8),
+            "Classificação: " + moment(updated_at),
+            font=font(16),
+            fill="#d4d8dd",
+        )
+        count = f"{len(ranking)} classificados"
+        if total_units is not None:
+            count += f" · {max(0, total_units - len(ranking))} sem avaliação"
+        count += f" · Retratos: revisão {media_revision}"
+        draw.text((16, height + 32), count, font=font(15), fill="#aab1b8")
+    draw.rectangle((0, 0, width - 1, canvas.height - 1), outline="#626569", width=1)
     output = io.BytesIO()
     canvas.save(output, format="PNG", optimize=True)
     return output.getvalue()
 
 
-def panel_payload(store):
-    publication = store.latest()
-    blob = render(publication["ranking"])
-    when = (
-        f"<t:{int(publication['created_at'])}:R>"
-        if publication["created_at"]
-        else "Aguardando a primeira análise"
-    )
-    description = (
-        f"**Atualizada:** {when}\nOs mais bem colocados ficam à esquerda em cada tier."
-    )
-    if not publication["ranking"]:
-        description += "\n\nA lista começa sem posições inventadas. Os personagens entram após a análise das fontes e dos comentários."
-    embed = discord.Embed(title="Tier list", description=description, color=0x960D16)
-    embed.set_image(url="attachment://tierlist.png")
-    embed.set_footer(text="Enquetes de 10 min · no máximo uma proposta por hora")
-    file = discord.File(io.BytesIO(blob), filename="tierlist.png", description=".")
-    return embed, file, hashlib.sha256(blob).hexdigest()
+class PanelRenderer:
+    def __init__(self, media_root):
+        self.media_root = media_root
+        self.key = None
+        self.blob = None
 
-
-def log_embed(store, catalog, page=1):
-    logs = store.history(page)
-    embed = discord.Embed(title="Atualizações · Meta", color=0x960D16)
-    if not logs:
-        embed.description = "Ainda não há mudanças confirmadas no Meta."
-    else:
-        for row in logs:
-            unit = catalog.units.get(row["unit_id"])
-            detail = json.loads(row["sources"])
-            links = []
-            for source in detail[:2]:
-                links.append(f"[Conferir na wiki]({source['url']})")
-            embed.add_field(
-                name=f"{unit.name if unit else row['unit_id']} · posição {row['to_position']}",
-                value=f"{safe(row['reason'], 700)}\n"
-                + " · ".join(links)
-                + f"\n<t:{int(row['created_at'])}:R>",
-                inline=False,
+    def get(self, publication, overrides, media_revision, total_units):
+        key = (publication["id"], media_revision, total_units)
+        if key != self.key:
+            media = dict(portraits())
+            media.update(overrides)
+            blob = render(
+                publication["ranking"],
+                media=media,
+                media_root=self.media_root,
+                updated_at=publication["created_at"],
+                media_revision=media_revision,
+                total_units=total_units,
+                footer=True,
             )
-    embed.set_footer(text=f"Página {page} · motivos detalhados dos personagens do Meta")
-    return embed
+            if len(blob) > 8 * 1024 * 1024:
+                raise ValueError(
+                    "A imagem excedeu o limite; a versão anterior foi preservada."
+                )
+            self.blob, self.key = blob, key
+        return self.blob, hashlib.sha256(self.blob).hexdigest()
 
 
-POLL_STATES = {
-    "open": "Votação aberta",
-    "approved": "Aprovada · tier list atualizada",
-    "maintained": "Encerrada · posição mantida",
-    "needs-tests": "Encerrada · precisa de mais testes",
-    "not-enough-votes": "Encerrada · participação insuficiente",
-    "outdated": "Encerrada · fontes ou lista mudaram",
-}
+def image_file(blob):
+    return discord.File(io.BytesIO(blob), filename="tierlist.png")
+
+
+def ranking_text(publication, catalog):
+    lines = [
+        "ANIME ADVENTURES · CLASSIFICAÇÃO GLOBAL",
+        moment(publication["created_at"]),
+        f"Versão {publication['id']}",
+        "Ordem dentro de cada tier: da esquerda para a direita.",
+        "",
+    ]
+    for tier in TIERS:
+        lines.append("META" if tier == "META" else tier)
+        rows = [r for r in publication["ranking"] if r["tier"] == tier]
+        lines.extend(
+            f"{i}. {catalog.units[r['unit_id']].name}" for i, r in enumerate(rows, 1)
+        )
+        if not rows:
+            lines.append("Sem classificação confirmada.")
+        lines.append("")
+    ranked = {r["unit_id"] for r in publication["ranking"]}
+    pending = sorted(u.name for u in catalog.units.values() if u.id not in ranked)
+    lines += ["SEM AVALIAÇÃO", "Falta de evidência não significa tier E.", *pending]
+    return ("\n".join(lines) + "\n").encode()
+
+
+def index_text(store, panel, *, wiki_status="cache", media_pending=0):
+    thread = store.thread(panel["guild_id"])
+    status = STATUS.get(
+        store.get("analysis_status") or "waiting", "Aguardando a próxima análise"
+    )
+    source = (
+        "Fontes em cache"
+        if wiki_status in ("cache", "unavailable")
+        else "Referências sincronizadas"
+    )
+    lines = [
+        "## Votações e histórico",
+        "**A imagem no canal mostra a classificação atual. Aqui ficam as decisões.**",
+        "Propostas com motivos, condições e fontes. Você escolhe **Aprovar**, **Manter** ou **Precisa de mais testes**.",
+        "\n**Regras:** 10 minutos · mínimo de 5 participantes · dois terços a favor · um voto por conta na rede. Você pode trocar até o prazo. As escolhas aparecem no resultado final.",
+        "No máximo uma proposta por hora; sem evidência suficiente, a classificação é preservada.",
+        f"\n**Análise:** {status}.",
+        f"**Wiki:** {source}.",
+        f"**Última classificação:** {moment(store.latest()['created_at'])}.",
+    ]
+    proposal = store.active_proposal()
+    if proposal and thread:
+        receipt = store.connection.execute(
+            "SELECT message_id FROM tier_poll_messages WHERE proposal_id=? AND channel_id=?",
+            (proposal["id"], thread["thread_id"]),
+        ).fetchone()
+        if receipt:
+            lines.append(
+                f"**Proposta atual:** [abrir votação](https://discord.com/channels/{panel['guild_id']}/{thread['thread_id']}/{receipt[0]})."
+            )
+    if thread:
+        approved = store.rows(
+            "SELECT m.message_id,m.proposal_id FROM tier_poll_messages m JOIN tier_proposals p ON p.id=m.proposal_id WHERE m.channel_id=? AND p.status='approved' ORDER BY p.id DESC LIMIT 1",
+            (thread["thread_id"],),
+        )
+        if approved:
+            lines.append(
+                f"**Última votação aprovada:** [ver resultado](https://discord.com/channels/{panel['guild_id']}/{thread['thread_id']}/{approved[0]['message_id']})."
+            )
+        audit = store.rows(
+            "SELECT m.message_id FROM tier_audit_messages m WHERE m.guild_id=? ORDER BY audit_id DESC LIMIT 1",
+            (panel["guild_id"],),
+        )
+        if audit:
+            lines.append(
+                f"**Última revisão:** [ver registro](https://discord.com/channels/{panel['guild_id']}/{thread['thread_id']}/{audit[0]['message_id']})."
+            )
+    lines += [
+        "\nO arquivo abaixo contém a classificação completa por nome. **Sem avaliação** não é uma posição ruim.",
+        "Tem um retrato melhor ou uma skin atualizada? Use **Sugerir imagem**. A substituição passa por revisão.",
+    ]
+    return "\n".join(lines)
 
 
 def poll_embed(store, catalog, proposal):
@@ -129,34 +253,112 @@ def poll_embed(store, catalog, proposal):
     question = (
         f"{name} deve passar {catalog.units[before].name}?"
         if before
-        else f"{name} deve ficar no tier {detail['tier']}?"
+        else f"{name} deve ficar no tier {'Meta' if detail['tier'] == 'META' else detail['tier']}?"
     )
     embed = discord.Embed(
-        title=question[:250], description=safe(detail["reason"], 800), color=0x960D16
+        title=safe(question, 250),
+        description=safe(detail["reason"], 700),
+        color=0x960D16,
     )
+    base = store.rows(
+        "SELECT ranking FROM tier_publications WHERE id=?",
+        (proposal["base_publication"],),
+    )
+    old = json.loads(base[0]["ranking"]) if base else []
+    changes = [
+        f"**{safe(name, 100)}:** {place(old, uid)} → {place(proposal['ranking'], uid)}"
+    ]
+    if before:
+        changes.append(
+            f"**{safe(catalog.units[before].name, 100)}:** {place(old, before)} → {place(proposal['ranking'], before)}"
+        )
+    embed.add_field(name="O que muda", value="\n".join(changes), inline=False)
+    if detail.get("conditions"):
+        embed.add_field(
+            name="Quando essa vantagem se aplica",
+            value=safe(detail["conditions"], 300),
+            inline=False,
+        )
+    if detail.get("caveat"):
+        embed.add_field(
+            name="O que precisa ser considerado",
+            value=safe(detail["caveat"], 300),
+            inline=False,
+        )
     for source in detail["sources"][:2]:
+        url = source["url"].replace("(", "%28").replace(")", "%29")
+        if len(url) > 500:
+            revision = parse_qs(urlsplit(url).query).get("oldid", [""])[0]
+            url = (
+                (
+                    "https://animeadventures.fandom.com/wiki/Special:Redirect/revision/"
+                    + revision
+                )
+                if revision.isdigit() and len(revision) <= 20
+                else ""
+            )
         embed.add_field(
             name="Referência na wiki",
-            value=safe(source["quote"], 350) + f"\n[Conferir fonte]({source['url']})",
+            value=safe(source["quote"], 350)
+            + (
+                f"\n[Conferir a revisão]({url})"
+                if url
+                else "\nReferência preservada no registro da proposta."
+            ),
             inline=False,
         )
     counts = (
         store.poll_counts(proposal["id"])
-        if proposal["status"] == "open"
+        if proposal["status"] in ("open", "queued")
         else proposal["outcome"]
     )
-    embed.add_field(
-        name=POLL_STATES[proposal["status"]],
-        value=f"**Aprovar:** {counts.get('approve', 0)} · **Manter:** {counts.get('keep', 0)} · **Mais testes:** {counts.get('test', 0)}",
-        inline=False,
-    )
+    state = POLL_STATES.get(proposal["status"], "Encerrada")
+    if proposal["status"] in ("open", "queued"):
+        value = (
+            f"**{sum(counts.values())} participantes.** Escolhas reveladas ao encerrar."
+        )
+    else:
+        value = f"**Aprovar:** {counts.get('approve', 0)} · **Manter:** {counts.get('keep', 0)} · **Mais testes:** {counts.get('test', 0)}"
+    embed.add_field(name=state, value=value, inline=False)
     if proposal["status"] == "open":
         embed.add_field(
             name="Prazo",
-            value=f"Encerra <t:{int(proposal['closes_at'])}:R> · <t:{int(proposal['closes_at'])}:t>\nMínimo de 5 pessoas e dois terços a favor. Um voto por pessoa em toda a rede.",
+            value=f"Encerra <t:{int(proposal['closes_at'])}:R> · <t:{int(proposal['closes_at'])}:t>\nMínimo de 5 participantes e dois terços a favor.",
+            inline=False,
+        )
+    elif proposal["status"] == "queued":
+        embed.add_field(
+            name="Prazo",
+            value="10 minutos a partir da publicação confirmada.",
             inline=False,
         )
     embed.set_footer(
-        text="A IA propõe; a comunidade decide · uma proposta por hora · votos não treinam o modelo"
+        text=f"Proposta #{proposal['id']} · classificação #{proposal['base_publication']} · fontes verificáveis"
     )
+    return embed
+
+
+# Kept for offline compatibility; the public runtime sends only image_file().
+def panel_payload(store):
+    publication = store.latest()
+    blob = render(publication["ranking"])
+    embed = discord.Embed(
+        title="Tier list", description=moment(publication["created_at"])
+    )
+    embed.set_image(url="attachment://tierlist.png")
+    return embed, image_file(blob), hashlib.sha256(blob).hexdigest()
+
+
+def log_embed(store, catalog, page=1):
+    embed = discord.Embed(title="Atualizações · Meta", color=0x960D16)
+    for row in store.history(page):
+        embed.add_field(
+            name=safe(catalog.units[row["unit_id"]].name, 150),
+            value=safe(row["reason"], 700)
+            + "\n"
+            + " · ".join(f"[Wiki]({s['url']})" for s in json.loads(row["sources"])[:2]),
+            inline=False,
+        )
+    if not embed.fields:
+        embed.description = "Ainda não há mudanças confirmadas no Meta."
     return embed
