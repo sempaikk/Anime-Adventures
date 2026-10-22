@@ -460,7 +460,7 @@ class DomainCase(unittest.TestCase):
 
 class RuntimeCase(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
-        from community_bot import CommunityBot
+        from community_legacy import CommunityBot
 
         self.tmp = tempfile.TemporaryDirectory()
         self.app = CommunityBot(self.tmp.name)
@@ -606,14 +606,14 @@ class RuntimeCase(unittest.IsolatedAsyncioTestCase):
         )
         with (
             patch.object(self.app, "get_channel", return_value=channel),
-            patch("community_bot.time.time", return_value=2000000000),
+            patch("community_legacy.time.time", return_value=2000000000),
         ):
             await self.app.panel_loop.coro(self.app)
             await self.app.panel_loop.coro(self.app)
         channel.send.assert_awaited_once()
         with (
             patch.object(self.app, "get_channel", return_value=channel),
-            patch("community_bot.time.time", return_value=2000003601),
+            patch("community_legacy.time.time", return_value=2000003601),
         ):
             await self.app.panel_loop.coro(self.app)
         channel.send.assert_awaited_once()

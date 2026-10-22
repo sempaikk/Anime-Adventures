@@ -69,7 +69,13 @@ class Unit:
 
 
 class Catalog:
-    def __init__(self, path=ROOT / "data/community_catalog.json"):
+    def __init__(
+        self,
+        path=ROOT / "data/community_catalog.json",
+        *,
+        min_mention_length=4,
+        extra_aliases=None,
+    ):
         self.metadata = json.loads(Path(path).read_text())
         self.units = {
             row["id"]: Unit(row["id"], row["name"], tuple(row["aliases"]))
@@ -79,11 +85,16 @@ class Catalog:
         for unit in self.units.values():
             for alias in (unit.id, unit.name, *unit.aliases):
                 self.aliases.setdefault(normalize(alias), set()).add(unit.id)
+        for unit_id, aliases in (extra_aliases or {}).items():
+            if unit_id not in self.units:
+                raise ValueError("Alias de unidade desconhecida.")
+            for alias in aliases:
+                self.aliases.setdefault(normalize(alias), set()).add(unit_id)
         # Only unambiguous names count as passive mentions.
         usable = [
             alias
             for alias, ids in self.aliases.items()
-            if len(alias) >= 4 and len(ids) == 1
+            if len(alias) >= min_mention_length and len(ids) == 1
         ]
         self.mention_pattern = re.compile(
             r"(?<!\w)(?:"
