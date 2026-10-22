@@ -31,6 +31,45 @@ aprovação automática de retratos ou aumentar a frequência das votações ant
 de medir o uso real. Não há estimativa validada de capacidade para dezenas de
 servidores no plano gratuito.
 
+## Fechamento da preparação para a estreia
+
+Esta é a revisão completa das prioridades; o critério de conclusão é qualidade
+da experiência e da operação, em vez de acrescentar funcionalidades sem fim.
+
+- **Imagem e catálogo inicial:** há 455 retratos válidos e 94 formas sem retrato
+  aprovado. Conferir retrato, evolução e legibilidade de todos os personagens
+  que entrarem na classificação da estreia. Priorizar essas formas na revisão;
+  uma imagem genérica ou de outra evolução não resolve a pendência.
+- **Interface dos membros:** manter o canal com a imagem, o tópico com decisões
+  e a ajuda privada. Ampliar pelo visualizador do Discord no celular. Confirmar
+  que uma pessoa nova entende o sentido esquerda→direita, o voto, o resultado
+  e o andamento de seu envio. Os controles de diagnóstico continuam privados.
+- **Qualidade das decisões:** observar as primeiras propostas reais com
+  jogadores experientes. A explicação precisa separar vantagem, condições,
+  limitação e fonte da forma exata. Testes de código e confiança declarada pelo
+  modelo não comprovam o balanceamento. A data final de 20.4.1 segue sem
+  confirmação no trecho consultado da wiki.
+- **Administração:** instalação com permissões mínimas e um `/tierlist`.
+  Reinícios retomam o conjunto existente. O ADM consulta Conferir painel para
+  entender falta de acesso; não recebe ferramentas de revisão global do dono.
+- **Proteções e recuperação:** respeitar exclusão/edição, troca de permissão,
+  conta duplicada na votação, limites e restauração de dados. A revisão fechou
+  o reaproveitamento de contexto já processado sem acesso ao canal e verifica
+  novamente o acesso ao retornar da IA, antes de aceitar a proposta.
+  A suíte com essas duas regressões passou em **423 testes locais**.
+- **Operação do dono:** acompanhar fila de relatos, cota local diária UTC,
+  imagens/relatos pendentes e backup pelo diagnóstico privado. Manter cópia
+  completa fora da hospedagem. Esses indicadores não garantem monitoramento
+  externo enquanto o bot estiver totalmente desligado.
+- **Piloto de lançamento:** usar um a três servidores durante 24–48 horas para
+  observar votos, qualidade dos argumentos, edições da imagem, memória/CPU e
+  cotas. Formar as primeiras posições com votos reais antes da divulgação
+  ampla. O piloto é a validação que a suíte isolada não substitui.
+
+Com esses critérios atendidos, a recomendação é encerrar a preparação da
+primeira versão e corrigir os problemas observados no uso real. Chat global,
+site e outros módulos continuam no planejamento posterior.
+
 ## Caminho curto para quem cuida do bot sozinho
 
 1. No Bot-Hosting.net, confirme **Python 3.12**, **`bot.py`**, pull automático e as variáveis já cadastradas: `DISCORD_TOKEN`, `GROQ_API_KEY` e `DATA_DIR=./state`. Reinicie após a atualização do GitHub. Não recrie a implantação nem apague `state`.

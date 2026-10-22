@@ -203,11 +203,12 @@ def family(uid):
 
 
 class TierAnalyzer:
-    def __init__(self, store, catalog, backend=None, evidence=None):
+    def __init__(self, store, catalog, backend=None, evidence=None, source_guard=None):
         self.store = store
         self.catalog = catalog
         self.backend = backend or GroqBackend()
         self.evidence = evidence or EvidenceLibrary()
+        self.source_guard = source_guard
 
     def packet(self):
         pending = self.store.pending(64)
@@ -467,6 +468,8 @@ class TierAnalyzer:
             self.store.set("budget", json.dumps(budget))
             if packet.get("source_version") != self.evidence.version:
                 raise ValueError("As fontes mudaram durante a análise.")
+            if self.source_guard is not None:
+                self.source_guard()
             ranking, explanations, details = self.validate(result, packet, comments)
             changed = self.store.create_proposal(
                 ranking,

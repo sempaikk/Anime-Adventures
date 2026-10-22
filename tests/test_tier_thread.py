@@ -482,6 +482,65 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.app.purge_inaccessible_sources()
         self.assertEqual(self.app.store.pending(), [])
 
+    async def test_lost_access_removes_processed_context_as_well_as_pending_comments(
+        self,
+    ):
+        await self.app.on_message(self.source())
+        with self.app.store.connection:
+            self.app.store.connection.execute("UPDATE tier_comments SET processed=1")
+        self.assertEqual(self.app.store.pending(), [])
+        self.assertEqual(len(self.app.store.recent()), 1)
+        self.env.permissions.view_channel = False
+        self.app.purge_inaccessible_sources()
+        self.assertEqual(self.app.store.recent(), [])
+
+    async def test_lost_access_during_inference_prevents_a_valid_proposal(self):
+        await self.setup_panel()
+        conversation = MagicMock(spec=discord.TextChannel)
+        conversation.id, conversation.guild = 20, self.env.guild
+        conversation.permissions_for.return_value = self.env.permissions
+        self.env.channels[20] = conversation
+        await self.app.on_message(self.source(channel=conversation))
+        packet, _ = self.app.analyzer.packet()
+        sid = next(
+            k for k, value in packet["sources"].items() if value["unit_id"] == "daki"
+        )
+        output = {
+            "changes": [
+                {
+                    "unit_id": "daki",
+                    "tier": "S",
+                    "before": None,
+                    "confidence": 0.95,
+                    "supporting_comments": ["c0"],
+                    "reason": "Justificativa artificial para verificar a perda de acesso durante a análise.",
+                    "conditions": "Condições artificiais exclusivas deste teste.",
+                    "caveat": "O teste não descreve o balanceamento real do jogo.",
+                    "evidence": [
+                        {
+                            "source_id": sid,
+                            "quote": packet["sources"][sid]["text"][:120],
+                        }
+                    ],
+                }
+            ]
+        }
+        # Confirm the proposed output would be valid if access were unchanged.
+        _, comments = self.app.analyzer.packet()
+        self.app.analyzer.validate(output, packet, comments)
+
+        async def respond(_):
+            self.env.permissions.view_channel = False
+            return output, 100
+
+        self.backend.enabled = True
+        self.backend.analyze.side_effect = respond
+        await self.app.analysis_loop.coro(self.app)
+        self.backend.analyze.assert_awaited_once()
+        self.assertEqual(self.app.store.recent(), [])
+        self.assertIsNone(self.app.store.active_proposal())
+        self.assertEqual(self.app.store.latest()["ranking"], [])
+
     async def test_poll_is_in_thread_only_and_clock_starts_after_publication(self):
         await self.setup_panel()
         self.propose()

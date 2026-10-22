@@ -8,6 +8,7 @@ import logging
 import os
 import signal
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import urlparse
@@ -19,7 +20,7 @@ from discord.http import handle_message_parameters
 from dotenv import load_dotenv
 from community_domain import Catalog
 from runtime_health import RuntimeHealth
-from tier_analysis import TierAnalyzer
+from tier_analysis import DAILY_CALLS, DAILY_TOKENS, TierAnalyzer
 from tier_backup import acquire_lease, maintain_tier_storage
 from tier_domain import digest, relevant_units, safe, moment
 from tier_image import PanelRenderer, image_file, index_text, poll_embed
@@ -62,7 +63,12 @@ class CommunityBot(commands.Bot):
             extra_aliases={"gyutaro": ["Giltaro", "Gyuutaro", "Gyuutarou"]},
         )
         self.media = MediaLibrary(self.store, self.catalog)
-        self.analyzer = TierAnalyzer(self.store, self.catalog, backend=backend)
+        self.analyzer = TierAnalyzer(
+            self.store,
+            self.catalog,
+            backend=backend,
+            source_guard=self.purge_inaccessible_sources,
+        )
         self.wiki = WikiSync(self.store, self.catalog, self.analyzer.evidence)
         self.renderer = PanelRenderer(self.media.root)
         self.render_lock = asyncio.Lock()
@@ -340,6 +346,18 @@ class CommunityBot(commands.Bot):
         from tier_history import history_status
 
         text += "\n**Histórico do jogo:** " + history_status(self.store, i.guild_id)
+        pending = self.store.rows(
+            "SELECT COUNT(*) AS total FROM tier_comments WHERE processed=0 AND attempts<3 AND created_at>=?",
+            (self.store.clock() - 7 * 86400,),
+        )[0]["total"]
+        budget = json.loads(self.store.get("budget") or "{}")
+        day = datetime.fromtimestamp(self.store.clock(), timezone.utc).strftime(
+            "%Y-%m-%d"
+        )
+        if budget.get("day") != day:
+            budget = {}
+        text += f"\n**Relatos aguardando análise:** {pending}."
+        text += f"\n**Cota local do dia UTC:** {budget.get('calls', 0)}/{DAILY_CALLS} chamadas · {budget.get('tokens', 0)}/{DAILY_TOKENS} tokens."
         thread = self.store.thread(i.guild_id)
         if thread:
             text += f"\n**Tópico:** {thread['status']}."
@@ -619,7 +637,7 @@ class CommunityBot(commands.Bot):
             ai_enabled=self.analyzer.backend.enabled,
         )
         if self.health.storage_level == "critical":
-            text += "\n**Manutenção:** novas análises e imagens pausadas por falta de espaço. A classificação atual foi preservada."
+            text += "\n**Manutenção:** novas análises e imagens temporariamente pausadas. A classificação atual foi preservada."
         previous = self.store.get("previous-thread:" + panel["guild_id"])
         if previous and previous != str(thread.id):
             text += f"\n[Histórico do tópico anterior](https://discord.com/channels/{panel['guild_id']}/{previous})."
@@ -657,7 +675,7 @@ class CommunityBot(commands.Bot):
 
     def purge_inaccessible_sources(self):
         for row in self.store.rows(
-            "SELECT DISTINCT channel_id,guild_id FROM tier_comments WHERE processed=0 LIMIT 1000"
+            "SELECT DISTINCT channel_id,guild_id FROM tier_comments"
         ):
             channel = self.get_channel(int(row["channel_id"]))
             if (

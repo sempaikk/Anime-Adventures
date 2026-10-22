@@ -37,7 +37,7 @@ POLL_STATES = {
 STATUS = {
     "not-connected": "Análise automática ainda indisponível",
     "retry": "Análise temporariamente indisponível; posições preservadas",
-    "quota": "Limite gratuito atingido; aguardando nova janela",
+    "quota": "Análises em pausa; posições preservadas",
     "poll-open": "Votação em andamento",
     "poll-queued": "Preparando uma proposta",
     "no-proposal": "Nenhuma nova proposta suficientemente fundamentada",
