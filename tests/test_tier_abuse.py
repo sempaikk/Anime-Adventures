@@ -375,6 +375,31 @@ class HostingCase(unittest.TestCase):
             self.assertTrue(passed, output)
             self.assertEqual(count, 1)
 
+    async def test_host_profile_covers_active_bot_and_shared_helpers_only(self):
+        from tier_verify import isolated_suite
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "tests").mkdir()
+            for name in (
+                "test_tier_example.py",
+                "test_tierlist.py",
+                "test_runtime_health.py",
+                "test_storage_maintenance.py",
+            ):
+                (root / "tests" / name).write_text(
+                    "import unittest\nclass ActiveCase(unittest.TestCase):\n"
+                    "    def test_active(self): self.assertTrue(True)\n"
+                )
+            (root / "tests" / "test_session.py").write_text(
+                "raise RuntimeError('Archived quiz belongs to the full CI suite')\n"
+            )
+            with patch("tier_verify.ROOT", root):
+                passed, count, output = await isolated_suite()
+        self.assertTrue(passed, output)
+        self.assertEqual(count, 4)
+        self.assertNotIn("Archived quiz", output)
+
     async def test_full_verification_uses_isolated_scenarios_and_real_api_adapter(self):
         self.backend.enabled = True
         self.backend.analyze.return_value = ({"changes": []}, 50)
@@ -476,20 +501,37 @@ class HostingCase(unittest.TestCase):
 
         launch = asyncio.create_subprocess_exec
         processes = []
+        ready = Path(self.temp.name) / "timeout-child-ready"
+
+        async def wait_until_ready():
+            while not ready.is_file():
+                await asyncio.sleep(0.01)
 
         async def tracked(*args, **kwargs):
             process = await launch(*args, **kwargs)
             processes.append(process)
+            # The assertion concerns collecting output at a timeout, not Python
+            # startup speed. Wait for the child's flushed output before allowing
+            # the already-expired runner deadline to kill it.
+            try:
+                await asyncio.wait_for(wait_until_ready(), 30)
+            except BaseException:
+                if process.returncode is None:
+                    process.kill()
+                await process.communicate()
+                raise
             return process
 
         bootstrap = """
 import json,time
+from pathlib import Path
 print('TIER_SUITE_PROGRESS '+json.dumps({'group':0,'completed':7,'failures':0,'errors':0,'last_test':'synthetic.completed'}),flush=True)
+Path(READY_PATH).write_text('ready')
 time.sleep(60)
-"""
+""".replace("READY_PATH", repr(str(ready)))
         with (
             patch("tier_verify.BOOTSTRAP", bootstrap),
-            patch("tier_verify.SUITE_TIMEOUT", 0.3),
+            patch("tier_verify.SUITE_TIMEOUT", 0),
             patch("tier_verify.asyncio.create_subprocess_exec", side_effect=tracked),
         ):
             with self.assertRaises(SuiteTimeout) as caught:

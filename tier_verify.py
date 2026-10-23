@@ -19,12 +19,17 @@ from tier_store import TierStore
 from tier_views import GuardedView, PollView, reply
 from tier_release import build_info, label as build_label
 
-SUITE_TIMEOUT = 300
+SUITE_TIMEOUT = 480
+HOST_TEST_PATTERNS = (
+    "test_tier*.py",
+    "test_runtime_health.py",
+    "test_storage_maintenance.py",
+)
 PROGRESS_MARKER = "TIER_SUITE_PROGRESS "
 
 # The subprocess has no production credentials, dotenv imports or external network.
 BOOTSTRAP = """
-import json,socket,unittest,sys
+import fnmatch,json,socket,unittest,sys
 from pathlib import Path
 import dotenv
 dotenv.load_dotenv=lambda *a,**k:False
@@ -47,10 +52,8 @@ socket.getaddrinfo=dns
 socket.socket.connect=connect
 socket.socket.connect_ex=connect_ex
 files=sorted(p.name for p in Path('tests').glob('test_*.py'))
-current=[f for f in files if f.startswith('test_tier')]
-archived=[f for f in files if f not in current]
-middle=len(archived)//2
-groups=[current,archived[:middle],archived[middle:]]
+current=[f for f in files if any(fnmatch.fnmatchcase(f,p) for p in sys.argv[2:])]
+groups=[current[index::3] for index in range(3)]
 selected=groups[int(sys.argv[1])]
 if not selected:
     print('Nenhum arquivo nesta parte.')
@@ -135,6 +138,7 @@ async def isolated_suite():
                 "-c",
                 BOOTSTRAP,
                 str(group),
+                *HOST_TEST_PATTERNS,
                 cwd=ROOT,
                 env=environment,
                 stdout=asyncio.subprocess.PIPE,
@@ -338,6 +342,12 @@ async def _verify(bot, i):
             "checks": [],
             "writes_production_ranking": False,
             "ranking_before": bot.store.board()["id"],
+            "isolated_scope": {
+                "profile": "tierlist-and-shared-runtime",
+                "patterns": list(HOST_TEST_PATTERNS),
+                "timeout_seconds": SUITE_TIMEOUT,
+                "includes_archived_features": False,
+            },
         }
         installed = build_info()
         running = getattr(bot, "build", installed)
@@ -364,14 +374,14 @@ async def _verify(bot, i):
             await edit(i, content="### Verificação em andamento\n" + text, view=None)
 
         await progress(
-            "Executando os cenários de interface, disputa e falhas em bancos isolados. Esta etapa tem até cinco minutos na hospedagem gratuita; depois seguem os testes reais do Discord."
+            "Executando os testes da tier list e dos recursos compartilhados em bancos isolados, com até oito minutos. Os módulos antigos são testados no GitHub. Depois seguem os testes reais do Discord."
         )
         try:
             passed, count, output = await isolated_suite()
             report["isolated_progress"] = suite_progress(output)
             report["checks"].append(
                 {
-                    "name": f"Cenários automatizados: {count} testes",
+                    "name": f"Cenários da tier list: {count} testes",
                     "result": "passed" if passed else "failed",
                     "level": "isolated",
                     **(
@@ -391,18 +401,18 @@ async def _verify(bot, i):
             report["isolated_output"] = error.output[-40000:]
             report["checks"].append(
                 {
-                    "name": f"Cenários automatizados: {state['completed']} testes concluídos",
+                    "name": f"Cenários da tier list: {state['completed']} testes concluídos",
                     "result": "failed"
                     if state["failures"] or state["errors"]
                     else "warning",
                     "level": "isolated",
-                    "detail": "Suíte incompleta: atingiu o limite de cinco minutos da verificação. O JSON conserva o progresso e as falhas encontradas; as etapas reais seguem abaixo.",
+                    "detail": "Suíte incompleta: atingiu o limite de oito minutos da verificação. O JSON conserva o progresso e as falhas encontradas; as etapas reais seguem abaixo.",
                 }
             )
         except (TimeoutError, OSError) as error:
             report["checks"].append(
                 {
-                    "name": "Cenários automatizados",
+                    "name": "Cenários da tier list",
                     "result": "warning",
                     "level": "isolated",
                     "detail": "A hospedagem não conseguiu concluir a execução isolada. Confira os arquivos e recursos disponíveis; as etapas reais seguem abaixo.",

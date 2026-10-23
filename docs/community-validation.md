@@ -98,8 +98,12 @@ Use **Testar personagens na imagem** nos controles do dono, ou **Ver alteraçõe
 
 Baixe `verificacao-tierlist.json` para acompanhar falhas. O relatório diferencia isolado, Discord real, Groq real e não testado. A suíte roda com credenciais removidas, importação de `.env` desativada, rede externa bloqueada e estado temporário. Falha não é escondida como aprovação. Uma interrupção cancela o subprocesso antes de fechar o banco.
 
-A suíte isolada tem orçamento total de cinco minutos, compartilhado pelos três
-processos sequenciais. Se a hospedagem não terminar nesse prazo, o relatório
+A suíte isolada da hospedagem cobre `test_tier*.py`, `test_runtime_health.py` e
+`test_storage_maintenance.py`: o bot ativo e seus recursos compartilhados.
+Ela tem orçamento total de oito minutos, compartilhado pelos três processos
+sequenciais. Os módulos antigos de quiz e comunidade continuam na suíte
+completa executada pelo GitHub, sem consumir CPU da hospedagem ativa.
+O JSON identifica esse perfil e seus padrões de seleção. Se a hospedagem não terminar nesse prazo, o relatório
 mostra a quantidade de testes concluídos, conserva o progresso e identifica a
 execução como incompleta. Falhas já encontradas continuam marcadas como falha;
 os testes reais do Discord seguem em seguida. Um limite de tempo não comprova

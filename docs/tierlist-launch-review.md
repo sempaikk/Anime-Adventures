@@ -264,3 +264,32 @@ botões, arquivamento/retomada e limpeza passaram. O pacote foi identificado com
 `2026.10.22.3 · 9c7ebe36b61a`. Não houve Gateway adicional, chamada à Groq ou
 alteração de posições oficiais. O limite de tempo foi reproduzido com processo
 real controlado; contagem parcial e encerramento do filho foram conferidos.
+
+## Diagnóstico sob CPU limitada — 2026.10.22.4
+
+O relatório da hospedagem confirmou todas as etapas reais, inclusive as dez
+mudanças de personagens, as cinco de retratos e o clique humano no voto.
+O erro automatizado ficou no teste de encerramento do subprocesso: ele usava
+um prazo de 0,3 segundo e exigia que o filho já tivesse escrito seu progresso.
+Na hospedagem o filho era encerrado antes disso, produzindo corretamente zero
+registros; o teste confundia a velocidade de inicialização com perda de dados.
+O teste agora espera uma confirmação explícita de saída gravada e só então
+exercita o encerramento com prazo vencido. A coleta e o término do processo
+continuam sendo verificados. A regressão passou com atraso artificial de
+0,8 segundo antes de o filho executar seu código.
+
+A mesma hospedagem levou 281,7 segundos para executar os 322 testes de tier
+list daquela versão, deixando pouco tempo para os módulos antigos do
+repositório. A verificação operacional agora seleciona todos os testes
+`test_tier*.py`, saúde do runtime e manutenção de armazenamento, distribuídos
+em três processos sequenciais, com oito minutos de orçamento total. O relatório
+identifica o perfil e o prazo. A suíte completa do repositório continua no
+GitHub; testes excluídos do perfil operacional não são apresentados como
+executados pela hospedagem. Falhas e execução incompleta continuam explícitas.
+
+O novo perfil operacional passou localmente nos **334 testes**, sem rede externa
+ou credenciais. Inclui uma regressão que comprova a seleção dos testes ativos,
+os dois módulos compartilhados e a exclusão dos módulos arquivados desse perfil.
+Os ensaios reais já aprovados pelo dono no relatório da versão 2026.10.22.3
+continuam sendo evidência separada; esta correção não altera os fluxos de
+classificação, voto, IA ou publicação de imagens.
