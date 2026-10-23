@@ -10,7 +10,7 @@ import test_global_chat as fixtures
 from global_reports import ReportInbox, ReportDecision
 from global_ops import GlobalOperations, OperationsView, NetworkPause
 from global_policy import check_links
-from global_views import MyMessagesView
+from global_views import MyMessagesView, GlobalAdminView
 from runtime_health import RuntimeHealth
 from tier_style import GameTheme, GAME_KEYS
 from quiz_icons import ICONS
@@ -29,6 +29,36 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
     copies = fixtures.ChatCase.copies
     flush = fixtures.ChatCase.flush
     asset = fixtures.ChatCase.asset
+
+    async def test_global_admin_controls_separate_personal_local_and_owner_actions(
+        self,
+    ):
+        for user in (7, 8):
+            with self.subTest(user=user):
+                view = GlobalAdminView(
+                    self.app, self.interaction(user=user, admin=True)
+                )
+                if user == 7:
+                    self.engine.store.restrict(
+                        "*", "guild", 1, 600, 7, "Contenção temporária de teste"
+                    )
+                    self.engine.store.pause_network(
+                        True, 7, "Pausa temporária para conferir a tela completa"
+                    )
+                card = payload(bot=self.app, content=view.description(), view=view)[
+                    "view"
+                ]
+                text = visible_text(card)
+                self.assertIn("Conexão deste servidor", text)
+                self.assertIn("Moderação deste servidor", text)
+                self.assertIn("Sua participação", text)
+                self.assertEqual("Operação · dono do bot" in text, user == 7)
+                self.assertEqual("Moderação da rede · dono do bot" in text, user == 7)
+                self.assertLessEqual(card.total_children_count, 40)
+                self.assertEqual(view.personal.row, 2)
+                if user == 7:
+                    self.assertEqual(view.network.row, 3)
+                    self.assertEqual(view.operations.row, 4)
 
     async def reported(self, guild=2):
         source = self.message(content="Uma mensagem compartilhada para revisão")

@@ -215,6 +215,7 @@ class Card(discord.ui.LayoutView):
                 rows.setdefault(item.row or 0, []).append(item)
             controls = discord.ui.Container(accent_colour=0xA283E8)
             for row in sorted(rows):
+                titles = {}
                 if controller.__class__.__name__ == "AdminView":
                     titles = {
                         0: "Revisão e acompanhamento"
@@ -224,6 +225,15 @@ class Card(discord.ui.LayoutView):
                         2: "Testes",
                         3: "Atualizações do jogo",
                     }
+                elif controller.__class__.__name__ == "GlobalAdminView":
+                    titles = {
+                        0: "Conexão deste servidor",
+                        1: "Moderação deste servidor",
+                        2: "Sua participação",
+                        3: "Moderação da rede · dono do bot",
+                        4: "Operação · dono do bot",
+                    }
+                if titles:
                     controls.add_item(
                         discord.ui.TextDisplay("### " + titles.get(row, "Outras ações"))
                     )

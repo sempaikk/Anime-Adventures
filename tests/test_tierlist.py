@@ -213,6 +213,44 @@ class TierCase(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(await self.analyzer.run())
         self.assertEqual(self.store.latest()["id"], 0)
 
+    async def test_changed_classification_during_inference_discards_the_stale_proposal(
+        self,
+    ):
+        async def answer(packet):
+            self.publish_fixture([{"unit_id": "gyutaro", "tier": "GOOD_GROUND"}])
+            return self.output(), 300
+
+        self.backend.analyze.side_effect = answer
+        self.assertFalse(await self.analyzer.run())
+        self.assertIsNone(self.store.active_proposal())
+        self.assertEqual(
+            self.store.latest()["ranking"],
+            [{"unit_id": "gyutaro", "tier": "GOOD_GROUND"}],
+        )
+        self.assertEqual(self.store.get("analysis_status"), "retry")
+
+    async def test_publication_in_the_other_mode_does_not_discard_a_valid_proposal(
+        self,
+    ):
+        async def answer(packet):
+            self.store.publish(
+                [{"unit_id": "gyutaro", "tier": "GOOD_GROUND"}],
+                {},
+                source_version="test",
+                model="test",
+                comments=[],
+                mode="casual",
+            )
+            return self.output(), 300
+
+        self.backend.analyze.side_effect = answer
+        self.assertTrue(await self.analyzer.run())
+        self.assertEqual(self.store.active_proposal()["mode"], "infinite")
+        self.assertEqual(
+            self.store.latest("casual")["ranking"],
+            [{"unit_id": "gyutaro", "tier": "GOOD_GROUND"}],
+        )
+
     async def test_no_changes_does_not_fake_a_new_update_time(self):
         self.backend.analyze.return_value = ({"changes": []}, 200)
         self.assertFalse(await self.analyzer.run())

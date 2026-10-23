@@ -499,6 +499,7 @@ class TierAnalyzer:
         packet, comments = self.packet()
         if not packet:
             return False
+        publications = {mode: self.store.latest(mode)["id"] for mode in MODES}
         day = datetime.fromtimestamp(now, timezone.utc).strftime("%Y-%m-%d")
         budget = json.loads(self.store.get("budget") or "{}")
         if budget.get("day") != day:
@@ -536,6 +537,11 @@ class TierAnalyzer:
             if self.source_guard is not None:
                 self.source_guard()
             ranking, explanations, details = self.validate(result, packet, comments)
+            mode = next(iter(details.values()))["mode"] if details else "infinite"
+            if details and self.store.latest(mode)["id"] != publications[mode]:
+                raise ValueError(
+                    "A classificação mudou durante a análise. Aguarde uma nova avaliação."
+                )
             changed = self.store.create_proposal(
                 ranking,
                 explanations,
@@ -543,7 +549,7 @@ class TierAnalyzer:
                 model=self.backend.model,
                 comments=comments,
                 details=details,
-                mode=next(iter(details.values()))["mode"] if details else "infinite",
+                mode=mode,
                 game_revision=packet.get("game_revision", ""),
             )
             if not changed:

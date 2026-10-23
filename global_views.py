@@ -365,7 +365,7 @@ class GlobalAdminView(ScopedView):
         view = ReportInbox(self.bot, i)
         await reply(i, view.description(), view=view)
 
-    @discord.ui.button(label="Estado do bot", row=3)
+    @discord.ui.button(label="Estado do bot", row=4)
     async def operations(self, i, button):
         self.current(i)
         self.bot.require_owner(i)
@@ -388,13 +388,13 @@ class GlobalAdminView(ScopedView):
         view = GlobalMemberView(self.bot, i)
         await reply(i, view.description(), view=view)
 
-    @discord.ui.button(label="Moderação da rede", row=2)
+    @discord.ui.button(label="Moderação da rede", row=3)
     async def network(self, i, button):
         self.current(i)
         self.bot.require_owner(i)
         await i.response.send_modal(ModerationModal(self.bot, i, network=True))
 
-    @discord.ui.button(label="Denúncias da rede", row=2)
+    @discord.ui.button(label="Denúncias da rede", row=3)
     async def network_reports(self, i, button):
         self.current(i)
         self.bot.require_owner(i)

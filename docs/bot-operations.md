@@ -1,5 +1,20 @@
 # Operação da versão 2026.10.23.2
 
+## Fechamento posterior — 2026.10.23.3
+
+Pacote `eefb5bde71c2`, 114 arquivos. A resposta da IA agora é descartada quando
+a publicação do modo avaliado muda durante a consulta; uma mudança apenas no
+outro modo não descarta uma proposta válida. O painel privado do chat separa
+conexão, moderação local, participação pessoal, moderação da rede e operação.
+Controles da rede continuam exclusivos do dono.
+
+Passaram 677 testes completos e 428 no perfil isolado da hospedagem, neste
+ambiente. A API real passou em 14 conferências em dois canais privados
+temporários de um único servidor físico, incluindo os novos agrupamentos da
+administração. Os canais foram removidos; nenhum estado de produção foi usado.
+As seções abaixo registram a revisão anterior e continuam válidas, exceto pelos
+identificadores e contagens substituídos neste fechamento.
+
 ## Interface e alcance
 
 A imagem usa **Casual à esquerda e Infinite à direita**, com uma margem entre
