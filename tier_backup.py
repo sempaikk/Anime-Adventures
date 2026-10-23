@@ -101,6 +101,14 @@ def make_snapshot(database, *, now=None):
             required_tables=REQUIRED_TABLES | MEDIA_TABLES,
         )
         with closing(sqlite3.connect(temporary / "tierlist.sqlite3")) as db:
+            if db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='global_messages'"
+            ).fetchone():
+                # Local snapshots preserve consent and receipts, not a historical
+                # copy of the chat's short-lived text/media download URLs.
+                db.execute("PRAGMA secure_delete=ON")
+                db.execute("UPDATE global_messages SET payload='{}'")
+                db.commit()
             assets = [
                 {"digest": r[0], "bytes": r[1]}
                 for r in db.execute("SELECT digest,bytes FROM tier_media_assets")

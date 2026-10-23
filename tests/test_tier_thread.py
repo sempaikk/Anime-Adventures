@@ -449,13 +449,16 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertIn("aguardando revisão", call_text(response))
         self.assertEqual(len(self.env.payloads), sent)
 
-    async def test_global_chat_remains_inactive(self):
+    async def test_global_chat_opens_private_admin_setup_without_sharing(self):
         i = self.interaction()
         await self.app.tree.get_command("chatglobal").callback(i)
         i.response.send_message.assert_awaited_once()
         self.assertTrue(i.response.send_message.await_args.kwargs["ephemeral"])
-        self.assertEqual(call_text(i.response.send_message.await_args), "Em breve.")
-        self.assertFalse(hasattr(self.app, "delivery_loop"))
+        self.assertIn(
+            "Chat global · administração", call_text(i.response.send_message.await_args)
+        )
+        self.assertEqual(self.app.globalchat.store.channels(), [])
+        self.assertEqual(self.app.globalchat.store.jobs(), [])
 
     async def test_automatic_collection_requires_no_consent_or_channel_selection(self):
         message = self.source()

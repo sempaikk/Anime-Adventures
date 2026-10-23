@@ -92,6 +92,9 @@ class CommunityBot(commands.Bot):
         self.upload_slots = self.image_slots
         self.guild_locks = {}
         self.health = RuntimeHealth(self.is_ready, lambda: self.store.connection)
+        from global_relay import GlobalRelay
+
+        self.globalchat = GlobalRelay(self)
         self.owner_ids_set = set()
         self.ui_theme = GameTheme()
         from tier_release import build_info
@@ -159,6 +162,9 @@ class CommunityBot(commands.Bot):
         self.owner_ids_set = {app.team.owner_id if app.team else app.owner.id}
         self.add_view(ThreadView(self))
         self.add_view(PollView(self))
+        from global_views import GlobalPanelView
+
+        self.add_view(GlobalPanelView(self))
         legacy = PollView(self)
         old_ids = {
             "tier:v3:approve": "tier:v2:vote:approve",
@@ -182,6 +188,7 @@ class CommunityBot(commands.Bot):
             self.panel_loop,
             self.maintenance_loop,
             self.wiki_loop,
+            self.global_loop,
         ):
             loop.start()
         log.info(
@@ -196,6 +203,9 @@ class CommunityBot(commands.Bot):
         for row in self.store.rows("SELECT guild_id FROM tier_guilds"):
             if row["guild_id"] not in actual:
                 self.store.remove_guild(row["guild_id"])
+        for row in self.globalchat.store.channels():
+            if row["guild_id"] not in actual:
+                self.globalchat.store.remove_guild(row["guild_id"])
         log.info(
             "Conectado; %s servidores; aguardando relatos do jogo.", len(self.guilds)
         )
@@ -228,12 +238,14 @@ class CommunityBot(commands.Bot):
         self.store.register_guild(guild.id)
 
     async def on_guild_remove(self, guild):
+        self.globalchat.store.remove_guild(guild.id)
         self.store.remove_guild(guild.id)
         self.guild_locks.pop(guild.id, None)
         self.index_checks.pop(str(guild.id), None)
 
     async def on_message(self, message):
         self.collect_message(message)
+        await self.globalchat.ingest(message)
 
     def collect_message(self, message):
         if (
@@ -282,6 +294,7 @@ class CommunityBot(commands.Bot):
         )
 
     async def on_raw_message_delete(self, event):
+        self.globalchat.on_delete(event)
         if self.active_history_import:
             self.active_history_import.invalidate(event)
         with self.store.connection:
@@ -303,6 +316,7 @@ class CommunityBot(commands.Bot):
             await self.on_raw_message_delete(SimpleNamespace(message_id=ident))
 
     async def on_raw_message_edit(self, event):
+        await self.globalchat.on_edit(event)
         if "content" in event.data:
             if self.active_history_import:
                 self.active_history_import.invalidate(event)
@@ -320,6 +334,14 @@ class CommunityBot(commands.Bot):
                 )
 
     async def on_guild_channel_delete(self, channel):
+        cfg = self.globalchat.store.source(channel.id)
+        if cfg:
+            for row in self.globalchat.store.rows(
+                "SELECT id FROM global_messages WHERE channel_id=? AND deleted=0",
+                (str(channel.id),),
+            ):
+                self.globalchat.store.erase(row["id"])
+            self.globalchat.store.active(channel.guild.id, False)
         with self.store.connection:
             self.store.connection.execute(
                 "DELETE FROM tier_comments WHERE channel_id=?", (str(channel.id),)
@@ -1011,6 +1033,17 @@ class CommunityBot(commands.Bot):
     async def maintenance_ready(self):
         await self.wait_until_ready()
 
+    @tasks.loop(seconds=2)
+    async def global_loop(self):
+        try:
+            await self.globalchat.cycle()
+        except Exception as error:
+            log.warning("Chat global adiado: %s", type(error).__name__)
+
+    @global_loop.before_loop
+    async def global_ready(self):
+        await self.wait_until_ready()
+
     def register_commands(self):
         @self.tree.command(
             name="tierlist",
@@ -1021,6 +1054,10 @@ class CommunityBot(commands.Bot):
         @app_commands.default_permissions(manage_guild=True)
         async def tierlist(i: discord.Interaction):
             self.require_admin(i)
+            if self.globalchat.store.source(i.channel_id):
+                raise ValueError(
+                    "Use um canal diferente do chat global para preparar a tier list."
+                )
             await i.response.defer(ephemeral=True, thinking=True)
             async with self.guild_lock(i.guild_id):
                 panel, thread = await self.ensure_panel(i)
@@ -1035,10 +1072,19 @@ class CommunityBot(commands.Bot):
                 ephemeral=True,
             )
 
-        @self.tree.command(name="chatglobal", description="Em breve.")
+        @self.tree.command(
+            name="chatglobal",
+            description="Conecte ou confira o chat global deste servidor.",
+        )
         @app_commands.guild_only()
+        @app_commands.allowed_installs(guilds=True, users=False)
+        @app_commands.default_permissions(manage_guild=True)
         async def chatglobal(i: discord.Interaction):
-            await reply(i, "Em breve.")
+            from global_views import GlobalAdminView
+
+            self.require_admin(i)
+            view = GlobalAdminView(self, i)
+            await reply(i, view.description(), view=view)
 
         @self.tree.error
         async def command_error(i, error):
@@ -1073,6 +1119,7 @@ class CommunityBot(commands.Bot):
             self.panel_loop,
             self.maintenance_loop,
             self.wiki_loop,
+            self.global_loop,
         ):
             task = loop.get_task()
             if task and not task.done():
@@ -1082,6 +1129,7 @@ class CommunityBot(commands.Bot):
                 except asyncio.CancelledError:
                     pass
         await self.health.close()
+        await self.globalchat.close()
         await super().close()
         self.store.close()
         self.lease.close()

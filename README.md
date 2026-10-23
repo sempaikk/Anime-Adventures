@@ -1,9 +1,19 @@
 # Anime Adventures
 
-Tier list global com retratos originais, análise de relatos e decisões da comunidade. **Somente dois comandos, sem argumentos:**
+Tier list com decisões da comunidade e chat entre servidores. **Somente dois comandos, sem argumentos:**
 
 - **`/tierlist`** — exclusivo de quem tem **Administrador** ou **Gerenciar servidor**; publica ou confere o painel. Membros votam no canal da imagem e usam o tópico para histórico, ajuda e sugestões de retrato.
-- **`/chatglobal`** — responde **Em breve.** Nenhuma conversa é apagada ou retransmitida por esse comando.
+- **`/chatglobal`** — exclusivo de quem tem **Administrador** ou **Gerenciar servidor**; prepara a conexão de um canal de texto com os demais servidores participantes. Cada pessoa confirma uma vez por conta antes de compartilhar.
+
+## Chat entre servidores
+
+Use `/chatglobal` no canal escolhido e **Ativar neste canal**. O bot precisa de **Ver canal, Enviar mensagens, Ler histórico, Anexar arquivos e Gerenciar webhooks**. Não precisa de Administrador ou Gerenciar mensagens. O canal deve ser diferente da tier list e não pode ter restrição de idade. Os controles administrativos são privados; o painel público oferece Participar, Meus envios, Como funciona, Denunciar e Parar de participar.
+
+As originais permanecem no servidor onde foram enviadas. Outros servidores recebem cópias por webhook com nome, `@username`, avatar e origem; a marca APP/BOT é do Discord. **[Owner]** identifica o responsável pelo aplicativo e **[Tester]** a conta de teste autorizada, por ID, sem conceder permissões administrativas. A confirmação informa o compartilhamento com toda a rede, incluindo servidores futuros, e vale em todos os servidores após reinícios. Mensagens anteriores à confirmação não são importadas; o aviso de uma primeira mensagem permite compartilhar apenas aquela mensagem ainda disponível.
+
+Texto e formatação, imagens, GIFs, vídeos, áudios, PDF e TXT são retransmitidos dentro dos limites dos destinos. Figurinhas compatíveis viram imagens. Respostas incluem citação, menções não notificam pessoas/cargos e mensagens longas podem ser divididas. Editar/apagar a original sincroniza as cópias por até 30 dias, enquanto houver acesso; cópias removidas pela moderação local não são recriadas. Reações, enquetes nativas, voz e digitação continuam locais. Veja os detalhes e limites em [docs/global-chat.md](docs/global-chat.md).
+
+**Armazenamento:** conteúdo temporário da fila expira após uma hora, com limpeza periódica; arquivos são removidos após as entregas e pendências também expiram. IDs e denúncias ficam por até 30 dias. Configuração e confirmação persistem até alteração/saída. Isso não apaga o histórico do Discord. O cache de anexos tem teto local de 256 MiB; excesso de carga, falta de espaço ou limites da API podem impedir entregas, com acompanhamento em Meus envios. O relay não usa IA nem serviços pagos.
 
 ## Um canal, uma imagem e um tópico
 
@@ -132,7 +142,7 @@ Mudanças de categorias são transacionais e auditadas. Versões e votos antigos
 
 `tierlist.sqlite3` guarda o sistema atual; bancos do quiz e da comunidade antiga não viram ranking. As versões antigas permanecem arquivadas, sem executar seus comandos ou filas de chat global. A migração de disponibilidade preserva snapshots, votos e histórico: caso uma forma retirada já estivesse classificada, cria uma revisão auditada removendo-a e mantém a ordem relativa das demais. Cancela propostas incompatíveis e impede a reversão de reintroduzir essas formas. Retratos antigos ficam registrados para histórico/backup; sugestões pendentes dessas formas deixam a fila ativa. Os antigos controles individuais não fazem parte da interface ativa.
 
-Há integridade ao iniciar, manutenção periódica, limites de coleta/votos/mídia e proteção contra espaço insuficiente. O backup diário inclui **SQLite, manifesto e arquivos de mídia verificados**, em `state/backups/tierlist-<instante>/`. `backups/latest.json` aponta a geração atual; uma geração anterior é mantida. Exporte a pasta inteira. Uma cópia no mesmo disco não protege contra exclusão da hospedagem.
+Há integridade ao iniciar, manutenção periódica, limites de coleta/votos/mídia e proteção contra espaço insuficiente. O backup diário inclui **SQLite, manifesto e arquivos de mídia verificados**, em `state/backups/tierlist-<instante>/`. A cópia preserva configurações, confirmações e IDs do chat global, mas remove seu conteúdo temporário e não inclui seu cache de anexos. `backups/latest.json` aponta a geração atual; uma geração anterior é mantida. Exporte a pasta inteira. Uma cópia no mesmo disco não protege contra exclusão da hospedagem.
 
 Para restaurar, **pare o bot** e execute, usando o nome real da pasta:
 

@@ -22,6 +22,7 @@ from tier_release import build_info, label as build_label
 SUITE_TIMEOUT = 480
 HOST_TEST_PATTERNS = (
     "test_tier*.py",
+    "test_global*.py",
     "test_runtime_health.py",
     "test_storage_maintenance.py",
 )
@@ -457,21 +458,21 @@ async def _verify(bot, i):
                 raise ValueError(
                     "Os comandos registrados no Discord não correspondem aos dois comandos sem opções."
                 )
-            tier_command = next(c for c in remote if c.name == "tierlist")
-            if (
-                tier_command.default_member_permissions is None
-                or tier_command.default_member_permissions.value
-                != discord.Permissions(manage_guild=True).value
-            ):
-                raise ValueError(
-                    "A permissão padrão de /tierlist no Discord precisa ser Gerenciar servidor. Atualize e reinicie o bot para sincronizar os comandos."
-                )
+            for command in remote:
+                if (
+                    command.default_member_permissions is None
+                    or command.default_member_permissions.value
+                    != discord.Permissions(manage_guild=True).value
+                ):
+                    raise ValueError(
+                        f"A permissão padrão de /{command.name} no Discord precisa ser Gerenciar servidor. Atualize e reinicie o bot para sincronizar os comandos."
+                    )
             report["checks"].append(
                 {
                     "name": "Registro real dos dois comandos",
                     "result": "passed",
                     "level": "Discord real",
-                    "detail": "/tierlist registrado com permissão padrão de Gerenciar servidor.",
+                    "detail": "/tierlist e /chatglobal registrados com permissão padrão de Gerenciar servidor.",
                 }
             )
             stage = "Criação real de tópico privado"
