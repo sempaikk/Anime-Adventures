@@ -39,12 +39,19 @@ def render(
     media_revision=0,
     total_units=None,
     footer=False,
+    row_heights=None,
 ):
     media = portraits() if media is None else media
     columns, tile, label = 10, 96, 138
     groups = [(t, rows_for(ranking, t)) for t in TIERS]
     width = label + columns * tile
-    height = sum(max(1, math.ceil(len(rows) / columns)) * tile for _, rows in groups)
+    bands = {
+        t: max(
+            max(1, math.ceil(len(rows) / columns)) * tile, (row_heights or {}).get(t, 0)
+        )
+        for t, rows in groups
+    }
+    height = sum(bands.values())
     canvas = Image.new("RGB", (width, height + (60 if footer else 0)), "#111415")
     draw = ImageDraw.Draw(canvas)
     top = 0
@@ -52,7 +59,7 @@ def render(
     if media_root:
         allowed.append(Path(media_root).resolve())
     for tier, rows in groups:
-        band = max(1, math.ceil(len(rows) / columns)) * tile
+        band = bands[tier]
         draw.rectangle((0, top, label, top + band), fill=ROW_COLORS[tier])
         title = LABELS[tier]
         face = font(22)
@@ -126,20 +133,31 @@ def render(
 def render_modes(publications, **kwargs):
     """One persistent PNG with independently ranked, clearly labelled game modes."""
     frames = []
-    for mode, title in MODES.items():
-        blob = render(publications[mode]["ranking"], **kwargs)
+    row_heights = {
+        tier: max(
+            max(1, math.ceil(len(rows_for(publications[mode]["ranking"], tier)) / 10))
+            * 96
+            for mode in MODES
+        )
+        for tier in TIERS
+    }
+    for mode in ("casual", "infinite"):
+        title = MODES[mode]
+        blob = render(publications[mode]["ranking"], row_heights=row_heights, **kwargs)
         with Image.open(io.BytesIO(blob)) as image:
             frame = Image.new("RGB", (image.width, image.height + 54), "#202735")
             frame.paste(image, (0, 54))
         ImageDraw.Draw(frame).text((16, 14), title, font=font(23), fill="#f1f3f5")
         frames.append(frame)
     canvas = Image.new(
-        "RGB", (frames[0].width, sum(f.height for f in frames)), "#111415"
+        "RGB",
+        (sum(f.width for f in frames) + 16, max(f.height for f in frames)),
+        "#111415",
     )
-    top = 0
+    left = 0
     for frame in frames:
-        canvas.paste(frame, (0, top))
-        top += frame.height
+        canvas.paste(frame, (left, 0))
+        left += frame.width + 16
         frame.close()
     output = io.BytesIO()
     canvas.save(output, format="PNG", optimize=True)
@@ -237,7 +255,7 @@ def index_text(
         "## Votações e histórico",
         "**A imagem no canal mostra a classificação atual. As enquetes abertas aparecem junto dela; os resultados ficam aqui.**",
         "Propostas com motivos, mudanças e condições de uso. Você escolhe **Aprovar**, **Manter** ou **Precisa de mais testes**.",
-        "**Leitura:** Infinite e Casual têm posições independentes. Em cada modo, META e Good se dividem em Hill/Hybrid, Ground e Support. A ordem da linha vai da esquerda para a direita.",
+        "**Leitura:** Casual fica à esquerda e Infinite à direita, com posições independentes. Em cada modo, META e Good se dividem em Hill/Hybrid, Ground e Support. A ordem da linha vai da esquerda para a direita. Abra a imagem para ampliar.",
         "\n**Regras:** 10 minutos · mínimo de 5 participantes · dois terços a favor · um voto por conta na rede. Você pode trocar até o prazo. As escolhas aparecem no resultado final.",
         "No máximo uma proposta por hora; sem evidência suficiente, a classificação é preservada.",
         "\n" + progress_text(progress),

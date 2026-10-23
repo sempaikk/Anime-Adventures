@@ -314,11 +314,11 @@ class ModeStoreCase(unittest.TestCase):
         with patch("tier_image.ROOT", root):
             blob = render_modes(self.store.board()["modes"], media=media)
         with Image.open(io.BytesIO(blob)) as image:
-            self.assertEqual(image.size, (1098, 1260))
-            self.assertEqual(image.getpixel((180, 102)), (255, 0, 0))
-            self.assertEqual(image.getpixel((180, 1116)), (0, 0, 255))
-            self.assertEqual(image.getpixel((180, 486)), (17, 20, 21))
-            self.assertEqual(image.getpixel((180, 732)), (17, 20, 21))
+            self.assertEqual(image.size, (2212, 630))
+            self.assertEqual(image.getpixel((1294, 102)), (255, 0, 0))
+            self.assertEqual(image.getpixel((180, 486)), (0, 0, 255))
+            self.assertEqual(image.getpixel((1294, 486)), (17, 20, 21))
+            self.assertEqual(image.getpixel((180, 102)), (17, 20, 21))
 
     def test_board_cache_invalidates_when_only_casual_changes(self):
         renderer = PanelRenderer(None)

@@ -7,6 +7,21 @@ import aiohttp
 
 from quiz_icons import ICONS, asset
 
+# Positive allowlist: original game items/stat symbols. GUI_Tier-List_icon.png
+# belongs to the website and must never be rendered by the active bot.
+GAME_FILES = {
+    "Stars.png",
+    "Unit_Storage.png",
+    "Summon_Ticket.png",
+    "Star_Fruit.png",
+    "Star_Remnant.png",
+    "Gems.png",
+    "Damage_icon.png",
+    "SPA_icon.png",
+    "Range_icon.png",
+}
+GAME_KEYS = {key for key in ICONS if asset(key)["source_file"] in GAME_FILES}
+
 
 class GameTheme:
     def __init__(self):
@@ -22,7 +37,7 @@ class GameTheme:
             self.available = {
                 key
                 for key, icon in ICONS.items()
-                if (icon["id"], icon["name"]) in known
+                if key in GAME_KEYS and (icon["id"], icon["name"]) in known
             }
         except (
             discord.HTTPException,
@@ -34,10 +49,11 @@ class GameTheme:
             self.available.clear()
 
     def icon(self, key):
+        key = "units" if key == "rank" else key
         icon = ICONS.get(key)
         return (
             discord.PartialEmoji(name=icon["name"], id=int(icon["id"]))
-            if key in self.available and icon and icon["id"]
+            if key in GAME_KEYS and key in self.available and icon and icon["id"]
             else None
         )
 
@@ -72,9 +88,23 @@ def theme_for(bot=None):
 def decorate_controls(view, bot):
     theme = theme_for(bot)
     mapping = {"rollback": "rank", "visual-test": "rank"}
+    labels = {
+        "Meus envios": "items",
+        "Remover cópias": "items",
+        "Sugerir imagem": "units",
+        "Revisar imagens": "units",
+        "Restaurar retrato anterior": "units",
+        "Testar personagens na imagem": "units",
+        "Ver alterações de personagens": "units",
+        "Minha participação": "units",
+        "Participar": "units",
+        "Histórico": "clock",
+        "Ver tier list": "units",
+    }
     for button in view.children:
         if isinstance(button, discord.ui.Button):
             key = mapping.get(button.custom_id)
+            key = labels.get(button.label, key)
             if button.label == "Ver tier list":
                 key = "rank"
             elif button.label == "Histórico":
@@ -84,4 +114,4 @@ def decorate_controls(view, bot):
 
 
 def icon_sources():
-    return {key: asset(key)["source_page"] for key in ICONS}
+    return {key: asset(key)["source_page"] for key in GAME_KEYS}

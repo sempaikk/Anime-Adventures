@@ -1,5 +1,7 @@
 # Interface de /adventures
 
+> Interface ativa de tier list e chat global: [bot-operations.md](bot-operations.md). Abaixo há também registros históricos do quiz arquivado; esses recursos não são ativados pelos dois comandos atuais. O tema ativo aceita nove artes do jogo e exclui a grade de tier list do site.
+
 A interface usa **Discord Components V2**, disponíveis em discord.py 2.7.1. O quiz é focado no jogo e combina resposta pelo chat, reconhecimento de imagem do jogo e três alternativas por botões. O conteúdo continua restrito ao lançamento e a cenários derivados dos valores documentados.
 
 ## Telas e interação

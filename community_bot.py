@@ -95,6 +95,7 @@ class CommunityBot(commands.Bot):
         from global_relay import GlobalRelay
 
         self.globalchat = GlobalRelay(self)
+        self.health.add_probe("global_chat", self.globalchat.ready)
         self.owner_ids_set = set()
         self.ui_theme = GameTheme()
         from tier_release import build_info
@@ -190,6 +191,7 @@ class CommunityBot(commands.Bot):
             self.maintenance_loop,
             self.wiki_loop,
             self.global_loop,
+            self.operations_loop,
         ):
             loop.start()
         log.info(
@@ -423,6 +425,7 @@ class CommunityBot(commands.Bot):
         if reference:
             data = json.loads(reference)
             text += f"\n**Base Wiki:** revisão {data['revision']} · {data['unresolved']} entradas sem correspondência exata. Registro inicial interno, sem votos."
+        text += "\n" + self.globalchat.operations.description(compact=True)
         text += f"\n**Relatos aguardando análise:** {pending}."
         text += f"\n**Resultados aguardando arquivo/limpeza:** {self.store.public_results_waiting()}."
         text += f"\n**Cota local do dia UTC:** {budget.get('calls', 0)}/{DAILY_CALLS} chamadas · {budget.get('tokens', 0)}/{DAILY_TOKENS} tokens."
@@ -1045,6 +1048,17 @@ class CommunityBot(commands.Bot):
     async def global_ready(self):
         await self.wait_until_ready()
 
+    @tasks.loop(seconds=30)
+    async def operations_loop(self):
+        try:
+            await self.globalchat.operations.check_alerts()
+        except Exception as error:
+            log.warning("Diagnóstico operacional adiado: %s", type(error).__name__)
+
+    @operations_loop.before_loop
+    async def operations_ready(self):
+        await self.wait_until_ready()
+
     def register_commands(self):
         @self.tree.command(
             name="tierlist",
@@ -1132,6 +1146,7 @@ class CommunityBot(commands.Bot):
             self.maintenance_loop,
             self.wiki_loop,
             self.global_loop,
+            self.operations_loop,
         ):
             task = loop.get_task()
             if task and not task.done():

@@ -70,7 +70,8 @@ O comando `/tierlist` continua exclusivo de Gerenciar servidor. Abrir o comando
 não concede permissões para executar funções administrativas: cada ação valida
 a identidade, o contexto e as permissões novamente.
 
-Meus envios é privado e mostra até cinco envios recentes e suas entregas. A pessoa
+Meus envios é privado e mostra cinco envios por página, com Anterior, Próxima,
+Atualizar e o andamento das entregas. A pessoa
 pode remover suas cópias, sem apagar a original. Parar de participar interrompe
 novos envios em toda a rede e cancela os ainda não entregues; não promete desfazer
 uma requisição que o Discord já esteja processando. Cópias anteriores continuam
@@ -79,12 +80,32 @@ disponíveis até exclusão pela original ou solicitação de remoção.
 Denunciar recebe link/ID de uma mensagem conhecida neste chat e motivo. ADMs veem
 denúncias locais e podem bloquear/desbloquear pessoas no próprio servidor. O dono
 vê denúncias da rede e pode bloquear pessoas/servidores ou remover cópias na rede.
+As caixas privadas têm páginas, filtros Pendente/Resolvida/Descartada/Todas,
+seleção e decisão com motivo. Resolver, descartar, reabrir, bloquear por uma hora
+ou solicitar remoção das cópias registra responsável e horário. Uma revisão
+concomitante invalida o formulário anterior. ADMs agem somente no próprio
+servidor; o dono pode agir na rede. A remoção não apaga mensagens humanas originais.
+Trechos temporários aparecem apenas se o revisor puder ver o canal. A denúncia
+não arquiva permanentemente o texto da conversa. Mensagens fora da janela de
+sincronização ainda podem ter a denúncia encerrada, mas não recebem sanções por
+esse registro expirado.
 Permissões e identidade são revalidadas nas ações; o formulário não libera acesso
 por ter sido aberto anteriormente. Uma cópia apagada pela moderação local não é
 recriada em edições futuras da original.
 
 Contas com menos de sete dias não participam. Envios têm limite de seis mensagens
 por dez segundos por pessoa na rede, além de controle de repetição e denúncias.
+Edições têm limite de doze alterações por dez segundos por pessoa. O filtro local
+recusa links Markdown cujo endereço exibido esconde outro domínio e excesso de
+menções. Exemplos dentro de blocos de código continuam permitidos. Isso não é
+um detector completo de golpes ou de conteúdo abusivo.
+
+Uma origem pode ser contida por dez minutos após mais de 120 eventos por minuto,
+mais de doze mensagens com convites por minuto ou oito contas repetindo o mesmo
+texto normalizado de pelo menos doze caracteres em um minuto. A detecção guarda
+hash, IDs e horários por uma hora, sem uma cópia adicional do texto. Não há
+banimento permanente automático. ADMs veem o estado da própria conexão; o dono
+pode liberar a origem em Moderação da rede.
 Essas proteções reduzem abuso; não substituem a moderação humana do conteúdo.
 
 ## Retenção e recursos
@@ -111,6 +132,29 @@ uso) ou 50 mil entregas pendentes. A hospedagem precisa ter espaço para o resta
 do bot, suas dependências e retratos. Não existe garantia de sustentar milhares
 de servidores na hospedagem gratuita: filas, rede e limites da API determinam a
 capacidade real. O chat não utiliza Groq/IA ou uma API paga.
+Cada mensagem tem teto de preparo temporário de 128 MiB somando anexos, além
+do limite individual de cada destino. A fila também limita a participação de
+uma única origem para impedir que ela ocupe toda a capacidade disponível.
+
+Destinos são alternados, com até quatro entregas em paralelo e uma por canal em
+cada rodada. A ordem de mensagens normais é preservada por canal; exclusões têm
+prioridade. Um destino lento não ocupa sozinho toda a rodada.
+
+## Estado privado e pausa de emergência
+
+O dono encontra **Estado do bot** na configuração privada: fila e idade,
+falhas recentes, contenções, armazenamento e últimas análises válidas. Pode
+ativar/desativar alertas por DM ou pausar/retomar a rede com motivo registrado.
+A pausa interrompe novos compartilhamentos e cancela a fila normal; exclusões
+continuam. Mensagens escritas durante a pausa não são importadas ao retomar.
+Uma requisição que o Discord já esteja processando ainda pode terminar.
+
+Alertas privados exigem dois minutos de condição persistente e têm intervalo
+de uma hora por tipo: espaço crítico, fila atrasada, rotina sem avanço e origem
+contida. Há um aviso de recuperação quando um alerta entregue se resolve.
+DM bloqueada não gera aviso público nem repetição a cada mensagem. O monitor
+roda separado do processador da fila. `/ready` também considera o avanço dessa
+rotina, sem expor dados de pessoas; uma pausa intencional não é falha de saúde.
 
 ## Reinício e confirmação incerta
 
@@ -137,6 +181,7 @@ cliente ou conectividade entre dois servidores reais. Esses resultados devem ser
 identificados separadamente no relatório de validação da versão.
 
 Resultados desta interface: [validação de 23/10/2026](global-chat-private-validation.md).
+Revisão posterior, atualização e ensaio de carga local: [operação atual](bot-operations.md).
 
 Referências: [webhooks](https://docs.discord.com/developers/resources/webhook),
 [conteúdo de mensagens](https://docs.discord.com/developers/resources/message),

@@ -775,7 +775,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("IA", status)
         blob, _ = await self.app.picture()
         with Image.open(io.BytesIO(blob)) as image:
-            self.assertEqual(image.height, 2 * (6 * 96 + 54))
+            self.assertEqual(image.size, (2212, 6 * 96 + 54))
 
     async def test_player_guide_is_private_and_available_from_official_index(self):
         await self.setup_panel()

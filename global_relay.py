@@ -106,6 +106,14 @@ class GlobalRelay:
         from global_onboarding import GlobalOnboarding
 
         self.onboarding = GlobalOnboarding(self)
+        from global_policy import GlobalGuard
+
+        self.guard = GlobalGuard(self.store)
+        self.workers = asyncio.Semaphore(4)
+        self.last_cycle = self.store.clock()
+        from global_ops import GlobalOperations
+
+        self.operations = GlobalOperations(self)
         self.session = None
         self.media = GlobalMedia(bot.directory, self.http_session)
         self.upload_slots = asyncio.Semaphore(2)
@@ -296,6 +304,14 @@ class GlobalRelay:
             or not self.readable(message.channel)
         ):
             return
+        if self.store.network_paused():
+            return
+        if not self.store.message(
+            message.id
+        ) and message.created_at.timestamp() < float(
+            self.bot.store.get("global-network-resumed-at") or 0
+        ):
+            return
         if not self.store.message(message.id) and (
             message.created_at.timestamp() < cfg["enabled_at"]
             or self.store.clock() - message.created_at.timestamp() > 3600
@@ -338,6 +354,16 @@ class GlobalRelay:
                 )
                 data = self.serialize(message)
                 old = self.store.message(message.id)
+                changed = not old or old["fingerprint"] != data["fingerprint"]
+                self.guard.check(message, data, new=changed)
+                if (
+                    old
+                    and changed
+                    and not self.store.limit("edit:" + str(message.author.id), 12, 10)
+                ):
+                    raise ValueError(
+                        "Muitas edições em sequência. Aguarde alguns segundos; a alteração poderá ser sincronizada quando o limite liberar."
+                    )
                 if not old:
                     if not self.store.limit("send:" + str(message.author.id), 6, 10):
                         raise ValueError(
@@ -538,7 +564,10 @@ class GlobalRelay:
         row = self.store.message(job["source_id"])
         if not row:
             return
-        if not row["deleted"] and self.store.clock() - row["updated"] > 3600:
+        if (
+            not (row["deleted"] or job["suppressed"])
+            and self.store.clock() - row["updated"] > 3600
+        ):
             self.store.retry(
                 job, "A fila expirou após uma hora; original preservada.", terminal=True
             )
@@ -546,7 +575,7 @@ class GlobalRelay:
         receipts = json.loads(job["receipts"])
         try:
             hook = self.webhook(job["hook_id"])
-            if row["deleted"] and job["uncertain"] >= 0:
+            if (row["deleted"] or job["suppressed"]) and job["uncertain"] >= 0:
                 target = self.channel(job["channel_id"])
                 if not self.readable(target):
                     raise ValueError(
@@ -566,7 +595,8 @@ class GlobalRelay:
             cfg = self.store.source(job["channel_id"])
             target = self.channel(job["channel_id"])
             if (
-                not cfg
+                self.store.network_paused()
+                or not cfg
                 or cfg["hook_id"] != job["hook_id"]
                 or not self.readable(target)
                 or self.store.blocked(row["user_id"], job["guild_id"], row["guild_id"])
@@ -613,7 +643,8 @@ class GlobalRelay:
                 active = self.store.source(job["channel_id"])
                 delivery = self.store.delivery(job["source_id"], job["channel_id"])
                 if (
-                    not active
+                    self.store.network_paused()
+                    or not active
                     or active["hook_id"] != job["hook_id"]
                     or delivery["state"] == "cancelled"
                     or delivery["suppressed"]
@@ -860,22 +891,38 @@ class GlobalRelay:
             if self.store.clock() - self.last_maintenance >= 60:
                 self.maintenance()
                 self.last_maintenance = self.store.clock()
-            for job in self.store.jobs(limit=8):
-                try:
-                    await asyncio.wait_for(self.deliver(job), 90)
-                except TimeoutError:
-                    current = self.store.delivery(job["source_id"], job["channel_id"])
-                    self.store.retry(
-                        current,
-                        "Tempo de entrega excedido; original preservada.",
-                        uncertain=current["uncertain"],
-                    )
-                except Exception as error:
-                    log.warning("Entrega global adiada: %s", type(error).__name__)
+            self.last_cycle = self.store.clock()
+
+            async def run(job):
+                async with self.workers:
+                    try:
+                        await asyncio.wait_for(self.deliver(job), 90)
+                    except TimeoutError:
+                        current = self.store.delivery(
+                            job["source_id"], job["channel_id"]
+                        )
+                        if current:
+                            self.store.retry(
+                                current,
+                                "Tempo de entrega excedido; original preservada.",
+                                uncertain=current["uncertain"],
+                            )
+                    except Exception as error:
+                        log.warning("Entrega global adiada: %s", type(error).__name__)
+
+            await asyncio.gather(*(run(job) for job in self.store.jobs(limit=8)))
+            self.last_cycle = self.store.clock()
             self.round += 1
             if self.store.clock() - self.last_recovery >= 10:
                 await self.recover()
                 self.last_recovery = self.store.clock()
+
+    def ready(self):
+        if self.store.network_paused() or not any(
+            c["active"] for c in self.store.channels()
+        ):
+            return True
+        return self.store.clock() - self.last_cycle < 240
 
     def maintenance(self):
         self.store.cleanup()

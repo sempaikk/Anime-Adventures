@@ -8,7 +8,7 @@ from urllib.parse import unquote, urlsplit
 
 import discord
 
-from tier_style import theme_for
+from tier_style import theme_for, decorate_controls
 
 log = logging.getLogger("tierlist.ui")
 
@@ -111,12 +111,23 @@ class Card(discord.ui.LayoutView):
         super().__init__(timeout=controller.timeout if controller else 600)
         self.controller = controller
         self.theme = theme_for(bot or getattr(controller, "bot", None))
+        if controller:
+            decorate_controls(controller, bot or getattr(controller, "bot", None))
         used_images = set()
         if text:
             paragraphs = str(text).split("\n\n")
             box = discord.ui.Container(accent_colour=0xA283E8)
             context = controller.__class__.__name__ if controller else ""
-            hero_key = "rank" if context in ("ThreadView", "AdminView") else None
+            hero_key = {
+                "ThreadView": "units",
+                "AdminView": "units",
+                "GlobalAdminView": "units",
+                "GlobalMemberView": "units",
+                "ConsentView": "units",
+                "GlobalDirectView": "units",
+                "MyMessagesView": "items",
+                "OperationsView": "clock",
+            }.get(context)
             for index, paragraph in enumerate(paragraphs):
                 if index:
                     box.add_item(

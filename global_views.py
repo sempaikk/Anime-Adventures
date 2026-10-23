@@ -33,7 +33,7 @@ HELP = """## Como funciona o chat global
 
 **O que fica local.** Reações, votos de enquetes nativas, chamadas, transmissão de tela e indicador de digitação não formam uma interação única entre servidores. Não é possível unir canais nativamente.
 
-**Convivência.** Respeite os participantes. Spam, repetição, arquivos não suportados e falta de recursos podem impedir um compartilhamento; a original é preservada. ADMs moderam seu servidor; o responsável pelo bot modera a rede. Denúncias e controles pessoais são privados."""
+**Convivência.** Respeite os participantes. Não compartilhe golpes, assédio, ameaças, conteúdo sexual, dados pessoais de terceiros ou divulgação em massa. Links ocasionais são permitidos; destinos disfarçados e rajadas coordenadas podem ser contidos temporariamente. Spam, repetição, arquivos não suportados e falta de recursos podem impedir um compartilhamento; a original é preservada. ADMs moderam seu servidor; o responsável pelo bot modera a rede. Denúncias e controles pessoais são privados."""
 
 
 class ScopedView(GuardedView):
@@ -103,11 +103,29 @@ class GlobalMemberView(ScopedView):
 
     def description(self):
         participating = self.bot.globalchat.store.consented(self.actor)
+        cfg = self.bot.globalchat.store.channel(self.guild)
+        held = self.bot.globalchat.store.restriction(self.actor, self.guild)
+        paused = self.bot.globalchat.store.network_paused() or (
+            cfg and not cfg["active"]
+        )
         state = (
             "**Você já participa da rede.** Escreva normalmente no canal global."
             if participating
             else "**Você ainda não participa.** Abra Participar para confirmar o compartilhamento. Suas mensagens ficam só neste servidor até aceitar."
         )
+        if paused:
+            state = (
+                "**Conexão pausada.** Os próximos envios ficam locais até a conexão ser retomada. "
+                + (
+                    "Sua confirmação continua salva."
+                    if participating
+                    else "Sua participação ainda não foi confirmada."
+                )
+            )
+        elif held:
+            state = f"**Compartilhamento temporariamente contido até <t:{int(held['until'])}:t>.** Você pode acompanhar seus envios ou procurar a administração."
+        elif self.bot.globalchat.store.blocked(self.actor, self.guild):
+            state = "**Sua participação está bloqueada neste chat.** Procure a administração do servidor ou o responsável pelo bot."
         return (
             "## 🌐 Chat global · meus controles\n"
             + state
@@ -250,6 +268,7 @@ class GlobalAdminView(ScopedView):
         if not bot.is_owner_id(i.user.id):
             self.remove_item(self.network)
             self.remove_item(self.network_reports)
+            self.remove_item(self.operations)
 
     def current(self, i):
         self.require(i)
@@ -271,6 +290,11 @@ class GlobalAdminView(ScopedView):
             + state
             + "\n\n**Um canal por servidor.** Ative neste canal para conectar as próximas conversas à rede. Mensagens originais são mantidas; só participantes que confirmarem entram no compartilhamento.\n\nO bot precisa de **Ver canal, Enviar mensagens, Ler histórico, Anexar arquivos e Gerenciar webhooks**. Use um canal diferente da tier list e sem restrição de idade.\n\nADMs cuidam deste servidor. Bloqueios e remoções da rede inteira são exclusivos do responsável pelo aplicativo."
         )
+        held = self.bot.globalchat.store.restriction(0, self.guild)
+        if held:
+            text += f"\n\n**Compartilhamento temporariamente contido até <t:{int(held['until'])}:t>.** A conversa local continua; o responsável pelo bot pode revisar a proteção."
+        if self.bot.globalchat.store.network_paused():
+            text += "\n\n**A rede foi pausada pelo responsável pelo bot.** A configuração deste servidor está preservada."
         if self.bot.is_owner_id(self.actor):
             from global_media import CACHE_LIMIT
 
@@ -336,14 +360,22 @@ class GlobalAdminView(ScopedView):
     @discord.ui.button(label="Denúncias deste servidor", row=1)
     async def reports(self, i, button):
         self.current(i)
-        rows = self.bot.globalchat.store.rows(
-            "SELECT * FROM global_reports WHERE guild_id=? AND reviewed=0 ORDER BY id DESC LIMIT 5",
-            (str(i.guild_id),),
+        from global_reports import ReportInbox
+
+        view = ReportInbox(self.bot, i)
+        await reply(i, view.description(), view=view)
+
+    @discord.ui.button(label="Estado do bot", row=3)
+    async def operations(self, i, button):
+        self.current(i)
+        self.bot.require_owner(i)
+        from global_ops import OperationsView
+
+        await reply(
+            i,
+            self.bot.globalchat.operations.description(),
+            view=OperationsView(self.bot, i),
         )
-        text = "## Denúncias deste servidor\n"
-        for row in rows:
-            text += f"\n**#{row['id']} · mensagem {row['source_id']}**\n{safe(row['reason'], 500)}\n"
-        await reply(i, text if rows else text + "Nenhuma denúncia pendente.")
 
     @discord.ui.button(label="Minha participação", row=2)
     async def personal(self, i, button):
@@ -366,13 +398,10 @@ class GlobalAdminView(ScopedView):
     async def network_reports(self, i, button):
         self.current(i)
         self.bot.require_owner(i)
-        rows = self.bot.globalchat.store.rows(
-            "SELECT * FROM global_reports ORDER BY id DESC LIMIT 5"
-        )
-        text = "## Denúncias da rede\n"
-        for row in rows:
-            text += f"\n**#{row['id']} · mensagem {row['source_id']} · servidor {row['guild_id']}**\n{safe(row['reason'], 500)}\n"
-        await reply(i, text if rows else text + "Nenhuma denúncia recente.")
+        from global_reports import ReportInbox
+
+        view = ReportInbox(self.bot, i, network=True)
+        await reply(i, view.description(), view=view)
 
 
 class MoveConfirm(ScopedView):
@@ -404,12 +433,19 @@ class MoveConfirm(ScopedView):
 
 
 class MyMessagesView(ScopedView):
+    def __init__(self, bot, i):
+        super().__init__(bot, i)
+        self.page = 0
+
     def description(self):
         rows = self.bot.globalchat.store.rows(
-            "SELECT * FROM global_messages WHERE user_id=? AND deleted=0 AND expires>? ORDER BY created DESC LIMIT 5",
-            (str(self.actor), self.bot.globalchat.store.clock()),
+            "SELECT * FROM global_messages WHERE user_id=? AND deleted=0 AND expires>? ORDER BY created DESC,id DESC LIMIT 6 OFFSET ?",
+            (str(self.actor), self.bot.globalchat.store.clock(), self.page * 5),
         )
-        text = "## Meus envios\nEdite ou apague a mensagem original pelo Discord. Para solicitar somente a remoção das cópias da rede, use Remover cópias.\n"
+        self.previous.disabled = self.page == 0
+        self.next.disabled = len(rows) <= 5
+        rows = rows[:5]
+        text = f"## Meus envios · página {self.page + 1}\nEdite ou apague a mensagem original pelo Discord. Para solicitar somente a remoção das cópias da rede, use Remover cópias.\n"
         for row in rows:
             data = json.loads(row["payload"])
             counts = self.bot.globalchat.store.rows(
@@ -433,7 +469,30 @@ class MyMessagesView(ScopedView):
             else text + "\nNenhuma mensagem recente compartilhada pela sua conta."
         )
 
-    @discord.ui.button(label="Remover cópias", style=discord.ButtonStyle.danger)
+    @discord.ui.button(label="Anterior", row=0)
+    async def previous(self, i, button):
+        self.require(i)
+        self.page = max(0, self.page - 1)
+        from tier_ui import edit_response
+
+        await edit_response(i, content=self.description(), view=self)
+
+    @discord.ui.button(label="Próxima", row=0)
+    async def next(self, i, button):
+        self.require(i)
+        self.page += 1
+        from tier_ui import edit_response
+
+        await edit_response(i, content=self.description(), view=self)
+
+    @discord.ui.button(label="Atualizar", row=0)
+    async def reload(self, i, button):
+        self.require(i)
+        from tier_ui import edit_response
+
+        await edit_response(i, content=self.description(), view=self)
+
+    @discord.ui.button(label="Remover cópias", style=discord.ButtonStyle.danger, row=1)
     async def erase(self, i, button):
         self.require(i)
         await i.response.send_modal(MessageAction(self.bot, i, "erase"))

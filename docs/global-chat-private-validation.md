@@ -1,5 +1,8 @@
 # Chat global privado — 23/10/2026
 
+> Este registro descreve a versão 2026.10.23.1. A revisão seguinte, com imagem
+> horizontal e controles de operação/moderação, está em [bot-operations.md](bot-operations.md).
+
 Versão `2026.10.23.1`, identificação `d2dec285fa92`, 107 arquivos conferidos.
 
 ## Comportamento entregue

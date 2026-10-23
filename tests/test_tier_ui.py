@@ -240,7 +240,7 @@ class NativeRuntimeCase(unittest.IsolatedAsyncioTestCase):
         thread = ThreadView(self.app)
         view = payload(bot=self.app, content="Índice", view=thread)["view"]
         self.assertTrue(view.is_persistent())
-        self.assertIsNone(thread.suggest.emoji)
+        self.assertEqual(thread.suggest.emoji.id, int(ICONS["units"]["id"]))
         poll = PollView(self.app)
         self.assertIsNone(poll.tests.emoji)
         self.assertIsNone(poll.report.emoji)

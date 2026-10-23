@@ -2,13 +2,14 @@
 
 import json
 import hashlib
+from global_moderation import ModerationStore
 
 RETENTION = 30 * 86400
 CONTENT_TTL = 3600
 CONSENT_VERSION = 1
 
 
-class GlobalStore:
+class GlobalStore(ModerationStore):
     def __init__(self, base):
         self.base, self.db = base, base.connection
         self.clock = lambda: base.clock()
@@ -55,6 +56,7 @@ class GlobalStore:
         CREATE TABLE IF NOT EXISTS global_limits(
           key TEXT PRIMARY KEY,window REAL NOT NULL,count INTEGER NOT NULL,fingerprint TEXT NOT NULL DEFAULT '');
         """)
+        self.init_moderation()
         # A previous process may have stopped after Discord accepted a request.
         # Recover that attempt before sending anything else to this destination.
         with self.db:
@@ -187,7 +189,7 @@ class GlobalStore:
                 )
 
     def blocked(self, user, guild, source_guild=None):
-        return bool(
+        return bool(self.restriction(user, guild, source_guild)) or bool(
             self.one(
                 """SELECT 1 FROM global_blocks WHERE
           (kind='user' AND target=? AND scope IN ('*',?)) OR
@@ -219,6 +221,10 @@ class GlobalStore:
             else:
                 self.db.execute(
                     "DELETE FROM global_blocks WHERE scope=? AND kind=? AND target=?",
+                    (str(scope), kind, str(target)),
+                )
+                self.db.execute(
+                    "DELETE FROM global_restrictions WHERE scope=? AND kind=? AND target=?",
                     (str(scope), kind, str(target)),
                 )
             self.base.audit("global-moderation", actor, reason.strip())
@@ -264,7 +270,12 @@ class GlobalStore:
             str, (message.id, message.guild.id, message.channel.id, message.author.id)
         )
         cfg = self.source(cid)
-        if not cfg or cfg["guild_id"] != gid or self.blocked(uid, gid):
+        if (
+            self.network_paused()
+            or not cfg
+            or cfg["guild_id"] != gid
+            or self.blocked(uid, gid)
+        ):
             raise ValueError("Este chat está pausado ou a participação está bloqueada.")
         old = self.message(ident)
         fingerprint = data["fingerprint"]
@@ -275,6 +286,13 @@ class GlobalStore:
         if old and (old["deleted"] or old["fingerprint"] == fingerprint):
             return old, False
         if not old:
+            destinations = [
+                d
+                for d in self.channels()
+                if d["active"]
+                and d["guild_id"] != gid
+                and not self.blocked(uid, d["guild_id"], gid)
+            ]
             if not self.consented(uid):
                 raise ValueError(
                     "Confirme sua participação antes de compartilhar mensagens."
@@ -296,10 +314,19 @@ class GlobalStore:
                 or self.one(
                     "SELECT COUNT(*) AS n FROM global_deliveries WHERE state IN ('queued','preparing','uncertain','sending')"
                 )["n"]
-                >= 50000
+                + len(destinations)
+                > 50000
             ):
                 raise ValueError(
                     "O chat está ocupado. Aguarde um pouco antes de enviar novamente."
+                )
+            own_pending = self.one(
+                "SELECT COUNT(*) AS n FROM global_deliveries d JOIN global_messages m ON m.id=d.source_id WHERE m.guild_id=? AND d.state IN ('queued','preparing','uncertain','sending')",
+                (gid,),
+            )["n"]
+            if own_pending + len(destinations) > max(1000, len(destinations) * 20):
+                raise ValueError(
+                    "Este servidor já tem muitos envios pendentes. Aguarde as entregas antes de compartilhar mais mensagens."
                 )
         with self.db:
             if old:
@@ -333,12 +360,8 @@ class GlobalStore:
                         self.clock() + RETENTION,
                     ),
                 )
-                for dest in self.channels():
-                    if (
-                        dest["active"]
-                        and dest["guild_id"] != gid
-                        and not self.blocked(uid, dest["guild_id"], gid)
-                    ):
+                for dest in destinations:
+                    if dest["active"]:
                         self.db.execute(
                             "INSERT OR IGNORE INTO global_deliveries(source_id,channel_id,guild_id,hook_id,state) VALUES(?,?,?,?,'preparing')",
                             (
@@ -405,14 +428,21 @@ class GlobalStore:
                 )
 
     def jobs(self, limit=10):
-        return self.rows(
-            """SELECT d.* FROM global_deliveries d JOIN global_messages m ON m.id=d.source_id
+        cursor = self.base.get("global-queue-cursor") or ""
+        rows = self.rows(
+            """WITH candidates AS (
+          SELECT d.*,ROW_NUMBER() OVER(PARTITION BY d.channel_id ORDER BY CASE WHEN m.deleted=1 OR d.suppressed=1 THEN 0 ELSE 1 END,d.rowid) AS slot
+          FROM global_deliveries d JOIN global_messages m ON m.id=d.source_id
           WHERE d.state IN ('queued','uncertain') AND d.next_try<=? AND m.expires>?
-          AND NOT EXISTS(SELECT 1 FROM global_deliveries p JOIN global_messages q ON q.id=p.source_id
-          WHERE p.channel_id=d.channel_id AND p.rowid<d.rowid AND p.state IN ('queued','preparing','uncertain','sending') AND q.deleted=0)
-          ORDER BY d.rowid LIMIT ?""",
-            (self.clock(), self.clock(), limit),
+          AND ((m.deleted=1 OR d.suppressed=1) OR NOT EXISTS(
+            SELECT 1 FROM global_deliveries p JOIN global_messages q ON q.id=p.source_id
+            WHERE p.channel_id=d.channel_id AND p.rowid<d.rowid AND p.state IN ('queued','preparing','uncertain','sending') AND q.deleted=0 AND p.suppressed=0)))
+          SELECT * FROM candidates WHERE slot=1 ORDER BY CASE WHEN channel_id>? THEN 0 ELSE 1 END,channel_id LIMIT ?""",
+            (self.clock(), self.clock(), cursor, limit),
         )
+        if rows:
+            self.base.set("global-queue-cursor", rows[-1]["channel_id"])
+        return rows
 
     def delivery(self, source, channel):
         return self.one(
@@ -428,7 +458,7 @@ class GlobalStore:
                 receipts.append(None)
             receipts[part] = str(ident)
             self.db.execute(
-                "UPDATE global_deliveries SET receipts=?,uncertain=-1,state=CASE WHEN state='cancelled' THEN state ELSE 'queued' END WHERE source_id=? AND channel_id=?",
+                "UPDATE global_deliveries SET receipts=?,uncertain=-1,state=CASE WHEN suppressed=1 THEN 'queued' WHEN state='cancelled' THEN state ELSE 'queued' END WHERE source_id=? AND channel_id=?",
                 (json.dumps(receipts), job["source_id"], job["channel_id"]),
             )
             self.db.execute(
@@ -441,10 +471,19 @@ class GlobalStore:
             row = self.message(job["source_id"])
             fresh = self.delivery(job["source_id"], job["channel_id"])
             state = state if row["revision"] == revision else "queued"
-            if not row["deleted"] and (
-                fresh["suppressed"] or fresh["state"] == "cancelled"
-            ):
-                state = "cancelled"
+            if not row["deleted"]:
+                if fresh["suppressed"]:
+                    # A moderator may act while a POST is already in flight.
+                    # Keep the returned receipt available for cleanup.
+                    state = (
+                        "deleted"
+                        if state == "deleted"
+                        else "queued"
+                        if any(receipts)
+                        else "cancelled"
+                    )
+                elif fresh["state"] == "cancelled":
+                    state = "cancelled"
             self.db.execute(
                 "UPDATE global_deliveries SET state=?,revision=?,receipts=?,attempts=0,next_try=0,uncertain=-1,error='' WHERE source_id=? AND channel_id=?",
                 (
@@ -459,7 +498,7 @@ class GlobalStore:
     def retry(self, job, reason, *, uncertain=-1, terminal=False):
         with self.db:
             current = self.delivery(job["source_id"], job["channel_id"])
-            if not current or current["state"] == "cancelled" or current["suppressed"]:
+            if not current or current["state"] == "cancelled":
                 return
             self.db.execute(
                 """UPDATE global_deliveries SET state=?,error=?,attempts=attempts+1,
@@ -521,6 +560,15 @@ class GlobalStore:
             self.db.execute(
                 "DELETE FROM global_reports WHERE created<?",
                 (self.clock() - RETENTION,),
+            )
+            self.db.execute(
+                "DELETE FROM global_report_actions WHERE report_id NOT IN (SELECT id FROM global_reports)"
+            )
+            self.db.execute(
+                "DELETE FROM global_restrictions WHERE until<=?", (self.clock(),)
+            )
+            self.db.execute(
+                "DELETE FROM global_traffic WHERE created<?", (self.clock() - 3600,)
             )
             self.db.execute(
                 "DELETE FROM global_prompts WHERE expires<?", (self.clock(),)
