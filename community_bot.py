@@ -162,9 +162,10 @@ class CommunityBot(commands.Bot):
         self.owner_ids_set = {app.team.owner_id if app.team else app.owner.id}
         self.add_view(ThreadView(self))
         self.add_view(PollView(self))
-        from global_views import GlobalPanelView
+        from global_views import GlobalPanelView, GlobalDirectView
 
         self.add_view(GlobalPanelView(self))
+        self.add_view(GlobalDirectView(self))
         legacy = PollView(self)
         old_ids = {
             "tier:v3:approve": "tier:v2:vote:approve",
@@ -1074,16 +1075,27 @@ class CommunityBot(commands.Bot):
 
         @self.tree.command(
             name="chatglobal",
-            description="Conecte ou confira o chat global deste servidor.",
+            description="Participe do chat global ou administre a conexão deste servidor.",
         )
         @app_commands.guild_only()
         @app_commands.allowed_installs(guilds=True, users=False)
-        @app_commands.default_permissions(manage_guild=True)
         async def chatglobal(i: discord.Interaction):
-            from global_views import GlobalAdminView
+            from global_views import GlobalAdminView, GlobalMemberView
 
-            self.require_admin(i)
-            view = GlobalAdminView(self, i)
+            if i.permissions.manage_guild:
+                view = GlobalAdminView(self, i)
+            else:
+                self.require_human(i)
+                cfg = self.globalchat.store.channel(i.guild_id)
+                if not cfg:
+                    raise ValueError(
+                        "O chat global ainda não está conectado neste servidor. Peça à administração para preparar um canal."
+                    )
+                if cfg["channel_id"] != str(i.channel_id):
+                    raise ValueError(
+                        f"Abra /chatglobal no canal global <#{cfg['channel_id']}> para acessar seus controles pessoais."
+                    )
+                view = GlobalMemberView(self, i)
             await reply(i, view.description(), view=view)
 
         @self.tree.error

@@ -460,6 +460,29 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.app.globalchat.store.channels(), [])
         self.assertEqual(self.app.globalchat.store.jobs(), [])
 
+    async def test_global_chat_member_command_only_opens_private_personal_controls(
+        self,
+    ):
+        self.app.globalchat.store.configure(1, 10, 110, "synthetic-hook", 0)
+        i = self.interaction(admin=False, user=8, channel=self.env.channel)
+        await self.app.tree.get_command("chatglobal").callback(i)
+        response = i.response.send_message.await_args
+        self.assertTrue(response.kwargs["ephemeral"])
+        self.assertIn("meus controles", call_text(response))
+        labels = [
+            item.get("label")
+            for item in component_dicts(response.kwargs["view"])
+            if item.get("type") == 2
+        ]
+        self.assertIn("Participar", labels)
+        self.assertNotIn("Ativar neste canal", labels)
+        self.assertNotIn("Moderação da rede", labels)
+        self.assertEqual(self.env.payloads, [])
+        self.assertIsNone(self.app.tree.get_command("chatglobal").default_permissions)
+        self.assertTrue(
+            self.app.tree.get_command("tierlist").default_permissions.manage_guild
+        )
+
     async def test_automatic_collection_requires_no_consent_or_channel_selection(self):
         message = self.source()
         await self.app.on_message(message)

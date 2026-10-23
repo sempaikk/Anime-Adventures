@@ -6,19 +6,11 @@ import re
 import discord
 
 from tier_views import GuardedView, BoundModal, reply
-from tier_ui import edit_response
+from tier_ui import payload
 from tier_domain import safe
 
-PANEL_TEXT = """## 🌐 Chat global
-Converse com pessoas de outros servidores diretamente neste canal.
-
-**Participe uma vez e escreva normalmente.** Suas mensagens originais ficam aqui; os outros servidores recebem cópias identificadas com seu nome e avatar. Texto, imagens, vídeos e áudios podem ser compartilhados dentro dos limites disponíveis.
-
-**Antes de começar:** abra Participar para entender o compartilhamento e confirmar. Se já participou em outro servidor desta rede, sua confirmação continua valendo.
--# Use os botões para consultar as regras, acompanhar seus envios ou denunciar uma mensagem."""
-
 TERMS = """## 🌐 Antes de participar
-**O que você escrever nos canais globais será compartilhado com todos os servidores conectados à rede deste bot — inclusive servidores que entrarem depois.** Essa rede pode crescer para muitos ou milhares de servidores. Participantes desses locais poderão ler suas mensagens e ver seu nome, avatar, anexos e indicação de origem.
+**O que você escrever nos canais globais será compartilhado com todos os servidores conectados à rede deste bot — inclusive servidores que entrarem depois.** Essa rede pode crescer para muitos ou milhares de servidores. Participantes desses locais poderão ler suas mensagens e ver seu nome de exibição, avatar e anexos. O bot não acrescenta seu @usuario nem o nome do servidor ao nome das cópias.
 
 **Vale para sua conta em toda a rede.** Você confirma uma vez. Ao entrar em outro servidor participante, não precisa confirmar novamente. A autorização continua salva depois de reiniciar o bot.
 
@@ -29,9 +21,9 @@ TERMS = """## 🌐 Antes de participar
 Ao escolher **Confirmar e participar**, você concorda com esse compartilhamento. Seus próximos envios nos canais globais conectados serão distribuídos automaticamente."""
 
 HELP = """## Como funciona o chat global
-**Uma conversa entre servidores.** Escreva neste canal. A original permanece com você e os demais servidores recebem cópias com seu nome, avatar e origem. A identificação de aplicativo/bot nas cópias faz parte do Discord.
+**Uma conversa entre servidores.** Escreva neste canal. A original permanece com você e os demais servidores recebem cópias com seu nome de exibição e avatar, sem @usuario ou nome do servidor acrescentado. Owner e Tester aparecem apenas nas contas autorizadas. A identificação de aplicativo/bot nas cópias faz parte do Discord.
 
-**Participação única.** Confirme uma vez por conta. A escolha vale em todos os servidores desta rede e sobrevive aos reinícios. Parar de participar interrompe novos compartilhamentos. Mensagens anteriores à confirmação não são importadas; se você confirmar pelo aviso de uma primeira mensagem, apenas aquela mensagem ainda disponível poderá ser compartilhada.
+**Participação única.** Confirme uma vez por conta. A escolha vale em todos os servidores desta rede e sobrevive aos reinícios. Parar de participar interrompe novos compartilhamentos. O primeiro convite chega por mensagem privada, sem avisos públicos repetidos. Mensagens anteriores à confirmação não são compartilhadas. Se suas DMs estiverem bloqueadas, abra `/chatglobal` no canal global para confirmar em particular.
 
 **Texto e respostas.** Formatação do Discord é preservada em textos comuns; mensagens longas podem ser divididas. Respostas a mensagens conhecidas pela rede incluem uma citação. Menções retransmitidas não notificam pessoas, cargos ou todos os membros.
 
@@ -77,76 +69,108 @@ class ScopedView(GuardedView):
 
 
 class GlobalPanelView(GuardedView):
+    """Retire old public buttons safely until their notices have been removed."""
+
     def __init__(self, bot):
         super().__init__(timeout=None)
         self.bot = bot
+        for name, label in (
+            ("join", "Participar"),
+            ("mine", "Meus envios"),
+            ("help", "Como funciona"),
+            ("report", "Denunciar"),
+            ("leave", "Parar de participar"),
+        ):
+            button = discord.ui.Button(label=label, custom_id="global:v1:" + name)
+            button.callback = self.redirect
+            self.add_item(button)
 
-    @discord.ui.button(
-        label="Participar",
-        style=discord.ButtonStyle.success,
-        custom_id="global:v1:join",
-        row=0,
-    )
-    async def join(self, i, button):
-        cfg, prompt = self.bot.globalchat.public_context(i)
-        self.bot.require_human(i)
-        store = self.bot.globalchat.store
-        if not cfg["active"]:
-            raise ValueError(
-                "A conexão deste servidor está pausada. Aguarde a administração ou participe em outro servidor conectado."
-            )
-        if store.blocked(i.user.id, i.guild_id):
-            raise ValueError("Sua participação está bloqueada neste chat.")
-        if store.consented(i.user.id):
-            await reply(
-                i,
-                "**Você já participa da rede.** Escreva normalmente neste canal; sua confirmação vale em todos os servidores conectados.",
-            )
-            return
-        await reply(i, TERMS, view=ConsentView(self.bot, i, cfg, prompt))
-
-    @discord.ui.button(label="Meus envios", custom_id="global:v1:mine", row=0)
-    async def mine(self, i, button):
-        self.bot.globalchat.public_context(i)
-        self.bot.require_human(i)
-        view = MyMessagesView(self.bot, i)
-        await reply(i, view.description(), view=view)
-
-    @discord.ui.button(label="Como funciona", custom_id="global:v1:help", row=0)
-    async def help(self, i, button):
-        self.bot.globalchat.public_context(i)
-        await reply(i, HELP)
-
-    @discord.ui.button(label="Denunciar", custom_id="global:v1:report", row=1)
-    async def report(self, i, button):
-        self.bot.globalchat.public_context(i)
-        self.bot.require_human(i)
-        await i.response.send_modal(MessageAction(self.bot, i, "report"))
-
-    @discord.ui.button(label="Parar de participar", custom_id="global:v1:leave", row=1)
-    async def leave(self, i, button):
-        self.bot.globalchat.public_context(i)
-        self.bot.require_human(i)
-        self.bot.globalchat.store.consent(i.user.id, False)
+    async def redirect(self, i):
         await reply(
             i,
-            "**Novos envios interrompidos em toda a rede.** Suas próximas mensagens ficam apenas no servidor onde você escrever. As cópias já publicadas continuam disponíveis; use a original ou Meus envios para solicitar remoção. Para voltar, abra Participar.",
+            "Os controles agora são privados. Abra `/chatglobal` neste canal para participar ou consultar seus envios.",
         )
 
 
-class JoinPromptView(GlobalPanelView):
-    def __init__(self, bot):
-        super().__init__(bot)
-        for item in list(self.children):
-            if item.custom_id != "global:v1:join":
-                self.remove_item(item)
+class GlobalMemberView(ScopedView):
+    def current(self, i):
+        self.require(i)
+        cfg = self.bot.globalchat.store.channel(i.guild_id)
+        if not cfg or cfg["channel_id"] != str(i.channel_id):
+            raise ValueError("Abra /chatglobal no canal global atual do servidor.")
+        self.bot.require_human(i)
+        return cfg
+
+    def description(self):
+        participating = self.bot.globalchat.store.consented(self.actor)
+        state = (
+            "**Você já participa da rede.** Escreva normalmente no canal global."
+            if participating
+            else "**Você ainda não participa.** Abra Participar para confirmar o compartilhamento. Suas mensagens ficam só neste servidor até aceitar."
+        )
+        return (
+            "## 🌐 Chat global · meus controles\n"
+            + state
+            + "\n\nSua confirmação vale em todos os servidores conectados. Consulte seus envios, as regras ou interrompa novos compartilhamentos pelos botões abaixo.\n-# Este painel é privado. Só administradores têm acesso à configuração do servidor."
+        )
+
+    @discord.ui.button(label="Participar", style=discord.ButtonStyle.success, row=0)
+    async def join(self, i, button):
+        cfg = self.current(i)
+        if not cfg["active"]:
+            raise ValueError(
+                "A conexão deste servidor está pausada. Aguarde a administração."
+            )
+        if self.bot.globalchat.store.blocked(i.user.id, i.guild_id):
+            raise ValueError("Sua participação está bloqueada neste chat.")
+        if self.bot.globalchat.store.consented(i.user.id):
+            await reply(
+                i,
+                "**Você já participa da rede.** Sua confirmação continua salva em todos os servidores.",
+            )
+            return
+        await reply(i, TERMS, view=ConsentView(self.bot, i, cfg))
+
+    @discord.ui.button(label="Meus envios", row=0)
+    async def mine(self, i, button):
+        self.current(i)
+        view = MyMessagesView(self.bot, i)
+        await reply(i, view.description(), view=view)
+
+    @discord.ui.button(label="Como funciona", row=0)
+    async def help(self, i, button):
+        self.current(i)
+        await reply(i, HELP)
+
+    @discord.ui.button(label="Denunciar", row=1)
+    async def report(self, i, button):
+        self.current(i)
+        await i.response.send_modal(MessageAction(self.bot, i, "report"))
+
+    @discord.ui.button(label="Parar de participar", row=1)
+    async def leave(self, i, button):
+        self.current(i)
+        self.bot.globalchat.store.consent(i.user.id, False)
+        await reply(
+            i,
+            "**Novos envios interrompidos em toda a rede.** As cópias já publicadas continuam disponíveis; use a original ou Meus envios para solicitar remoção. Para voltar, abra Participar neste painel. Não enviaremos outro convite automático.",
+        )
+
+
+async def close_confirmation(i, text):
+    await i.response.defer()
+    try:
+        await i.delete_original_response()
+    except discord.NotFound:
+        pass
+    except discord.HTTPException:
+        await i.edit_original_response(**payload(bot=i.client, content=text, view=None))
 
 
 class ConsentView(ScopedView):
-    def __init__(self, bot, i, cfg, prompt=None):
+    def __init__(self, bot, i, cfg):
         super().__init__(bot, i)
         self.generation = cfg["generation"]
-        self.source = prompt["source_id"] if prompt else None
         self.completed = False
 
     @discord.ui.button(
@@ -157,25 +181,18 @@ class ConsentView(ScopedView):
         self.bot.require_human(i)
         cfg = self.bot.globalchat.store.source(i.channel_id)
         if not cfg or cfg["generation"] != self.generation:
-            raise ValueError("A conexão do canal mudou. Abra Participar novamente.")
+            raise ValueError("A conexão do canal mudou. Abra /chatglobal novamente.")
         if self.bot.globalchat.store.blocked(i.user.id, i.guild_id):
             raise ValueError("Sua participação está bloqueada neste chat.")
         if self.completed:
             return
         self.completed = True
         self.bot.globalchat.store.consent(i.user.id)
-        await edit_response(
+        await close_confirmation(
             i,
-            content="## Participação confirmada\n**Sua escolha foi salva para toda a rede.** Você já pode escrever nos canais globais conectados. Não vamos pedir novamente em outro servidor ou após reiniciar o bot.\n\nPara interromper próximos envios, use Parar de participar.",
-            view=None,
+            "**Participação confirmada para toda a rede.** Seus próximos envios no canal global serão compartilhados.",
         )
-        if self.source:
-            try:
-                original = await i.channel.fetch_message(int(self.source))
-                if original.author.id == i.user.id:
-                    await self.bot.globalchat.ingest(original, confirmed_first=True)
-            except discord.HTTPException:
-                pass
+        await self.bot.globalchat.onboarding.finish(i.user.id, "accepted")
         self.stop()
 
     @discord.ui.button(label="Agora não")
@@ -184,12 +201,40 @@ class ConsentView(ScopedView):
         if self.completed:
             return
         self.completed = True
-        await edit_response(
+        await close_confirmation(
             i,
-            content="Participação não ativada. Suas mensagens continuam apenas no servidor onde foram escritas.",
-            view=None,
+            "Participação não ativada. Suas mensagens continuam apenas no servidor onde foram escritas.",
         )
+        await self.bot.globalchat.onboarding.finish(i.user.id, "declined")
         self.stop()
+
+
+class GlobalDirectView(GuardedView):
+    """Persistent buttons bound to the recorded DM recipient and message IDs."""
+
+    def __init__(self, bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    @discord.ui.button(
+        label="Confirmar e participar",
+        style=discord.ButtonStyle.success,
+        custom_id="global:v2:dm:accept",
+    )
+    async def accept(self, i, button):
+        service = self.bot.globalchat.onboarding
+        service.direct_record(i)
+        await i.response.defer()
+        await service.context(i)
+        self.bot.globalchat.store.consent(i.user.id)
+        await service.finish(i.user.id, "accepted", message=i.message)
+
+    @discord.ui.button(label="Agora não", custom_id="global:v2:dm:cancel")
+    async def cancel(self, i, button):
+        service = self.bot.globalchat.onboarding
+        service.direct_record(i)
+        await i.response.defer()
+        await service.finish(i.user.id, "declined", message=i.message)
 
 
 class GlobalAdminView(ScopedView):
@@ -255,7 +300,7 @@ class GlobalAdminView(ScopedView):
         fresh = GlobalAdminView(self.bot, i)
         await reply(
             i,
-            "**Conexão preparada.** O painel de participação está no canal.\n\n"
+            "**Conexão preparada.** Os controles são privados e o primeiro convite chega por DM, sem avisos públicos repetidos.\n\n"
             + fresh.description(),
             view=fresh,
         )
@@ -268,8 +313,8 @@ class GlobalAdminView(ScopedView):
         await i.response.defer(ephemeral=True)
         if cfg["active"]:
             self.bot.globalchat.store.active(i.guild_id, False)
-            await self.bot.globalchat.sync_panel(
-                self.bot.globalchat.store.channel(i.guild_id), force=True
+            await self.bot.globalchat.onboarding.cleanup_public(
+                self.bot.globalchat.store.channel(i.guild_id)
             )
             await reply(
                 i,
@@ -299,6 +344,17 @@ class GlobalAdminView(ScopedView):
         for row in rows:
             text += f"\n**#{row['id']} · mensagem {row['source_id']}**\n{safe(row['reason'], 500)}\n"
         await reply(i, text if rows else text + "Nenhuma denúncia pendente.")
+
+    @discord.ui.button(label="Minha participação", row=2)
+    async def personal(self, i, button):
+        cfg = self.current(i)
+        if not cfg or cfg["channel_id"] != str(i.channel_id):
+            raise ValueError(
+                "Abra /chatglobal no canal global configurado para acessar sua participação."
+            )
+        self.bot.require_human(i)
+        view = GlobalMemberView(self.bot, i)
+        await reply(i, view.description(), view=view)
 
     @discord.ui.button(label="Moderação da rede", row=2)
     async def network(self, i, button):
@@ -342,7 +398,7 @@ class MoveConfirm(ScopedView):
             await self.bot.globalchat.activate(i.channel)
         await reply(
             i,
-            "**Canal global alterado.** O novo painel de participação já está disponível.",
+            "**Canal global alterado.** Os controles continuam privados; os próximos participantes recebem o convite por DM.",
         )
         self.stop()
 

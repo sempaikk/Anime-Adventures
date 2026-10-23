@@ -12,7 +12,6 @@ import discord
 
 from global_store import GlobalStore, fingerprint
 from global_media import GlobalMedia, cdn_url, filename
-from tier_ui import payload
 
 log = logging.getLogger("globalchat")
 HOOK_NAME = "Anime Adventures · Global"
@@ -39,7 +38,7 @@ def clean_name(value, limit):
     return value.encode("utf-16-le")[: limit * 2].decode("utf-16-le", errors="ignore")
 
 
-def relay_name(bot, author, guild):
+def relay_name(bot, author):
     """Reserved account labels are computed from IDs, never from a nickname/role."""
     label = (
         "Owner"
@@ -55,11 +54,8 @@ def relay_name(bot, author, guild):
         ).strip()
         return clean_name(value, size) or "usuário"
 
-    display = identity(author.display_name, 14 if label else 18)
-    username = clean_name(author.name, 32)
-    server = identity(guild.name, 12 if label else 20)
-    prefix = f"[{label}] " if label else ""
-    return clean_name(f"{prefix}{display} (@{username}) · {server}", 80)
+    display = identity(author.display_name, 70 if label else 80)
+    return display + (f" [{label}]" if label else "")
 
 
 def text_content(message):
@@ -107,6 +103,9 @@ class GlobalRelay:
     def __init__(self, bot):
         self.bot = bot
         self.store = GlobalStore(bot.store)
+        from global_onboarding import GlobalOnboarding
+
+        self.onboarding = GlobalOnboarding(self)
         self.session = None
         self.media = GlobalMedia(bot.directory, self.http_session)
         self.upload_slots = asyncio.Semaphore(2)
@@ -138,20 +137,6 @@ class GlobalRelay:
             return False
         p = channel.permissions_for(channel.guild.me)
         return bool(p.view_channel and p.read_message_history)
-
-    def public_context(self, i):
-        cfg = self.store.channel(i.guild_id)
-        if not cfg or cfg["channel_id"] != str(i.channel_id):
-            raise ValueError("Abra este recurso no canal de chat global ativo.")
-        prompt = self.store.one(
-            "SELECT * FROM global_prompts WHERE notice_id=? AND expires>?",
-            (str(i.message.id), self.store.clock()),
-        )
-        if str(i.message.id) != str(cfg["panel_id"]) and not (
-            prompt and prompt["user_id"] == str(i.user.id)
-        ):
-            raise ValueError("Use os botões do painel oficial deste canal.")
-        return cfg, prompt
 
     def webhook(self, ident):
         record = self.store.hook(ident)
@@ -225,75 +210,15 @@ class GlobalRelay:
             raise ValueError(
                 "O Discord não forneceu acesso ao webhook. Tente novamente."
             )
+        previous = self.store.channel(channel.guild.id)
+        if previous:
+            await self.onboarding.cleanup_public(previous)
         cursor = discord.utils.time_snowflake(discord.utils.utcnow())
         self.store.configure(channel.guild.id, channel.id, hook.id, hook.token, cursor)
-        await self.sync_panel(self.store.channel(channel.guild.id), force=True)
-
-    async def sync_panel(self, cfg, *, force=False):
-        from global_views import GlobalPanelView, PANEL_TEXT
-
-        channel = self.channel(cfg["channel_id"])
-        if not self.readable(channel):
-            return
-        key = "global-panel-hash:" + cfg["guild_id"]
-        checked_key = "global-panel-checked:" + cfg["guild_id"]
-        text = (
-            PANEL_TEXT
-            if cfg["active"]
-            else "## 🌐 Chat global\n**Conexão pausada neste servidor.** As mensagens deste canal ficam apenas aqui até a administração retomar a conexão. Você pode consultar seus envios e interromper sua participação pelos controles abaixo."
-        )
-        signature = fingerprint({"text": text, "version": 1})
-        if (
-            not force
-            and cfg["panel_id"]
-            and self.bot.store.get(key) == signature
-            and self.store.clock() - float(self.bot.store.get(checked_key) or 0) < 300
-        ):
-            return
-        kwargs = payload(bot=self.bot, content=text, view=GlobalPanelView(self.bot))
-        if cfg["panel_id"]:
-            try:
-                await channel.get_partial_message(int(cfg["panel_id"])).edit(**kwargs)
-            except discord.NotFound:
-                pass
-            else:
-                self.bot.store.set(key, signature)
-                self.bot.store.set(checked_key, str(self.store.clock()))
-                return
-        message = await channel.send(**kwargs)
-        with self.store.db:
-            self.store.db.execute(
-                "UPDATE global_channels SET panel_id=? WHERE guild_id=?",
-                (str(message.id), cfg["guild_id"]),
-            )
-        self.bot.store.set(key, signature)
-        self.bot.store.set(checked_key, str(self.store.clock()))
+        await self.onboarding.cleanup_public(self.store.channel(channel.guild.id))
 
     async def notice(self, message, text, *, join=False):
-        if not self.store.limit("notice:" + str(message.author.id), 1, 60):
-            return
-        from global_views import JoinPromptView
-
-        kwargs = payload(
-            bot=self.bot, content=text, view=JoinPromptView(self.bot) if join else None
-        )
-        try:
-            sent = await message.reply(**kwargs, mention_author=False, delete_after=300)
-            if join:
-                with self.store.db:
-                    self.store.db.execute(
-                        "INSERT OR REPLACE INTO global_prompts VALUES(?,?,?,?,?,?)",
-                        (
-                            str(sent.id),
-                            str(message.id),
-                            str(message.author.id),
-                            str(message.guild.id),
-                            str(message.channel.id),
-                            self.store.clock() + 300,
-                        ),
-                    )
-        except discord.HTTPException:
-            log.warning("Aviso global indisponível; original preservada.")
+        await self.onboarding.notice(message, text, join=join)
 
     def serialize(self, message):
         body = text_content(message)
@@ -341,7 +266,7 @@ class GlobalRelay:
             if reference and reference.message_id
             else None
         )
-        username = relay_name(self.bot, message.author, message.guild)
+        username = relay_name(self.bot, message.author)
         avatar = str(message.author.display_avatar.url)
         if not cdn_url(avatar):
             avatar = None
@@ -380,6 +305,12 @@ class GlobalRelay:
             return
         if not self.store.consented(message.author.id):
             if not recovery:
+                try:
+                    self.bot.require_human(
+                        SimpleNamespace(user=message.author, guild_id=message.guild.id)
+                    )
+                except ValueError:
+                    return
                 await self.notice(
                     message,
                     "## Participe do chat global\nSuas mensagens ficam neste servidor até você confirmar. Ao participar, o que escrever neste canal será compartilhado com toda a rede de servidores. Abra a confirmação abaixo.",
@@ -652,6 +583,8 @@ class GlobalRelay:
                 await self.reconcile_uncertain(job, row, target)
                 return
             data = json.loads(row["payload"])
+            if data:
+                data["username"] = live["username"]
             if not data:
                 with self.store.db:
                     self.store.db.execute(
@@ -870,13 +803,17 @@ class GlobalRelay:
                     )
 
     async def recover(self):
-        configs = [c for c in self.store.channels() if c["active"]]
+        await self.onboarding.cleanup_private()
+        configs = self.store.channels()
         for _ in range(min(5, len(configs))):
             cfg = configs[self.recovery_index % len(configs)]
             self.recovery_index += 1
             channel = self.channel(cfg["channel_id"])
             if self.readable(channel):
                 try:
+                    await self.onboarding.cleanup_public(cfg)
+                    if not cfg["active"]:
+                        continue
                     async for message in channel.history(
                         limit=30,
                         after=discord.Object(
@@ -897,7 +834,6 @@ class GlobalRelay:
                                 "UPDATE global_channels SET cursor=? WHERE guild_id=?",
                                 (str(message.id), cfg["guild_id"]),
                             )
-                    await self.sync_panel(cfg)
                 except (discord.HTTPException, ValueError):
                     pass
         for row in self.store.rows(

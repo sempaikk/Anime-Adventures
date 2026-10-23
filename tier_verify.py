@@ -459,20 +459,28 @@ async def _verify(bot, i):
                     "Os comandos registrados no Discord não correspondem aos dois comandos sem opções."
                 )
             for command in remote:
-                if (
-                    command.default_member_permissions is None
-                    or command.default_member_permissions.value
-                    != discord.Permissions(manage_guild=True).value
+                permissions = command.default_member_permissions
+                if command.name == "tierlist" and (
+                    permissions is None
+                    or permissions.value != discord.Permissions(manage_guild=True).value
                 ):
                     raise ValueError(
                         f"A permissão padrão de /{command.name} no Discord precisa ser Gerenciar servidor. Atualize e reinicie o bot para sincronizar os comandos."
+                    )
+                if (
+                    command.name == "chatglobal"
+                    and permissions is not None
+                    and permissions.value
+                ):
+                    raise ValueError(
+                        "O /chatglobal precisa estar disponível aos membros para abrir os controles pessoais privados. Atualize e reinicie o bot; a configuração continua protegida por Gerenciar servidor."
                     )
             report["checks"].append(
                 {
                     "name": "Registro real dos dois comandos",
                     "result": "passed",
                     "level": "Discord real",
-                    "detail": "/tierlist e /chatglobal registrados com permissão padrão de Gerenciar servidor.",
+                    "detail": "/tierlist restrito a Gerenciar servidor; /chatglobal abre controles pessoais privados para membros e mantém configuração protegida para ADMs.",
                 }
             )
             stage = "Criação real de tópico privado"

@@ -48,6 +48,10 @@ class GlobalStore:
         CREATE TABLE IF NOT EXISTS global_prompts(
           notice_id TEXT PRIMARY KEY,source_id TEXT NOT NULL,user_id TEXT NOT NULL,
           guild_id TEXT NOT NULL,channel_id TEXT NOT NULL,expires REAL NOT NULL);
+        CREATE TABLE IF NOT EXISTS global_invitations(
+          user_id TEXT PRIMARY KEY,guild_id TEXT NOT NULL,channel_id TEXT NOT NULL,
+          generation INTEGER NOT NULL,dm_channel_id TEXT NOT NULL DEFAULT '',
+          message_id TEXT NOT NULL DEFAULT '',status TEXT NOT NULL,attempted REAL NOT NULL);
         CREATE TABLE IF NOT EXISTS global_limits(
           key TEXT PRIMARY KEY,window REAL NOT NULL,count INTEGER NOT NULL,fingerprint TEXT NOT NULL DEFAULT '');
         """)
@@ -144,6 +148,27 @@ class GlobalStore:
                 (str(user), CONSENT_VERSION),
             )
         )
+
+    def invitation(self, user):
+        return self.one(
+            "SELECT * FROM global_invitations WHERE user_id=?", (str(user),)
+        )
+
+    def claim_invitation(self, user, cfg):
+        # Reserve before awaiting Discord, including failures/restarts. Never DM
+        # the same person again just because they send another message.
+        with self.db:
+            result = self.db.execute(
+                "INSERT OR IGNORE INTO global_invitations(user_id,guild_id,channel_id,generation,status,attempted) VALUES(?,?,?,?,'sending',?)",
+                (
+                    str(user),
+                    cfg["guild_id"],
+                    cfg["channel_id"],
+                    cfg["generation"],
+                    self.clock(),
+                ),
+            )
+        return result.rowcount == 1
 
     def consent(self, user, enabled=True):
         with self.db:

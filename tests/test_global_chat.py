@@ -18,6 +18,8 @@ from global_relay import GlobalRelay, chunks, relay_name
 from global_store import GlobalStore
 from global_views import (
     GlobalPanelView,
+    GlobalMemberView,
+    GlobalDirectView,
     GlobalAdminView,
     ConsentView,
     MessageAction,
@@ -147,6 +149,8 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
                 me=SimpleNamespace(id=42),
                 filesize_limit=10 * 1024 * 1024,
                 get_channel=lambda cid: self.channels.get(cid),
+                get_member=lambda uid: self.author if uid == self.author.id else None,
+                fetch_member=AsyncMock(side_effect=missing()),
             )
             channel = MagicMock(spec=discord.TextChannel)
             channel.id = gid * 10
@@ -192,6 +196,16 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
                 url="https://cdn.discordapp.com/embed/avatars/0.png"
             ),
         )
+        self.dm = SimpleNamespace(id=5000, guild=None, recipient=self.author)
+
+        async def fetch_dm(ident):
+            return await self.fetch(self.dm, ident)
+
+        self.dm.fetch_message = AsyncMock(side_effect=fetch_dm)
+        self.channels[5000] = self.dm
+        self.author.send = AsyncMock(
+            side_effect=lambda **kwargs: self.send_notice(self.dm, kwargs)
+        )
         self.engine.store.consent(7)
 
     async def asyncTearDown(self):
@@ -206,9 +220,17 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         return message
 
     async def history(
-        self, channel_id, limit=100, after=None, oldest_first=False, **kwargs
+        self,
+        channel_id,
+        limit=100,
+        after=None,
+        before=None,
+        oldest_first=False,
+        **kwargs,
     ):
         rows = [m for m in self.messages.values() if m.channel.id == channel_id]
+        if before:
+            rows = [m for m in rows if m.id < before.id]
         if after:
             if isinstance(after, datetime):
                 rows = [m for m in rows if m.created_at > after]
@@ -219,12 +241,15 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
             yield row
 
     def send_notice(self, channel, kwargs):
-        return self.message(
+        message = self.message(
             channel,
             visible_text(kwargs),
             author=SimpleNamespace(id=42, bot=True),
             webhook_id=None,
         )
+        view = kwargs.get("view")
+        message.components = view.to_components() if view else []
+        return message
 
     def message(
         self,
@@ -246,6 +271,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
             attachments=attachments or [],
             webhook_id=webhook_id,
             stickers=[],
+            components=[],
             reference=None,
             mentions=[],
             role_mentions=[],
@@ -254,7 +280,9 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         message.reply = AsyncMock(
             side_effect=lambda **kwargs: self.send_notice(channel, kwargs)
         )
-        message.delete = AsyncMock()
+        message.delete = AsyncMock(
+            side_effect=lambda: self.messages.pop(message.id, None)
+        )
         self.messages[message.id] = message
         return message
 
@@ -275,7 +303,16 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
                 send_modal=AsyncMock(),
             ),
             followup=SimpleNamespace(send=AsyncMock()),
+            delete_original_response=AsyncMock(),
+            edit_original_response=AsyncMock(),
         )
+
+    def direct_interaction(self):
+        row = self.engine.store.invitation(7)
+        i = self.interaction()
+        i.guild_id, i.channel_id, i.channel = None, self.dm.id, self.dm
+        i.message = self.messages[int(row["message_id"])]
+        return i
 
     def copies(self, source):
         return [m for m in self.messages.values() if m.webhook_id and m.id != source.id]
@@ -317,28 +354,29 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_owner_and_tester_labels_are_identity_bound_and_fit_discord(self):
         guild = self.channels[10].guild
-        self.assertTrue(relay_name(self.app, self.author, guild).startswith("[Owner] "))
+        self.assertTrue(relay_name(self.app, self.author).endswith(" [Owner]"))
         tester = SimpleNamespace(**{**vars(self.author), "id": 1401953040004550858})
-        self.assertTrue(relay_name(self.app, tester, guild).startswith("[Tester] "))
+        self.assertTrue(relay_name(self.app, tester).endswith(" [Tester]"))
         fake = SimpleNamespace(
             **{**vars(self.author), "id": 8, "display_name": "[Owner] [Tester] Juninho"}
         )
         guild.name = "[Owner] Servidor"
-        rendered = relay_name(self.app, fake, guild)
+        rendered = relay_name(self.app, fake)
         self.assertNotIn("[Owner]", rendered)
         self.assertNotIn("[Tester]", rendered)
-        self.assertIn("@juninho", rendered)
+        self.assertNotIn("@juninho", rendered)
+        self.assertEqual(rendered, "Juninho")
         tester.display_name = "😀" * 50
         tester.name = "a" * 32
         guild.name = "😀" * 50
         self.assertLessEqual(
-            len(relay_name(self.app, tester, guild).encode("utf-16-le")) // 2, 80
+            len(relay_name(self.app, tester).encode("utf-16-le")) // 2, 80
         )
 
     async def test_consent_is_account_wide_and_persistent(self):
         for gid in (2, 3):
             i = self.interaction(gid)
-            await GlobalPanelView(self.app).join.callback(i)
+            await GlobalMemberView(self.app, i).join.callback(i)
             text = visible_text(i.response.send_message.await_args.kwargs["view"])
             self.assertIn("Você já participa", text)
             self.assertNotIn("Antes de participar", text)
@@ -353,7 +391,11 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         await self.engine.ingest(source)
         self.assertFalse(self.engine.store.jobs())
         source.delete.assert_not_awaited()
-        self.assertEqual(len(self.engine.store.rows("SELECT * FROM global_prompts")), 1)
+        self.assertEqual(
+            len(self.engine.store.rows("SELECT * FROM global_invitations")), 1
+        )
+        self.assertFalse(self.engine.store.rows("SELECT * FROM global_prompts"))
+        source.reply.assert_not_awaited()
         cfg = self.engine.store.channel(1)
         view = ConsentView(self.app, self.interaction(), cfg)
         self.assertFalse(await view.interaction_check(self.interaction(user=8)))
@@ -361,10 +403,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         i = self.interaction()
         await view.accept.callback(i)
         self.assertTrue(self.engine.store.consented(7))
-        self.assertIn(
-            "toda a rede",
-            visible_text(i.response.edit_message.await_args.kwargs["view"]),
-        )
+        i.delete_original_response.assert_awaited_once()
 
     async def test_native_edit_and_delete_update_the_same_copies(self):
         source = self.message()
@@ -765,20 +804,26 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
             accepted,
         )
 
-    async def test_first_message_confirmation_shares_only_the_selected_source(self):
+    async def test_dm_confirmation_shares_only_messages_written_after_accepting(self):
         self.engine.store.consent(7, False)
         earlier = self.message(content="Mensagem sem autorização")
-        selected = self.message(content="Mensagem selecionada no aviso")
-        await self.engine.ingest(selected)
-        prompt = self.engine.store.one("SELECT * FROM global_prompts")
+        await self.engine.ingest(earlier)
+        row = self.engine.store.invitation(7)
         self.now[0] += 2
         i = self.interaction()
-        view = ConsentView(self.app, i, self.engine.store.channel(1), prompt)
-        await view.accept.callback(i)
+        i.guild_id = None
+        i.channel_id = self.dm.id
+        i.channel = self.dm
+        i.message = self.messages[int(row["message_id"])]
+        await GlobalDirectView(self.app).accept.callback(i)
+        self.assertTrue(self.engine.store.consented(7))
+        self.assertNotIn(i.message.id, self.messages)
         await self.engine.ingest(earlier, recovery=True)
+        later = self.message(content="Depois da confirmação")
+        await self.engine.ingest(later)
         await self.flush()
         self.assertIsNone(self.engine.store.message(earlier.id))
-        self.assertEqual(len(self.copies(selected)), 2)
+        self.assertEqual(len(self.copies(later)), 2)
 
     async def test_live_download_and_completed_asset_are_safe_from_cleanup(self):
         import os
@@ -856,7 +901,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         self,
     ):
         channel = self.channels[10]
-        self.engine.sync_panel = AsyncMock()
+        self.engine.onboarding.cleanup_public = AsyncMock()
         await self.engine.activate(channel)
         channel.create_webhook.assert_not_awaited()
         self.assertEqual(self.engine.store.channel(1)["hook_id"], "110")
@@ -944,13 +989,11 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         await self.flush()
         self.assertFalse(self.copies(source))
 
-    async def test_deleted_participation_panel_is_repaired_even_with_saved_hash(self):
-        cfg = self.engine.store.channel(1)
-        await self.engine.sync_panel(cfg, force=True)
-        self.engine.on_delete(SimpleNamespace(message_id=int(cfg["panel_id"])))
-        await self.engine.sync_panel(self.engine.store.channel(1))
-        self.channels[10].send.assert_awaited_once()
-        self.assertNotEqual(self.engine.store.channel(1)["panel_id"], cfg["panel_id"])
+    async def test_activation_never_publishes_a_panel(self):
+        self.engine.store.db.execute("UPDATE global_channels SET panel_id=NULL")
+        await self.engine.activate(self.channels[10])
+        self.channels[10].send.assert_not_awaited()
+        self.assertIsNone(self.engine.store.channel(1)["panel_id"])
 
     async def test_owner_diagnostics_do_not_appear_to_other_administrators(self):
         self.assertIn(
@@ -967,3 +1010,261 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         self.engine.store.active(1, False)
         with self.assertRaisesRegex(ValueError, "configurações mudaram"):
             await view.activate.callback(self.interaction(admin=True))
+
+    async def test_first_invite_is_once_per_account_across_guilds_bursts_and_restart(
+        self,
+    ):
+        self.engine.store.consent(7, False)
+        sources = [
+            self.message(
+                self.channels[10 if n % 2 else 20], content=f"Primeiro contato {n}"
+            )
+            for n in range(30)
+        ]
+        await asyncio.gather(*(self.engine.ingest(m) for m in sources))
+        self.author.send.assert_awaited_once()
+        self.assertEqual(self.engine.store.invitation(7)["status"], "pending")
+        self.assertTrue(GlobalStore(self.base).invitation(7))
+        await self.engine.ingest(self.message(self.channels[30]))
+        self.assertEqual(self.author.send.await_count, 1)
+        self.assertFalse(self.engine.store.rows("SELECT * FROM global_messages"))
+        for channel in (self.channels[x] for x in (10, 20, 30)):
+            channel.send.assert_not_awaited()
+        for message in sources:
+            message.reply.assert_not_awaited()
+            message.delete.assert_not_awaited()
+
+    async def test_blocked_dm_has_no_public_fallback_and_member_can_confirm_privately(
+        self,
+    ):
+        self.engine.store.consent(7, False)
+        self.author.send.side_effect = discord.Forbidden(
+            SimpleNamespace(status=403, reason="Forbidden"),
+            {"code": 50007, "message": "Cannot send messages to this user"},
+        )
+        for _ in range(3):
+            source = self.message()
+            await self.engine.ingest(source)
+            source.reply.assert_not_awaited()
+        self.author.send.assert_awaited_once()
+        self.assertEqual(self.engine.store.invitation(7)["status"], "unavailable")
+        i = self.interaction()
+        await GlobalMemberView(self.app, i).join.callback(i)
+        self.assertTrue(i.response.send_message.await_args.kwargs["ephemeral"])
+        await ConsentView(self.app, i, self.engine.store.channel(1)).accept.callback(i)
+        i.delete_original_response.assert_awaited_once()
+        self.assertTrue(self.engine.store.consented(7))
+        later = self.message(content="Mensagem após confirmar pelo comando")
+        await self.engine.ingest(later)
+        await self.flush()
+        self.assertEqual(len(self.copies(later)), 2)
+
+    async def test_declining_dm_removes_invitation_without_consent_or_repeated_prompts(
+        self,
+    ):
+        self.engine.store.consent(7, False)
+        source = self.message()
+        await self.engine.ingest(source)
+        i = self.direct_interaction()
+        await GlobalDirectView(self.app).cancel.callback(i)
+        self.assertFalse(self.engine.store.consented(7))
+        self.assertNotIn(i.message.id, self.messages)
+        self.assertEqual(self.engine.store.invitation(7)["status"], "declined")
+        await self.engine.ingest(self.message(self.channels[20]))
+        self.assertEqual(self.author.send.await_count, 1)
+        self.assertFalse(self.engine.store.jobs())
+
+    async def test_dm_buttons_cannot_be_reused_by_another_person_channel_or_message(
+        self,
+    ):
+        self.engine.store.consent(7, False)
+        await self.engine.ingest(self.message())
+        view = GlobalDirectView(self.app)
+        for key, value in [
+            ("user", SimpleNamespace(**{**vars(self.author), "id": 8})),
+            ("channel_id", 999),
+            ("message", SimpleNamespace(id=999)),
+            ("guild_id", 1),
+        ]:
+            i = self.direct_interaction()
+            setattr(i, key, value)
+            with self.assertRaises(ValueError):
+                await view.accept.callback(i)
+        self.assertFalse(self.engine.store.consented(7))
+
+    async def test_stale_or_blocked_dm_never_grants_participation(self):
+        self.engine.store.consent(7, False)
+        await self.engine.ingest(self.message())
+        i = self.direct_interaction()
+        self.engine.store.block("*", "user", 7, 8, "Bloqueio durante convite")
+        with self.assertRaisesRegex(ValueError, "bloqueada"):
+            await GlobalDirectView(self.app).accept.callback(i)
+        self.engine.store.block(
+            "*", "user", 7, 8, "Removendo bloqueio de teste", enabled=False
+        )
+        self.engine.store.active(1, False)
+        with self.assertRaisesRegex(ValueError, "conexão"):
+            await GlobalDirectView(self.app).accept.callback(i)
+        self.assertFalse(self.engine.store.consented(7))
+
+    async def test_dm_cannot_confirm_after_leaving_source_guild(self):
+        self.engine.store.consent(7, False)
+        await self.engine.ingest(self.message())
+        self.channels[10].guild.get_member = lambda uid: None
+        with self.assertRaisesRegex(ValueError, "acesso ao servidor"):
+            await GlobalDirectView(self.app).accept.callback(self.direct_interaction())
+        self.assertFalse(self.engine.store.consented(7))
+
+    async def test_slash_confirmation_also_removes_a_pending_dm_invitation(self):
+        self.engine.store.consent(7, False)
+        await self.engine.ingest(self.message())
+        invitation_id = int(self.engine.store.invitation(7)["message_id"])
+        i = self.interaction()
+        await ConsentView(self.app, i, self.engine.store.channel(1)).accept.callback(i)
+        self.assertNotIn(invitation_id, self.messages)
+        self.assertEqual(self.engine.store.invitation(7)["status"], "accepted")
+        with self.assertRaises(ValueError):
+            stale = self.interaction()
+            stale.guild_id = None
+            stale.channel_id = self.dm.id
+            stale.message = SimpleNamespace(id=invitation_id)
+            await GlobalDirectView(self.app).cancel.callback(stale)
+        self.assertTrue(self.engine.store.consented(7))
+
+    async def test_private_error_notice_never_replies_in_public(self):
+        source = self.message()
+        for _ in range(5):
+            await self.engine.notice(source, "O envio não pôde ser confirmado.")
+        self.author.send.assert_awaited_once()
+        source.reply.assert_not_awaited()
+        self.channels[10].send.assert_not_awaited()
+
+    async def test_legacy_cleanup_preserves_people_webhooks_and_other_bot_messages(
+        self,
+    ):
+        channel = self.channels[10]
+        legacy = payload(
+            content="## Participe do chat global", view=GlobalPanelView(self.app)
+        )
+        old = self.send_notice(channel, legacy)
+        other_bot = self.send_notice(channel, legacy)
+        other_bot.author = SimpleNamespace(id=99, bot=True)
+        human = self.message(content="## Participe do chat global")
+        human.components = old.components
+        webhook = self.send_notice(channel, legacy)
+        webhook.webhook_id = 110
+        unrelated = self.send_notice(
+            channel, payload(content="Uma mensagem da tier list")
+        )
+        self.engine.store.db.execute(
+            "UPDATE global_channels SET panel_id=? WHERE guild_id=?", (str(old.id), "1")
+        )
+        self.now[0] += 1
+        await self.engine.onboarding.cleanup_public(self.engine.store.channel(1))
+        self.assertNotIn(old.id, self.messages)
+        for message in (other_bot, human, webhook, unrelated):
+            self.assertIn(message.id, self.messages)
+            message.delete.assert_not_awaited()
+        channel.send.assert_not_awaited()
+
+    async def test_legacy_cleanup_paginates_and_does_not_recreate_public_ui(self):
+        channel = self.channels[10]
+        self.engine.store.db.execute(
+            "UPDATE global_channels SET panel_id=NULL,enabled_at=enabled_at-1"
+        )
+        old = [
+            self.send_notice(
+                channel,
+                payload(
+                    content="## Participe do chat global",
+                    view=GlobalPanelView(self.app),
+                ),
+            )
+            for _ in range(120)
+        ]
+        for _ in range(4):
+            await self.engine.onboarding.cleanup_public(self.engine.store.channel(1))
+        self.assertTrue(all(m.id not in self.messages for m in old))
+        self.assertEqual(self.base.get("global-private-ui-migration:10"), "done")
+        channel.send.assert_not_awaited()
+
+    async def test_legacy_buttons_only_redirect_privately(self):
+        i = self.interaction()
+        await GlobalPanelView(self.app).children[0].callback(i)
+        self.assertTrue(i.response.send_message.await_args.kwargs["ephemeral"])
+        self.assertIn(
+            "/chatglobal",
+            visible_text(i.response.send_message.await_args.kwargs["view"]),
+        )
+
+    async def test_new_copies_never_use_username_or_guild_from_an_old_queued_payload(
+        self,
+    ):
+        source = self.message()
+        await self.engine.ingest(source)
+        row = self.engine.store.message(source.id)
+        data = json.loads(row["payload"])
+        data["username"] = "[Owner] Nome (@nome_real) · Servidor antigo"
+        self.engine.store.db.execute(
+            "UPDATE global_messages SET payload=? WHERE id=?",
+            (json.dumps(data), str(source.id)),
+        )
+        await self.flush()
+        self.assertTrue(
+            all(m.author.name == "Juninho [Owner]" for m in self.copies(source))
+        )
+
+    async def test_declining_while_the_dm_send_is_pending_does_not_restore_the_invite(
+        self,
+    ):
+        self.engine.store.consent(7, False)
+        started, release = asyncio.Event(), asyncio.Event()
+
+        async def delayed(**kwargs):
+            started.set()
+            await release.wait()
+            return self.send_notice(self.dm, kwargs)
+
+        self.author.send.side_effect = delayed
+        pending = asyncio.create_task(self.engine.ingest(self.message()))
+        await started.wait()
+        try:
+            i = self.interaction()
+            await ConsentView(
+                self.app, i, self.engine.store.channel(1)
+            ).cancel.callback(i)
+        finally:
+            release.set()
+            await pending
+        self.assertFalse(self.engine.store.consented(7))
+        self.assertEqual(self.engine.store.invitation(7)["status"], "declined")
+        self.assertFalse(
+            [m for m in self.messages.values() if m.channel.id == self.dm.id]
+        )
+
+    async def test_dm_confirmation_rechecks_pause_after_a_membership_fetch(self):
+        self.engine.store.consent(7, False)
+        await self.engine.ingest(self.message())
+        self.channels[10].guild.get_member = lambda uid: None
+
+        async def paused(uid):
+            self.engine.store.active(1, False)
+            return self.author
+
+        self.channels[10].guild.fetch_member.side_effect = paused
+        with self.assertRaisesRegex(ValueError, "conexão"):
+            await GlobalDirectView(self.app).accept.callback(self.direct_interaction())
+        self.assertFalse(self.engine.store.consented(7))
+
+    async def test_expired_private_invites_are_removed_without_new_automatic_attempts(
+        self,
+    ):
+        self.engine.store.consent(7, False)
+        await self.engine.ingest(self.message())
+        invitation = self.direct_interaction().message
+        self.now[0] += 30 * 86400 + 1
+        await self.engine.onboarding.cleanup_private()
+        self.assertNotIn(invitation.id, self.messages)
+        self.assertEqual(self.engine.store.invitation(7)["status"], "expired")
+        await self.engine.ingest(self.message())
+        self.author.send.assert_awaited_once()
