@@ -36,6 +36,15 @@ HELP = """## Como funciona o chat global
 **Convivência.** Respeite os participantes. Não compartilhe golpes, assédio, ameaças, conteúdo sexual, dados pessoais de terceiros ou divulgação em massa. Links ocasionais são permitidos; destinos disfarçados e rajadas coordenadas podem ser contidos temporariamente. Spam, repetição, arquivos não suportados e falta de recursos podem impedir um compartilhamento; a original é preservada. ADMs moderam seu servidor; o responsável pelo bot modera a rede. Denúncias e controles pessoais são privados."""
 
 
+POLICY_LINKS = (
+    "\n\n[Termos de serviço](https://www.adventureswiki.workers.dev/bot/termos/)"
+    " · [Política de privacidade](https://www.adventureswiki.workers.dev/bot/privacidade/)"
+    "\nSuporte e pedidos sobre seus dados: estrmozica@gmail.com."
+)
+TERMS += POLICY_LINKS
+HELP += POLICY_LINKS
+
+
 class ScopedView(GuardedView):
     def __init__(self, bot, i, *, admin=False, owner=False):
         super().__init__(timeout=600)

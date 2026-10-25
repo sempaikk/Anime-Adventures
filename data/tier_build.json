@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "version": "2026.10.23.3",
-  "fingerprint": "eefb5bde71c25c0f2321cf07936897bee7f288ce1af8e34ff34d5788a83c048f",
+  "version": "2026.10.24.1",
+  "fingerprint": "ae1afc08b1cf41c1ab97f62b1eb0bfd499d44e2cf5f93a0aea982a487019892f",
   "files": {
     "adventure_controls.py": "cdbae75539c54e1eada910fe9f04ba498e828df033e7175b917e0382b42d715a",
     "adventure_repository.py": "91c1261a0bb77c33f372ba1225ffefcc59727439a28544ac5e0e47586755d9e8",
@@ -32,7 +32,7 @@
     "global_relay.py": "f8f935f2decb9584f15a7ba64856057c7b4797d79d93fbd46b5a426b1810678c",
     "global_reports.py": "3bfd8a7f59a9d789f79b16dc334df12a91085f84315a9021c65e1e00d1d34f44",
     "global_store.py": "2a8e15656916c968709b0ce28c45b5fe35b918822c94fb6de4244ac374f94322",
-    "global_views.py": "ec81a6506c155faa325c5e323ae6eb20245a91cc47cd662117649345bb2d4ea0",
+    "global_views.py": "8c73617cce656686b778fb95800f773f42305429f5f3f7dd286484a17dc01ce0",
     "interaction_errors.py": "26ac70d1511daafd5ebee07525b5f2dd567a01a42f61c6057260934b8b9c43af",
     "question_factory.py": "bbc8ea7231d72643bd7e28d2e9dc3daffc99a504192147f256956814f5106683",
     "quiz_content.py": "157fd1718083247e1e0a62ba3859e8fd3f7c9f1a041f53722443cb217f6e7462",
