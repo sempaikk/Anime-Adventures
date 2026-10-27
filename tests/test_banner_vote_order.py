@@ -31,8 +31,8 @@ class BannerVoteOrderCase(unittest.IsolatedAsyncioTestCase):
         self.relay.configure(CENTRAL_GUILD_ID, 30)
         await self.votes.ensure_emojis()
 
-    def voted_banner(self):
-        message = self.message(900, channel=self.channel)
+    def voted_banner(self, *, channel=None, ident=900):
+        message = self.message(ident, channel=channel or self.channel)
         message.reactions = [SimpleNamespace(emoji=self.registry[index], me=True, count=count)
                              for index, count in ((1, 2), (0, 1), (2, 1))]
         return message
@@ -77,22 +77,82 @@ class BannerVoteOrderCase(unittest.IsolatedAsyncioTestCase):
         message.clear_reaction.assert_not_awaited()
         self.assertEqual(self.relay.db.execute('SELECT count(*) FROM banner_vote_order_repairs').fetchone()[0], 0)
 
-    async def test_does_not_reset_other_servers_or_messages_created_after_the_fixed_cutoff(self):
+    async def test_does_not_reset_messages_created_after_the_channel_cutoff(self):
         message = self.voted_banner()
-        self.app.store.set('banner-vote-order-cutoff:1', '800')
+        self.app.store.set('banner-vote-order-cutoff:1:30', '800')
         self.history_page([message], 30)
         await self.votes.cycle()
         message.clear_reaction.assert_not_awaited()
         self.assertEqual([reaction.count for reaction in message.reactions], [2, 1, 1])
 
-        self.relay.disable(CENTRAL_GUILD_ID)
+    async def test_repairs_all_configured_guilds_with_independent_restart_safe_receipts(self):
+        messages = []
+        for guild_id, channel_id in ((CENTRAL_GUILD_ID, 30), (1, 10), (2, 20)):
+            channel = self.channels[channel_id]
+            channel.permissions_for.return_value.manage_messages = True
+            self.relay.configure(guild_id, channel_id)
+            message = self.voted_banner(channel=channel)
+            self.history_page([message], channel_id)
+            messages.append(message)
+        for _ in messages:
+            await self.votes.cycle()
+            self.now += 31
+        for message in messages:
+            self.assertEqual(message.clear_reaction.await_count, 3)
+            self.assertEqual([reaction.emoji.name for reaction in self.owned(message)], ['win', 'mid', 'lose'])
+            self.owned(message)[1].count += 1
+        rows = self.relay.db.execute('SELECT guild_id,phase FROM banner_vote_order_repairs').fetchall()
+        self.assertEqual({row['guild_id'] for row in rows}, {str(CENTRAL_GUILD_ID), '1', '2'})
+        self.assertTrue(all(row['phase'] == 'done' for row in rows))
+        self.votes = BannerVotes(self.relay)
+        for _ in messages:
+            await self.votes.cycle()
+            self.now += 31
+        for message in messages:
+            self.assertEqual(message.clear_reaction.await_count, 3)
+            self.assertEqual([reaction.count for reaction in self.owned(message)], [1, 2, 1])
+
+    async def test_migrates_old_cutoff_without_restarting_completed_channels_or_limiting_new_guilds(self):
+        self.app.store.set('banner-vote-order-cutoff:1', '1000')
+        self.app.store.set('banner-vote-order-scan:1:30', '1')
+        with self.relay.db:
+            self.relay.db.execute('''INSERT INTO banner_vote_backfill(guild_id,channel_id,done,rated)
+                VALUES(?,?,1,37)''', (str(CENTRAL_GUILD_ID), '30'))
+        self.channel.permissions_for.return_value.manage_messages = True
+        self.channels[10].permissions_for.return_value.manage_messages = True
         self.relay.configure(1, 10)
-        other = self.voted_banner()
-        self.history_page([other])
-        self.now += 61
+        message = self.voted_banner(channel=self.channels[10], ident=2000)
+        self.history_page([message])
         await self.votes.cycle()
-        other.clear_reaction.assert_not_awaited()
-        self.assertEqual([reaction.count for reaction in other.reactions], [2, 1, 1])
+        self.assertEqual(self.votes.order.cutoffs['30'], 1000)
+        self.assertGreater(self.votes.order.cutoffs['10'], 2000)
+        self.assertEqual(message.clear_reaction.await_count, 3)
+        row = self.relay.db.execute('SELECT done,rated FROM banner_vote_backfill WHERE channel_id=?', ('30',)).fetchone()
+        self.assertEqual((row['done'], row['rated']), (1, 37))
+
+    async def test_does_not_clear_an_unconfigured_channel_in_a_connected_guild(self):
+        channel = self.add_channel(CENTRAL_GUILD_ID, 40)
+        channel.permissions_for.return_value.manage_messages = True
+        self.votes.order.prepare_scan()
+        message = self.voted_banner(channel=channel)
+        self.assertFalse(await self.votes.order.repair(message, channel))
+        message.clear_reaction.assert_not_awaited()
+
+    async def test_one_guild_missing_permission_does_not_block_or_mislabel_another_guild(self):
+        blocked = self.voted_banner()
+        self.channel.permissions_for.return_value.manage_messages = False
+        self.history_page([blocked], 30)
+        self.relay.configure(1, 10)
+        self.channels[10].permissions_for.return_value.manage_messages = True
+        other = self.voted_banner(channel=self.channels[10])
+        self.history_page([other])
+        for _ in range(2):
+            await self.votes.cycle()
+            self.now += 10
+        blocked.clear_reaction.assert_not_awaited()
+        self.assertEqual(other.clear_reaction.await_count, 3)
+        self.assertIn('Manage Messages', self.votes.description(CENTRAL_GUILD_ID))
+        self.assertNotIn('Manage Messages', self.votes.description(1))
 
     async def test_missing_manage_messages_pauses_repair_without_blocking_images(self):
         message = self.voted_banner()

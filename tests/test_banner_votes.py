@@ -175,7 +175,8 @@ class BannerVoteCase(unittest.IsolatedAsyncioTestCase):
         self.assertIn('Discord-confirmed names: win, mid, lose', self.votes.description(1))
         self.app.create_application_emoji.assert_not_awaited()
 
-    async def test_historical_names_refresh_only_the_bot_seed_preserving_member_votes(self):
+    async def test_names_after_reset_cutoff_refresh_only_the_bot_seed_preserving_member_votes(self):
+        self.app.store.set('banner-vote-order-cutoff:1:10', '800')
         self.legacy_emojis()
         old = list(self.registry)
         message = self.message(900)
@@ -191,7 +192,8 @@ class BannerVoteCase(unittest.IsolatedAsyncioTestCase):
         message.edit.assert_not_awaited()
         message.delete.assert_not_awaited()
 
-    async def test_lost_seed_removal_ack_resumes_without_losing_member_votes(self):
+    async def test_lost_seed_removal_after_reset_cutoff_resumes_without_losing_member_votes(self):
+        self.app.store.set('banner-vote-order-cutoff:1:10', '800')
         self.legacy_emojis()
         message = self.message(900)
         message.reactions = [SimpleNamespace(emoji=emoji, me=True, count=5) for emoji in self.registry]

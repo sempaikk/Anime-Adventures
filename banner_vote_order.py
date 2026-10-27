@@ -1,16 +1,13 @@
-"""One-time, owner-authorized W/M/L reset for old community banner messages."""
+"""One-time, owner-authorized W/M/L reset in every configured banner channel."""
 
 from datetime import datetime, timezone
 
 import discord
 
-from community_hub import CENTRAL_GUILD_ID
-
-
 class BannerVoteOrder:
     def __init__(self, votes):
         self.votes, self.bot, self.db = votes, votes.bot, votes.db
-        self.cutoff = 0
+        self.cutoffs = {}
         self.db.execute('''CREATE TABLE IF NOT EXISTS banner_vote_order_repairs(
             guild_id TEXT NOT NULL, channel_id TEXT NOT NULL, message_id TEXT NOT NULL,
             phase TEXT NOT NULL DEFAULT 'clear', cleared INTEGER NOT NULL DEFAULT 0,
@@ -18,27 +15,45 @@ class BannerVoteOrder:
         self.db.commit()
 
     def prepare_scan(self):
-        target = self.votes.relay.target(CENTRAL_GUILD_ID)
-        if not target:
-            return
-        cutoff_key = 'banner-vote-order-cutoff:1'
-        cutoff = self.bot.store.get(cutoff_key)
-        if cutoff is None:
-            cutoff = discord.utils.time_snowflake(
-                datetime.fromtimestamp(self.votes.relay.clock(), timezone.utc), high=True)
-            self.bot.store.set(cutoff_key, cutoff)
-        self.cutoff = int(cutoff)
-        key = 'banner-vote-order-scan:1:' + target['channel_id']
-        if not self.bot.store.get(key):
-            with self.db:
-                self.db.execute('''UPDATE banner_vote_backfill SET before_id=NULL,done=0,
-                    scanned=0,rated=0,skipped=0,next_scan=0 WHERE guild_id=? AND channel_id=?''',
-                    (str(CENTRAL_GUILD_ID), target['channel_id']))
-                self.bot.store.set(key, '1')
+        targets = self.db.execute('SELECT guild_id,channel_id FROM banner_targets').fetchall()
+        active = {target['channel_id'] for target in targets}
+        self.cutoffs = {channel_id: cutoff for channel_id, cutoff in self.cutoffs.items() if channel_id in active}
+        for target in targets:
+            channel_id = target['channel_id']
+            if channel_id in self.cutoffs:
+                continue
+            key = 'banner-vote-order-scan:1:' + channel_id
+            scanned = self.bot.store.get(key)
+            cutoff_key = 'banner-vote-order-cutoff:1:' + channel_id
+            cutoff = self.bot.store.get(cutoff_key)
+            if cutoff is None:
+                # Keep the previous release's boundary for channels already
+                # scanned, while new channels get their own fixed boundary.
+                cutoff = self.bot.store.get('banner-vote-order-cutoff:1') if scanned else None
+                if cutoff is None:
+                    cutoff = discord.utils.time_snowflake(
+                        datetime.fromtimestamp(self.votes.relay.clock(), timezone.utc), high=True)
+                self.bot.store.set(cutoff_key, cutoff)
+            if not scanned:
+                with self.db:
+                    self.db.execute('''UPDATE banner_vote_backfill SET before_id=NULL,done=0,
+                        scanned=0,rated=0,skipped=0,next_scan=0 WHERE guild_id=? AND channel_id=?''',
+                        (target['guild_id'], channel_id))
+                    self.bot.store.set(key, '1')
+            self.cutoffs[channel_id] = int(cutoff)
+
+    def description(self, channel):
+        if not channel.permissions_for(channel.guild.me).manage_messages and self.db.execute(
+                "SELECT 1 FROM banner_vote_order_repairs WHERE channel_id=? AND phase='clear' LIMIT 1",
+                (str(channel.id),)).fetchone():
+            return 'Grant Manage Messages to reset old W/M/L votes in this channel. New banner images remain enabled.'
+        return None
 
     async def repair(self, message, channel):
         """Return True when handled, False when unnecessary, None while blocked."""
-        if channel.guild.id != CENTRAL_GUILD_ID or message.id > self.cutoff:
+        target = self.votes.relay.target(channel.guild.id)
+        if (not target or target['channel_id'] != str(channel.id)
+                or message.id > self.cutoffs.get(str(channel.id), 0)):
             return False
         channel_id, message_id = str(channel.id), str(message.id)
         row = self.db.execute('''SELECT * FROM banner_vote_order_repairs
@@ -56,7 +71,7 @@ class BannerVoteOrder:
                 return False
             with self.db:
                 self.db.execute('''INSERT INTO banner_vote_order_repairs(guild_id,channel_id,message_id)
-                    VALUES(?,?,?)''', (str(CENTRAL_GUILD_ID), channel_id, message_id))
+                    VALUES(?,?,?)''', (str(channel.guild.id), channel_id, message_id))
             phase, cleared, seeded = 'clear', 0, 0
         else:
             phase, cleared, seeded = row['phase'], row['cleared'], row['seeded']
@@ -73,8 +88,6 @@ class BannerVoteOrder:
                     continue
                 if emoji.id in present:
                     if not channel.permissions_for(channel.guild.me).manage_messages:
-                        self.votes.status = ('Grant Manage Messages to reset old W/M/L votes in the community '
-                                             'channel. New banner images remain enabled.')
                         return None
                     await message.clear_reaction(emoji)
                 cleared |= bit

@@ -110,6 +110,8 @@ class BannerVotes:
         channel = self.bot.get_channel(int(target['channel_id'])) if target else None
         if channel and not channel.permissions_for(channel.guild.me).add_reactions:
             return 'Grant Add Reactions in this channel. Banner images remain enabled.'
+        if channel and (issue := self.order.description(channel)):
+            return issue
         row = self.db.execute('SELECT * FROM banner_vote_backfill WHERE channel_id=?',
                               (target['channel_id'],)).fetchone() if target else None
         text = self.status

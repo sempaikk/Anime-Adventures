@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "version": "2026.10.27.10",
+  "version": "2026.10.27.11",
   "requires_banner_reactions": true,
   "changes": [
-    "As reações W/M/L dos banners antigos deste servidor estão sendo reorganizadas na ordem correta. As votações afetadas são reiniciadas para essa correção."
+    "A correção da ordem W/M/L nos banners antigos agora alcança todos os servidores com banners configurados. As votações afetadas são reiniciadas uma única vez."
   ]
 }
