@@ -154,6 +154,42 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNotNone(self.worker.store.get('budget'))
         self.assertFalse((self.app.directory/'knowledge.sqlite3').exists())
 
+    async def test_real_currencies_article_answers_portuguese_gems_question_with_a_source(self):
+        await self.connect()
+        async def grounded(packet):
+            source=next(s for s in packet['sources'] if s['title']=='Currencies')
+            start=source['text'].index('They can be obtained')
+            quote=source['text'][start:source['text'].index('.',start)+1]
+            return {'supported':True,'answer':'Segundo a wiki arquivada, você pode conseguir gemas em missões, fases da história, raids e modos infinitos.',
+                    'citations':[{'id':source['id'],'quote':quote}]},100
+        self.worker.knowledge.backend.answer.side_effect=grounded
+        result=await self.bridge.ask('Como conseguir gemas?',actor_id=77,locale='pt-BR')
+        self.assertIn('você pode conseguir gemas',result)
+        self.assertIn('/wiki/Currencies?oldid=',result)
+        self.assertEqual(self.worker.knowledge.backend.answer.await_count,1)
+        self.assertIsNone(self.app.store.get('budget'))
+
+    async def test_pc_groq_quote_repair_returns_verified_answer_over_existing_bridge(self):
+        await self.connect()
+        calls=0
+        async def respond(packet):
+            nonlocal calls
+            calls+=1
+            source=next(s for s in packet['sources'] if s['title']=='Currencies')
+            if calls==1:
+                quote='As gemas podem ser obtidas completando missões e fases da história.'
+            else:
+                self.assertEqual(packet['repair']['reason'],'quote-not-in-source')
+                start=source['text'].index('They can be obtained')
+                quote=source['text'][start:source['text'].index('.',start)+1]
+            return {'supported':True,'answer':'Segundo a wiki arquivada, é possível conseguir gemas em missões e fases da história.',
+                    'citations':[{'id':source['id'],'quote':quote}]},100
+        self.worker.knowledge.backend.answer.side_effect=respond
+        result=await self.bridge.ask('Como conseguir gemas?',actor_id=78,locale='pt-BR')
+        self.assertIn('é possível conseguir gemas',result)
+        self.assertIn('/wiki/Currencies?oldid=',result)
+        self.assertEqual(json.loads(self.worker.store.get('budget'))['calls'],2)
+
     async def test_only_authorized_events_are_saved_on_pc_and_cursor_is_acknowledged(self):
         await self.connect()
         event={'event':'question','channel_id':str(QUESTIONS_CHANNEL_ID),'message_id':'101',
@@ -176,6 +212,37 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaisesRegex(ValueError,'temporarily unavailable'):
             await asyncio.wait_for(self.bridge.ask('How does this game work?',actor_id=1),.2)
         self.assertIsNone(self.bridge.get_meta('source-cursor'))
+
+    async def test_server_close_reports_duration_and_code_without_private_values(self):
+        import contextlib,io
+        await self.connect()
+        output=io.StringIO()
+        with contextlib.redirect_stdout(output):
+            await self.bridge.ws.close(code=1001)
+            await asyncio.wait_for(self.worker_task,2)
+        text=output.getvalue()
+        self.assertIn('Connection ended after',text)
+        self.assertIn('WebSocket code:',text)
+        self.assertNotIn(SECRET,text)
+        self.assertNotIn(self.config['groq_api_key'],text)
+
+    async def test_status_task_failure_closes_connection_instead_of_silently_stalling(self):
+        import contextlib,io
+        async def fail_status(worker,ws):
+            await asyncio.sleep(.05)
+            raise RuntimeError('synthetic private details must not be logged')
+        output=io.StringIO()
+        with contextlib.redirect_stdout(output),patch.object(Worker,'heartbeat',fail_status):
+            await self.connect()
+            with self.assertRaises(RuntimeError):
+                await asyncio.wait_for(self.worker_task,2)
+        self.assertIn('PC connection task stopped: RuntimeError.',output.getvalue())
+        self.assertNotIn('synthetic private details',output.getvalue())
+        for _ in range(100):
+            if not self.bridge.online:
+                break
+            await asyncio.sleep(.01)
+        self.assertFalse(self.bridge.online)
 
     async def test_only_one_worker_can_connect(self):
         await self.connect()
@@ -278,6 +345,15 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
 
 
 class PCConfigTests(unittest.TestCase):
+    def test_patch_package_contains_only_public_answer_code_and_instructions(self):
+        from scripts.build_pc_knowledge import build
+        with tempfile.TemporaryDirectory() as folder:
+            target=Path(folder)/'patch.zip'
+            build(target,patch=True)
+            with zipfile.ZipFile(target) as bundle:
+                self.assertEqual(set(bundle.namelist()),{'game_knowledge.py','knowledge_pc.py','LEIA-ME-ATUALIZACAO.txt','patch-manifest.json'})
+                self.assertEqual(bundle.read('game_knowledge.py'),Path('game_knowledge.py').read_bytes())
+
     def test_windows_package_contains_source_and_corpus_without_state_or_credentials(self):
         from scripts.build_pc_knowledge import build
         with tempfile.TemporaryDirectory() as folder:

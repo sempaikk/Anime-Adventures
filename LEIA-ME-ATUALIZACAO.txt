@@ -1,0 +1,29 @@
+CORRECAO DO /ASK NO PC - 2026.10.26.3
+
+1. Feche a janela do INICIAR-PC.cmd.
+2. Extraia o ZIP da correcao.
+3. Copie SOMENTE game_knowledge.py e knowledge_pc.py para
+   D:\Armazenamento do Bot, substituindo os dois arquivos de mesmo nome.
+4. Abra novamente INICIAR-PC.cmd e aguarde Connected.
+5. Teste /ask: Como conseguir gemas?
+
+Nao precisa executar CONFIGURAR-PC.cmd novamente nem trocar as variaveis.
+O protocolo permanece compativel com o servidor instalado.
+Nenhum arquivo privado, banco ou recibo deve ser apagado ou substituido.
+Mantenha a copia antiga da hospedagem ate concluir o teste de resposta.
+
+Esta correcao normaliza somente espacos/quebras de linha em citacoes e
+permite uma tentativa de correcao do formato, dentro do limite de duas
+chamadas por pergunta. Fontes, palavras e numeros continuam conferidos.
+
+Uma recusa que persistir gera um codigo tecnico sem perguntas/chaves no
+console, como: Answer check rejected: quote-not-in-source.
+Se ocorrer, informe somente esse codigo e a pergunta usada.
+
+Se a conexao cair, o programa tambem informa duracao, codigo WebSocket
+e classe do erro, sem valores privados. Repetir Connected significa
+reconexao, nao uma mensagem periodica. Essas informacoes permitem
+diagnosticar rede/proxy/arquivo sem adivinhar a causa pela imagem.
+
+A busca especifica por upgrades/niveis do Dark Mage continua pendente;
+transferir o armazenamento ou corrigir citacoes nao corrige essa busca.

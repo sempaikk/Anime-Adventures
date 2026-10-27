@@ -49,6 +49,77 @@ class KnowledgeCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.knowledge.db.execute('SELECT COUNT(*) FROM knowledge_chat').fetchone()[0],0)
         self.assertEqual(json.loads(self.app.store.get('budget'))['calls'],1)
 
+    async def test_formatting_whitespace_and_unicode_composition_do_not_reject_real_quote(self):
+        body='Gems are rewards.\n\nYou can obtain gems\tby completing story stages.\nCafé rewards are listed separately.'
+        self.knowledge.db.execute('UPDATE knowledge_wiki SET body=?',(body,));self.knowledge.db.commit()
+        self.knowledge.backend.answer.side_effect=None
+        self.knowledge.backend.answer.return_value=({'supported':True,'answer':'Você pode obter gemas ao concluir fases da história.',
+            'citations':[{'id':'w0','quote':'You can obtain gems\u00a0by completing story stages.'},{'id':'w0','quote':'Cafe\u0301 rewards are listed separately.'}]},100)
+        result=await self.knowledge.ask('Como conseguir gemas?',actor_id=1)
+        self.assertIn('Você pode obter',result)
+        self.assertEqual(self.knowledge.backend.answer.await_count,1)
+
+    async def test_bad_citation_id_gets_one_bounded_repair_in_original_question_language(self):
+        bad={'supported':True,'answer':'Você pode obter gemas ao concluir fases da história.',
+             'citations':[{'id':'w0 or c0','quote':self.source[:60]}]}
+        good={**bad,'citations':[{'id':'w0','quote':self.source[:60]}]}
+        self.knowledge.backend.answer.side_effect=[(bad,100),(good,100)]
+        with self.assertLogs('adventures.knowledge',level='WARNING') as logs:
+            result=await self.knowledge.ask('Como conseguir gemas?',actor_id=1,locale='pt-BR')
+        self.assertIn('Você pode obter',result)
+        self.assertEqual(self.knowledge.backend.answer.await_count,2)
+        packet=self.knowledge.backend.answer.call_args.args[0]
+        self.assertEqual(packet['repair']['reason'],'unknown-source-id')
+        self.assertEqual(packet['question'],'Como conseguir gemas?')
+        self.assertEqual(packet['valid_citation_ids'],['w0'])
+        self.assertEqual(json.loads(self.app.store.get('budget'))['calls'],2)
+        self.assertNotIn('Como conseguir gemas',' '.join(logs.output))
+        self.assertNotIn(self.source,' '.join(logs.output))
+
+    async def test_translated_or_changed_numeric_quote_is_still_refused_after_repair(self):
+        for index,quote in enumerate(('Gemas podem ser obtidas ao concluir fases da história.',
+                                      'Gems can be obtained by completing 999 story stages.')):
+            self.knowledge.backend.answer.side_effect=None
+            self.knowledge.backend.answer.return_value=({'supported':True,'answer':'Você recebe 999 gemas.',
+                'citations':[{'id':'w0','quote':quote}]},100)
+            with self.assertRaisesRegex(ValueError,'sources'):
+                await self.knowledge.ask('Como conseguir gemas?',actor_id=index+1)
+        self.assertEqual(self.knowledge.backend.answer.await_count,4)
+
+    async def test_search_retry_and_citation_repair_share_maximum_of_two_calls(self):
+        self.knowledge.backend.answer.side_effect=[
+            ({'supported':False,'answer':'確認できる情報が不足しています。','citations':[], 'search_terms':'gems'},50),
+            ({'supported':True,'answer':'You can get gems.','citations':[{'id':'unknown','quote':self.source[:60]}]},100)]
+        with self.assertRaisesRegex(ValueError,'sources'):
+            await self.knowledge.ask('ジェムの入手方法を教えてください',actor_id=1,locale='ja')
+        self.assertEqual(self.knowledge.backend.answer.await_count,2)
+
+    async def test_repair_does_not_exceed_daily_free_quota(self):
+        day=datetime.fromtimestamp(self.now,timezone.utc).strftime('%Y-%m-%d')
+        self.app.store.set('budget',json.dumps({'day':day,'calls':47,'tokens':0}))
+        self.knowledge.backend.answer.side_effect=None
+        self.knowledge.backend.answer.return_value=({'supported':True,'answer':'You can obtain gems.',
+            'citations':[{'id':'unknown','quote':self.source[:60]}]},100)
+        with self.assertRaisesRegex(ValueError,'free daily'):
+            await self.knowledge.ask('How can I get gems?',actor_id=1)
+        self.assertEqual(self.knowledge.backend.answer.await_count,1)
+        self.assertEqual(json.loads(self.app.store.get('budget'))['calls'],48)
+
+    async def test_invalid_citation_schema_is_repaired_without_crashing_or_skipping_checks(self):
+        self.knowledge.backend.answer.side_effect=[
+            ({'supported':True,'answer':'You can obtain gems.','citations':[{'id':['w0'],'quote':self.source[:60]}]},100),
+            ({'supported':True,'answer':'You can obtain gems.','citations':[{'id':'w0','quote':self.source[:60]}]},100)]
+        result=await self.knowledge.ask('How can I get gems?',actor_id=1)
+        self.assertIn('You can obtain gems.',result)
+        self.assertEqual(self.knowledge.backend.answer.await_count,2)
+
+    async def test_short_padded_wiki_quote_does_not_bypass_meaningful_quote_length(self):
+        self.knowledge.backend.answer.side_effect=None
+        self.knowledge.backend.answer.return_value=({'supported':True,'answer':'You can obtain gems.',
+            'citations':[{'id':'w0','quote':'Gems'+' '*20}]},100)
+        with self.assertRaisesRegex(ValueError,'sources'):
+            await self.knowledge.ask('How can I get gems?',actor_id=1)
+
     async def test_answers_keep_portuguese_spanish_and_english_without_forced_translation(self):
         for index,(question,answer,locale) in enumerate([
             ('Como obter gemas?','Você pode obter gemas ao concluir fases da história.','pt-BR'),

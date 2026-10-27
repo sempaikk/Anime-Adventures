@@ -4,6 +4,10 @@ Pasta de dados escolhida: **`D:\Armazenamento do Bot`**.
 Endereço do bot: **`https://7g2x14fnpa.apps.bot-hosting.cloud`**.
 O site não participa desta configuração.
 
+## Atualização de uma instalação existente
+
+Se o programa já conectou e importou seus dados, a correção `.3` pode ser instalada pelo ZIP pequeno de atualização: feche a janela, copie somente `game_knowledge.py` e `knowledge_pc.py` para a pasta onde está `INICIAR-PC.cmd`, substitua esses dois arquivos e abra o programa novamente. Veja `LEIA-ME-ATUALIZACAO.txt`. Não precisa executar a configuração outra vez nem mudar variáveis/chaves. Bancos e arquivos privados permanecem no lugar. Teste “Como conseguir gemas?” antes de finalizar a migração. A busca por upgrade/nível do Dark Mage continua sendo uma pendência separada.
+
 ## Primeira instalação
 
 1. Instale **Python 3.12 para Windows**, com o Python Launcher, se ainda não estiver instalado. A versão 3.12 da hospedagem não instala Python no seu computador.

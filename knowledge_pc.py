@@ -23,6 +23,7 @@ from knowledge_remote import ROUTE
 DEFAULT_DIRECTORY = r'D:\Armazenamento do Bot'
 DEFAULT_URL = 'https://7g2x14fnpa.apps.bot-hosting.cloud'
 CONFIG = 'pc-knowledge.private.json'
+PC_BUILD = '2026.10.26.3'
 
 
 def validate_url(value, *, allow_loopback=False):
@@ -96,8 +97,12 @@ class Worker:
                 raise ValueError('Unknown request')
             await ws.send_json({'type': 'result', 'id': ident, 'result': result})
         except ValueError as error:
+            if method in {'ingest','checkpoint'}:
+                print(f'PC archive operation failed: {method}/{type(error).__name__}. Existing data preserved.',flush=True)
             await ws.send_json({'type': 'result', 'id': ident, 'error': str(error)[:300]})
-        except Exception:
+        except Exception as error:
+            if method in {'ingest','checkpoint'}:
+                print(f'PC archive operation failed: {method}/{type(error).__name__}. Existing data preserved.',flush=True)
             await ws.send_json({'type': 'result', 'id': ident, 'error': 'The answer service is temporarily unavailable. Please try again later.'})
 
     async def heartbeat(self, ws):
@@ -113,6 +118,30 @@ class Worker:
             await ws.send_json({'type': 'status', 'status': self.status()})
             await asyncio.sleep(5)
 
+    async def receive_requests(self, ws):
+        async for message in ws:
+            if message.type != aiohttp.WSMsgType.TEXT:
+                break
+            data = json.loads(message.data)
+            if not isinstance(data,dict):
+                raise ValueError('Invalid worker protocol')
+            if data.get('method') == 'ask':
+                # Only one inference at once; ingest/checkpoints continue
+                # in receive order while Groq is answering.
+                if self.tasks:
+                    await ws.send_json({'type': 'result', 'id': data.get('id'), 'error': 'The answer service is busy. Please try again shortly.'})
+                    continue
+                task = asyncio.create_task(self.handle(ws, data))
+                self.tasks.add(task)
+                task.add_done_callback(self.request_finished)
+            else:
+                await self.handle(ws, data)
+
+    def request_finished(self, task):
+        self.tasks.discard(task)
+        if not task.cancelled() and task.exception() is not None:
+            print(f'PC request interrupted: {type(task.exception()).__name__}.',flush=True)
+
     async def connection(self, session, url):
         receipt_path = self.directory / 'migration-receipt.json'
         receipt = json.loads(receipt_path.read_text())['id'] if receipt_path.exists() else None
@@ -122,29 +151,31 @@ class Worker:
             if accepted != {'type': 'accepted', 'protocol': 1}:
                 raise ValueError('The host did not accept this worker.')
             print('Connected. /ask is available while this program and the internet remain online.', flush=True)
+            started=time.monotonic()
             heartbeat = asyncio.create_task(self.heartbeat(ws))
+            receiver = asyncio.create_task(self.receive_requests(ws))
+            interrupted=False
             try:
-                async for message in ws:
-                    if message.type != aiohttp.WSMsgType.TEXT:
-                        break
-                    data = json.loads(message.data)
-                    if data.get('method') == 'ask':
-                        # Only one inference at once; ingest/checkpoints continue
-                        # in receive order while Groq is answering.
-                        if self.tasks:
-                            await ws.send_json({'type': 'result', 'id': data.get('id'), 'error': 'The answer service is busy. Please try again shortly.'})
-                            continue
-                        task = asyncio.create_task(self.handle(ws, data))
-                        self.tasks.add(task)
-                        task.add_done_callback(self.tasks.discard)
-                    else:
-                        await self.handle(ws, data)
+                # If status reporting fails, reconnect rather than silently leave
+                # the host holding an open socket with an expired online status.
+                done,_=await asyncio.wait({heartbeat,receiver},return_when=asyncio.FIRST_COMPLETED)
+                for task in done:
+                    await task
+            except asyncio.CancelledError:
+                interrupted=True
+                raise
+            except Exception as error:
+                print(f'PC connection task stopped: {type(error).__name__}.',flush=True)
+                raise
             finally:
-                heartbeat.cancel()
-                for task in self.tasks:
+                tasks=[heartbeat,receiver,*self.tasks]
+                for task in tasks:
                     task.cancel()
-                await asyncio.gather(heartbeat, *self.tasks, return_exceptions=True)
+                await asyncio.gather(*tasks, return_exceptions=True)
                 self.tasks.clear()
+                if not interrupted:
+                    cause=ws.exception()
+                    print(f'Connection ended after {int(time.monotonic()-started)} s; WebSocket code: {ws.close_code or "unknown"}; error: {type(cause).__name__ if cause else "none"}. Reconnecting.',flush=True)
 
     def close(self):
         self.knowledge.close()
@@ -201,7 +232,7 @@ async def run(directory, config, *, finalize=False, allow_loopback=False):
                             receipt.write_text(json.dumps({'schema': 1, 'id': None, 'fresh': True}))
                     await worker.connection(session, url)
                     delay = 5
-                except (aiohttp.ClientError, asyncio.TimeoutError, ConnectionError):
+                except (aiohttp.ClientError, asyncio.TimeoutError, ConnectionError, RuntimeError):
                     print('Connection unavailable. /ask is offline; reconnecting automatically.', flush=True)
                 await asyncio.sleep(delay)
                 delay = min(60, delay * 2)
@@ -248,6 +279,7 @@ def main():
     if args.setup:
         setup(directory, args.url)
         return
+    print(f'PC question service version {PC_BUILD}.',flush=True)
     config = json.loads((directory / CONFIG).read_text(encoding='utf-8'))
     if config.get('schema') != 1 or not 32 <= len(config.get('bridge_secret', '')) <= 200 or not config.get('groq_api_key'):
         raise ValueError('Invalid private PC configuration.')

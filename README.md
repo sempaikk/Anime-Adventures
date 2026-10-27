@@ -2,7 +2,7 @@
 
 **Conhecimento no PC:** o responsável autorizou migrar a base de perguntas para `D:\Armazenamento do Bot`. Programa Windows e conexão autenticada preparados; instalação/ativação e transferência reais seguem [LEIA-ME-PC.md](LEIA-ME-PC.md). Em modo PC, `/ask` só funciona enquanto esse programa estiver conectado; a Groq continua sendo a IA. Preservar os dados hospedados até conferir a importação.
 
-[Baixar o programa Windows — ZIP, aproximadamente 1 MB](https://github.com/sempaikk/Anime-Adventures/raw/refs/heads/main/downloads/Anime-Adventures-PC-2026.10.26.2.zip). Extraia o pacote e comece por `LEIA-ME-PC.md`. O ZIP contém somente fonte pública e acervo, com hashes internos; nunca incluir configurações privadas ou bancos reais ao reconstruí-lo.
+[Baixar o programa Windows — ZIP, aproximadamente 1 MB](https://github.com/sempaikk/Anime-Adventures/raw/refs/heads/main/downloads/Anime-Adventures-PC-2026.10.26.3.zip). Extraia o pacote e comece por `LEIA-ME-PC.md`. Para quem já instalou: [correção pequena do `/ask`](https://github.com/sempaikk/Anime-Adventures/raw/refs/heads/main/downloads/Correcao-Ask-PC-2026.10.26.3.zip), que substitui somente `game_knowledge.py` e `knowledge_pc.py`, sem bancos, configuração ou chaves. Os ZIPs contêm somente fonte pública/acervo e hashes; nunca incluir configurações privadas ou bancos reais ao reconstruí-los.
 
 Chat entre servidores, imagens do jogo e perguntas com fontes. A tier list está pausada, com código e dados arquivados. **Comandos atuais, todos em inglês e sem argumentos:**
 
