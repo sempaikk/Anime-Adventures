@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "version": "2026.10.27.8",
+  "version": "2026.10.27.9",
   "requires_banner_reactions": true,
   "changes": [
-    "Os emojis das reações W/M/L agora se chamam win, mid e lose, sem códigos no nome."
+    "Melhorada a atualização dos nomes win, mid e lose nas reações W/M/L dos banners antigos."
   ]
 }

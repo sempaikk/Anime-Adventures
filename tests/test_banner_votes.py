@@ -64,9 +64,26 @@ class BannerVoteCase(unittest.IsolatedAsyncioTestCase):
         async def add(emoji):
             self.reaction_calls.append((channel.id, ident, emoji.id))
             self.reacted.add((channel.id, ident, emoji.id))
-            message.reactions.append(SimpleNamespace(emoji=emoji, me=True))
+            existing = next((reaction for reaction in message.reactions if reaction.emoji.id == emoji.id), None)
+            if existing:
+                if not existing.me:
+                    existing.count += 1
+                existing.me, existing.emoji = True, emoji
+            else:
+                message.reactions.append(SimpleNamespace(emoji=emoji, me=True, count=1))
+
+        async def remove(emoji, user):
+            self.assertEqual(user.id, self.app.user.id)
+            existing = next(reaction for reaction in message.reactions if reaction.emoji.id == emoji.id)
+            if existing.me:
+                existing.me = False
+                existing.count -= 1
+                if not existing.count:
+                    message.reactions.remove(existing)
+            self.reacted.discard((channel.id, ident, emoji.id))
 
         message.add_reaction = AsyncMock(side_effect=add)
+        message.remove_reaction = AsyncMock(side_effect=remove)
         return message
 
     def history_page(self, messages):
@@ -133,6 +150,108 @@ class BannerVoteCase(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(await self.votes.ensure_emojis())
         self.assertEqual([emoji.name for emoji in self.votes.emojis], ['win', 'mid', 'lose'])
         self.assertEqual([emoji.id for emoji in self.votes.emojis], original_ids)
+        self.app.create_application_emoji.assert_not_awaited()
+
+    async def test_setup_does_not_report_ready_until_a_fresh_lookup_confirms_the_names(self):
+        self.legacy_emojis()
+        for emoji in self.registry:
+            emoji.edit.side_effect = lambda *, name, ident=emoji.id: self.emoji(name, ident)
+        self.assertFalse(await self.votes.ensure_emojis())
+        self.assertFalse(self.votes.emojis)
+        self.assertIn('awaiting Discord confirmation', self.votes.description(1))
+        await self.publish()
+        self.assertEqual(len(self.sent), 1)
+        self.registry[:] = [self.emoji(name, emoji.id) for name, emoji in zip(('win', 'mid', 'lose'), self.registry)]
+        self.now += 61
+        self.assertTrue(await self.votes.ensure_emojis())
+        self.assertIn('Discord-confirmed names: win, mid, lose', self.votes.description(1))
+        self.app.create_application_emoji.assert_not_awaited()
+
+    async def test_historical_names_refresh_only_the_bot_seed_preserving_member_votes(self):
+        self.legacy_emojis()
+        old = list(self.registry)
+        message = self.message(900)
+        message.reactions = [SimpleNamespace(emoji=emoji, me=True, count=5) for emoji in old]
+        self.history_page([message])
+        await self.votes.cycle()
+        self.assertEqual([reaction.count for reaction in message.reactions], [5, 5, 5])
+        self.assertEqual([reaction.emoji.id for reaction in message.reactions], [emoji.id for emoji in old])
+        self.assertEqual(message.remove_reaction.await_count, 3)
+        self.assertEqual(message.add_reaction.await_count, 3)
+        for call in message.remove_reaction.await_args_list:
+            self.assertIs(call.args[1], self.app.user)
+        message.edit.assert_not_awaited()
+        message.delete.assert_not_awaited()
+
+    async def test_lost_seed_removal_ack_resumes_without_losing_member_votes(self):
+        self.legacy_emojis()
+        message = self.message(900)
+        message.reactions = [SimpleNamespace(emoji=emoji, me=True, count=5) for emoji in self.registry]
+        remove = message.remove_reaction.side_effect
+
+        async def lost(emoji, user):
+            await remove(emoji, user)
+            message.remove_reaction.side_effect = remove
+            raise TimeoutError('Lost own-reaction removal acknowledgment')
+
+        message.remove_reaction.side_effect = lost
+        self.history_page([message])
+        await self.votes.cycle()
+        self.assertEqual([reaction.count for reaction in message.reactions], [4, 5, 5])
+        self.assertIsNone(self.relay.db.execute('SELECT before_id FROM banner_vote_backfill').fetchone()[0])
+        self.now += 61
+        self.votes = BannerVotes(self.relay)
+        await self.votes.cycle()
+        self.assertEqual([reaction.count for reaction in message.reactions], [5, 5, 5])
+        self.assertTrue(all(reaction.me for reaction in message.reactions))
+        self.assertEqual(self.relay.db.execute('SELECT done FROM banner_vote_backfill').fetchone()[0], 1)
+
+    async def test_name_refresh_reopens_completed_history_once_and_keeps_the_cursor_after_restart(self):
+        with self.relay.db:
+            self.relay.db.execute('''INSERT INTO banner_vote_backfill(guild_id,channel_id,before_id,done,rated)
+                VALUES('1','10','123',1,37)''')
+        messages = [self.message(ident) for ident in (900, 800, 700, 600)]
+        self.history_page(messages)
+        await self.votes.cycle()
+        row = self.relay.db.execute('SELECT * FROM banner_vote_backfill').fetchone()
+        self.assertEqual((row['before_id'], row['done'], row['rated']), ('700', 0, 3))
+        self.now += 61
+        self.votes = BannerVotes(self.relay)
+        await self.votes.cycle()
+        row = self.relay.db.execute('SELECT * FROM banner_vote_backfill').fetchone()
+        self.assertEqual((row['done'], row['rated']), (1, 4))
+
+    async def test_real_sdk_renames_the_registry_and_refreshes_only_its_own_reaction(self):
+        self.legacy_emojis()
+        records = [{'id': str(emoji.id), 'name': emoji.name} for emoji in self.registry]
+        self.app._connection.application_id = 4242
+        self.app.fetch_application_emojis = discord.Client.fetch_application_emojis.__get__(self.app)
+        self.app.http.get_application_emojis = AsyncMock(
+            side_effect=lambda app_id: {'items': [dict(record) for record in records]})
+
+        async def edit(app_id, emoji_id, *, payload):
+            self.assertEqual(app_id, 4242)
+            record = next(record for record in records if record['id'] == str(emoji_id))
+            record.update(payload)
+            return dict(record)
+
+        self.app.http.edit_application_emoji = AsyncMock(side_effect=edit)
+        self.assertTrue(await self.votes.ensure_emojis())
+        self.assertEqual(self.app.http.get_application_emojis.await_count, 2)
+        message = self.message(900)
+        message.channel, message._state = self.channels[10], self.app._connection
+        message.reactions = [SimpleNamespace(emoji=discord.PartialEmoji(name=emoji.name, id=emoji.id),
+                                            me=True, count=5) for emoji in self.registry]
+        message.add_reaction = discord.PartialMessage.add_reaction.__get__(message)
+        message.remove_reaction = discord.PartialMessage.remove_reaction.__get__(message)
+        self.app.http.add_reaction = AsyncMock()
+        self.app.http.remove_own_reaction = AsyncMock()
+        self.app.http.remove_reaction = AsyncMock(side_effect=AssertionError('Must not remove member votes'))
+        await self.votes.rate(message, refresh_names=True)
+        self.assertEqual(self.app.http.remove_own_reaction.await_count, 3)
+        self.app.http.remove_reaction.assert_not_awaited()
+        self.assertEqual([call.args[2] for call in self.app.http.add_reaction.await_args_list],
+                         ['win:300', 'mid:301', 'lose:302'])
         self.app.create_application_emoji.assert_not_awaited()
 
     async def test_lost_emoji_creation_ack_does_not_create_a_duplicate(self):

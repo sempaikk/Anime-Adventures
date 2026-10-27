@@ -78,8 +78,24 @@ class BannerVotes:
                 if emoji.name != name:
                     emoji = await emoji.edit(name=name)
                 selected.append(emoji)
+            # PATCH acknowledgments and existing reaction payloads can carry
+            # different names. Confirm the application registry independently.
+            current = {emoji.id: emoji for emoji in await self.bot.fetch_application_emojis()}
+            selected = [current.get(emoji.id) for emoji in selected]
+            reported = tuple(emoji.name if emoji else 'missing' for emoji in selected)
+            if reported != KEYS:
+                self.status = ('Short emoji names are awaiting Discord confirmation. Reported names: '
+                               + ', '.join(reported) + '. Banner images continue to be delivered.')
+                return False
+            # One bounded pass also refreshes names on reactions created before
+            # the rename. Preserve the regular historical cursor on later restarts.
+            if not self.bot.store.get('banner-vote-name-refresh:1'):
+                with self.db:
+                    self.db.execute('''UPDATE banner_vote_backfill SET before_id=NULL,done=0,
+                        scanned=0,rated=0,skipped=0,next_scan=0''')
+                    self.bot.store.set('banner-vote-name-refresh:1', '1')
             self.emojis = tuple(selected)
-            self.status = 'W/M/L ready.'
+            self.status = 'W/M/L ready. Discord-confirmed names: win, mid, lose.'
             return True
         except (discord.DiscordException, aiohttp.ClientError, TimeoutError, OSError, ValueError, KeyError, TypeError) as error:
             self.status = 'Emoji setup is waiting. Banner images continue to be delivered.'
@@ -112,14 +128,20 @@ class BannerVotes:
             return None
         return channel
 
-    async def rate(self, message, mask=0, progress=None):
-        present = {getattr(reaction.emoji, 'id', None)
+    async def rate(self, message, mask=0, progress=None, *, refresh_names=False):
+        present = {getattr(reaction.emoji, 'id', None): reaction
                    for reaction in getattr(message, 'reactions', ()) if reaction.me}
         for index, emoji in enumerate(self.emojis):
             bit = 1 << index
             if mask & bit:
                 continue
-            if emoji.id not in present:
+            reaction = present.get(emoji.id)
+            if refresh_names and reaction and getattr(reaction.emoji, 'name', None) != emoji.name:
+                # Remove only our own seed, then restore it with the current name.
+                # Never clear an emoji's reactions or remove another member's vote.
+                await message.remove_reaction(reaction.emoji, self.bot.user)
+                await message.add_reaction(emoji)
+            elif reaction is None:
                 await message.add_reaction(emoji)
             mask |= bit
             if progress:
@@ -189,7 +211,7 @@ class BannerVotes:
                         if self.target_channel(row['guild_id'], row['channel_id']) is None:
                             return
                         try:
-                            await self.rate(message)
+                            await self.rate(message, refresh_names=True)
                         except discord.HTTPException as error:
                             if error.code not in (10008, 30010):
                                 raise
