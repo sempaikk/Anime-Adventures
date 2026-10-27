@@ -13,8 +13,25 @@ import subprocess
 import sys
 import time
 import venv
+from collections import OrderedDict
+from urllib.parse import urlsplit
 
 READER_VERSION = "2.1.0"
+
+
+class ImageTracker:
+    """Bounded polling/live deduplication; signed CDN query renewal is not an edit."""
+    def __init__(self): self.seen = OrderedDict()
+
+    def new(self, payload):
+        paths=tuple((urlsplit(url).hostname,urlsplit(url).path) for url in payload['images'])
+        key=(payload['channel_id'],payload['message_id'],payload['created_at'],paths)
+        if key in self.seen:
+            self.seen.move_to_end(key)
+            return False
+        self.seen[key]=None
+        while len(self.seen)>256:self.seen.popitem(last=False)
+        return True
 
 
 def emit(event, **values):
@@ -70,6 +87,37 @@ async def listen(config):
         raise ValueError("Invalid reader configuration")
 
     class Reader(account_discord.Client):
+        def publish_image(self, message):
+            payload=image_message(message,sources-{questions})
+            if payload and self.image_tracker.new(payload):
+                emit(**payload)
+            return bool(payload)
+
+        async def scan_image(self, channel):
+            async for message in channel.history(limit=50):
+                age=time.time()-(getattr(message,'edited_at',None) or message.created_at).timestamp()
+                if age>(26*3600 if channel.id==daily else 3900):break
+                if self.publish_image(message):break
+            emit('ready',channel_id=str(channel.id))
+
+        async def poll_images(self):
+            while True:
+                await asyncio.sleep(30)
+                if not self.image_ready:continue
+                for ident in sources-{questions}:
+                    try:
+                        channel=self.image_channels.get(ident)
+                        if channel is None:
+                            channel=self.get_channel(ident) or await self.fetch_channel(ident)
+                            if not isinstance(channel,account_discord.TextChannel):raise ValueError('Unsupported source channel')
+                            await channel.guild.subscribe(typing=True,threads=False,activities=False,member_updates=False)
+                            self.image_channels[ident]=channel
+                        await self.scan_image(channel)
+                    except account_discord.CaptchaRequired:
+                        emit('account_action_required');await self.close();return
+                    except Exception as error:
+                        emit('source_unavailable',channel_id=str(ident),reason=type(error).__name__)
+
         def publish_question(self,message,*,checkpoint=True):
             reference=getattr(message,'reference',None)
             original=getattr(reference,'resolved',None)
@@ -95,7 +143,7 @@ async def listen(config):
                     if not isinstance(channel, account_discord.TextChannel):
                         raise ValueError("Source must be a guild text channel")
                     # Large official guilds require an explicit subscription.
-                    await channel.guild.subscribe(typing=False, threads=False,
+                    await channel.guild.subscribe(typing=True, threads=False,
                                                   activities=False, member_updates=False)
                     if ident == questions:
                         if self.qa_cursor:
@@ -111,20 +159,21 @@ async def listen(config):
                             self.publish_question(message)
                         self.qa_loading=False
                         continue
-                    # Catch only the latest current image, not the channel archive.
-                    async for message in channel.history(limit=10):
-                        if time.time() - (getattr(message, "edited_at", None) or message.created_at).timestamp() > (26 * 3600 if ident == daily else 3900):
-                            break
-                        payload = image_message(message, sources)
-                        if payload:
-                            emit(**payload)
-                            break
-                except Exception:
+                    self.image_channels[ident]=channel
+                    await self.scan_image(channel)
+                except Exception as error:
                     unavailable=True
-            emit("source_unavailable" if unavailable else "ready")
+                    emit('source_unavailable',channel_id=str(ident),reason=type(error).__name__)
+            self.image_ready=True
+            if self.image_poll is None or self.image_poll.done():
+                self.image_poll=asyncio.create_task(self.poll_images())
+            # Preserve archived Q&A test protocol; production has image sources only.
+            if questions in sources and questions_enabled:
+                emit("source_unavailable" if unavailable else "ready")
 
         async def on_disconnect(self):
             self.qa_loading=True
+            self.image_ready=False
             emit("connecting")
 
         async def on_message(self, message):
@@ -140,9 +189,7 @@ async def listen(config):
                 else:
                     self.publish_question(message)
                 return
-            payload = image_message(message, sources)
-            if payload:
-                emit(**payload)
+            self.publish_image(message)
 
         async def on_raw_message_edit(self, event):
             if event.channel_id not in sources:
@@ -152,11 +199,12 @@ async def listen(config):
             try:
                 channel = self.get_channel(event.channel_id) or await self.fetch_channel(event.channel_id)
                 message = await channel.fetch_message(event.message_id)
-                payload = question_message(message, questions) if event.channel_id == questions else image_message(message, sources)
-                if payload:
-                    emit(**payload)
-            except Exception:
-                emit("source_unavailable")
+                if event.channel_id==questions:
+                    payload=question_message(message,questions)
+                    if payload:emit(**payload)
+                else:self.publish_image(message)
+            except Exception as error:
+                emit('source_unavailable',channel_id=str(event.channel_id),reason=type(error).__name__)
 
         async def on_raw_message_delete(self, event):
             if event.channel_id == questions:
@@ -171,6 +219,10 @@ async def listen(config):
     client.qa_loading=True
     client.qa_pending=[]
     client.qa_cursor=int(config.get('question_after') or 0)
+    client.image_tracker=ImageTracker()
+    client.image_channels={}
+    client.image_ready=False
+    client.image_poll=None
     try:
         emit("connecting")
         await client.start(config["token"])
@@ -181,6 +233,9 @@ async def listen(config):
         emit("login_failed")
         return 2
     finally:
+        if client.image_poll:
+            client.image_poll.cancel()
+            await asyncio.gather(client.image_poll,return_exceptions=True)
         await client.close()
     return 0
 

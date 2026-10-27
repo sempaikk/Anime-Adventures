@@ -159,7 +159,7 @@ class FakeDiscord:
                         name
                     ).default_permissions,
                 )
-                for name in ("tierlist", "globalchat", "setbanner", "dailychallenge", "ask")
+                for name in ("tierlist", "globalchat", "setbanner", "dailychallenge")
             ]
         )
 
@@ -318,7 +318,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_archived_tierlist_and_active_commands_have_no_options(self):
         self.assertEqual(
-            {c.name for c in self.app.tree.get_commands()}, {"tierlist", "globalchat", "setbanner", "dailychallenge", "ask"}
+            {c.name for c in self.app.tree.get_commands()}, {"tierlist", "globalchat", "setbanner", "dailychallenge"}
         )
         self.assertTrue(all(not c.parameters for c in self.app.tree.get_commands()))
         self.assertIsNone(self.app.help_command)

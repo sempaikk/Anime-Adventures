@@ -8,7 +8,6 @@ Estado vigente definido pelo responsável em 26/10/2026. Esta entrega pertence s
 | --- | --- | --- |
 | `/setbanner` | `993219350179876874` | canal onde um administrador executa o comando |
 | `/dailychallenge` | `1326659593199423610` | canal onde um administrador executa o comando |
-| `/ask` | textos de `994219170101219408` e wiki arquivada | resposta privada à pergunta |
 
 Cada servidor define um destino independente para cada feed. Os comandos de configuração exigem Gerenciar servidor ou Administrador, conferem novamente a permissão ao executar e respondem em particular. **Stop receiving** desativa somente aquele feed naquele servidor. Para trocar, execute o comando no novo canal. O bot precisa de Ver canal, Enviar mensagens, Anexar arquivos e Ler histórico. Não há argumento de ID do destino.
 
@@ -24,7 +23,7 @@ Cada servidor define um destino independente para cada feed. Os comandos de conf
 - O processo principal permanece com `discord.py==2.7.1`. O segredo da conta é passado por stdin, fora dos argumentos do processo. Os segredos do bot/Groq não entram no ambiente do subprocesso; logs privados do cliente não são repassados.
 - Automação de conta comum é self-bot, proibida pelos termos do Discord e sujeita a suspensão, como explicado ao responsável. Não tentar ultrapassar permissões ou resolver CAPTCHA por evasão. Uma verificação exigida pelo Discord interrompe a autenticação; o responsável precisa conferir a conta no aplicativo oficial.
 
-A conta atua como leitora e **o bot publica com a própria identidade**. O bot não herda permissão para entrar ou ler o servidor de origem. A conexão da conta pode receber metadados de outras áreas conforme o protocolo; o código processa somente as três origens autorizadas. Não afirmar que o token fica limitado a elas. O leitor não envia mensagens, reações ou comandos pela conta.
+A conta atua como leitora e **o bot publica com a própria identidade**. O bot não herda permissão para entrar ou ler o servidor de origem. A conexão da conta pode receber metadados de outras áreas conforme o protocolo; o código vigente processa somente as duas origens de imagens autorizadas. Não afirmar que o token fica limitado a elas. O leitor não envia mensagens, reações ou comandos pela conta.
 
 ## Entrega, cache e limites
 
@@ -38,6 +37,12 @@ A conta atua como leitora e **o bot publica com a própria identidade**. O bot n
 
 ## Conhecimento e testes
 
-O texto de Questões tem arquivo próprio e não é enviado como publicação dos feeds. Consulte [knowledge.md](knowledge.md) para consulta multilíngue, compressão, volume, limite, retomada e backup.
+O recurso de perguntas foi cancelado em 27/10/2026. O processo normal não coleta Questões nem armazena conhecimento/abre conexão com o PC. Banners e desafios dependem apenas da hospedagem.
 
 Os testes usam bancos temporários, imagens artificiais e APIs simuladas. A importação isolada da biblioteca foi conferida sem login. Isso não comprova autenticação da conta, acesso real aos três canais, publicação ou Groq na hospedagem. Evidências da entrega estão em `CONTINUIDADE.md`.
+
+## Correção do recebimento em 27/10/2026
+
+A biblioteca 2.1.0 documenta que servidores com mais de 75 mil membros precisam de `typing=True` para inscrição. O código anterior usava todos os recursos como `False`, cancelando a inscrição de eventos. A chamada foi corrigida, mantendo membros/atividades/tópicos desligados. Isso não exige abrir Discord no PC. O leitor também confere a imagem recente a cada 30 segundos em até 50 mensagens, respeitando retenção e limites da API. Uma assinatura CDN renovada não é uma imagem nova; deduplicação permanece antes da emissão e nos recibos do bot.
+
+Estado de origem é separado para banner e desafio; falha numa não deve mascarar a outra. Ao configurar o desafio, a imagem recente disponível pode ser entregue imediatamente, sem esperar o próximo dia. Se não houver imagem dentro da janela de 26 horas, aguarda a próxima publicação. Logs/estado não comprovam entrega real sem conferir o canal de destino após a atualização.

@@ -1,5 +1,4 @@
 @echo off
-setlocal
-cd /d "%~dp0"
-"D:\Armazenamento do Bot\.pc-venv\Scripts\python.exe" "%~dp0knowledge_pc.py" --directory "D:\Armazenamento do Bot"
+echo The PC question service and /ask were retired. The hosted bot does not require this PC.
+echo Read LEIA-ME-REMOCAO.txt to remove the old installation.
 pause

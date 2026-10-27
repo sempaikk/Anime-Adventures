@@ -17,7 +17,7 @@ from banner_reader import question_message
 class KnowledgeCase(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.app = CommunityBot(self.temp.name)
+        self.app = CommunityBot(self.temp.name, archived_knowledge=True)
         self.knowledge = self.app.knowledge
         self.now = 2_000_000_000.0
         self.knowledge.clock = lambda: self.now
@@ -241,7 +241,7 @@ class KnowledgeCase(unittest.IsolatedAsyncioTestCase):
         await asyncio.to_thread(self.knowledge.backup)
         self.assertTrue(self.knowledge.path.with_name('knowledge-backup.sqlite3').is_file())
         await self.app.close()
-        self.app=CommunityBot(self.temp.name)
+        self.app=CommunityBot(self.temp.name, archived_knowledge=True)
         self.knowledge=self.app.knowledge
         self.assertEqual(self.knowledge.statistics()['messages'],1)
         self.assertEqual(self.knowledge.get_meta('source-cursor'),'100')
@@ -265,7 +265,7 @@ class KnowledgeCase(unittest.IsolatedAsyncioTestCase):
         await self.app.close()
         path=self.knowledge.path
         path.write_bytes(b'synthetic corruption')
-        self.app=CommunityBot(self.temp.name)
+        self.app=CommunityBot(self.temp.name, archived_knowledge=True)
         self.knowledge=self.app.knowledge
         self.assertTrue(self.knowledge.paused)
         self.assertIsNotNone(self.app.tree.get_command('globalchat'))

@@ -9,7 +9,7 @@ from community_domain import ROOT
 
 def shipped_files(root=ROOT):
     paths = {root / "requirements.txt", root / "requirements-pc.txt"}
-    for pattern in ("*.py", "*.cmd", "data/*.json", "scripts/*.py", "tests/*.py"):
+    for pattern in ("*.py", "*.cmd", "data/*.json", "scripts/*.py", "scripts/*.ps1", "tests/*.py"):
         paths.update(root.glob(pattern))
     paths.discard(root / "data/tier_build.json")
     return sorted(path for path in paths if path.is_file())

@@ -1,3 +1,5 @@
+> **CANCELADO EM 27/10/2026:** o responsável removeu `/ask` e toda a integração com o PC. Este documento é histórico; não seguir as instruções de instalação/migração. Veja `LEIA-ME-REMOCAO.txt`.
+
 # Serviço de perguntas no PC
 
 Veja o passo a passo do responsável em [LEIA-ME-PC.md](../LEIA-ME-PC.md). O pedido posterior autorizou executar o plano que antes estava apenas reservado para o futuro. A pasta é `D:\Armazenamento do Bot`; o domínio fornecido é `https://7g2x14fnpa.apps.bot-hosting.cloud`, HTTPS ativo e porta de destino 25302 conforme captura do painel.

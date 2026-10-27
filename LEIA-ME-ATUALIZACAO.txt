@@ -1,3 +1,5 @@
+CANCELADO EM 27/10/2026: nao instale esta atualizacao. O responsavel retirou /ask e o programa do PC. Siga LEIA-ME-REMOCAO.txt.
+
 CORRECAO DO /ASK NO PC - 2026.10.26.3
 
 1. Feche a janela do INICIAR-PC.cmd.

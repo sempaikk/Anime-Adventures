@@ -1,3 +1,5 @@
+> **CANCELADO EM 27/10/2026:** o responsável removeu `/ask` e toda a integração com o PC. Este documento é histórico; não seguir as instruções de instalação/migração. Veja `LEIA-ME-REMOCAO.txt`.
+
 # Base de perguntas no seu Windows
 
 Pasta de dados escolhida: **`D:\Armazenamento do Bot`**.

@@ -49,7 +49,7 @@ PERMISSIONS = {
 
 
 class CommunityBot(commands.Bot):
-    def __init__(self, data_dir=None, *, backend=None, tierlist_enabled=False):
+    def __init__(self, data_dir=None, *, backend=None, tierlist_enabled=False, archived_knowledge=False):
         # Archived implementation remains testable; production keeps it paused.
         self.tierlist_enabled = tierlist_enabled
         intents = discord.Intents.none()
@@ -103,17 +103,20 @@ class CommunityBot(commands.Bot):
 
         self.banners = BannerRelay(self)
         self.daily = BannerRelay(self, kind="daily")
-        from game_knowledge import GameKnowledge, UnavailableKnowledge
-
-        try:
-            if os.getenv('KNOWLEDGE_MODE', 'local').lower() == 'pc':
-                from knowledge_remote import RemoteKnowledge
-                self.knowledge = RemoteKnowledge(self)
-            else:
-                self.knowledge = GameKnowledge(self)
-        except (sqlite3.DatabaseError, OSError, ValueError):
-            log.warning('Knowledge archive unavailable; existing files preserved.')
-            self.knowledge = UnavailableKnowledge(self)
+        from knowledge_disabled import DisabledKnowledge
+        self.knowledge = DisabledKnowledge(self)
+        # Historical offline tests only. No environment variable activates /ask.
+        if archived_knowledge:
+            from game_knowledge import GameKnowledge, UnavailableKnowledge
+            try:
+                if os.getenv('KNOWLEDGE_MODE', 'local').lower() == 'pc':
+                    from knowledge_remote import RemoteKnowledge
+                    self.knowledge = RemoteKnowledge(self)
+                else:
+                    self.knowledge = GameKnowledge(self)
+            except (sqlite3.DatabaseError, OSError, ValueError):
+                log.warning('Archived knowledge unavailable; existing files preserved.')
+                self.knowledge = UnavailableKnowledge(self)
         from instance_storage import InstanceStorage
 
         self.instance_storage=InstanceStorage(Path(__file__).resolve().parent,self.directory,self.health,
@@ -232,9 +235,8 @@ class CommunityBot(commands.Bot):
             loop.start()
         self.banners.start()
         log.info(
-            "Comandos sincronizados; tier list %s; IA %s.",
+            "Commands synchronized; tier list %s; image feeds active; /ask retired.",
             "ativa" if self.tierlist_enabled else "pausada",
-            "chave carregada" if self.analyzer.backend.enabled else "sem chave",
         )
 
     async def on_ready(self):
@@ -1169,14 +1171,6 @@ class CommunityBot(commands.Bot):
         @app_commands.default_permissions(manage_guild=True)
         async def dailychallenge(i: discord.Interaction):
             await configure_feed(i, "daily")
-
-        @self.tree.command(name="ask", description="Ask a question about Anime Adventures in your preferred language.")
-        @app_commands.guild_only()
-        @app_commands.allowed_installs(guilds=True, users=False)
-        async def ask(i: discord.Interaction):
-            from game_knowledge import AskModal
-
-            await i.response.send_modal(AskModal(self, i))
 
         @self.tree.command(
             name="tierlist",

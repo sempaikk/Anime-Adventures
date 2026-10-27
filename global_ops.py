@@ -50,10 +50,10 @@ class GlobalOperations:
         build = getattr(self.bot, "build", None)
         if build:
             text += '\n**Running version:** ' + label(build)
-        for key, title in (
+        for key, title in (() if getattr(getattr(self.bot,'knowledge',None),'disabled',False) else (
             ("last_connection_success", 'Last successful AI connection'),
             ("ask_last_success", 'Last successful answer'),
-        ):
+        )):
             value = self.bot.store.get(key)
             text += f"\n**{title}:** " + (
                 f"<t:{int(float(value))}:R>" if value else 'not recorded yet'
@@ -68,7 +68,7 @@ class GlobalOperations:
             text += f"\n**Server {row['target']}:** restricted until <t:{int(row['until'])}:t>."
         text += '\n-# Use Network moderation to release a server early. Pausing the network stops new sharing; deletions continue to be processed.'
         knowledge=getattr(self.bot,'knowledge',None)
-        if knowledge:
+        if knowledge and not getattr(knowledge,'disabled',False):
             info=knowledge.statistics()
             if info.get('remote'):
                 text+=f"\n**PC question service:** {'online' if info['online'] else 'offline'} · {info['messages']} saved messages · {info['bytes']/1048576:.1f} MiB on the PC (last received status)."
@@ -124,6 +124,8 @@ class GlobalOperations:
                 'One or more servers were temporarily restricted after a burst. Check Bot status to review.',
             ),
         }
+        if getattr(getattr(self.bot,'knowledge',None),'disabled',False):
+            conditions.pop('knowledge',None)
         for key, (active, text) in conditions.items():
             meta = "global-alert:" + key
             previous = json.loads(self.bot.store.get(meta) or "{}")

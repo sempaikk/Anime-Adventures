@@ -27,7 +27,7 @@ class MigrationTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
-        self.app = CommunityBot(self.root / 'host')
+        self.app = CommunityBot(self.root / 'host', archived_knowledge=True)
         self.app.knowledge.ensure_wiki()
         event = {'event':'question','channel_id':str(QUESTIONS_CHANNEL_ID),'message_id':'100',
                  'body':'Synthetic game question about gems?', 'reply_to':None, 'created_at':time.time()}
@@ -97,7 +97,7 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         with patch.dict('os.environ',{'KNOWLEDGE_MODE':'pc','KNOWLEDGE_BRIDGE_SECRET':SECRET}):
-            self.app = CommunityBot(self.root/'host')
+            self.app = CommunityBot(self.root/'host', archived_knowledge=True)
         self.bridge = self.app.knowledge
         await self.app.health.start(0,routes=self.bridge.install_routes)
         self.url='http://127.0.0.1:'+str(self.app.health.port)
@@ -313,7 +313,7 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_missing_pc_secret_fails_closed_without_creating_local_archive(self):
         with patch.dict('os.environ',{'KNOWLEDGE_MODE':'pc','KNOWLEDGE_BRIDGE_SECRET':''}):
-            other=CommunityBot(self.root/'misconfigured-host')
+            other=CommunityBot(self.root/'misconfigured-host', archived_knowledge=True)
         try:
             self.assertTrue(other.knowledge.paused)
             self.assertFalse((other.directory/'knowledge.sqlite3').exists())

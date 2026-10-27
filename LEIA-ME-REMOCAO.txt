@@ -1,0 +1,35 @@
+REMOCAO DO PROGRAMA DO PC E DO PYTHON
+
+1. Feche a janela INICIAR-PC.cmd e outros programas que estejam usando Python.
+2. Extraia este ZIP em Downloads, fora de D:\Armazenamento do Bot.
+3. Abra REMOVER-PYTHON-E-BOT.cmd.
+4. O script chama os desinstaladores oficiais registrados no Windows, incluindo
+   as versoes encontradas de Python, Launcher e Install Manager. Algumas versoes
+   podem mostrar sua propria janela ou pedir permissao de administrador.
+5. Revise o resultado e eventuais avisos. Reinicie o Windows se solicitado.
+
+O script tambem remove D:\Armazenamento do Bot (incluindo banco, chaves e .pc-venv),
+o atalho desse programa na inicializacao e residuos conhecidos de Python/pip.
+Nao depende de Python para funcionar. Os arquivos .ps1 e .cmd sao texto legivel;
+voce pode abri-los no Bloco de Notas para conferir antes de executar.
+
+As instalacoes detectadas sao desinstaladas pelos comandos cadastrados no Windows.
+Pastas compartilhadas sao preservadas se uma versao nao puder ser desinstalada.
+Nao se apagam Windows\Installer, WindowsApps ou runtimes embutidos em outros
+programas, porque isso poderia quebra-los. Python portatil em pastas personalizadas
+e instalacoes de outras contas podem exigir remocao especifica. Nao e uma promessa
+de encontrar todo arquivo Python de todos os programas de todos os discos.
+
+Se o comando python abrir a Microsoft Store depois da limpeza, isso pode ser
+apenas o alias do Windows, sem Python instalado. Desative python.exe/python3.exe
+em Configuracoes > Aplicativos > Configuracoes avancadas > Aliases de execucao.
+
+Depois, pode apagar os ZIPs antigos do bot e o instalador python-3.12.10-amd64.exe
+em Downloads. Nao execute CONFIGURAR-PC, INICIAR-PC ou FINALIZAR-MIGRACAO novamente.
+
+NA HOSPEDAGEM: atualize o bot e reinicie para retirar /ask. Remova as variaveis
+KNOWLEDGE_MODE, KNOWLEDGE_BRIDGE_SECRET e GROQ_API_KEY que ficaram sem uso.
+Mantenha DISCORD_TOKEN, SECONDARY_ACCOUNT_TOKEN e DATA_DIR. O Python da hospedagem
+continua necessario para o bot; desinstalar Python no seu PC nao o remove de la.
+
+O site nao participa desta remocao.

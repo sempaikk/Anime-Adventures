@@ -1,19 +1,18 @@
 # Anime Adventures
 
-**Conhecimento no PC:** o responsável autorizou migrar a base de perguntas para `D:\Armazenamento do Bot`. Programa Windows e conexão autenticada preparados; instalação/ativação e transferência reais seguem [LEIA-ME-PC.md](LEIA-ME-PC.md). Em modo PC, `/ask` só funciona enquanto esse programa estiver conectado; a Groq continua sendo a IA. Preservar os dados hospedados até conferir a importação.
+**Escopo vigente em 27/10/2026:** `/globalchat`, `/setbanner` e `/dailychallenge`. `/ask` e a integração com o PC foram cancelados e não são ativados por `KNOWLEDGE_MODE`. Não é necessário manter o PC ou o Discord do responsável aberto para os feeds de imagens.
 
-[Baixar o programa Windows — ZIP, aproximadamente 1 MB](https://github.com/sempaikk/Anime-Adventures/raw/refs/heads/main/downloads/Anime-Adventures-PC-2026.10.26.3.zip). Extraia o pacote e comece por `LEIA-ME-PC.md`. Para quem já instalou: [correção pequena do `/ask`](https://github.com/sempaikk/Anime-Adventures/raw/refs/heads/main/downloads/Correcao-Ask-PC-2026.10.26.3.zip), que substitui somente `game_knowledge.py` e `knowledge_pc.py`, sem bancos, configuração ou chaves. Os ZIPs contêm somente fonte pública/acervo e hashes; nunca incluir configurações privadas ou bancos reais ao reconstruí-los.
+[Remover o programa do PC e instalações de Python — scripts legíveis para Windows](https://github.com/sempaikk/Anime-Adventures/raw/refs/heads/main/downloads/Remover-Python-e-Bot-Windows.zip). Extraia fora da pasta do bot e leia `LEIA-ME-REMOCAO.txt`. Use os desinstaladores oficiais registrados; confira eventuais falhas ao terminar.
 
-Chat entre servidores, imagens do jogo e perguntas com fontes. A tier list está pausada, com código e dados arquivados. **Comandos atuais, todos em inglês e sem argumentos:**
+Chat entre servidores e imagens do jogo. A tier list está pausada, com código e dados arquivados. **Comandos atuais, todos em inglês e sem argumentos:**
 
 - **`/globalchat`** — controles pessoais privados e administração do chat entre servidores. Substitui o nome anterior `/chatglobal`, mantendo configurações, consentimentos e histórico.
 - **`/setbanner`** — quem tem **Administrador** ou **Gerenciar servidor** define o canal atual para receber apenas as imagens dos banners. Cada servidor tem um destino próprio; a confirmação e o botão de desativar são privados. [Configuração e teste](docs/banners.md).
 - **`/dailychallenge`** — define o próprio canal para receber as imagens do desafio diário. Configuração independente do banner em cada servidor; mesma exigência de permissão.
-- **`/ask`** — abre um formulário privado de pergunta sobre Anime Adventures. A IA responde **no idioma da pergunta**, consultando a wiki arquivada e respostas comunitárias com fontes. [Base de conhecimento e armazenamento](docs/knowledge.md).
 
-**Interface fixa em inglês; respostas de `/ask` no idioma da pergunta.** Textos escritos pelos participantes do chat global mantêm o idioma original. Banners/desafios enviam somente imagens estáticas PNG/JPEG/WebP, sem GIF, vídeo, texto ou legenda. Comandos de configuração têm confirmação privada e **Stop receiving**.
+**Interface fixa em inglês.** Textos escritos pelos participantes do chat global mantêm o idioma original. Banners/desafios enviam somente imagens estáticas PNG/JPEG/WebP, sem GIF, vídeo, texto ou legenda. Comandos de configuração têm confirmação privada e **Stop receiving**.
 
-Hospedagem atual: Bot-Hosting.net, Python 3.12 e início em `bot.py`. Preservar o valor de `DATA_DIR` já utilizado e os segredos `DISCORD_TOKEN`, `GROQ_API_KEY` e **`SECONDARY_ACCOUNT_TOKEN`**. Não colocar credenciais em `.env.example`. A captura do responsável confirmou **256 MB de RAM e 512 MB de disco**. O leitor usa ambiente isolado; a IA roda na Groq. O conhecimento usa arquivo separado comprimido, com reserva inicial de 64 MiB e backup local, sem apagar histórico por idade. Ao atingir capacidade, a captura pausa e avisa o responsável. O painel **Bot status** apresenta volume diário e uso medido. Não prometer armazenamento ilimitado.
+Hospedagem atual: Bot-Hosting.net, Python 3.12 e início em `bot.py`. Preservar `DATA_DIR`, `DISCORD_TOKEN` e `SECONDARY_ACCOUNT_TOKEN`. A instância informada tem 256 MB RAM e 512 MB disco; o leitor fica em ambiente isolado na hospedagem. O PC do responsável não participa dos feeds. Variáveis antigas de IA/conhecimento podem ser removidas do painel após atualizar. O site permanece pausado.
 
 O site está congelado em Em breve / Coming soon por tempo indeterminado. Não alterar seus arquivos, configuração ou publicação sem novo pedido. Estado desta entrega, testes e publicação: [CONTINUIDADE.md](CONTINUIDADE.md).
 

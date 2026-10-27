@@ -18,7 +18,7 @@ import aiohttp
 import discord
 from discord.http import handle_message_parameters
 from PIL import Image
-from game_sources import BANNER_CHANNEL_ID, DAILY_CHANNEL_ID, QUESTIONS_CHANNEL_ID, SOURCE_CHANNELS, reader_token
+from game_sources import BANNER_CHANNEL_ID, DAILY_CHANNEL_ID, QUESTIONS_CHANNEL_ID, SOURCE_CHANNELS, IMAGE_SOURCE_CHANNELS, reader_token
 
 SOURCE_CHANNEL_IDS = (BANNER_CHANNEL_ID,)
 MAX_IMAGE = 8 * 1024 * 1024
@@ -120,7 +120,7 @@ class BannerRelay:
             self.query("DELETE FROM banner_jobs WHERE guild_id=? AND state NOT IN ('sent','sending','uncertain')", (str(guild_id),))
 
     def description(self, guild_id=None):
-        current = getattr(self.bot, "banners", self).status
+        current = self.status
         status = {
             "not_configured": "The bot owner has not configured the source reader yet.",
             "installing": "The source reader is completing its initial setup.",
@@ -131,6 +131,8 @@ class BannerRelay:
             "account_action_required": "Discord requested account verification. Reading has stopped; the owner needs to check the account in the official app.",
             "reader_failed": "The reader is unavailable. The bot owner needs to check the installation and restart the bot.",
         }.get(current, "The reader is reconnecting to the source.")
+        if current=='ready' and not self.query('SELECT 1 FROM banner_events WHERE created_at>? LIMIT 1',(self.clock()-self.max_age,)).fetchone():
+            status+='\nNo recent image is cached yet. The source is checked automatically every 30 seconds.'
         if guild_id is not None:
             job = self.query("SELECT state FROM banner_jobs WHERE guild_id=? ORDER BY rowid DESC LIMIT 1", (str(guild_id),)).fetchone()
             if job:
@@ -164,6 +166,9 @@ class BannerRelay:
                           "questions_channel_id": QUESTIONS_CHANNEL_ID, "daily_channel_id": DAILY_CHANNEL_ID,
                           "question_after": self.bot.knowledge.get_meta('source-cursor'),
                           "questions_enabled": not self.bot.knowledge.paused}
+                if getattr(self.bot.knowledge,'disabled',False):
+                    config.update(source_channel_ids=IMAGE_SOURCE_CHANNELS,questions_channel_id=0,
+                                  question_after=None,questions_enabled=False)
                 self.process.stdin.write(json.dumps(config).encode() + b"\n")
                 await self.process.stdin.drain()
                 self.process.stdin.close()
@@ -186,9 +191,16 @@ class BannerRelay:
                             if inspect.isawaitable(result):
                                 await result
                         elif event.get("event") in {"installing", "connecting", "ready", "source_unavailable", "login_failed", "account_action_required", "reader_failed"}:
-                            self.status = event["event"]
-                            self.bot.daily.status = self.status
-                            self.bot.knowledge.reader_status = self.status
+                            source = str(event.get('channel_id',''))
+                            feed = self if source == str(BANNER_CHANNEL_ID) else self.bot.daily if source == str(DAILY_CHANNEL_ID) else None
+                            if feed:
+                                changed=feed.status!=event['event']
+                                feed.status=event['event']
+                                if changed:log.info('Image source %s: %s (%s).',feed.kind,event['event'],event.get('reason','confirmed'))
+                            elif not source:
+                                self.status = event["event"]
+                                self.bot.daily.status = self.status
+                            self.bot.knowledge.reader_status = event['event']
                     except (ValueError, TypeError, KeyError, aiohttp.ClientError, asyncio.TimeoutError):
                         log.warning("Uma imagem de banner não pôde ser recebida; detalhes privados omitidos.")
                     count+=1

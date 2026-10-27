@@ -13,7 +13,7 @@ from PIL import Image
 
 from banner_reader import image_message
 from banner_relay import BannerControls, SOURCE_CHANNEL_IDS, image_extension, image_url
-from game_sources import DAILY_CHANNEL_ID, SOURCE_CHANNELS, reader_token
+from game_sources import DAILY_CHANNEL_ID, SOURCE_CHANNELS, IMAGE_SOURCE_CHANNELS, reader_token
 from community_bot import CommunityBot
 
 
@@ -80,7 +80,7 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
         return self.relay.db.execute("SELECT * FROM banner_jobs ORDER BY channel_id").fetchall()
 
     async def test_setbanner_uses_current_channel_private_confirmation_and_admin_permission(self):
-        self.assertEqual({command.name for command in self.app.tree.get_commands()}, {"setbanner", "globalchat", "dailychallenge", "ask"})
+        self.assertEqual({command.name for command in self.app.tree.get_commands()}, {"setbanner", "globalchat", "dailychallenge"})
         self.assertFalse(self.app.tierlist_enabled)
         command = self.app.tree.get_command("setbanner")
         self.assertEqual(command.default_permissions.value, discord.Permissions(manage_guild=True).value)
@@ -251,8 +251,24 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
             self.assertNotIn(key, kwargs["env"])
         self.assertNotIn("synthetic-account-secret", repr(spawn.call_args))
         data = json.loads(process.stdin.write.call_args.args[0])
-        self.assertEqual(data["source_channel_ids"], list(SOURCE_CHANNELS))
+        self.assertEqual(data["source_channel_ids"], list(IMAGE_SOURCE_CHANNELS))
+        self.assertFalse(data['questions_enabled'])
+        self.assertEqual(data['questions_channel_id'],0)
         self.assertEqual(self.relay.status, "login_failed")
+
+    async def test_source_failures_do_not_hide_the_other_image_feed_status(self):
+        async def events():
+            yield json.dumps({'event':'ready','channel_id':str(SOURCE_CHANNEL_IDS[0])}).encode()+b'\n'
+            yield json.dumps({'event':'source_unavailable','channel_id':str(DAILY_CHANNEL_ID),'reason':'Forbidden'}).encode()+b'\n'
+            raise __import__('asyncio').CancelledError()
+        process=SimpleNamespace(stdin=SimpleNamespace(write=MagicMock(),drain=AsyncMock(),close=MagicMock()),stdout=events(),returncode=2)
+        self.app.wait_until_ready=AsyncMock()
+        with patch.dict('os.environ',{'SECONDARY_ACCOUNT_TOKEN':'synthetic-only'}),patch('asyncio.create_subprocess_exec',AsyncMock(return_value=process)):
+            with self.assertRaises(__import__('asyncio').CancelledError):await self.relay.supervise()
+        self.assertEqual(self.relay.status,'ready')
+        self.assertEqual(self.app.daily.status,'source_unavailable')
+        self.assertIn('Reader connected',self.relay.description())
+        self.assertIn('could not confirm source access',self.app.daily.description())
 
     async def test_daily_challenge_has_its_own_source_destinations_and_longer_retention(self):
         daily = self.app.daily
