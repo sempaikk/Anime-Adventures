@@ -28,6 +28,8 @@ Há uma **única exceção de edição autorizada**, para reduzir o aviso .5/.4 
 
 Essa conferência vale para todo aviso novo, mesmo sem a opção `requires_banner_reactions` nas notas. Novas tarefas assíncronas de atualização devem expor sua conclusão em `CommunityHub.update_complete`; não usar um atraso fixo como prova. Trabalho já confirmado não é refeito para liberar o aviso. Banners/desafios continuam sendo entregues pelas tarefas independentes; não se aguarda a próxima imagem do jogo nem o próximo desafio diário para anunciar uma atualização aplicada. Registro do aplicativo, filas, diagnóstico e configuração ficam privados.
 
+A .13 integra também `FeedPublications.release_pending`: mensagens de feed já entregues em canais de anúncios precisam ter a publicação para seguidores confirmada. A pendência é consultada em todos os destinos ativos, incluindo outros servidores, sem publicar os próprios avisos de atualização para seguidores. Os avisos continuam exclusivos deste canal oficial; a nova publicação automática vale para imagens dos feeds.
+
 Há um recibo persistente por versão no banco existente. Reiniciar ou renomear o canal não duplica o aviso. A confirmação perdida é pesquisada no canal original; sem conseguir confirmar, não reenvia cegamente. O envio não menciona membros/cargos e não faz crosspost de anúncios. **Bot status** informa se houve publicação, falta de canal/permissão ou confirmação pendente. A verificação ocorre a cada 30 s; indisponibilidades são reavaliadas em até cinco minutos.
 
 ## Testes privados

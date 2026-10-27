@@ -1,9 +1,8 @@
 {
   "schema": 1,
-  "version": "2026.10.27.12",
+  "version": "2026.10.27.13",
   "requires_banner_reactions": true,
   "changes": [
-    "A ordem W/M/L dos banners antigos foi corrigida em todos os servidores com banners configurados. As votações afetadas foram reiniciadas uma única vez.",
-    "Os avisos de atualização agora são publicados depois que as mudanças terminam de ser aplicadas."
+    "Banners com W/M/L e desafios diários agora são publicados automaticamente nos canais de anúncios, alcançando também os servidores que seguem esses canais."
   ]
 }

@@ -151,6 +151,8 @@ class BannerRelay:
                 }.get(job[0], "")
             if self.kind == 'banner' and self.target(guild_id):
                 status += '\n**W/M/L reactions:** ' + self.votes.description(guild_id)
+            if publishing := self.bot.feed_publications.description(self.kind, guild_id):
+                status += '\n**Announcement publishing:** ' + publishing
         return status
 
     def private_status(self, guild_id):
