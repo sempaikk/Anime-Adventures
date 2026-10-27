@@ -316,26 +316,22 @@ class GlobalAdminView(ScopedView):
 
     @discord.ui.button(label='Pause / resume', row=0)
     async def toggle(self, i, button):
-        cfg = self.current(i)
-        if not cfg:
+        if not self.current(i):
             raise ValueError('Enable a channel first.')
         await i.response.defer(ephemeral=True)
-        if cfg["active"]:
-            self.bot.globalchat.store.active(i.guild_id, False)
-            await self.bot.globalchat.onboarding.cleanup_public(
-                self.bot.globalchat.store.channel(i.guild_id)
-            )
-            await reply(
-                i,
-                '**Connection paused in this server.** New messages are not shared in either direction. Existing history remains available. Use /globalchat to resume.',
-            )
-        else:
-            channel = self.bot.globalchat.channel(cfg["channel_id"])
-            await self.bot.globalchat.activate(channel)
-            await reply(
-                i,
-                '**Connection resumed.** Only new messages will be shared; conversations from the pause are not imported.',
-            )
+        async with self.bot.guild_lock(i.guild_id):
+            cfg = self.current(i)
+            if cfg["active"]:
+                self.bot.globalchat.store.active(i.guild_id, False)
+                await self.bot.globalchat.onboarding.cleanup_public(
+                    self.bot.globalchat.store.channel(i.guild_id)
+                )
+                text = '**Connection paused in this server.** New messages are not shared in either direction. Existing history remains available. Use /globalchat to resume.'
+            else:
+                channel = self.bot.globalchat.channel(cfg["channel_id"])
+                await self.bot.globalchat.activate(channel)
+                text = '**Connection resumed.** Only new messages will be shared; conversations from the pause are not imported.'
+        await reply(i, text)
 
     @discord.ui.button(label='Local restrictions', row=1)
     async def blocks(self, i, button):
@@ -356,10 +352,11 @@ class GlobalAdminView(ScopedView):
         self.bot.require_owner(i)
         from global_ops import OperationsView
 
+        view = OperationsView(self.bot, i)
         await reply(
             i,
-            self.bot.globalchat.operations.description(),
-            view=OperationsView(self.bot, i),
+            view.description(),
+            view=view,
         )
 
     @discord.ui.button(label='My participation', row=2)

@@ -14,6 +14,8 @@ Chat entre servidores e imagens do jogo. A tier list está pausada, com código 
 
 Hospedagem atual: Bot-Hosting.net, Python 3.12 e início em `bot.py`. Preservar `DATA_DIR`, `DISCORD_TOKEN` e `SECONDARY_ACCOUNT_TOKEN`. A instância informada tem 256 MB RAM e 512 MB disco; o leitor fica em ambiente isolado na hospedagem. O PC do responsável não participa dos feeds. Variáveis antigas de IA/conhecimento podem ser removidas do painel após atualizar. O site permanece pausado.
 
+**Comunidade central:** `1554953245204422807`. O dono acessa o relatório privado em `/globalchat` → **Bot status** → **Server report**, sem ativar o chat. Atualizações relevantes são publicadas uma vez por versão no canal `update-log` desse servidor; nomes decorados são aceitos quando não há ambiguidade. Todos os ensaios permanecem privados. O sistema de níveis por mensagens/passivas é apenas ideia futura, sem implementação autorizada agora. [Operação e limites](docs/community-server.md).
+
 O site está congelado em Em breve / Coming soon por tempo indeterminado. Não alterar seus arquivos, configuração ou publicação sem novo pedido. Estado desta entrega, testes e publicação: [CONTINUIDADE.md](CONTINUIDADE.md).
 
 ## Chat entre servidores
@@ -101,7 +103,7 @@ A lista de contribuição usa o catálogo ativo e os retratos disponíveis, incl
 
 Propostas têm **Sinalizar problema**. Os relatos entram na revisão privada, sem acrescentar votos ou modificar posições. O responsável pode suspender uma proposta aberta, reverter a última classificação e restaurar retratos, com auditoria interna. A suspensão aparece no resultado da própria enquete. Administradores de outros servidores não alteram a classificação global diretamente.
 
-## Hospedagem e IA gratuita
+## Hospedagem e IA gratuita — histórico da tier list arquivada
 
 No Bot-Hosting.net, use **Python 3.12**, arquivo inicial **`bot.py`**, pull automático do GitHub e estas variáveis:
 
@@ -131,7 +133,7 @@ O plano gratuito da hospedagem exige renovação conforme suas regras. `./state`
 
 A revisão atual, o procedimento de atualização e as medições locais de fila estão em [docs/bot-operations.md](docs/bot-operations.md). Os ícones ativos são artes do jogo; o ícone de tier list do site foi excluído do tema.
 
-## Verificar sozinho, incluindo Discord real
+## Verificação da tier list arquivada — descrição histórica
 
 O responsável pelo aplicativo recebe **Verificação completa** na resposta privada de `/tierlist`. Ela:
 

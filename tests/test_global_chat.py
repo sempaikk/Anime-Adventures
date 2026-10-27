@@ -906,7 +906,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         channel.create_webhook.assert_not_awaited()
         self.assertEqual(self.engine.store.channel(1)["hook_id"], "110")
         channel.permissions_for.return_value.manage_webhooks = False
-        with self.assertRaisesRegex(ValueError, "Gerenciar webhooks"):
+        with self.assertRaisesRegex(ValueError, "Manage Webhooks"):
             await self.engine.activate(channel)
         channel.permissions_for.return_value.manage_webhooks = True
         channel.is_nsfw.return_value = True

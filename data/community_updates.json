@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "version": "2026.10.27.3",
+  "changes": [
+    "Banner and daily challenge deliveries now run independently, so an error in one feed does not pause the other.",
+    "Private feed diagnostics show the configured destination, source status and recent confirmed delivery.",
+    "Global chat now rechecks its settings before pausing or resuming, preventing outdated controls from changing a newer configuration.",
+    "Relevant bot updates will be posted here. Setup confirmations and diagnostic reports remain private."
+  ]
+}

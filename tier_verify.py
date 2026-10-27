@@ -24,6 +24,7 @@ HOST_TEST_PATTERNS = (
     "test_tier*.py",
     "test_global*.py",
     "test_banner*.py",
+    "test_community_hub.py",
     "test_instance_storage.py",
     "test_runtime_health.py",
     "test_storage_maintenance.py",

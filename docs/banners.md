@@ -27,7 +27,7 @@ A conta atua como leitora e **o bot publica com a própria identidade**. O bot n
 
 ## Entrega, cache e limites
 
-- `game_sources.py` centraliza as origens. `banner_reader.py` acompanha criação/edição de imagens e o texto de Questões. `banner_relay.py` mantém tabelas separadas `banner_*` e `daily_*` no SQLite do bot.
+- `game_sources.py` centraliza as origens. O leitor ativo acompanha somente criação/edição de imagens nas duas origens; a captura de Questões está encerrada. `banner_relay.py` mantém tabelas separadas `banner_*` e `daily_*` no SQLite do bot.
 - Ao conectar, procura a última imagem recente em no máximo dez mensagens por feed. Um destino novo recebe a mais recente disponível em cache; depois recebe as novas imagens. Não prometer atraso zero: rede, disponibilidade e limites do Discord afetam a entrega.
 - Configurações e recibos sobrevivem a reinícios. Repetir o comando não duplica uma imagem já confirmada. Trocar/desativar cancela trabalhos não enviados e conserva recibos confirmados ou incertos enquanto recentes.
 - Até dez imagens, 8 MiB por arquivo, 16 MiB por conjunto, 32 MiB de cache e até 64 conjuntos recentes por feed. Até 20 milhões de pixels e dimensão máxima de 8.192 pixels. O limite de upload do servidor também é conferido. Os bytes aprovados são mantidos, sem reconstruir artes ou cortar imagens.
@@ -39,7 +39,9 @@ A conta atua como leitora e **o bot publica com a própria identidade**. O bot n
 
 O recurso de perguntas foi cancelado em 27/10/2026. O processo normal não coleta Questões nem armazena conhecimento/abre conexão com o PC. Banners e desafios dependem apenas da hospedagem.
 
-Os testes usam bancos temporários, imagens artificiais e APIs simuladas. A importação isolada da biblioteca foi conferida sem login. Isso não comprova autenticação da conta, acesso real aos três canais, publicação ou Groq na hospedagem. Evidências da entrega estão em `CONTINUIDADE.md`.
+Os testes usam bancos temporários, imagens artificiais e APIs simuladas. A importação isolada da biblioteca foi conferida sem login. O responsável confirmou a entrega real dos banners; o desafio diário ainda precisa de confirmação própria. Evidências da entrega estão em `CONTINUIDADE.md`.
+
+Na revisão `2026.10.27.3`, cada feed tem seu próprio ciclo de entrega. Queda do leitor compartilhado afeta o estado dos dois feeds; falta de acesso a uma origem permanece individual. Excluir um destino desativa só aquele feed. O dono confere destinos, estado de origem e último recibo recente em **Bot status**, privado. [Servidor central e testes privados](community-server.md).
 
 ## Correção do recebimento em 27/10/2026
 

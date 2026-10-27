@@ -169,13 +169,38 @@ class GlobalOperations:
 class OperationsView(ScopedView):
     def __init__(self, bot, i):
         super().__init__(bot, i, owner=True)
+        from community_hub import CENTRAL_GUILD_ID
+
+        if i.guild_id != CENTRAL_GUILD_ID:
+            self.remove_item(self.server_report)
+
+    def description(self):
+        text = self.bot.globalchat.operations.description()
+        for feed in (getattr(self.bot, 'banners', None), getattr(self.bot, 'daily', None)):
+            if feed:
+                text += '\n\n' + feed.private_status(self.guild)
+        from community_hub import CENTRAL_GUILD_ID
+
+        if self.guild == CENTRAL_GUILD_ID:
+            text += '\n\n**Community update log:** ' + self.bot.community.status
+        return text
 
     @discord.ui.button(label='Refresh status', row=0)
     async def refresh(self, i, button):
         self.require(i)
         await edit_response(
-            i, content=self.bot.globalchat.operations.description(), view=self
+            i, content=self.description(), view=self
         )
+
+    @discord.ui.button(label='Server report', row=1)
+    async def server_report(self, i, button):
+        self.require(i)
+        await i.response.defer(ephemeral=True, thinking=True)
+        report = self.bot.community.report(i)
+        try:
+            await reply(i, 'Private server structure and bot permissions. Review this file before sharing it. No messages or credentials are included.', file=report)
+        finally:
+            report.close()
 
     @discord.ui.button(label='Pause / resume network', row=0)
     async def pause(self, i, button):
@@ -188,7 +213,7 @@ class OperationsView(ScopedView):
         enabled = self.bot.store.get("global-owner-alerts") != "0"
         self.bot.store.set("global-owner-alerts", "0" if enabled else "1")
         await edit_response(
-            i, content=self.bot.globalchat.operations.description(), view=self
+            i, content=self.description(), view=self
         )
 
 

@@ -405,6 +405,18 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
         with self.assertRaisesRegex(ValueError, 'changed'):
             await modal.on_submit(i)
 
+    async def test_local_pause_rechecks_newer_configuration_after_acknowledging(self):
+        i = self.interaction(admin=True)
+        view = GlobalAdminView(self.app, i)
+
+        async def changed(**kwargs):
+            self.engine.store.active(i.guild_id, False)
+
+        i.response.defer.side_effect = changed
+        with self.assertRaisesRegex(ValueError, 'settings changed'):
+            await view.toggle.callback(i)
+        self.assertFalse(self.engine.store.channel(i.guild_id)['active'])
+
     async def test_personal_sent_messages_have_private_navigation(self):
         for n in range(8):
             self.now[0] += 11

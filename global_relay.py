@@ -20,8 +20,8 @@ REQUIRED = {
     "view_channel": 'View Channel',
     "send_messages": 'Send Messages',
     "read_message_history": 'Read Message History',
-    "manage_webhooks": "Gerenciar webhooks",
-    "attach_files": "Anexar arquivos",
+    "manage_webhooks": "Manage Webhooks",
+    "attach_files": "Attach Files",
 }
 
 

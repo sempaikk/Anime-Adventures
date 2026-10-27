@@ -134,7 +134,7 @@ class BannerRelay:
         if current=='ready' and not self.query('SELECT 1 FROM banner_events WHERE created_at>? LIMIT 1',(self.clock()-self.max_age,)).fetchone():
             status+='\nNo recent image is cached yet. The source is checked automatically every 30 seconds.'
         if guild_id is not None:
-            job = self.query("SELECT state FROM banner_jobs WHERE guild_id=? ORDER BY rowid DESC LIMIT 1", (str(guild_id),)).fetchone()
+            job = self.query("SELECT j.state FROM banner_jobs j JOIN banner_targets t ON t.guild_id=j.guild_id AND t.channel_id=j.channel_id WHERE j.guild_id=? ORDER BY j.rowid DESC LIMIT 1", (str(guild_id),)).fetchone()
             if job:
                 status += {
                     "unavailable": "\nCheck the bot's channel access and permissions, then run the setup command again.",
@@ -142,6 +142,22 @@ class BannerRelay:
                     "uncertain": "\nA delivery is awaiting confirmation from Discord. The bot is checking the result to avoid duplicates.",
                 }.get(job[0], "")
         return status
+
+    def private_status(self, guild_id):
+        title = "Daily challenges" if self.kind == "daily" else "Banners"
+        target = self.target(guild_id)
+        if not target:
+            return f"**{title}:** no destination configured in this server."
+        text = f"**{title}:** <#{target['channel_id']}>. {self.description(guild_id)}"
+        confirmed = self.query(
+            "SELECT attempted_at FROM banner_jobs WHERE guild_id=? AND channel_id=? AND state='sent' ORDER BY attempted_at DESC LIMIT 1",
+            (str(guild_id), target['channel_id']),
+        ).fetchone()
+        if confirmed:
+            text += f"\nLast confirmed delivery: <t:{int(confirmed[0])}:R>."
+        else:
+            text += "\nNo confirmed delivery remains in the recent receipt window."
+        return text
 
     def start(self):
         if reader_token() and not self.task:
@@ -152,6 +168,7 @@ class BannerRelay:
         delay = 5
         while True:
             self.status = "connecting"
+            self.bot.daily.status = "connecting"
             try:
                 environment = {key: value for key, value in os.environ.items()
                                if key in {"PATH", "SYSTEMROOT", "TMPDIR", "TMP", "TEMP", "LANG", "LC_ALL", "SSL_CERT_FILE", "SSL_CERT_DIR", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"}}
@@ -201,6 +218,8 @@ class BannerRelay:
                                 self.status = event["event"]
                                 self.bot.daily.status = self.status
                             self.bot.knowledge.reader_status = event['event']
+                            if event['event'] == 'ready':
+                                delay = 5
                     except (ValueError, TypeError, KeyError, aiohttp.ClientError, asyncio.TimeoutError):
                         log.warning("Uma imagem de banner não pôde ser recebida; detalhes privados omitidos.")
                     count+=1
@@ -216,6 +235,7 @@ class BannerRelay:
             finally:
                 await self.stop_process()
             self.status = "reader_failed"
+            self.bot.daily.status = "reader_failed"
             await asyncio.sleep(delay)
             delay = min(delay * 2, 300)
 

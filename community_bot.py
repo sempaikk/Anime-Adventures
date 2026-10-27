@@ -1,4 +1,4 @@
-"""Tier list, global chat and independently configured image-only banners."""
+"""Global chat, independent image feeds and private community administration."""
 
 from __future__ import annotations
 import asyncio
@@ -124,6 +124,9 @@ class CommunityBot(commands.Bot):
         self.globalchat.media.available_space=self.instance_storage.available
         self.owner_ids_set = set()
         self.ui_theme = GameTheme()
+        from community_hub import CommunityHub
+
+        self.community = CommunityHub(self)
         from tier_release import build_info
 
         self.build = build_info()
@@ -228,6 +231,7 @@ class CommunityBot(commands.Bot):
             self.global_loop,
             self.operations_loop,
             self.banner_loop,
+            self.daily_loop,
             self.quota_loop,
         ):
             if not self.tierlist_enabled and loop in (self.history_loop, self.analysis_loop, self.poll_loop, self.panel_loop, self.wiki_loop):
@@ -386,6 +390,10 @@ class CommunityBot(commands.Bot):
                 )
 
     async def on_guild_channel_delete(self, channel):
+        for feed in (self.banners, self.daily):
+            target = feed.target(channel.guild.id)
+            if target and target["channel_id"] == str(channel.id):
+                feed.disable(channel.guild.id)
         cfg = self.globalchat.store.source(channel.id)
         if cfg:
             for row in self.globalchat.store.rows(
@@ -1104,6 +1112,10 @@ class CommunityBot(commands.Bot):
             await self.globalchat.operations.check_alerts()
         except Exception as error:
             log.warning("Diagnóstico operacional adiado: %s", type(error).__name__)
+        try:
+            await self.community.publish_update()
+        except Exception as error:
+            log.warning("Community update deferred: %s", type(error).__name__)
 
     @operations_loop.before_loop
     async def operations_ready(self):
@@ -1113,13 +1125,22 @@ class CommunityBot(commands.Bot):
     async def banner_loop(self):
         try:
             await self.banners.cycle()
-            await self.daily.cycle()
-            self.knowledge.prune()
         except Exception as error:
             log.warning("Entrega de banners adiada: %s", type(error).__name__)
 
     @banner_loop.before_loop
     async def banner_ready(self):
+        await self.wait_until_ready()
+
+    @tasks.loop(seconds=2)
+    async def daily_loop(self):
+        try:
+            await self.daily.cycle()
+        except Exception as error:
+            log.warning("Daily challenge delivery deferred: %s", type(error).__name__)
+
+    @daily_loop.before_loop
+    async def daily_ready(self):
         await self.wait_until_ready()
 
     @tasks.loop(seconds=60)
@@ -1263,6 +1284,7 @@ class CommunityBot(commands.Bot):
             self.global_loop,
             self.operations_loop,
             self.banner_loop,
+            self.daily_loop,
             self.quota_loop,
         ):
             task = loop.get_task()

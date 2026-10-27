@@ -2,6 +2,15 @@
 
 Leia `CONTINUIDADE.md`, confira `git status` e `origin/main` antes de editar e preserve trabalho pendente. Não usar reset destrutivo ou push forçado.
 
+## Comunidade central e testes — orientação posterior de 27/10/2026
+
+- Servidor central/comunidade: **1554953245204422807**. O servidor antigo Testes foi excluído; não reutilizar seus destinos nem presumir acesso direto ao Discord por ter o ID. O bot hospedado e a sessão de desenvolvimento têm acessos diferentes.
+- Todo teste deve ser privado: respostas ephemeral, bancos temporários e, se um ensaio real precisar publicar, canal restrito cuja permissão seja conferida antes do envio. Não mover destinos públicos de produção, compartilhar mensagens de teste na rede global, criar cargos ou mudar permissões para ensaiar. Nunca publicar testes em um canal público como alternativa a acesso privado indisponível.
+- O responsável autorizou publicar em **update log** as mudanças relevantes para quem usa o bot. `community_hub.py` publica somente notas curadas da versão executada/verificada, uma vez por versão, exclusivamente no servidor central e se encontrar um único canal de texto com esse nome normalizado. Não publicar logs técnicos, relatórios privados ou resultados de testes ali. Duplicidade de nome/permissão insuficiente bloqueia a publicação; não escolher outro canal por suposição.
+- Relatório da estrutura/permissões: `/globalchat` → **Bot status** → **Server report**, exclusivo do dono do aplicativo que também administra o servidor central. Exporta metadados conhecidos pelo Gateway; não lê mensagens, membros ou credenciais. O arquivo é privado e não deve ser versionado. Recebê-lo é necessário para analisar a estrutura real quando esta sessão não dispõe de acesso ao Discord.
+- **Somente ideia futura, sem implementação agora:** níveis por mensagens com tema das passivas de Anime Adventures, culminando em Unique. Sem loja/moedas/compras, XP, cargos automáticos ou contagem de call neste ciclo. O responsável corrigiu e adiou explicitamente essa parte.
+- O responsável confirmou entrega real e pontual dos banners. Desafio diário ainda aguarda confirmação real; não deduzir sucesso só porque o banner funciona.
+
 ## Decisão mais recente — 27/10/2026
 
 - O responsável cancelou `/ask`, a IA de perguntas e todo o programa/armazenamento no PC. Não continuar ajustes de Dark Mage/citações, migração ou pesquisa de outra IA como tarefa ativa. Decisões anteriores estão preservadas como histórico em `CONTINUIDADE.md` e foram substituídas por este pedido.

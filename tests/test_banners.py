@@ -287,6 +287,46 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(daily.target(2))
         self.assertIsNotNone(self.relay.target(1))
 
+    async def test_daily_worker_progresses_while_banner_worker_fails(self):
+        import asyncio
+        self.app.banners.cycle = AsyncMock(side_effect=RuntimeError('synthetic banner failure'))
+        self.app.daily.cycle = AsyncMock()
+        await asyncio.gather(self.app.banner_loop.coro(self.app), self.app.daily_loop.coro(self.app))
+        self.app.daily.cycle.assert_awaited_once()
+
+    async def test_deleted_destination_disables_only_its_feed(self):
+        self.relay.configure(1, 10)
+        self.add_channel(1, 11)
+        self.app.daily.configure(1, 11)
+        await self.app.on_guild_channel_delete(self.channels[10])
+        self.assertIsNone(self.relay.target(1))
+        self.assertEqual(self.app.daily.target(1)['channel_id'], '11')
+
+    async def test_shared_reader_exit_marks_both_feeds_unavailable(self):
+        import asyncio
+        process = SimpleNamespace(
+            stdin=SimpleNamespace(write=MagicMock(), drain=AsyncMock(), close=MagicMock()),
+            stdout=iterate([b'{"event":"ready"}\n']), wait=AsyncMock(return_value=1), returncode=1)
+        self.app.wait_until_ready = AsyncMock()
+        with patch.dict('os.environ', {'SECONDARY_ACCOUNT_TOKEN': 'synthetic-only'}), patch('asyncio.create_subprocess_exec', AsyncMock(return_value=process)), patch('asyncio.sleep', AsyncMock(side_effect=asyncio.CancelledError())):
+            with self.assertRaises(asyncio.CancelledError):
+                await self.relay.supervise()
+        self.assertEqual(self.relay.status, 'reader_failed')
+        self.assertEqual(self.app.daily.status, 'reader_failed')
+
+    async def test_status_does_not_report_an_old_channels_uncertain_delivery_after_move(self):
+        self.relay.configure(1, 10)
+        await self.relay.accept(self.event())
+        self.relay.state(self.jobs()[0], 'uncertain')
+        # The old receipt still exists, but no fresh event can seed the new channel.
+        self.now += 4000
+        self.add_channel(1, 11)
+        self.relay.configure(1, 11)
+        self.assertNotIn('awaiting confirmation', self.relay.description(1))
+        await self.relay.accept(self.event(message_id='123456789012345679'))
+        await self.relay.cycle()
+        self.assertIn('Last confirmed delivery:', self.relay.private_status(1))
+
 
 class SourceImageCase(unittest.TestCase):
     def test_source_serializer_forwards_only_images_and_handles_edited_old_messages(self):
