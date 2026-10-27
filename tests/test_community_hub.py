@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, MagicMock
 import discord
 
 from community_bot import CommunityBot
-from community_hub import CENTRAL_GUILD_ID
+from community_hub import CENTRAL_GUILD_ID, CENTRAL_UPDATE_CHANNEL_ID
 from global_ops import OperationsView
 
 
@@ -26,7 +26,7 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         self.bot = CommunityBot(self.temp.name)
         self.bot.owner_ids_set = {7}
         self.bot._connection.user = SimpleNamespace(id=42)
-        self.bot.build = {'version': '2026.10.27.3', 'verified': True}
+        self.bot.build = {'version': '2026.10.27.4', 'verified': True}
         self.hub = self.bot.community
         self.now = 2_000_000_000.0
         self.bot.store.clock = lambda: self.now
@@ -49,7 +49,8 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         )
         self.bot.get_guild = lambda ident: self.guild if ident == CENTRAL_GUILD_ID else None
         self.guild.get_channel = lambda ident: next((c for c in self.guild.channels if c.id == ident), None)
-        self.channel = self.add_channel(200, '📋┃update-log')
+        self.channel = self.add_channel(CENTRAL_UPDATE_CHANNEL_ID, '🛠️┃updates-logs')
+        self.channel.type = discord.ChannelType.news
         self.history = []
         self.bot.http.send_message = AsyncMock(return_value={'id': '999'})
 
@@ -72,14 +73,14 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
 
     def interaction(self, *, actor=7, guild=CENTRAL_GUILD_ID, admin=True):
         return SimpleNamespace(
-            user=SimpleNamespace(id=actor), guild_id=guild, channel_id=200, client=self.bot,
+            user=SimpleNamespace(id=actor), guild_id=guild, channel_id=CENTRAL_UPDATE_CHANNEL_ID, client=self.bot,
             permissions=discord.Permissions(manage_guild=admin),
             response=SimpleNamespace(defer=AsyncMock(), is_done=lambda: True),
             followup=SimpleNamespace(send=AsyncMock()),
         )
 
     def receipt(self):
-        return json.loads(self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.3') or '{}')
+        return json.loads(self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.4') or '{}')
 
     async def test_only_designated_server_and_verified_matching_release_can_publish(self):
         self.guild.id = 1
@@ -97,13 +98,15 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         await self.hub.publish_update()
         self.bot.http.send_message.assert_not_awaited()
 
-    async def test_no_fallback_public_channel_when_name_is_missing_or_ambiguous(self):
-        self.channel.name = 'general'
+    async def test_confirmed_announcement_channel_is_used_despite_plural_name_or_similar_channels(self):
+        self.add_channel(201, 'update-log')
+        self.add_channel(202, 'update_log')
         await self.hub.publish_update()
-        self.bot.http.send_message.assert_not_awaited()
-        self.channel.name = 'update-log'
-        self.add_channel(201, 'update_log')
-        self.now += 300
+        self.assertEqual(self.bot.http.send_message.call_args.args[0], CENTRAL_UPDATE_CHANNEL_ID)
+
+    async def test_missing_confirmed_channel_does_not_fall_back_to_a_similar_name(self):
+        self.guild.channels.remove(self.channel)
+        self.add_channel(201, 'update-log')
         await self.hub.publish_update()
         self.bot.http.send_message.assert_not_awaited()
 
@@ -114,12 +117,12 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         self.bot.http.send_message.assert_not_awaited()
         self.channel.permissions_for.return_value.read_message_history = True
         for feed in (self.bot.banners, self.bot.daily):
-            feed.configure(CENTRAL_GUILD_ID, 200)
+            feed.configure(CENTRAL_GUILD_ID, CENTRAL_UPDATE_CHANNEL_ID)
             self.now += 300
             await self.hub.publish_update()
             self.bot.http.send_message.assert_not_awaited()
             feed.disable(CENTRAL_GUILD_ID)
-        self.bot.globalchat.store.configure(CENTRAL_GUILD_ID, 200, 123, 'synthetic-not-a-token', 0)
+        self.bot.globalchat.store.configure(CENTRAL_GUILD_ID, CENTRAL_UPDATE_CHANNEL_ID, 123, 'synthetic-not-a-token', 0)
         self.now += 300
         await self.hub.publish_update()
         self.bot.http.send_message.assert_not_awaited()
@@ -137,7 +140,7 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.bot.http.send_message.await_count, 1)
         self.assertTrue(payloads[0]['enforce_nonce'])
         self.assertEqual(payloads[0]['allowed_mentions']['parse'], [])
-        self.assertIn('2026.10.27.3', payloads[0]['content'])
+        self.assertIn('2026.10.27.4', payloads[0]['content'])
         from community_hub import CommunityHub
         self.hub = CommunityHub(self.bot)
         await self.hub.publish_update()
@@ -157,7 +160,7 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         await self.hub.publish_update()
         self.bot.http.send_message.assert_awaited_once()
         self.assertEqual(self.receipt()['state'], 'sent')
-        self.assertEqual(self.receipt()['channel_id'], '200')
+        self.assertEqual(self.receipt()['channel_id'], str(CENTRAL_UPDATE_CHANNEL_ID))
 
     async def test_unconfirmed_or_crashed_send_is_never_blindly_repeated(self):
         self.bot.http.send_message.side_effect = asyncio.CancelledError()

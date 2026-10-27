@@ -118,16 +118,7 @@ class Card(discord.ui.LayoutView):
             paragraphs = str(text).split("\n\n")
             box = discord.ui.Container(accent_colour=0xA283E8)
             context = controller.__class__.__name__ if controller else ""
-            hero_key = {
-                "ThreadView": "units",
-                "AdminView": "units",
-                "GlobalAdminView": "units",
-                "GlobalMemberView": "units",
-                "ConsentView": "units",
-                "GlobalDirectView": "units",
-                "MyMessagesView": "items",
-                "OperationsView": "clock",
-            }.get(context)
+            hero_key = "clock" if context == "OperationsView" else None
             for index, paragraph in enumerate(paragraphs):
                 if index:
                     box.add_item(
@@ -146,9 +137,6 @@ class Card(discord.ui.LayoutView):
             self.add_item(box)
         for embed in embeds:
             box = discord.ui.Container(accent_colour=embed.colour or 0xA283E8)
-            is_poll = bool(
-                embed.footer.text and embed.footer.text.startswith("Proposta #")
-            )
             header = "\n".join(
                 filter(
                     None,
@@ -158,9 +146,7 @@ class Card(discord.ui.LayoutView):
                     ),
                 )
             )
-            thumbnail = embed.thumbnail.url or (
-                self.theme.image("rank") if is_poll else None
-            )
+            thumbnail = embed.thumbnail.url
             if thumbnail and header:
                 box.add_item(
                     discord.ui.Section(
@@ -174,16 +160,9 @@ class Card(discord.ui.LayoutView):
                 box.add_item(
                     discord.ui.Separator(spacing=discord.SeparatorSpacing.small)
                 )
-                icon = (
-                    "clock"
-                    if field.name == "Prazo"
-                    else "rank"
-                    if field.name == "O que muda"
-                    else None
-                )
                 box.add_item(
                     discord.ui.TextDisplay(
-                        f"### {self.theme.mark(icon)}{field.name}\n{field.value}"
+                        f"### {field.name}\n{field.value}"
                     )
                 )
             if embed.image.url:

@@ -8,13 +8,13 @@ import io
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-import re
 
 import aiohttp
 import discord
 from discord.http import handle_message_parameters
 
 CENTRAL_GUILD_ID = 1554953245204422807
+CENTRAL_UPDATE_CHANNEL_ID = 1564498826423959652
 UPDATES_PATH = Path(__file__).with_name("data") / "community_updates.json"
 REPORT_PERMISSIONS = (
     "view_channel", "send_messages", "read_message_history", "attach_files",
@@ -37,14 +37,12 @@ class CommunityHub:
         return guild
 
     def update_channel(self, guild):
-        matches = [
-            channel for channel in guild.text_channels
-            if re.sub(r"[^a-z0-9]", "", channel.name.casefold()) == "updatelog"
-        ]
-        if len(matches) != 1:
-            self.status = "A single text channel named update-log is required."
+        # Confirmed from the owner's private server report. Names may change;
+        # never redirect announcements to a different channel with a similar name.
+        channel = guild.get_channel(CENTRAL_UPDATE_CHANNEL_ID)
+        if not isinstance(channel, discord.TextChannel):
+            self.status = "The configured updates channel is unavailable to the bot."
             return None
-        channel = matches[0]
         # A changelog must not change or mix with a configured relay destination.
         configured = self.bot.globalchat.store.channel(guild.id)
         if ((configured and configured['channel_id'] == str(channel.id))

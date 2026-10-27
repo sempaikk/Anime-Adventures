@@ -86,35 +86,10 @@ def theme_for(bot=None):
 
 
 def decorate_controls(view, bot):
-    theme = theme_for(bot)
-    mapping = {"rollback": "rank", "visual-test": "rank"}
-    labels = {
-        "My messages": "items",
-        "Remove copies": "items",
-        "My participation": "units",
-        "Join": "units",
-        "Meus envios": "items",
-        "Remover cópias": "items",
-        "Sugerir imagem": "units",
-        "Revisar imagens": "units",
-        "Restaurar retrato anterior": "units",
-        "Testar personagens na imagem": "units",
-        "Ver alterações de personagens": "units",
-        "Minha participação": "units",
-        "Participar": "units",
-        "Histórico": "clock",
-        "Ver tier list": "units",
-    }
+    """Controls use text; the only decorative game icon belongs to Bot status."""
     for button in view.children:
         if isinstance(button, discord.ui.Button):
-            key = mapping.get(button.custom_id)
-            key = labels.get(button.label, key)
-            if button.label == "Ver tier list":
-                key = "rank"
-            elif button.label == "Histórico":
-                key = "clock"
-            if key:
-                button.emoji = theme.icon(key)
+            button.emoji = None
 
 
 def icon_sources():

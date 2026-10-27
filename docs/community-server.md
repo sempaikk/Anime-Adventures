@@ -12,7 +12,7 @@ A máquina de desenvolvimento não recebe acesso ao Discord por conhecer o ID do
 
 ## Atualizações para os membros
 
-O bot procura exclusivamente no servidor central um único canal de texto cujo nome normalizado seja `updatelog`; `update-log`, `update_log` e nomes com decoração em volta são reconhecidos. Precisa de Ver canal, Enviar mensagens e Ler histórico. Não usa um destino de banner, desafio ou chat global para esse fim. Se houver zero ou vários candidatos, aguarda correção em vez de publicar em outro lugar.
+O relatório privado da instância confirmou o canal de anúncios **1564498826423959652**. A versão .3 procurava `update-log` no singular e não reconheceu o nome real `updates-logs`. A partir de .4, o bot usa exclusivamente o ID confirmado dentro do servidor central. Renomear esse canal não altera o destino; nomes parecidos em outros canais não redirecionam a publicação. Precisa de Ver canal, Enviar mensagens e Ler histórico. Não usa um destino de banner, desafio ou chat global para esse fim. Se o canal for excluído ou ficar inacessível, aguarda correção em vez de publicar em outro lugar.
 
 As notas ficam em `data/community_updates.json`, com a versão exata e mudanças relevantes ao uso. Cada entrega funcional precisa atualizar essa lista e o manifesto do pacote. Revisões internas sem efeito para os membros não recebem anúncio. Só a versão que estiver rodando com arquivos verificados pode publicar; testes locais não anunciam nada. Não publica retrospectivamente releases antigas nem mensagens de teste, resultados da suíte ou relatórios administrativos.
 
@@ -31,7 +31,15 @@ Os testes automatizados usam estado temporário e APIs simuladas. Nenhuma mensag
 - Pausa/retomada do chat global é serializada por servidor e confere novamente a geração da configuração após confirmar a interação; um painel antigo não modifica uma configuração nova.
 - Mensagens de permissões do chat global permanecem em inglês, como o restante da interface.
 
-O responsável confirmou banners chegando no horário. Não houve nova publicação real executada pela máquina de desenvolvimento. Entrega real de desafio diário, identificação do update log e análise da estrutura ainda exigem conferir a hospedagem/relatório.
+O responsável confirmou banners chegando no horário. O relatório privado posterior e a captura de Bot status comprovam .3 com arquivos íntegros, chat global ativo, destinos de ambos os feeds e recibos confirmados de banner e desafio diário. A máquina de desenvolvimento não executou publicações reais. A correção do destino de atualizações na .4 ainda precisa ser carregada na hospedagem e o anúncio conferido.
+
+## Ícones e organização do servidor
+
+Por preferência posterior do responsável, apenas **Bot status** pode exibir uma miniatura decorativa do jogo, uma vez no início do cartão. Os demais menus, botões e campos usam texto, sem recolocar o mesmo ícone em títulos, confirmações ou listas. Os feeds continuam com suas imagens originais; o texto e os emojis escritos pelos participantes não são alterados.
+
+O responsável definiu **Assinantes** como membros normais, **Angelic** e **Artista** como cargos decorativos e **Mods** como moderadores. Disse que excluiria seu cargo pessoal e continuaria com Assinantes; a conta proprietária mantém os poderes de dono independentemente desse cargo. O relatório antigo não tinha um cargo chamado Angelic; não inferir identidade a partir de outro nome.
+
+A captura posterior mostra o cargo **Adventures**, criado pelo responsável, atribuído ao bot, no topo e com Administrador. A posição habilita gerenciamento de cargos abaixo. Desativar **Exibir membros deste cargo separadamente** em Adventures mantém a organização visual pelo cargo Bots inferior. Não duplicar o cargo nem alterar permissões dos outros cargos automaticamente. O relatório anterior tinha Mods com Administrador; a proposta de moderação com permissões específicas ainda não foi aplicada. Autorização do dono não disponibiliza acesso técnico direto ao Discord nesta sessão.
 
 ## Ideia futura de níveis
 

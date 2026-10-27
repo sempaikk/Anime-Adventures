@@ -233,14 +233,14 @@ class NativeRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual([item["label"] for item in buttons], ["Conferir painel"])
         self.assertNotIn("Correções", visible_text(data["view"]))
 
-    async def test_public_controls_are_persistent_and_semantic_icons_are_selective(
+    async def test_public_controls_remain_persistent_with_text_only_buttons(
         self,
     ):
         self.app.ui_theme.available = set(ICONS)
         thread = ThreadView(self.app)
         view = payload(bot=self.app, content="Índice", view=thread)["view"]
         self.assertTrue(view.is_persistent())
-        self.assertEqual(thread.suggest.emoji.id, int(ICONS["units"]["id"]))
+        self.assertTrue(all(item.emoji is None for item in thread.children))
         poll = PollView(self.app)
         self.assertIsNone(poll.tests.emoji)
         self.assertIsNone(poll.report.emoji)

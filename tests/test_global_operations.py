@@ -437,6 +437,41 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(theme.icon("rank").id, int(ICONS["units"]["id"]))
         self.assertNotEqual(theme.icon("rank").id, int(ICONS["rank"]["id"]))
 
+    async def test_game_icon_appears_only_once_in_bot_status_and_nowhere_in_other_menus(self):
+        from global_views import GlobalMemberView, GlobalDirectView, ConsentView
+        from tier_ui import component_dicts
+
+        self.app.ui_theme = GameTheme()
+        self.app.ui_theme.available = set(ICONS)
+        i = self.interaction(admin=True)
+        views = [
+            GlobalAdminView(self.app, i), GlobalMemberView(self.app, i),
+            GlobalDirectView(self.app), ConsentView(self.app, i, self.engine.store.channel(i.guild_id)),
+            MyMessagesView(self.app, i), OperationsView(self.app, i),
+        ]
+        for view in views:
+            with self.subTest(view=type(view).__name__):
+                card = payload(bot=self.app, content='## Controls\n\nFirst section\n\nSecond section', view=view)['view']
+                components = list(component_dicts(card))
+                thumbnails = [part for part in components if part.get('type') == 11]
+                self.assertEqual(len(thumbnails), 1 if isinstance(view, OperationsView) else 0)
+                self.assertFalse(any(part.get('emoji') for part in components))
+                if thumbnails:
+                    self.assertIn(ICONS['clock']['id'], thumbnails[0]['media']['url'])
+
+    async def test_embedded_sections_do_not_add_decorative_game_icons(self):
+        self.app.ui_theme = GameTheme()
+        self.app.ui_theme.available = set(ICONS)
+        embed = __import__('discord').Embed(title='Status')
+        embed.set_footer(text='Proposta #123')
+        embed.add_field(name='Prazo', value='In ten minutes')
+        embed.add_field(name='O que muda', value='A configuration change')
+        card = payload(bot=self.app, embed=embed)['view']
+        from tier_ui import component_dicts
+
+        self.assertFalse(any(part.get('type') == 11 for part in component_dicts(card)))
+        self.assertNotIn('<:', visible_text(card))
+
     async def test_side_by_side_modes_grow_aligned_without_shrinking_portraits(self):
         publications = {
             "casual": {"ranking": []},
