@@ -11,9 +11,11 @@ Leia `CONTINUIDADE.md`, confira `git status` e `origin/main` antes de editar e p
 - O leitor usa `discord.py-self==2.1.0` no processo/venv isolado, nunca no ambiente principal de `discord.py`. A inscrição de servidor grande requer `typing=True`; colocar todas as flags como False cancela a inscrição. Poll de 30 s e deduplicação complementam eventos. Estado de acesso é separado por fonte; não alegar entrega real sem observar o destino após atualizar.
 - Hospedagem: 256 MB RAM / 512 MB disco. Não instalar software ou exigir PC ligado para os feeds. Histórico antigo de conhecimento hospedado permanece inativo e não é apagado automaticamente ao retirar o comando.
 
-## Remoção Windows autorizada
+## Remoção Windows — alerta do Defender
 
-O responsável pediu desinstalar todas as instalações registradas de Python e limpar os arquivos do programa em `D:\Armazenamento do Bot`. Ferramentas: `LEIA-ME-REMOCAO.txt`, `REMOVER-PYTHON-E-BOT.cmd` e `scripts/remove_python_windows.ps1`. Usar os desinstaladores registrados, apagar somente resíduos conhecidos, não seguir junctions/symlinks e não apagar Windows/Installer, WindowsApps ou runtimes embutidos em outros programas. Falhas precisam ser mostradas, sem prometer encontrar todos os arquivos de todos os discos. O teste no GitHub Windows usa apenas `-Preview`, nunca desinstala software do runner.
+**Em 27/10/2026 o responsável mostrou “Vírus detectado” no ZIP automático de remoção.** O pacote, launcher, PowerShell e gerador foram retirados da main. Não oferecer outra versão/EXE, renomear/reempacotar para escapar da detecção, pedir para restaurar/permitir ou desativar o antivírus. A causa/nome da detecção ainda precisam de informação do Histórico de proteção; não afirmar falso positivo, infecção ou segurança total com base na simulação/CI. Não confundir testes funcionais com análise antimalware.
+
+A autorização de limpar o PC permanece: orientar desinstalação em Configurações > Aplicativos e exclusão manual das pastas/arquivos conhecidos, conforme `LEIA-ME-REMOCAO.txt`, sem novos downloads de limpadores. O responsável quer remover Python, pacotes, ZIPs e arquivos desta configuração. Não apagar arquivos alheios, Windows/Installer, WindowsApps ou runtimes embutidos em outros programas. Site e hospedagem ficam separados da limpeza do PC.
 
 ## Site congelado
 

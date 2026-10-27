@@ -2,7 +2,7 @@
 
 **Escopo vigente em 27/10/2026:** `/globalchat`, `/setbanner` e `/dailychallenge`. `/ask` e a integração com o PC foram cancelados e não são ativados por `KNOWLEDGE_MODE`. Não é necessário manter o PC ou o Discord do responsável aberto para os feeds de imagens.
 
-[Remover o programa do PC e instalações de Python — scripts legíveis para Windows](https://github.com/sempaikk/Anime-Adventures/raw/refs/heads/main/downloads/Remover-Python-e-Bot-Windows.zip). Extraia fora da pasta do bot e leia `LEIA-ME-REMOCAO.txt`. Use os desinstaladores oficiais registrados; confira eventuais falhas ao terminar.
+**Pacote automático de remoção retirado:** o responsável mostrou um bloqueio do Microsoft Defender no ZIP que foi distribuído. Não restaurar, permitir, executar ou desativar o antivírus para usá-lo. Os testes de sintaxe/simulação não eram uma análise antimalware. Use apenas a desinstalação pelas configurações do Windows, conforme `LEIA-ME-REMOCAO.txt`; não é necessário baixar outro programa de limpeza.
 
 Chat entre servidores e imagens do jogo. A tier list está pausada, com código e dados arquivados. **Comandos atuais, todos em inglês e sem argumentos:**
 
