@@ -34,35 +34,46 @@ class GlobalOperations:
             "paused": self.store.network_paused(),
             "heartbeat": max(0, int(now - self.relay.last_cycle)),
             "storage": getattr(self.bot.health, "storage_level", "unknown"),
+            "archive_paused": bool(getattr(getattr(self.bot,'knowledge',None),'paused',False)),
         }
 
     def description(self, *, compact=False):
         s = self.snapshot()
-        text = f"**Chat global:** {'rede pausada' if s['paused'] else 'rede ativa'} · {s['pending']} entrega(s) pendente(s), mais antiga há {s['age']} s.\n**Últimos 15 minutos:** {s['failures']} entrega(s) não confirmada(s).\n**Proteção temporária:** {s['contained']} servidor(es) contido(s).\n**Última passagem da fila:** há {s['heartbeat']} s."
+        text = f"**Global chat:** {('network paused' if s['paused'] else 'network active')} · {s['pending']} pending delivery attempt(s); oldest: {s['age']} s.\n**Last 15 minutes:** {s['failures']} unconfirmed delivery attempt(s).\n**Temporary restrictions:** {s['contained']} restricted server(s).\n**Last queue cycle:** {s['heartbeat']} s."
         if compact:
             return text
-        text = "## Estado privado do bot\n" + text
-        text += f"\n**Armazenamento:** {s['storage']} · banco {self.bot.store.path.stat().st_size / 1024 / 1024:.1f} MiB · cache {self.relay.media.usage() / 1024 / 1024:.1f} MiB."
+        text = '## Private bot status\n' + text
+        quota=getattr(self.bot.health,'quota',None)
+        if quota:
+            text+=f"\n**Instance files:** {quota['used']/1048576:.1f}/{quota['total']/1048576:.0f} MiB (measured locally)."
+        text += f"\n**Storage:** {s['storage']} · database {self.bot.store.path.stat().st_size / 1024 / 1024:.1f} MiB · cache {self.relay.media.usage() / 1024 / 1024:.1f} MiB."
         build = getattr(self.bot, "build", None)
         if build:
-            text += "\n**Versão em execução:** " + label(build)
+            text += '\n**Running version:** ' + label(build)
         for key, title in (
-            ("last_connection_success", "Última conexão válida da IA"),
-            ("last_success", "Última análise válida"),
+            ("last_connection_success", 'Last successful AI connection'),
+            ("ask_last_success", 'Last successful answer'),
         ):
             value = self.bot.store.get(key)
             text += f"\n**{title}:** " + (
-                f"<t:{int(float(value))}:R>" if value else "ainda não registrada"
+                f"<t:{int(float(value))}:R>" if value else 'not recorded yet'
             )
         alerts = self.bot.store.get("global-owner-alerts") != "0"
-        text += f"\n**Alertas privados:** {'ativados' if alerts else 'desativados'}. Falhas precisam persistir por dois minutos; cada tipo de alerta tem intervalo de uma hora."
+        text += f"\n**Private alerts:** {('enabled' if alerts else 'disabled')}. Failures must persist for two minutes; each alert type has a one-hour cooldown."
         held = self.store.rows(
             "SELECT target,until,reason FROM global_restrictions WHERE scope='*' AND kind='guild' AND until>? ORDER BY until LIMIT 5",
             (self.store.clock(),),
         )
         for row in held:
-            text += f"\n**Servidor {row['target']}:** contido até <t:{int(row['until'])}:t>."
-        text += "\n-# Use Moderação da rede para liberar um servidor antes do prazo. Pausar a rede interrompe novos compartilhamentos; exclusões continuam sendo processadas."
+            text += f"\n**Server {row['target']}:** restricted until <t:{int(row['until'])}:t>."
+        text += '\n-# Use Network moderation to release a server early. Pausing the network stops new sharing; deletions continue to be processed.'
+        knowledge=getattr(self.bot,'knowledge',None)
+        if knowledge:
+            info=knowledge.statistics()
+            today=info['days'][0]['messages'] if info['days'] else 0
+            text+=f"\n**Game knowledge:** {info['messages']} saved messages · {info['bytes']/1048576:.1f}/{info['limit']/1048576:.0f} MiB · latest observed day: {today} messages."
+            if info['paused']:
+                text+='\n**Q&A capture paused.** Saved history is preserved. Check storage and backups before restarting collection.'
         return text
 
     async def notify(self, text):
@@ -85,21 +96,25 @@ class GlobalOperations:
         s = self.snapshot()
         now = self.store.clock()
         conditions = {
+            "knowledge": (
+                s['archive_paused'],
+                'Q&A capture is paused because its archive is full or unavailable. Saved messages have not been erased. Check storage and download the knowledge backup before making changes.',
+            ),
             "storage": (
                 s["storage"] == "critical",
-                "O armazenamento está crítico. Abra o diagnóstico privado antes de compartilhar mais arquivos.",
+                'Storage is critically low. Open the private diagnostics before sharing more files.',
             ),
             "queue": (
                 s["pending"] > 0 and s["age"] > 180 and not s["paused"],
-                "Há entregas esperando há mais de três minutos. Abra Estado do bot para conferir a fila e as permissões.",
+                'Some deliveries have been waiting for more than three minutes. Open Bot status to check the queue and permissions.',
             ),
             "worker": (
                 s["heartbeat"] > 240 and not s["paused"],
-                "A rotina do chat global não registra avanço. Confira os logs e a versão em execução.",
+                'Global chat processing is not progressing. Check the logs and the running version.',
             ),
             "containment": (
                 s["contained"] > 0,
-                "A proteção conteve temporariamente um ou mais servidores após uma rajada. Confira Estado do bot para revisar.",
+                'One or more servers were temporarily restricted after a burst. Check Bot status to review.',
             ),
         }
         for key, (active, text) in conditions.items():
@@ -109,12 +124,13 @@ class GlobalOperations:
                 if previous.get("sent"):
                     self.bot.store.set(meta, "{}")
                     await self.notify(
-                        "## Situação normalizada\n"
+                        '## Service recovered\n'
                         + {
-                            "storage": "O armazenamento deixou de estar crítico.",
-                            "queue": "A fila deixou de apresentar o atraso observado.",
-                            "worker": "A rotina do chat global voltou a registrar avanço.",
-                            "containment": "Não há mais servidores sob contenção temporária.",
+                            "storage": 'Storage is no longer critically low.',
+                            "queue": 'The queue no longer shows the previous delay.',
+                            "worker": 'Global chat processing is progressing again.',
+                            "containment": 'No servers are currently under temporary restrictions.',
+                            "knowledge": 'The knowledge archive is accepting Q&A messages again.',
                         }[key]
                     )
                 elif previous:
@@ -133,9 +149,9 @@ class GlobalOperations:
             previous.update(attempted=now)
             self.bot.store.set(meta, json.dumps(previous))
             delivered = await self.notify(
-                "## Atenção · estado do bot\n"
+                '## Bot status alert\n'
                 + text
-                + "\n-# Este aviso é privado e não se repete a cada mensagem."
+                + '\n-# This alert is private and is not repeated for every message.'
             )
             previous["sent"] = previous.get("sent", False) or delivered
             self.bot.store.set(meta, json.dumps(previous))
@@ -145,19 +161,19 @@ class OperationsView(ScopedView):
     def __init__(self, bot, i):
         super().__init__(bot, i, owner=True)
 
-    @discord.ui.button(label="Atualizar estado", row=0)
+    @discord.ui.button(label='Refresh status', row=0)
     async def refresh(self, i, button):
         self.require(i)
         await edit_response(
             i, content=self.bot.globalchat.operations.description(), view=self
         )
 
-    @discord.ui.button(label="Pausar / retomar rede", row=0)
+    @discord.ui.button(label='Pause / resume network', row=0)
     async def pause(self, i, button):
         self.require(i)
         await i.response.send_modal(NetworkPause(self.bot, i))
 
-    @discord.ui.button(label="Ativar / desativar alertas", row=1)
+    @discord.ui.button(label='Enable / disable alerts', row=1)
     async def alerts(self, i, button):
         self.require(i)
         enabled = self.bot.store.get("global-owner-alerts") != "0"
@@ -169,7 +185,7 @@ class OperationsView(ScopedView):
 
 class NetworkPause(BoundModal):
     def __init__(self, bot, i):
-        super().__init__(title="Pausar ou retomar a rede")
+        super().__init__(title='Pause or resume the network')
         self.bind(bot, i)
         self.was_paused = bot.globalchat.store.network_paused()
         self.reason = discord.ui.TextInput(
@@ -177,10 +193,10 @@ class NetworkPause(BoundModal):
         )
         self.add_item(
             discord.ui.Label(
-                text="Motivo para "
-                + ("retomar" if self.was_paused else "pausar")
-                + " a rede",
-                description="Vale para todos os servidores. A conversa local e exclusões continuam disponíveis.",
+                text='Reason to '
+                + ('resume' if self.was_paused else 'pause')
+                + ' the network',
+                description='Applies to all servers. Local conversation and deletions remain available.',
                 component=self.reason,
             )
         )
@@ -191,19 +207,19 @@ class NetworkPause(BoundModal):
         self.bot.require_owner(i)
         if self.bot.globalchat.store.network_paused() != self.was_paused:
             raise ValueError(
-                "O estado da rede mudou. Atualize os controles antes de confirmar."
+                'The network status changed. Refresh the controls before confirming.'
             )
         self.bot.globalchat.store.pause_network(
             not self.was_paused, i.user.id, str(self.reason)
         )
         await reply(
             i,
-            "**Rede "
-            + ("retomada" if self.was_paused else "pausada")
+            '**Network '
+            + ('resumed' if self.was_paused else 'paused')
             + ".** "
             + (
-                "Somente novas mensagens entram no compartilhamento."
+                'Only new messages are shared.'
                 if self.was_paused
-                else "Novos compartilhamentos foram interrompidos; remoções continuam sendo processadas."
+                else 'New sharing has stopped; deletions continue to be processed.'
             ),
         )

@@ -6,4 +6,8 @@ scores.json
 *.sqlite3*
 backups/
 .venv/
+.banner-reader-venv/
+state/
+.env.*
+!.env.example
 .DS_Store

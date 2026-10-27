@@ -200,11 +200,11 @@ class GlobalStore(ModerationStore):
 
     def block(self, scope, kind, target, actor, reason, *, enabled=True):
         if kind not in ("user", "guild") or (kind == "guild" and str(scope) != "*"):
-            raise ValueError("Escolha um bloqueio válido.")
+            raise ValueError('Choose a valid restriction.')
         if not str(target).isdecimal() or not 0 < int(target) < 2**64:
-            raise ValueError("Informe um ID válido do Discord.")
+            raise ValueError('Enter a valid Discord ID.')
         if not 5 <= len(reason.strip()) <= 500:
-            raise ValueError("Explique o motivo em 5 a 500 caracteres.")
+            raise ValueError('Explain the reason in 5 to 500 characters.')
         with self.db:
             if enabled:
                 self.db.execute(
@@ -276,13 +276,13 @@ class GlobalStore(ModerationStore):
             or cfg["guild_id"] != gid
             or self.blocked(uid, gid)
         ):
-            raise ValueError("Este chat está pausado ou a participação está bloqueada.")
+            raise ValueError('This chat is paused or participation is blocked.')
         old = self.message(ident)
         fingerprint = data["fingerprint"]
         if old and (old["user_id"] != uid or old["channel_id"] != cid):
-            raise ValueError("A origem da mensagem não corresponde ao registro.")
+            raise ValueError('The message source does not match the record.')
         if old and old["expires"] <= self.clock():
-            raise ValueError("A janela de sincronização dessa mensagem terminou.")
+            raise ValueError("This message's synchronization window has ended.")
         if old and (old["deleted"] or old["fingerprint"] == fingerprint):
             return old, False
         if not old:
@@ -295,14 +295,14 @@ class GlobalStore(ModerationStore):
             ]
             if not self.consented(uid):
                 raise ValueError(
-                    "Confirme sua participação antes de compartilhar mensagens."
+                    'Confirm your participation before sharing messages.'
                 )
             accepted = self.one(
                 "SELECT accepted FROM global_consents WHERE user_id=?", (uid,)
             )["accepted"]
             if message.created_at.timestamp() < accepted and not confirmed_first:
                 raise ValueError(
-                    "Mensagens anteriores à confirmação não são compartilhadas automaticamente."
+                    'Messages written before confirmation are not shared automatically.'
                 )
             used_pages = (
                 self.db.execute("PRAGMA page_count").fetchone()[0]
@@ -318,7 +318,7 @@ class GlobalStore(ModerationStore):
                 > 50000
             ):
                 raise ValueError(
-                    "O chat está ocupado. Aguarde um pouco antes de enviar novamente."
+                    'The chat is busy. Wait a moment before sending again.'
                 )
             own_pending = self.one(
                 "SELECT COUNT(*) AS n FROM global_deliveries d JOIN global_messages m ON m.id=d.source_id WHERE m.guild_id=? AND d.state IN ('queued','preparing','uncertain','sending')",
@@ -326,7 +326,7 @@ class GlobalStore(ModerationStore):
             )["n"]
             if own_pending + len(destinations) > max(1000, len(destinations) * 20):
                 raise ValueError(
-                    "Este servidor já tem muitos envios pendentes. Aguarde as entregas antes de compartilhar mais mensagens."
+                    'This server already has many pending deliveries. Wait for them to finish before sharing more messages.'
                 )
         with self.db:
             if old:
@@ -520,9 +520,9 @@ class GlobalStore(ModerationStore):
 
     def report(self, source, user, guild, reason):
         if not 10 <= len(reason.strip()) <= 500:
-            raise ValueError("Explique o ocorrido em 10 a 500 caracteres.")
+            raise ValueError('Describe what happened in 10 to 500 characters.')
         if not self.limit("report:" + str(user), 5, 600):
-            raise ValueError("Aguarde antes de enviar outra denúncia.")
+            raise ValueError('Please wait before submitting another report.')
         with self.db:
             self.db.execute(
                 "INSERT OR IGNORE INTO global_reports(source_id,reporter,guild_id,reason,created) VALUES(?,?,?,?,?)",

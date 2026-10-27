@@ -181,7 +181,7 @@ class AutomaticHistoryCase(unittest.IsolatedAsyncioTestCase):
         channel.messages = [self.message(channel)]
         await scan_next(self.app)
         await self.app.close()
-        restarted = CommunityBot(self.temp.name, backend=self.backend)
+        restarted = CommunityBot(self.temp.name, backend=self.backend, tierlist_enabled=True)
         restarted._connection._guilds = {1: self.env.guild}
         try:
             self.assertFalse(await scan_next(restarted))

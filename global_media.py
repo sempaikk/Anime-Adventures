@@ -66,7 +66,7 @@ def filename(value):
     value = re.sub(r"[\x00-\x1f\x7f\u200b-\u200f\u202a-\u202e\u2066-\u2069]", "", value)
     if not value or Path(value).suffix.lower() not in MEDIA_EXTENSIONS:
         raise ValueError(
-            "Esse tipo de arquivo não pode ser compartilhado no chat global. Use imagem, vídeo, áudio, PDF ou TXT."
+            'This file type cannot be shared in global chat. Use an image, video, audio, PDF or TXT file.'
         )
     suffix = Path(value).suffix
     stem = (
@@ -85,6 +85,7 @@ class GlobalMedia:
         self.in_use = {}
         self.reserved = 0
         self.downloads = set()
+        self.available_space = None
 
     def usage(self):
         return sum(p.stat().st_size for p in self.root.iterdir() if p.is_file())
@@ -99,13 +100,13 @@ class GlobalMedia:
 
     async def download(self, asset, limit):
         if not cdn_url(asset["url"]):
-            raise ValueError("O arquivo precisa ser um anexo enviado ao Discord.")
+            raise ValueError('The file must be an attachment uploaded to Discord.')
         name = filename(asset["filename"])
         expected = int(asset.get("size") or 0)
         if expected > limit:
             return {**asset, "filename": name, "oversize": True}
         if expected < 0:
-            raise ValueError("O tamanho do arquivo é inválido.")
+            raise ValueError('The file size is invalid.')
         reservation = expected or limit
         used = sum(
             p.stat().st_size
@@ -114,11 +115,12 @@ class GlobalMedia:
         )
         if used + self.reserved + reservation > CACHE_LIMIT:
             raise ValueError(
-                "O cache temporário está ocupado. Aguarde a limpeza antes de compartilhar outro arquivo grande."
+                'The temporary cache is full. Wait for cleanup before sharing another large file.'
             )
-        if shutil.disk_usage(self.root).free < max(expected, limit) + 16 * 1024 * 1024:
+        free=await self.available_space() if self.available_space else shutil.disk_usage(self.root).free
+        if free-self.reserved < max(expected, limit) + 16 * 1024 * 1024:
             raise ValueError(
-                "Não há espaço disponível para compartilhar esse arquivo agora. A mensagem original foi preservada."
+                'There is not enough storage to share this file right now. The original message was preserved.'
             )
         temporary = None
         self.reserved += reservation
@@ -138,7 +140,7 @@ class GlobalMedia:
                 ) as response:
                     if response.status != 200:
                         raise ValueError(
-                            "O Discord não disponibilizou o anexo. Tente enviar novamente."
+                            'Discord did not provide the attachment. Please try sending it again.'
                         )
                     if (
                         response.content_length is not None
@@ -149,17 +151,17 @@ class GlobalMedia:
                         size += len(chunk)
                         if size > limit:
                             raise ValueError(
-                                "O arquivo excede o limite de compartilhamento disponível."
+                                'The file exceeds the available sharing limit.'
                             )
                         if size > reservation:
                             raise ValueError(
-                                "O arquivo excede o espaço temporário disponível."
+                                'The file exceeds the available temporary storage.'
                             )
                         stream.write(chunk)
                         digest.update(chunk)
                 if not size or (expected and expected != size):
                     raise ValueError(
-                        "O download do anexo ficou incompleto. A original foi preservada."
+                        'The attachment download was incomplete. The original was preserved.'
                     )
             target = self.root / digest.hexdigest()
             os.replace(temporary, target)
@@ -180,14 +182,14 @@ class GlobalMedia:
     def path(self, asset):
         digest = asset.get("digest", "")
         if not re.fullmatch("[a-f0-9]{64}", digest):
-            raise ValueError("Anexo aguardando preparação.")
+            raise ValueError('Attachment waiting to be prepared.')
         path = self.root / digest
         if (
             path.is_symlink()
             or not path.is_file()
             or path.stat().st_size != asset["size"]
         ):
-            raise ValueError("O anexo precisa ser preparado novamente.")
+            raise ValueError('The attachment needs to be prepared again.')
         return path
 
     def files(self, assets, limit):

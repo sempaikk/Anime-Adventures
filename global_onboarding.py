@@ -28,7 +28,7 @@ class GlobalOnboarding:
                     **payload(
                         bot=self.bot,
                         content=TERMS
-                        + "\n\n**A mensagem que você já escreveu ficou apenas no servidor de origem.** Depois de confirmar, escreva novamente no canal para conversar com a rede. Se preferir, seus controles pessoais também estão em `/chatglobal` dentro do servidor.",
+                        + '\n\n**The message you already wrote stayed in its original server.** After confirming, write again in the channel to join the network conversation. Your private controls are also available through `/globalchat` in the server.',
                         view=GlobalDirectView(self.bot),
                     )
                 )
@@ -61,9 +61,9 @@ class GlobalOnboarding:
                 await message.author.send(
                     **payload(
                         bot=self.bot,
-                        content="## Seu envio no chat global\n"
+                        content='## Your global chat message\n'
                         + text
-                        + "\n\nConsulte `/chatglobal` no servidor para acompanhar seus envios.",
+                        + '\n\nUse `/globalchat` in the server to check your messages.',
                     )
                 )
             except (discord.HTTPException, aiohttp.ClientError, TimeoutError, OSError):
@@ -79,7 +79,7 @@ class GlobalOnboarding:
             != (row["dm_channel_id"], row["message_id"])
         ):
             raise ValueError(
-                "Esta confirmação não está mais disponível. Abra /chatglobal no servidor para participar."
+                'This confirmation is no longer available. Open /globalchat in the server to join.'
             )
         return row
 
@@ -93,17 +93,17 @@ class GlobalOnboarding:
             != (row["channel_id"], row["generation"])
         ):
             raise ValueError(
-                "A conexão do servidor mudou. Abra /chatglobal no canal global atual para participar."
+                'The server connection changed. Open /globalchat in the current global channel to join.'
             )
         self.bot.require_human(
             SimpleNamespace(user=i.user, guild_id=int(cfg["guild_id"]))
         )
         if self.store.blocked(i.user.id, cfg["guild_id"]):
-            raise ValueError("Sua participação está bloqueada neste chat.")
+            raise ValueError('Your participation in this chat is blocked.')
         channel = self.relay.channel(cfg["channel_id"])
         if not self.relay.readable(channel):
             raise ValueError(
-                "O canal global está indisponível. Abra /chatglobal no servidor para conferir."
+                'The global channel is unavailable. Open /globalchat in the server to check it.'
             )
         member = channel.guild.get_member(i.user.id)
         if member is None:
@@ -111,12 +111,12 @@ class GlobalOnboarding:
                 member = await channel.guild.fetch_member(i.user.id)
             except discord.HTTPException:
                 raise ValueError(
-                    "Não consegui confirmar seu acesso ao servidor. Abra /chatglobal por lá."
+                    'Your server access could not be confirmed. Open /globalchat in that server.'
                 ) from None
         permissions = channel.permissions_for(member)
         if not permissions.view_channel or not permissions.send_messages:
             raise ValueError(
-                "Você precisa ter acesso para conversar no canal global desse servidor."
+                "You need access to write in this server's global channel."
             )
         fresh = self.store.source(row["channel_id"])
         if (
@@ -126,7 +126,7 @@ class GlobalOnboarding:
             or self.store.blocked(i.user.id, row["guild_id"])
         ):
             raise ValueError(
-                "A conexão ou seu acesso mudou. Abra /chatglobal no canal global atual."
+                'The connection or your access changed. Open /globalchat in the current global channel.'
             )
         self.direct_record(i)  # Another click may have resolved the DM while fetching.
         return cfg
@@ -197,7 +197,7 @@ class GlobalOnboarding:
         )
         text = visible_text(components) or message.content or ""
         return controls and (
-            "Chat global" in text or "chat global" in text or "Conexão pausada" in text
+            any(marker in text for marker in ("Chat global", "chat global", "Conexão pausada", "Global chat", "global chat", "Connection paused"))
         )
 
     async def cleanup_public(self, cfg):

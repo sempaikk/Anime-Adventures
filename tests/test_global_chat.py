@@ -378,7 +378,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
             i = self.interaction(gid)
             await GlobalMemberView(self.app, i).join.callback(i)
             text = visible_text(i.response.send_message.await_args.kwargs["view"])
-            self.assertIn("Você já participa", text)
+            self.assertIn('You have already joined', text)
             self.assertNotIn("Antes de participar", text)
         self.assertEqual(
             len(self.engine.store.rows("SELECT * FROM global_consents")), 1
@@ -592,7 +592,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         await self.engine.ingest(source)
         await self.flush()
         copy = next(m for m in self.copies(source) if m.channel.id == 20)
-        self.assertIn("acima do limite", copy.content)
+        self.assertIn("exceeds this server's limit", copy.content)
         self.assertFalse(copy.attachments)
         self.assertTrue(
             next(m for m in self.copies(source) if m.channel.id == 30).attachments
@@ -876,7 +876,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
             pending = asyncio.create_task(media.download(asset, 100))
             await started.wait()
             try:
-                with self.assertRaisesRegex(ValueError, "cache temporário"):
+                with self.assertRaisesRegex(ValueError, 'temporary cache'):
                     await media.download(asset, 100)
             finally:
                 resume.set()
@@ -910,7 +910,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
             await self.engine.activate(channel)
         channel.permissions_for.return_value.manage_webhooks = True
         channel.is_nsfw.return_value = True
-        with self.assertRaisesRegex(ValueError, "restrição de idade"):
+        with self.assertRaisesRegex(ValueError, 'age restrictions'):
             await self.engine.activate(channel)
 
     async def test_permission_revocation_at_destination_prevents_webhook_token_bypass(
@@ -921,7 +921,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         self.channels[20].permissions_for.return_value.manage_webhooks = False
         await self.flush()
         self.assertEqual({m.channel.id for m in self.copies(source)}, {30})
-        self.assertIn("permissões", self.engine.store.delivery(source.id, 20)["error"])
+        self.assertIn('permissions', self.engine.store.delivery(source.id, 20)["error"])
 
     async def test_local_blocks_also_exclude_reply_quotes(self):
         source = self.message(content="Não mostrar citação neste destino")
@@ -997,18 +997,18 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_owner_diagnostics_do_not_appear_to_other_administrators(self):
         self.assertIn(
-            "Somente para você",
+            'Only visible to you',
             GlobalAdminView(self.app, self.interaction(admin=True)).description(),
         )
         self.assertNotIn(
-            "Somente para você",
+            'Only visible to you',
             GlobalAdminView(
                 self.app, self.interaction(user=8, admin=True)
             ).description(),
         )
         view = GlobalAdminView(self.app, self.interaction(admin=True))
         self.engine.store.active(1, False)
-        with self.assertRaisesRegex(ValueError, "configurações mudaram"):
+        with self.assertRaisesRegex(ValueError, 'settings changed'):
             await view.activate.callback(self.interaction(admin=True))
 
     async def test_first_invite_is_once_per_account_across_guilds_bursts_and_restart(
@@ -1097,13 +1097,13 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         await self.engine.ingest(self.message())
         i = self.direct_interaction()
         self.engine.store.block("*", "user", 7, 8, "Bloqueio durante convite")
-        with self.assertRaisesRegex(ValueError, "bloqueada"):
+        with self.assertRaisesRegex(ValueError, 'blocked'):
             await GlobalDirectView(self.app).accept.callback(i)
         self.engine.store.block(
             "*", "user", 7, 8, "Removendo bloqueio de teste", enabled=False
         )
         self.engine.store.active(1, False)
-        with self.assertRaisesRegex(ValueError, "conexão"):
+        with self.assertRaisesRegex(ValueError, 'connection'):
             await GlobalDirectView(self.app).accept.callback(i)
         self.assertFalse(self.engine.store.consented(7))
 
@@ -1111,7 +1111,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         self.engine.store.consent(7, False)
         await self.engine.ingest(self.message())
         self.channels[10].guild.get_member = lambda uid: None
-        with self.assertRaisesRegex(ValueError, "acesso ao servidor"):
+        with self.assertRaisesRegex(ValueError, 'server access'):
             await GlobalDirectView(self.app).accept.callback(self.direct_interaction())
         self.assertFalse(self.engine.store.consented(7))
 
@@ -1193,7 +1193,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         await GlobalPanelView(self.app).children[0].callback(i)
         self.assertTrue(i.response.send_message.await_args.kwargs["ephemeral"])
         self.assertIn(
-            "/chatglobal",
+            '/globalchat',
             visible_text(i.response.send_message.await_args.kwargs["view"]),
         )
 
@@ -1252,7 +1252,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
             return self.author
 
         self.channels[10].guild.fetch_member.side_effect = paused
-        with self.assertRaisesRegex(ValueError, "conexão"):
+        with self.assertRaisesRegex(ValueError, 'connection'):
             await GlobalDirectView(self.app).accept.callback(self.direct_interaction())
         self.assertFalse(self.engine.store.consented(7))
 

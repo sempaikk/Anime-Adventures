@@ -1,13 +1,21 @@
 # Anime Adventures
 
-Tier list com decisões da comunidade e chat entre servidores. **Somente dois comandos, sem argumentos:**
+Chat entre servidores, imagens do jogo e perguntas com fontes. A tier list está pausada, com código e dados arquivados. **Comandos atuais, todos em inglês e sem argumentos:**
 
-- **`/tierlist`** — exclusivo de quem tem **Administrador** ou **Gerenciar servidor**; publica ou confere o painel. Membros votam no canal da imagem e usam o tópico para histórico, ajuda e sugestões de retrato.
-- **`/chatglobal`** — abre controles pessoais privados para membros. Quem tem **Administrador** ou **Gerenciar servidor** recebe a configuração privada da conexão; funções da rede são exclusivas do dono.
+- **`/globalchat`** — controles pessoais privados e administração do chat entre servidores. Substitui o nome anterior `/chatglobal`, mantendo configurações, consentimentos e histórico.
+- **`/setbanner`** — quem tem **Administrador** ou **Gerenciar servidor** define o canal atual para receber apenas as imagens dos banners. Cada servidor tem um destino próprio; a confirmação e o botão de desativar são privados. [Configuração e teste](docs/banners.md).
+- **`/dailychallenge`** — define o próprio canal para receber as imagens do desafio diário. Configuração independente do banner em cada servidor; mesma exigência de permissão.
+- **`/ask`** — abre um formulário privado de pergunta sobre Anime Adventures. A IA responde **no idioma da pergunta**, consultando a wiki arquivada e respostas comunitárias com fontes. [Base de conhecimento e armazenamento](docs/knowledge.md).
+
+**Interface fixa em inglês; respostas de `/ask` no idioma da pergunta.** Textos escritos pelos participantes do chat global mantêm o idioma original. Banners/desafios enviam somente imagens estáticas PNG/JPEG/WebP, sem GIF, vídeo, texto ou legenda. Comandos de configuração têm confirmação privada e **Stop receiving**.
+
+Hospedagem atual: Bot-Hosting.net, Python 3.12 e início em `bot.py`. Preservar o valor de `DATA_DIR` já utilizado e os segredos `DISCORD_TOKEN`, `GROQ_API_KEY` e **`SECONDARY_ACCOUNT_TOKEN`**. Não colocar credenciais em `.env.example`. A captura do responsável confirmou **256 MB de RAM e 512 MB de disco**. O leitor usa ambiente isolado; a IA roda na Groq. O conhecimento usa arquivo separado comprimido, com reserva inicial de 64 MiB e backup local, sem apagar histórico por idade. Ao atingir capacidade, a captura pausa e avisa o responsável. O painel **Bot status** apresenta volume diário e uso medido. Não prometer armazenamento ilimitado.
+
+O site está congelado em Em breve / Coming soon por tempo indeterminado. Não alterar seus arquivos, configuração ou publicação sem novo pedido. Estado desta entrega, testes e publicação: [CONTINUIDADE.md](CONTINUIDADE.md).
 
 ## Chat entre servidores
 
-Use `/chatglobal` no canal escolhido e **Ativar neste canal**. O bot precisa de **Ver canal, Enviar mensagens, Ler histórico, Anexar arquivos e Gerenciar webhooks**. Não precisa de Administrador ou Gerenciar mensagens. O canal deve ser diferente da tier list e não pode ter restrição de idade. Nenhum painel ou convite é publicado no canal. Na primeira mensagem, a pessoa recebe um único convite por DM. Se a DM estiver bloqueada, ela abre `/chatglobal` no canal global e confirma em particular. Os controles pessoais oferecem Participar, Meus envios, Como funciona, Denunciar e Parar de participar; ADMs acessam esses controles em Minha participação.
+Use `/globalchat` no canal escolhido e **Enable in this channel**. O bot precisa de Ver canal, Enviar mensagens, Ler histórico, Anexar arquivos e Gerenciar webhooks; não precisa de Administrador ou Gerenciar mensagens. Não use canal com restrição de idade. Nenhum painel ou convite é publicado no canal. A primeira mensagem gera um único convite privado; com DMs bloqueadas, a pessoa confirma em `/globalchat`. Os controles são **Join, My messages, How it works, Report e Leave**; ADMs acessam sua participação em **My participation**.
 
 As originais permanecem no servidor onde foram enviadas. Outros servidores recebem cópias por webhook apenas com **nome de exibição e avatar**, sem acrescentar `@username` ou servidor ao nome. As contas autorizadas aparecem como **Nome [Owner]** ou **Nome [Tester]**, com uma etiqueta por conta vinculada ao ID. A marca APP/BOT é do Discord. A confirmação informa o compartilhamento com toda a rede, incluindo servidores futuros, e vale após reinícios. O convite desaparece depois de aceitar ou recusar; não é reenviado a cada mensagem nem em outro servidor. Mensagens anteriores à confirmação ficam locais. Avisos públicos antigos reconhecidos como mensagens do próprio bot são removidos gradualmente, preservando conversas e cópias.
 
@@ -16,7 +24,11 @@ Texto e formatação, imagens, GIFs, vídeos, áudios, PDF e TXT são retransmit
 
 **Armazenamento:** conteúdo temporário da fila expira após uma hora, com limpeza periódica; arquivos são removidos após as entregas e pendências também expiram. IDs e denúncias ficam por até 30 dias. Configuração e confirmação persistem até alteração/saída. Isso não apaga o histórico do Discord. O cache de anexos tem teto local de 256 MiB; excesso de carga, falta de espaço ou limites da API podem impedir entregas, com acompanhamento em Meus envios. O relay não usa IA nem serviços pagos.
 
-## Um canal, uma imagem e um tópico
+## Tier list arquivada — descrição histórica
+
+As seções de tier list abaixo descrevem o código preservado, não a configuração ativa. `/tierlist`, seus botões persistentes e os ciclos de coleta, leitura inicial, análise, votação e painéis não são iniciados normalmente. Não reativar por iniciativa própria.
+
+### Um canal, uma imagem e um tópico
 
 O administrador usa `/tierlist` em um canal de texto. A mensagem permanente é **somente um PNG**, sem texto, embed ou botões, com o tópico **Votações e histórico** ligado a ela. Quando há uma proposta válida, uma enquete temporária aparece no mesmo canal, com motivo, posições antes/depois, condições, ressalva, prazo e botões para votar. Oferece atalhos para a imagem e o histórico, sem ping coletivo. Repetir o comando reutiliza o conjunto, inclusive em execuções concorrentes. O painel oficial existente é preservado se o comando for usado em outro canal.
 
@@ -94,6 +106,8 @@ No Bot-Hosting.net, use **Python 3.12**, arquivo inicial **`bot.py`**, pull auto
 DISCORD_TOKEN=segredo_do_bot
 DATA_DIR=./state
 GROQ_API_KEY=segredo_da_conta_gratuita
+# Opcional, somente nos segredos da hospedagem ou .env privado:
+# SECONDARY_ACCOUNT_TOKEN=segredo_da_conta_leitora
 ```
 
 Marque as chaves como **Segredo**. Mantenha a conta Groq no plano **Free**, sem ativar cobrança. O modelo inicial é `openai/gpt-oss-120b`; a assinatura do ChatGPT não fornece esse serviço. O bot não contrata planos e não tem fallback pago. Ele não consegue determinar se o proprietário mudou o contrato de cobrança da conta.
@@ -119,7 +133,7 @@ A revisão atual, o procedimento de atualização e as medições locais de fila
 O responsável pelo aplicativo recebe **Verificação completa** na resposta privada de `/tierlist`. Ela:
 
 - executa a suíte automatizada em subprocesso com estado temporário, sem credenciais nem rede externa;
-- confere os dois comandos registrados na API real;
+- confere os comandos registrados na API real contra a configuração ativa; a interface antiga de verificação da tier list permanece arquivada;
 - cria um tópico técnico **privado**, convida o dono, publica/lê/edita uma imagem, confere botões e arquivamento/retomada;
 - testa dez etapas visuais: entrada/remoção, ordem, mudança de tier, expansão/redução da linha, troca de retrato e restauração, comparando cada PNG baixado do Discord com o arquivo enviado;
 - testa cinco etapas da lista de retratos: pendência, envio, aprovação, restauração e rejeição, incluindo remover/recolocar o TXT na mesma mensagem e conferir o arquivo baixado;

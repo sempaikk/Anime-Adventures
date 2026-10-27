@@ -52,13 +52,13 @@ class GuardedView(discord.ui.View):
         elif isinstance(error, discord.Forbidden):
             await reply(
                 i,
-                "O Discord negou uma permissão necessária. Peça à administração para conferir o acesso do bot ao canal e ao tópico.",
+                "Discord denied a required permission. Ask an administrator to check the bot's channel access.",
             )
         else:
             log.warning("Interface indisponível: %s", type(error).__name__)
             await reply(
                 i,
-                "Não consegui confirmar o resultado desta ação. Confira o estado nos controles antes de repetir.",
+                "The action's result could not be confirmed. Check its status before trying again.",
             )
 
 
@@ -77,7 +77,7 @@ class BoundModal(discord.ui.Modal):
             self.guild,
             self.channel,
         ):
-            await reply(i, "Abra o formulário pelo seu próprio botão.")
+            await reply(i, "Open the form using your own button.")
             return False
         return True
 
@@ -88,7 +88,7 @@ class BoundModal(discord.ui.Modal):
             log.warning("Formulário indisponível: %s", type(error).__name__)
             await reply(
                 i,
-                "Não consegui confirmar o resultado do formulário. Reabra os controles e confira o estado antes de reenviar.",
+                "The form's result could not be confirmed. Reopen the controls and check its status before resubmitting.",
             )
 
 

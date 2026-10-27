@@ -23,6 +23,10 @@ SUITE_TIMEOUT = 480
 HOST_TEST_PATTERNS = (
     "test_tier*.py",
     "test_global*.py",
+    "test_banner*.py",
+    "test_game_knowledge.py",
+    "test_reader_recovery.py",
+    "test_instance_storage.py",
     "test_runtime_health.py",
     "test_storage_maintenance.py",
 )
@@ -447,20 +451,20 @@ async def _verify(bot, i):
         channel = (
             i.channel.parent if isinstance(i.channel, discord.Thread) else i.channel
         )
-        stage = "Registro real dos dois comandos"
+        stage = "Registro real dos comandos"
         try:
             if not isinstance(channel, discord.TextChannel):
                 raise ValueError("Use a verificação a partir de um canal de texto.")
             remote = await bot.tree.fetch_commands()
-            if {c.name for c in remote} != {"tierlist", "chatglobal"} or any(
+            if {c.name for c in remote} != {c.name for c in bot.tree.get_commands()} or any(
                 c.options for c in remote
             ):
                 raise ValueError(
-                    "Os comandos registrados no Discord não correspondem aos dois comandos sem opções."
+                    "Os comandos registrados no Discord não correspondem à configuração atual do bot."
                 )
             for command in remote:
                 permissions = command.default_member_permissions
-                if command.name == "tierlist" and (
+                if command.name in {"tierlist", "setbanner", "dailychallenge"} and (
                     permissions is None
                     or permissions.value != discord.Permissions(manage_guild=True).value
                 ):
@@ -468,19 +472,19 @@ async def _verify(bot, i):
                         f"A permissão padrão de /{command.name} no Discord precisa ser Gerenciar servidor. Atualize e reinicie o bot para sincronizar os comandos."
                     )
                 if (
-                    command.name == "chatglobal"
+                    command.name == "globalchat"
                     and permissions is not None
                     and permissions.value
                 ):
                     raise ValueError(
-                        "O /chatglobal precisa estar disponível aos membros para abrir os controles pessoais privados. Atualize e reinicie o bot; a configuração continua protegida por Gerenciar servidor."
+                        "O /globalchat precisa estar disponível aos membros para abrir os controles pessoais privados. Atualize e reinicie o bot; a configuração continua protegida por Gerenciar servidor."
                     )
             report["checks"].append(
                 {
-                    "name": "Registro real dos dois comandos",
+                    "name": "Registro real dos comandos",
                     "result": "passed",
                     "level": "Discord real",
-                    "detail": "/tierlist restrito a Gerenciar servidor; /chatglobal abre controles pessoais privados para membros e mantém configuração protegida para ADMs.",
+                    "detail": "/tierlist e /setbanner restritos a Gerenciar servidor; /globalchat abre controles pessoais privados para membros e mantém configuração protegida para ADMs.",
                 }
             )
             stage = "Criação real de tópico privado"

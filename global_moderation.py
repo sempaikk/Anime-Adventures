@@ -1,9 +1,9 @@
 """Scoped report decisions and expiring containment; never erase human originals."""
 
 REPORT_STATES = {
-    "pending": "Pendente",
-    "resolved": "Resolvida",
-    "dismissed": "Descartada",
+    "pending": 'Pending',
+    "resolved": 'Resolved',
+    "dismissed": 'Dismissed',
 }
 
 
@@ -49,10 +49,10 @@ class ModerationStore:
             or not str(target).isdecimal()
             or not 0 < int(target) < 2**64
         ):
-            raise ValueError("Escolha uma pessoa ou servidor válido.")
+            raise ValueError('Choose a valid user or server.')
         if not 5 <= len(reason.strip()) <= 500 or not 0 < seconds <= 86400:
             raise ValueError(
-                "Informe um motivo e uma duração entre um segundo e um dia."
+                'Provide a reason and a duration between one second and one day.'
             )
         with self.db:
             self.db.execute(
@@ -73,7 +73,7 @@ class ModerationStore:
 
     def pause_network(self, enabled, actor, reason):
         if not 5 <= len(reason.strip()) <= 500:
-            raise ValueError("Explique o motivo em 5 a 500 caracteres.")
+            raise ValueError('Explain the reason in 5 to 500 characters.')
         with self.db:
             self.db.execute(
                 "INSERT OR REPLACE INTO tier_meta VALUES(?,?)",
@@ -96,7 +96,7 @@ class ModerationStore:
 
     def report_page(self, scope, status="pending", page=0):
         if status not in (*REPORT_STATES, "all"):
-            raise ValueError("Escolha um estado de denúncia válido.")
+            raise ValueError('Choose a valid report status.')
         where, args = ["r.created>?"], [self.clock() - 30 * 86400]
         if scope is not None:
             where.append("r.guild_id=?")
@@ -126,7 +126,7 @@ class ModerationStore:
             (ident, self.clock() - 30 * 86400),
         )
         if not row or (scope is not None and row["guild_id"] != str(scope)):
-            raise ValueError("Esta denúncia não está disponível neste servidor.")
+            raise ValueError('This report is not available in this server.')
         return row
 
     def review_report(self, ident, scope, actor, expected, action, reason):
@@ -135,15 +135,15 @@ class ModerationStore:
             or not 5 <= len(reason.strip()) <= 500
         ):
             raise ValueError(
-                "Escolha uma ação e explique o motivo em 5 a 500 caracteres."
+                'Choose an action and explain the reason in 5 to 500 characters.'
             )
         report = self.report_record(ident, scope)
         if report["version"] != expected:
-            raise ValueError("A denúncia já mudou. Atualize a lista antes de decidir.")
+            raise ValueError('The report changed. Refresh the list before making a decision.')
         source = self.message(report["source_id"])
         if action in ("block-hour", "remove") and source is None:
             raise ValueError(
-                "A mensagem saiu da janela de sincronização. Você ainda pode resolver ou descartar a denúncia."
+                'The message is outside the synchronization window. You can still resolve or dismiss the report.'
             )
         if (
             action == "remove"
@@ -151,7 +151,7 @@ class ModerationStore:
             and source["guild_id"] == str(scope)
         ):
             raise ValueError(
-                "Esta é a mensagem original do servidor. Use a moderação do Discord para removê-la; o bot só solicita remoção das próprias cópias."
+                "This is the original server message. Use Discord's moderation tools to remove it; the bot only requests removal of its own copies."
             )
         status = (
             "pending"
@@ -178,7 +178,7 @@ class ModerationStore:
                 ),
             )
             if result.rowcount != 1:
-                raise ValueError("A denúncia já foi revisada. Atualize a lista.")
+                raise ValueError('The report has already been reviewed. Refresh the list.')
             self.db.execute(
                 "UPDATE global_reports SET reviewed=? WHERE id=?",
                 (int(status != "pending"), ident),
@@ -214,6 +214,6 @@ class ModerationStore:
             self.base.audit(
                 "global-report-review",
                 actor,
-                f"Denúncia {ident}: {action}. {reason.strip()}",
+                f'Report {ident}: {action}. {reason.strip()}',
             )
         return status

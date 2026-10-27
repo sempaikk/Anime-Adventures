@@ -19,6 +19,8 @@ class RuntimeHealth:
         self.runner = None
         self.port = None
         self.storage_level = "unknown"
+        self.physical_level = "unknown"
+        self.quota = None
         self.probes = {}
 
     def add_probe(self, name, probe):
@@ -58,8 +60,21 @@ class RuntimeHealth:
             if ratio >= 0.7
             else "ok"
         )
+        self.physical_level=level
+        self.apply_storage_level()
+
+    def update_quota(self,used,total):
+        self.quota={'used':used,'total':total,'free':max(0,total-used)}
+        self.apply_storage_level()
+
+    def apply_storage_level(self):
+        level=self.physical_level
+        if self.quota:
+            quota_level='critical' if self.quota['free']<32*1024*1024 or self.quota['used']>=self.quota['total']*.9 else 'warning' if self.quota['used']>=self.quota['total']*.8 else 'ok'
+            severity={'unknown':0,'ok':1,'warning':2,'critical':3}
+            if severity[quota_level]>severity[level]:level=quota_level
         if level != self.storage_level and level in ("warning", "critical"):
-            log.warning("Alerta de armazenamento: %s; %s bytes livres.", level, free)
+            log.warning("Storage alert: %s.", level)
         self.storage_level = level
 
     def status(self):

@@ -9,37 +9,13 @@ from tier_views import GuardedView, BoundModal, reply
 from tier_ui import payload
 from tier_domain import safe
 
-TERMS = """## 🌐 Antes de participar
-**O que você escrever nos canais globais será compartilhado com todos os servidores conectados à rede deste bot — inclusive servidores que entrarem depois.** Essa rede pode crescer para muitos ou milhares de servidores. Participantes desses locais poderão ler suas mensagens e ver seu nome de exibição, avatar e anexos. O bot não acrescenta seu @usuario nem o nome do servidor ao nome das cópias.
+TERMS = "## Before joining\n**Messages you write in global channels will be shared with every server connected to this bot's network, including servers that join later.** This may grow to many or thousands of servers. People in those servers can read your messages and see your display name, avatar and attachments. The bot does not add your @username or server name to the name on copies.\n\n**Your choice applies across the network.** Confirm once per account. You do not need to confirm again in another participating server. Your choice remains saved after bot restarts.\n\n**Write normally.** Original messages stay in their source server. Copies are published through webhooks with Discord's application label. Only global channels enabled by administrators share messages. This does not authorize sharing other channels or private messages.\n\n**You stay in control.** Choose Leave to stop sharing new messages. Editing or deleting an original synchronizes its copies for up to 30 days while the channels remain accessible. People may have seen or saved content before removal. Temporary message text and files are cleaned up within one hour, with periodic checks. Synchronization IDs and reports are kept for up to 30 days. Your confirmation stays saved until you leave.\n\nBy choosing **Confirm and join**, you agree to this sharing. New messages you write in connected global channels will be distributed automatically."
 
-**Vale para sua conta em toda a rede.** Você confirma uma vez. Ao entrar em outro servidor participante, não precisa confirmar novamente. A autorização continua salva depois de reiniciar o bot.
-
-**Você escreve normalmente.** A mensagem original fica no servidor onde foi enviada. As cópias são publicadas por webhooks, com a identificação de aplicativo do Discord. Só os canais globais ativados pela administração compartilham mensagens; isso não autoriza compartilhar conversas de outros canais ou mensagens privadas.
-
-**Você tem controle.** Pode interromper novos envios em Parar de participar. Editar ou apagar a original sincroniza as cópias durante a janela de 30 dias, enquanto houver acesso aos canais. Pessoas podem ter visto ou salvo conteúdo antes da remoção. Texto e anexos temporários usados no envio são limpos em até uma hora, com verificações periódicas. IDs de sincronização e denúncias ficam por até 30 dias. Sua confirmação continua salva até você interromper a participação.
-
-Ao escolher **Confirmar e participar**, você concorda com esse compartilhamento. Seus próximos envios nos canais globais conectados serão distribuídos automaticamente."""
-
-HELP = """## Como funciona o chat global
-**Uma conversa entre servidores.** Escreva neste canal. A original permanece com você e os demais servidores recebem cópias com seu nome de exibição e avatar, sem @usuario ou nome do servidor acrescentado. Owner e Tester aparecem apenas nas contas autorizadas. A identificação de aplicativo/bot nas cópias faz parte do Discord.
-
-**Participação única.** Confirme uma vez por conta. A escolha vale em todos os servidores desta rede e sobrevive aos reinícios. Parar de participar interrompe novos compartilhamentos. O primeiro convite chega por mensagem privada, sem avisos públicos repetidos. Mensagens anteriores à confirmação não são compartilhadas. Se suas DMs estiverem bloqueadas, abra `/chatglobal` no canal global para confirmar em particular.
-
-**Texto e respostas.** Formatação do Discord é preservada em textos comuns; mensagens longas podem ser divididas. Respostas a mensagens conhecidas pela rede incluem uma citação. Menções retransmitidas não notificam pessoas, cargos ou todos os membros.
-
-**Anexos.** Imagens, GIFs, vídeos, áudios, PDF e TXT podem ser enviados. O limite de upload pode variar por servidor. Um destino que não comporte o arquivo recebe uma indicação, em vez de um anexo incompleto. Figurinhas PNG/APNG/GIF são compartilhadas como arquivo de imagem; outros formatos ficam identificados por nome. Emojis personalizados dependem das permissões e disponibilidade.
-
-**Editar e apagar.** Use a mensagem original no Discord. O bot acompanha as alterações durante 30 dias; exclusões enquanto estiver desconectado são verificadas gradualmente. Em Meus envios também é possível solicitar a remoção das próprias cópias. Uma cópia removida pela moderação local não é recriada. Perda de acesso pode impedir sincronizar um destino.
-
-**O que fica local.** Reações, votos de enquetes nativas, chamadas, transmissão de tela e indicador de digitação não formam uma interação única entre servidores. Não é possível unir canais nativamente.
-
-**Convivência.** Respeite os participantes. Não compartilhe golpes, assédio, ameaças, conteúdo sexual, dados pessoais de terceiros ou divulgação em massa. Links ocasionais são permitidos; destinos disfarçados e rajadas coordenadas podem ser contidos temporariamente. Spam, repetição, arquivos não suportados e falta de recursos podem impedir um compartilhamento; a original é preservada. ADMs moderam seu servidor; o responsável pelo bot modera a rede. Denúncias e controles pessoais são privados."""
+HELP = "## How global chat works\n**One conversation across servers.** Write in this channel. Your original stays in its server; other servers receive copies with your display name and avatar, without an added @username or server name. Owner and Tester labels are reserved for authorized accounts. Discord adds its application/bot label to webhook copies.\n\n**Confirm once.** Your choice applies throughout this network and survives restarts. Leave stops new sharing. The first invitation arrives by DM, without repeated public notices. Messages written before confirmation are not shared. If your DMs are closed, open `/globalchat` in the global channel to confirm privately.\n\n**Text and replies.** Normal Discord formatting is preserved; long messages may be split. Replies to known network messages include a quote. Forwarded mentions do not notify users, roles or everyone.\n\n**Attachments.** Global chat supports images, GIFs, videos, audio, PDF and TXT. Upload limits vary by server. A destination that cannot accept a file receives a size notice instead of an incomplete attachment. Compatible stickers become image files; other formats are identified by name. Custom emoji rendering depends on Discord permissions and availability. These global chat attachment rules are separate from the static-image-only banner and daily challenge feeds.\n\n**Edit and delete.** Use the original Discord message. The bot follows changes for up to 30 days and gradually checks deletions made during disconnections. My messages also lets you request removal of your network copies. Copies removed by local moderation are not recreated. Missing access can prevent synchronization to a destination.\n\n**Local features.** Reactions, native poll votes, calls, screen sharing and typing indicators remain local. Discord channels cannot be merged natively.\n\n**Community rules.** Do not share scams, harassment, threats, sexual content, other people's personal information or mass advertising. Occasional links are allowed; disguised destinations and coordinated bursts may be restricted temporarily. Spam, unsupported files and insufficient resources can prevent sharing; the original is preserved. Administrators moderate their server; the bot owner moderates the network. Reports and personal controls are private."
 
 
 POLICY_LINKS = (
-    "\n\n[Termos de serviço](https://www.adventureswiki.workers.dev/bot/termos/)"
-    " · [Política de privacidade](https://www.adventureswiki.workers.dev/bot/privacidade/)"
-    "\nSuporte e pedidos sobre seus dados: estrmozica@gmail.com."
+    '\n\n[Terms of Service](https://www.adventureswiki.workers.dev/bot/termos/) · [Privacy Policy](https://www.adventureswiki.workers.dev/bot/privacidade/)\nSupport and data requests: estrmozica@gmail.com.'
 )
 TERMS += POLICY_LINKS
 HELP += POLICY_LINKS
@@ -62,7 +38,7 @@ class ScopedView(GuardedView):
             self.guild,
             self.channel,
         ):
-            raise ValueError("Abra seus próprios controles no chat global.")
+            raise ValueError('Open your own global chat controls.')
         if self.admin:
             self.bot.require_admin(i)
         if self.owner:
@@ -84,11 +60,11 @@ class GlobalPanelView(GuardedView):
         super().__init__(timeout=None)
         self.bot = bot
         for name, label in (
-            ("join", "Participar"),
-            ("mine", "Meus envios"),
-            ("help", "Como funciona"),
-            ("report", "Denunciar"),
-            ("leave", "Parar de participar"),
+            ("join", 'Join'),
+            ("mine", 'My messages'),
+            ("help", 'How it works'),
+            ("report", 'Report'),
+            ("leave", 'Leave'),
         ):
             button = discord.ui.Button(label=label, custom_id="global:v1:" + name)
             button.callback = self.redirect
@@ -97,7 +73,7 @@ class GlobalPanelView(GuardedView):
     async def redirect(self, i):
         await reply(
             i,
-            "Os controles agora são privados. Abra `/chatglobal` neste canal para participar ou consultar seus envios.",
+            'Controls are now private. Open `/globalchat` in this channel to join or check your messages.',
         )
 
 
@@ -106,7 +82,7 @@ class GlobalMemberView(ScopedView):
         self.require(i)
         cfg = self.bot.globalchat.store.channel(i.guild_id)
         if not cfg or cfg["channel_id"] != str(i.channel_id):
-            raise ValueError("Abra /chatglobal no canal global atual do servidor.")
+            raise ValueError("Open /globalchat in the server's current global channel.")
         self.bot.require_human(i)
         return cfg
 
@@ -118,69 +94,69 @@ class GlobalMemberView(ScopedView):
             cfg and not cfg["active"]
         )
         state = (
-            "**Você já participa da rede.** Escreva normalmente no canal global."
+            '**You have joined the network.** Write normally in the global channel.'
             if participating
-            else "**Você ainda não participa.** Abra Participar para confirmar o compartilhamento. Suas mensagens ficam só neste servidor até aceitar."
+            else '**You have not joined yet.** Choose Join to confirm sharing. Your messages stay in this server until you accept.'
         )
         if paused:
             state = (
-                "**Conexão pausada.** Os próximos envios ficam locais até a conexão ser retomada. "
+                '**Connection paused.** New messages stay local until the connection resumes. '
                 + (
-                    "Sua confirmação continua salva."
+                    'Your confirmation is still saved.'
                     if participating
-                    else "Sua participação ainda não foi confirmada."
+                    else 'You have not confirmed participation yet.'
                 )
             )
         elif held:
-            state = f"**Compartilhamento temporariamente contido até <t:{int(held['until'])}:t>.** Você pode acompanhar seus envios ou procurar a administração."
+            state = f"**Sharing is temporarily restricted until <t:{int(held['until'])}:t>.** You can check your messages or contact an administrator."
         elif self.bot.globalchat.store.blocked(self.actor, self.guild):
-            state = "**Sua participação está bloqueada neste chat.** Procure a administração do servidor ou o responsável pelo bot."
+            state = '**Your participation in this chat is blocked.** Contact a server administrator or the bot owner.'
         return (
-            "## 🌐 Chat global · meus controles\n"
+            '## Global chat · my controls\n'
             + state
-            + "\n\nSua confirmação vale em todos os servidores conectados. Consulte seus envios, as regras ou interrompa novos compartilhamentos pelos botões abaixo.\n-# Este painel é privado. Só administradores têm acesso à configuração do servidor."
+            + '\n\nYour confirmation applies to every connected server. Use the buttons below to check your messages, read the rules or stop sharing.\n-# This panel is private. Only administrators can configure the server connection.'
         )
 
-    @discord.ui.button(label="Participar", style=discord.ButtonStyle.success, row=0)
+    @discord.ui.button(label='Join', style=discord.ButtonStyle.success, row=0)
     async def join(self, i, button):
         cfg = self.current(i)
         if not cfg["active"]:
             raise ValueError(
-                "A conexão deste servidor está pausada. Aguarde a administração."
+                "This server's connection is paused. Please wait for its administrators."
             )
         if self.bot.globalchat.store.blocked(i.user.id, i.guild_id):
-            raise ValueError("Sua participação está bloqueada neste chat.")
+            raise ValueError('Your participation in this chat is blocked.')
         if self.bot.globalchat.store.consented(i.user.id):
             await reply(
                 i,
-                "**Você já participa da rede.** Sua confirmação continua salva em todos os servidores.",
+                '**You have already joined the network.** Your confirmation remains saved across all servers.',
             )
             return
         await reply(i, TERMS, view=ConsentView(self.bot, i, cfg))
 
-    @discord.ui.button(label="Meus envios", row=0)
+    @discord.ui.button(label='My messages', row=0)
     async def mine(self, i, button):
         self.current(i)
         view = MyMessagesView(self.bot, i)
         await reply(i, view.description(), view=view)
 
-    @discord.ui.button(label="Como funciona", row=0)
+    @discord.ui.button(label='How it works', row=0)
     async def help(self, i, button):
         self.current(i)
         await reply(i, HELP)
 
-    @discord.ui.button(label="Denunciar", row=1)
+    @discord.ui.button(label='Report', row=1)
     async def report(self, i, button):
         self.current(i)
         await i.response.send_modal(MessageAction(self.bot, i, "report"))
 
-    @discord.ui.button(label="Parar de participar", row=1)
+    @discord.ui.button(label='Leave', row=1)
     async def leave(self, i, button):
         self.current(i)
         self.bot.globalchat.store.consent(i.user.id, False)
         await reply(
             i,
-            "**Novos envios interrompidos em toda a rede.** As cópias já publicadas continuam disponíveis; use a original ou Meus envios para solicitar remoção. Para voltar, abra Participar neste painel. Não enviaremos outro convite automático.",
+            '**New sharing has stopped across the network.** Existing copies remain available; use the original message or My messages to request removal. Choose Join in this panel to return. Another automatic invitation will not be sent.',
         )
 
 
@@ -201,28 +177,28 @@ class ConsentView(ScopedView):
         self.completed = False
 
     @discord.ui.button(
-        label="Confirmar e participar", style=discord.ButtonStyle.success
+        label='Confirm and join', style=discord.ButtonStyle.success
     )
     async def accept(self, i, button):
         self.require(i)
         self.bot.require_human(i)
         cfg = self.bot.globalchat.store.source(i.channel_id)
         if not cfg or cfg["generation"] != self.generation:
-            raise ValueError("A conexão do canal mudou. Abra /chatglobal novamente.")
+            raise ValueError('The channel connection changed. Open /globalchat again.')
         if self.bot.globalchat.store.blocked(i.user.id, i.guild_id):
-            raise ValueError("Sua participação está bloqueada neste chat.")
+            raise ValueError('Your participation in this chat is blocked.')
         if self.completed:
             return
         self.completed = True
         self.bot.globalchat.store.consent(i.user.id)
         await close_confirmation(
             i,
-            "**Participação confirmada para toda a rede.** Seus próximos envios no canal global serão compartilhados.",
+            '**Participation confirmed across the network.** Your new messages in global channels will be shared.',
         )
         await self.bot.globalchat.onboarding.finish(i.user.id, "accepted")
         self.stop()
 
-    @discord.ui.button(label="Agora não")
+    @discord.ui.button(label='Not now')
     async def cancel(self, i, button):
         self.require(i)
         if self.completed:
@@ -230,7 +206,7 @@ class ConsentView(ScopedView):
         self.completed = True
         await close_confirmation(
             i,
-            "Participação não ativada. Suas mensagens continuam apenas no servidor onde foram escritas.",
+            'You have not joined. Your messages stay in the server where you wrote them.',
         )
         await self.bot.globalchat.onboarding.finish(i.user.id, "declined")
         self.stop()
@@ -244,7 +220,7 @@ class GlobalDirectView(GuardedView):
         self.bot = bot
 
     @discord.ui.button(
-        label="Confirmar e participar",
+        label='Confirm and join',
         style=discord.ButtonStyle.success,
         custom_id="global:v2:dm:accept",
     )
@@ -256,7 +232,7 @@ class GlobalDirectView(GuardedView):
         self.bot.globalchat.store.consent(i.user.id)
         await service.finish(i.user.id, "accepted", message=i.message)
 
-    @discord.ui.button(label="Agora não", custom_id="global:v2:dm:cancel")
+    @discord.ui.button(label='Not now', custom_id="global:v2:dm:cancel")
     async def cancel(self, i, button):
         service = self.bot.globalchat.onboarding
         service.direct_record(i)
@@ -270,9 +246,9 @@ class GlobalAdminView(ScopedView):
         cfg = bot.globalchat.store.channel(i.guild_id)
         self.generation = cfg["generation"] if cfg else 0
         self.activate.label = (
-            "Ativar neste canal"
+            'Enable in this channel'
             if not cfg or cfg["channel_id"] != str(i.channel_id)
-            else "Conferir conexão"
+            else 'Check connection'
         )
         if not bot.is_owner_id(i.user.id):
             self.remove_item(self.network)
@@ -283,27 +259,27 @@ class GlobalAdminView(ScopedView):
         self.require(i)
         cfg = self.bot.globalchat.store.channel(i.guild_id)
         if (cfg["generation"] if cfg else 0) != self.generation:
-            raise ValueError("As configurações mudaram. Abra /chatglobal novamente.")
+            raise ValueError('The settings changed. Open /globalchat again.')
         return cfg
 
     def description(self):
         cfg = self.bot.globalchat.store.channel(self.guild)
         state = (
-            "Ainda não conectado."
+            'Not connected yet.'
             if not cfg
-            else ("**Conectado:** " if cfg["active"] else "**Pausado:** ")
+            else ('**Connected:** ' if cfg["active"] else '**Paused:** ')
             + f"<#{cfg['channel_id']}>."
         )
         text = (
-            "## 🌐 Chat global · administração\n"
+            '## Global chat · administration\n'
             + state
-            + "\n\n**Um canal por servidor.** Ative neste canal para conectar as próximas conversas à rede. Mensagens originais são mantidas; só participantes que confirmarem entram no compartilhamento.\n\nO bot precisa de **Ver canal, Enviar mensagens, Ler histórico, Anexar arquivos e Gerenciar webhooks**. Use um canal diferente da tier list e sem restrição de idade.\n\nADMs cuidam deste servidor. Bloqueios e remoções da rede inteira são exclusivos do responsável pelo aplicativo."
+            + '\n\n**One channel per server.** Enable this channel to connect new conversations to the network. Original messages stay in place; only people who confirm participation have their messages shared.\n\nThe bot needs **View Channel, Send Messages, Read Message History, Attach Files and Manage Webhooks**. Choose a channel without an age restriction.\n\nAdministrators moderate this server. Network-wide restrictions and removals are reserved for the bot owner.'
         )
         held = self.bot.globalchat.store.restriction(0, self.guild)
         if held:
-            text += f"\n\n**Compartilhamento temporariamente contido até <t:{int(held['until'])}:t>.** A conversa local continua; o responsável pelo bot pode revisar a proteção."
+            text += f"\n\n**Sharing is temporarily restricted until <t:{int(held['until'])}:t>.** Local conversation continues; the bot owner can review the restriction."
         if self.bot.globalchat.store.network_paused():
-            text += "\n\n**A rede foi pausada pelo responsável pelo bot.** A configuração deste servidor está preservada."
+            text += "\n\n**The bot owner has paused the network.** This server's configuration has been preserved."
         if self.bot.is_owner_id(self.actor):
             from global_media import CACHE_LIMIT
 
@@ -311,18 +287,18 @@ class GlobalAdminView(ScopedView):
             queued = self.bot.globalchat.store.one(
                 "SELECT COUNT(*) AS n FROM global_deliveries WHERE state IN ('queued','preparing','uncertain','sending')"
             )["n"]
-            text += f"\n\n**Somente para você:** cache temporário {usage / 1024 / 1024:.1f}/{CACHE_LIMIT // 1024 // 1024} MiB · banco {self.bot.store.path.stat().st_size / 1024 / 1024:.1f} MiB · {queued} entregas pendentes."
+            text += f'\n\n**Only visible to you:** temporary cache {usage / 1024 / 1024:.1f}/{CACHE_LIMIT // 1024 // 1024} MiB · database {self.bot.store.path.stat().st_size / 1024 / 1024:.1f} MiB · {queued} pending deliveries.'
         return text
 
     @discord.ui.button(
-        label="Ativar neste canal", style=discord.ButtonStyle.success, row=0
+        label='Enable in this channel', style=discord.ButtonStyle.success, row=0
     )
     async def activate(self, i, button):
         cfg = self.current(i)
         if cfg and cfg["channel_id"] != str(i.channel_id):
             await reply(
                 i,
-                f"**Trocar o canal global?**\nAtual: <#{cfg['channel_id']}> → novo: <#{i.channel_id}>.\nAs próximas mensagens serão compartilhadas pelo novo canal. O histórico anterior permanece onde foi publicado.",
+                f"**Change the global channel?**\nCurrent: <#{cfg['channel_id']}> → new: <#{i.channel_id}>.\nNew messages will be shared through the new channel. Existing history stays where it was published.",
                 view=MoveConfirm(self.bot, i, self.generation),
             )
             return
@@ -333,16 +309,16 @@ class GlobalAdminView(ScopedView):
         fresh = GlobalAdminView(self.bot, i)
         await reply(
             i,
-            "**Conexão preparada.** Os controles são privados e o primeiro convite chega por DM, sem avisos públicos repetidos.\n\n"
+            '**Connection ready.** Controls are private. The first invitation arrives by DM, without repeated public notices.\n\n'
             + fresh.description(),
             view=fresh,
         )
 
-    @discord.ui.button(label="Pausar / retomar", row=0)
+    @discord.ui.button(label='Pause / resume', row=0)
     async def toggle(self, i, button):
         cfg = self.current(i)
         if not cfg:
-            raise ValueError("Ative um canal primeiro.")
+            raise ValueError('Enable a channel first.')
         await i.response.defer(ephemeral=True)
         if cfg["active"]:
             self.bot.globalchat.store.active(i.guild_id, False)
@@ -351,22 +327,22 @@ class GlobalAdminView(ScopedView):
             )
             await reply(
                 i,
-                "**Conexão pausada neste servidor.** Novas mensagens não entram nem saem da rede. O histórico permanece disponível. Use /chatglobal para retomar.",
+                '**Connection paused in this server.** New messages are not shared in either direction. Existing history remains available. Use /globalchat to resume.',
             )
         else:
             channel = self.bot.globalchat.channel(cfg["channel_id"])
             await self.bot.globalchat.activate(channel)
             await reply(
                 i,
-                "**Conexão retomada.** Só mensagens novas serão compartilhadas; a conversa ocorrida durante a pausa não é importada.",
+                '**Connection resumed.** Only new messages will be shared; conversations from the pause are not imported.',
             )
 
-    @discord.ui.button(label="Bloqueios locais", row=1)
+    @discord.ui.button(label='Local restrictions', row=1)
     async def blocks(self, i, button):
         self.current(i)
         await i.response.send_modal(ModerationModal(self.bot, i, network=False))
 
-    @discord.ui.button(label="Denúncias deste servidor", row=1)
+    @discord.ui.button(label='Server reports', row=1)
     async def reports(self, i, button):
         self.current(i)
         from global_reports import ReportInbox
@@ -374,7 +350,7 @@ class GlobalAdminView(ScopedView):
         view = ReportInbox(self.bot, i)
         await reply(i, view.description(), view=view)
 
-    @discord.ui.button(label="Estado do bot", row=4)
+    @discord.ui.button(label='Bot status', row=4)
     async def operations(self, i, button):
         self.current(i)
         self.bot.require_owner(i)
@@ -386,24 +362,24 @@ class GlobalAdminView(ScopedView):
             view=OperationsView(self.bot, i),
         )
 
-    @discord.ui.button(label="Minha participação", row=2)
+    @discord.ui.button(label='My participation', row=2)
     async def personal(self, i, button):
         cfg = self.current(i)
         if not cfg or cfg["channel_id"] != str(i.channel_id):
             raise ValueError(
-                "Abra /chatglobal no canal global configurado para acessar sua participação."
+                'Open /globalchat in the configured global channel to manage your participation.'
             )
         self.bot.require_human(i)
         view = GlobalMemberView(self.bot, i)
         await reply(i, view.description(), view=view)
 
-    @discord.ui.button(label="Moderação da rede", row=3)
+    @discord.ui.button(label='Network moderation', row=3)
     async def network(self, i, button):
         self.current(i)
         self.bot.require_owner(i)
         await i.response.send_modal(ModerationModal(self.bot, i, network=True))
 
-    @discord.ui.button(label="Denúncias da rede", row=3)
+    @discord.ui.button(label='Network reports', row=3)
     async def network_reports(self, i, button):
         self.current(i)
         self.bot.require_owner(i)
@@ -419,12 +395,12 @@ class MoveConfirm(ScopedView):
         self.generation = generation
         self.done = False
 
-    @discord.ui.button(label="Confirmar troca", style=discord.ButtonStyle.success)
+    @discord.ui.button(label='Confirm change', style=discord.ButtonStyle.success)
     async def confirm(self, i, button):
         self.require(i)
         cfg = self.bot.globalchat.store.channel(i.guild_id)
         if not cfg or cfg["generation"] != self.generation:
-            raise ValueError("O canal mudou. Abra /chatglobal novamente.")
+            raise ValueError('The channel changed. Open /globalchat again.')
         if self.done:
             return
         self.done = True
@@ -432,11 +408,11 @@ class MoveConfirm(ScopedView):
         async with self.bot.guild_lock(i.guild_id):
             current = self.bot.globalchat.store.channel(i.guild_id)
             if not current or current["generation"] != self.generation:
-                raise ValueError("O canal mudou. Abra /chatglobal novamente.")
+                raise ValueError('The channel changed. Open /globalchat again.')
             await self.bot.globalchat.activate(i.channel)
         await reply(
             i,
-            "**Canal global alterado.** Os controles continuam privados; os próximos participantes recebem o convite por DM.",
+            '**Global channel changed.** Controls remain private; new participants receive their invitation by DM.',
         )
         self.stop()
 
@@ -454,7 +430,7 @@ class MyMessagesView(ScopedView):
         self.previous.disabled = self.page == 0
         self.next.disabled = len(rows) <= 5
         rows = rows[:5]
-        text = f"## Meus envios · página {self.page + 1}\nEdite ou apague a mensagem original pelo Discord. Para solicitar somente a remoção das cópias da rede, use Remover cópias.\n"
+        text = f'## My messages · page {self.page + 1}\nEdit or delete the original message in Discord. To request removal of network copies only, choose Remove copies.\n'
         for row in rows:
             data = json.loads(row["payload"])
             counts = self.bot.globalchat.store.rows(
@@ -462,23 +438,23 @@ class MyMessagesView(ScopedView):
                 (row["id"],),
             )
             states = {x["state"]: x["n"] for x in counts}
-            status = f"Compartilhada em {states.get('sent', 0) + states.get('partial', 0)} destino(s)."
+            status = f"Shared with {states.get('sent', 0) + states.get('partial', 0)} destination(s)."
             if states.get("partial"):
-                status += " Alguns anexos ultrapassaram o limite do destino."
+                status += " Some attachments exceeded the destination's limit."
             if any(
                 states.get(k) for k in ("queued", "preparing", "uncertain", "sending")
             ):
-                status += " Há entregas pendentes."
+                status += ' There are pending deliveries.'
             if states.get("failed") or row["error"]:
-                status += " Alguns envios não puderam ser confirmados."
-            text += f"\n**[Mensagem {row['id']}](https://discord.com/channels/{row['guild_id']}/{row['channel_id']}/{row['id']})**\n{safe(data.get('body') or 'Anexo ou conteúdo já removido do cache.', 100)}\n{status}\n"
+                status += ' Some deliveries could not be confirmed.'
+            text += f"\n**[Message {row['id']}](https://discord.com/channels/{row['guild_id']}/{row['channel_id']}/{row['id']})**\n{safe(data.get('body') or 'The attachment or content has already been removed from the cache.', 100)}\n{status}\n"
         return (
             text
             if rows
-            else text + "\nNenhuma mensagem recente compartilhada pela sua conta."
+            else text + '\nYour account has not shared any recent messages.'
         )
 
-    @discord.ui.button(label="Anterior", row=0)
+    @discord.ui.button(label='Previous', row=0)
     async def previous(self, i, button):
         self.require(i)
         self.page = max(0, self.page - 1)
@@ -486,7 +462,7 @@ class MyMessagesView(ScopedView):
 
         await edit_response(i, content=self.description(), view=self)
 
-    @discord.ui.button(label="Próxima", row=0)
+    @discord.ui.button(label='Next', row=0)
     async def next(self, i, button):
         self.require(i)
         self.page += 1
@@ -494,14 +470,14 @@ class MyMessagesView(ScopedView):
 
         await edit_response(i, content=self.description(), view=self)
 
-    @discord.ui.button(label="Atualizar", row=0)
+    @discord.ui.button(label='Refresh', row=0)
     async def reload(self, i, button):
         self.require(i)
         from tier_ui import edit_response
 
         await edit_response(i, content=self.description(), view=self)
 
-    @discord.ui.button(label="Remover cópias", style=discord.ButtonStyle.danger, row=1)
+    @discord.ui.button(label='Remove copies', style=discord.ButtonStyle.danger, row=1)
     async def erase(self, i, button):
         self.require(i)
         await i.response.send_modal(MessageAction(self.bot, i, "erase"))
@@ -510,17 +486,17 @@ class MyMessagesView(ScopedView):
 class MessageAction(BoundModal):
     def __init__(self, bot, i, action):
         super().__init__(
-            title="Denunciar mensagem"
+            title='Report a message'
             if action == "report"
-            else "Remover minhas cópias"
+            else 'Remove my copies'
         )
         self.bind(bot, i)
         self.action = action
         self.link = discord.ui.TextInput(
-            placeholder="Cole o link ou o ID da mensagem", max_length=250
+            placeholder='Paste a message link or ID', max_length=250
         )
         self.add_item(
-            discord.ui.Label(text="Mensagem do chat global", component=self.link)
+            discord.ui.Label(text='Global chat message', component=self.link)
         )
         self.reason = None
         if action == "report":
@@ -528,7 +504,7 @@ class MessageAction(BoundModal):
                 style=discord.TextStyle.paragraph, min_length=10, max_length=500
             )
             self.add_item(
-                discord.ui.Label(text="O que aconteceu?", component=self.reason)
+                discord.ui.Label(text='What happened?', component=self.reason)
             )
 
     async def on_submit(self, i):
@@ -542,17 +518,17 @@ class MessageAction(BoundModal):
             )
             await reply(
                 i,
-                "**Denúncia registrada.** A administração deste servidor e o responsável pela rede podem revisar. Sua denúncia não é publicada no chat.",
+                "**Report submitted.** This server's administrators and the network owner can review it. Your report is not published in chat.",
             )
         else:
             if row["user_id"] != str(i.user.id):
                 raise ValueError(
-                    "Você só pode remover as cópias das próprias mensagens."
+                    'You can only remove copies of your own messages.'
                 )
             self.bot.globalchat.store.erase(row["id"])
             await reply(
                 i,
-                "**Remoção solicitada.** As cópias acessíveis serão apagadas. A original continua sob seu controle no Discord.",
+                '**Removal requested.** Accessible copies will be deleted. You remain in control of the original message in Discord.',
             )
 
 
@@ -570,7 +546,7 @@ def find_message(bot, i, value, *, own=False, network=False):
             and not network
             and (guild, channel) != (str(i.guild_id), str(i.channel_id))
         ):
-            raise ValueError("Use o link de uma mensagem deste chat global.")
+            raise ValueError('Use a message link from this global chat.')
         row = store.resolve(guild, channel, ident)
     elif value.isdecimal():
         row = store.resolve(i.guild_id, i.channel_id, value)
@@ -582,10 +558,10 @@ def find_message(bot, i, value, *, own=False, network=False):
                 )
                 row = store.message(receipt["source_id"]) if receipt else None
     else:
-        raise ValueError("Cole o link da mensagem do Discord ou somente seu ID.")
+        raise ValueError('Paste the Discord message link or its ID.')
     if not row:
         raise ValueError(
-            "A mensagem não foi encontrada na janela de sincronização de 30 dias."
+            'The message was not found within the 30-day synchronization window.'
         )
     return row
 
@@ -593,36 +569,36 @@ def find_message(bot, i, value, *, own=False, network=False):
 class ModerationModal(BoundModal):
     def __init__(self, bot, i, *, network):
         super().__init__(
-            title="Moderação da rede" if network else "Moderação deste servidor"
+            title='Network moderation' if network else 'Server moderation'
         )
         self.bind(bot, i)
         self.network = network
         options = [
-            discord.SelectOption(label="Bloquear pessoa", value="block-user"),
-            discord.SelectOption(label="Desbloquear pessoa", value="unblock-user"),
+            discord.SelectOption(label='Block user', value="block-user"),
+            discord.SelectOption(label='Unblock user', value="unblock-user"),
         ]
         if network:
             options.extend(
                 [
                     discord.SelectOption(
-                        label="Bloquear servidor", value="block-guild"
+                        label='Block server', value="block-guild"
                     ),
                     discord.SelectOption(
-                        label="Desbloquear servidor", value="unblock-guild"
+                        label='Unblock server', value="unblock-guild"
                     ),
                     discord.SelectOption(
-                        label="Remover cópias de uma mensagem", value="erase"
+                        label='Remove message copies', value="erase"
                     ),
                 ]
             )
         self.action = discord.ui.Select(options=options)
         self.target = discord.ui.TextInput(
-            max_length=250, placeholder="ID da pessoa/servidor ou link da mensagem"
+            max_length=250, placeholder='User/server ID or message link'
         )
         self.reason = discord.ui.TextInput(
             style=discord.TextStyle.paragraph, min_length=5, max_length=500
         )
-        self.add_item(discord.ui.Label(text="Ação", component=self.action))
+        self.add_item(discord.ui.Label(text='Action', component=self.action))
         self.add_item(discord.ui.Label(text="Alvo", component=self.target))
         self.add_item(discord.ui.Label(text="Motivo", component=self.reason))
 
@@ -634,11 +610,11 @@ class ModerationModal(BoundModal):
             self.bot.require_owner(i)
         reason = str(self.reason).strip()
         if not 5 <= len(reason) <= 500:
-            raise ValueError("Explique o motivo em 5 a 500 caracteres.")
+            raise ValueError('Explain the reason in 5 to 500 characters.')
         value = self.action.values[0]
         if value == "erase":
             if not self.network:
-                raise ValueError("Esta ação é exclusiva da moderação da rede.")
+                raise ValueError('This action is restricted to network moderation.')
             row = find_message(self.bot, i, str(self.target), network=True)
             self.bot.globalchat.store.erase(row["id"])
             with self.bot.store.connection:
@@ -646,7 +622,7 @@ class ModerationModal(BoundModal):
         else:
             enabled, kind = value.split("-", 1)
             if kind == "guild" and not self.network:
-                raise ValueError("ADMs só podem bloquear pessoas no próprio servidor.")
+                raise ValueError('Server administrators can only block users in their own server.')
             target = str(self.target).strip()
             if target.startswith("https://"):
                 row = find_message(self.bot, i, target, network=self.network)
@@ -661,10 +637,10 @@ class ModerationModal(BoundModal):
             )
         await reply(
             i,
-            "**Moderação aplicada.** "
+            '**Moderation applied.** '
             + (
-                "A ação vale para toda a rede."
+                'This action applies across the network.'
                 if self.network
-                else "A ação vale somente para este servidor."
+                else 'This action applies only to this server.'
             ),
         )

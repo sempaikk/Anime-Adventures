@@ -49,11 +49,11 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
                     "view"
                 ]
                 text = visible_text(card)
-                self.assertIn("Conexão deste servidor", text)
-                self.assertIn("Moderação deste servidor", text)
-                self.assertIn("Sua participação", text)
-                self.assertEqual("Operação · dono do bot" in text, user == 7)
-                self.assertEqual("Moderação da rede · dono do bot" in text, user == 7)
+                self.assertIn('Server connection', text)
+                self.assertIn('Server moderation', text)
+                self.assertIn('Your participation', text)
+                self.assertEqual("Operations · bot owner" in text, user == 7)
+                self.assertEqual("Network moderation · bot owner" in text, user == 7)
                 self.assertLessEqual(card.total_children_count, 40)
                 self.assertEqual(view.personal.row, 2)
                 if user == 7:
@@ -153,7 +153,7 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
         self.engine.store.review_report(
             row["id"], 2, 9, 0, "dismiss", "Motivo não confirmado após revisão"
         )
-        with self.assertRaisesRegex(ValueError, "mudou"):
+        with self.assertRaisesRegex(ValueError, 'changed'):
             self.engine.store.review_report(
                 row["id"], 2, 9, 0, "resolve", "Um segundo envio do formulário"
             )
@@ -402,7 +402,7 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
         modal = NetworkPause(self.app, i)
         modal.reason._value = "Uma pausa de manutenção confirmada"
         self.engine.store.pause_network(True, 7, "Outra sessão pausou a rede primeiro")
-        with self.assertRaisesRegex(ValueError, "mudou"):
+        with self.assertRaisesRegex(ValueError, 'changed'):
             await modal.on_submit(i)
 
     async def test_personal_sent_messages_have_private_navigation(self):

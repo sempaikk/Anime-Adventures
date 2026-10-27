@@ -708,7 +708,7 @@ class ReleaseRuntimeCase(unittest.IsolatedAsyncioTestCase):
         for _ in range(6):
             self.app.media.begin_upload(7, 1)
         await self.app.close()
-        self.app = CommunityBot(self.temp.name, backend=self.backend)
+        self.app = CommunityBot(self.temp.name, backend=self.backend, tierlist_enabled=True)
         self.app.store.clock = lambda: self.now
         with self.assertRaisesRegex(ValueError, "muitas imagens"):
             self.app.media.begin_upload(7, 2)

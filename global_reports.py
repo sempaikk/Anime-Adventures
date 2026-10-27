@@ -33,33 +33,33 @@ class ReportInbox(ScopedView):
         self.review.disabled = not self.rows
         self.choose.options = [
             discord.SelectOption(
-                label=f"Denúncia #{r['id']} · {REPORT_STATES[r['status']]}",
+                label=f"Report #{r['id']} · {REPORT_STATES[r['status']]}",
                 value=str(r["id"]),
                 description=r["reason"][:90],
                 default=r["id"] == self.selected,
             )
             for r in self.rows
-        ] or [discord.SelectOption(label="Nenhuma denúncia", value="0")]
+        ] or [discord.SelectOption(label='No reports', value="0")]
         for option in self.filter.options:
             option.default = option.value == self.status
 
     def description(self):
         self.refresh()
         title = (
-            "Denúncias da rede" if self.scope is None else "Denúncias deste servidor"
+            'Network reports' if self.scope is None else 'Server reports'
         )
         text = (
-            f"## {title}\n**Página {self.page + 1}/{max(1, (self.total + 4) // 5)} · {self.total} registro(s).**\nSelecione uma denúncia e revise com um motivo. As ações deste painel valem "
+            f'## {title}\n**Page {self.page + 1}/{max(1, (self.total + 4) // 5)} · {self.total} report(s).**\nSelect a report and provide a reason for your decision. Actions in this panel apply '
             + (
-                "para toda a rede."
+                'across the network.'
                 if self.scope is None
-                else "somente para este servidor."
+                else 'only to this server.'
             )
         )
         row = next((r for r in self.rows if r["id"] == self.selected), None)
         if not row:
-            return text + "\n\nNenhuma denúncia neste filtro."
-        text += f"\n\n### #{row['id']} · {REPORT_STATES[row['status']]}\n**Motivo enviado:** {safe(row['reason'], 500)}"
+            return text + '\n\nThere are no reports matching this filter.'
+        text += f"\n\n### #{row['id']} · {REPORT_STATES[row['status']]}\n**Submitted reason:** {safe(row['reason'], 500)}"
         source = self.bot.globalchat.store.message(row["source_id"])
         cfg = self.bot.globalchat.store.channel(row["guild_id"])
         if source and cfg:
@@ -77,7 +77,7 @@ class ReportInbox(ScopedView):
             if can_read:
                 body = json.loads(source["payload"]).get("body")
                 if body:
-                    text += "\n**Trecho disponível no cache:** " + safe(body, 300)
+                    text += '\n**Excerpt available in cache:** ' + safe(body, 300)
                 delivery = self.bot.globalchat.store.delivery(
                     source["id"], cfg["channel_id"]
                 )
@@ -88,33 +88,33 @@ class ReportInbox(ScopedView):
                     else next((x for x in ids if x), None)
                 )
                 if ident:
-                    text += f"\n[Abrir mensagem neste servidor](https://discord.com/channels/{cfg['guild_id']}/{cfg['channel_id']}/{ident})"
+                    text += f"\n[Open the message in this server](https://discord.com/channels/{cfg['guild_id']}/{cfg['channel_id']}/{ident})"
             if self.scope is None:
-                text += f"\n**Origem interna:** servidor {source['guild_id']} · pessoa {source['user_id']}."
-        text += "\n-# Conteúdo apagado ou fora do cache pode estar indisponível; a denúncia não guarda uma cópia permanente da conversa."
+                text += f"\n**Internal source:** server {source['guild_id']} · user {source['user_id']}."
+        text += '\n-# Deleted or expired content may be unavailable; reports do not keep a permanent copy of the conversation.'
         if row["resolution"]:
-            text += f"\n**Última revisão:** {safe(row['resolution'], 500)}\n**Responsável:** {row['actor']} · <t:{int(row['updated'])}:R>."
+            text += f"\n**Last review:** {safe(row['resolution'], 500)}\n**Reviewer:** {row['actor']} · <t:{int(row['updated'])}:R>."
         return text
 
-    @discord.ui.button(label="Anterior", row=0)
+    @discord.ui.button(label='Previous', row=0)
     async def previous(self, i, button):
         self.require(i)
         self.page = max(0, self.page - 1)
         await edit_response(i, content=self.description(), view=self)
 
-    @discord.ui.button(label="Próxima", row=0)
+    @discord.ui.button(label='Next', row=0)
     async def next(self, i, button):
         self.require(i)
         self.page += 1
         await edit_response(i, content=self.description(), view=self)
 
-    @discord.ui.button(label="Atualizar", row=0)
+    @discord.ui.button(label='Refresh', row=0)
     async def reload(self, i, button):
         self.require(i)
         await edit_response(i, content=self.description(), view=self)
 
     @discord.ui.select(
-        placeholder="Estado das denúncias",
+        placeholder='Report status',
         options=[
             discord.SelectOption(label=v, value=k)
             for k, v in (*REPORT_STATES.items(), ("all", "Todas"))
@@ -128,20 +128,20 @@ class ReportInbox(ScopedView):
         await edit_response(i, content=self.description(), view=self)
 
     @discord.ui.select(
-        placeholder="Selecionar denúncia",
-        options=[discord.SelectOption(label="Carregando", value="0")],
+        placeholder='Select a report',
+        options=[discord.SelectOption(label='Loading', value="0")],
         row=2,
     )
     async def choose(self, i, select):
         self.require(i)
         selected = int(select.values[0])
         if selected not in {r["id"] for r in self.rows}:
-            raise ValueError("Selecione uma denúncia desta página.")
+            raise ValueError('Select a report from this page.')
         self.selected = selected
         await edit_response(i, content=self.description(), view=self)
 
     @discord.ui.button(
-        label="Revisar denúncia", style=discord.ButtonStyle.primary, row=3
+        label='Review a report', style=discord.ButtonStyle.primary, row=3
     )
     async def review(self, i, button):
         self.require(i)
@@ -151,19 +151,19 @@ class ReportInbox(ScopedView):
 
 class ReportDecision(BoundModal):
     def __init__(self, bot, i, row, scope):
-        super().__init__(title=f"Revisar denúncia #{row['id']}")
+        super().__init__(title=f"Review report #{row['id']}")
         self.bind(bot, i)
         self.ident, self.version, self.scope = row["id"], row["version"], scope
         self.action = discord.ui.Select(
             options=[
-                discord.SelectOption(label="Resolver sem punição", value="resolve"),
-                discord.SelectOption(label="Descartar denúncia", value="dismiss"),
-                discord.SelectOption(label="Reabrir revisão", value="reopen"),
+                discord.SelectOption(label='Resolve without action', value="resolve"),
+                discord.SelectOption(label='Dismiss report', value="dismiss"),
+                discord.SelectOption(label='Reopen review', value="reopen"),
                 discord.SelectOption(
-                    label="Bloquear pessoa por uma hora", value="block-hour"
+                    label='Block user for one hour', value="block-hour"
                 ),
                 discord.SelectOption(
-                    label="Solicitar remoção das cópias", value="remove"
+                    label='Request copy removal', value="remove"
                 ),
             ]
         )
@@ -172,13 +172,13 @@ class ReportDecision(BoundModal):
         )
         self.add_item(
             discord.ui.Label(
-                text="Ação",
-                description="Escopo: "
-                + ("rede inteira" if scope is None else "somente este servidor"),
+                text='Action',
+                description='Scope: '
+                + ('entire network' if scope is None else 'this server only'),
                 component=self.action,
             )
         )
-        self.add_item(discord.ui.Label(text="Motivo da decisão", component=self.reason))
+        self.add_item(discord.ui.Label(text='Reason for the decision', component=self.reason))
 
     async def on_submit(self, i):
         if not await self.interaction_check(i):
@@ -187,14 +187,14 @@ class ReportDecision(BoundModal):
         if self.scope is None:
             self.bot.require_owner(i)
         elif self.scope != i.guild_id:
-            raise ValueError("Esta revisão pertence a outro servidor.")
+            raise ValueError('This review belongs to another server.')
         action = self.action.values[0]
         state = self.bot.globalchat.store.review_report(
             self.ident, self.scope, i.user.id, self.version, action, str(self.reason)
         )
-        message = f"**Denúncia #{self.ident}: {REPORT_STATES[state]}.** A decisão e o responsável foram registrados."
+        message = f'**Report #{self.ident}: {REPORT_STATES[state]}.** The decision and reviewer were recorded.'
         if action == "remove":
-            message += " A remoção das cópias acessíveis foi solicitada; a original permanece com o autor."
+            message += ' Removal of accessible copies was requested; the original remains with its author.'
         if action == "block-hour":
-            message += " O bloqueio expira em uma hora."
-        await reply(i, message + " Use Atualizar na lista para acompanhar.")
+            message += ' The restriction expires in one hour.'
+        await reply(i, message + ' Use Refresh in the list to check progress.')

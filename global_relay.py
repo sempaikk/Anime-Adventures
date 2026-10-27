@@ -17,9 +17,9 @@ log = logging.getLogger("globalchat")
 HOOK_NAME = "Anime Adventures · Global"
 TESTER_IDS = frozenset({1401953040004550858})
 REQUIRED = {
-    "view_channel": "Ver canal",
-    "send_messages": "Enviar mensagens",
-    "read_message_history": "Ler histórico",
+    "view_channel": 'View Channel',
+    "send_messages": 'Send Messages',
+    "read_message_history": 'Read Message History',
     "manage_webhooks": "Gerenciar webhooks",
     "attach_files": "Anexar arquivos",
 }
@@ -52,7 +52,7 @@ def relay_name(bot, author):
         value = re.sub(
             r"\[\s*(?:owner|tester)\s*\]", "", str(value), flags=re.I
         ).strip()
-        return clean_name(value, size) or "usuário"
+        return clean_name(value, size) or 'user'
 
     display = identity(author.display_name, 70 if label else 80)
     return display + (f" [{label}]" if label else "")
@@ -67,12 +67,12 @@ def text_content(message):
     roles = {
         str(r.id): clean_name(r.name, 40) for r in getattr(message, "role_mentions", [])
     }
-    text = re.sub(r"<@!?(\d+)>", lambda m: "@" + users.get(m[1], "usuário"), text)
+    text = re.sub(r"<@!?(\d+)>", lambda m: "@" + users.get(m[1], 'user'), text)
     text = re.sub(r"<@&(\d+)>", lambda m: "@" + roles.get(m[1], "cargo"), text)
 
     def channel(match):
         found = message.guild.get_channel(int(match[1]))
-        return "#" + clean_name(found.name, 60) if found else "#canal"
+        return "#" + clean_name(found.name, 60) if found else '#channel'
 
     return re.sub(r"<#(\d+)>", channel, text)
 
@@ -150,7 +150,7 @@ class GlobalRelay:
         record = self.store.hook(ident)
         if not record:
             raise ValueError(
-                "A conexão deste canal precisa ser reparada pela administração."
+                "An administrator needs to repair this channel's connection."
             )
         hook = discord.Webhook.partial(
             int(record["hook_id"]), record["token"], client=self.bot
@@ -163,10 +163,10 @@ class GlobalRelay:
 
     async def activate(self, channel):
         if not isinstance(channel, discord.TextChannel):
-            raise ValueError("Escolha um canal de texto do servidor.")
+            raise ValueError('Choose a server text channel.')
         if channel.is_nsfw():
             raise ValueError(
-                "O chat global desta rede é para canais sem restrição de idade."
+                'This global chat network is for channels without age restrictions.'
             )
         missing = [
             name
@@ -175,11 +175,11 @@ class GlobalRelay:
         ]
         if missing:
             raise ValueError(
-                "Permissões necessárias neste canal: " + ", ".join(missing) + "."
+                'Required channel permissions: ' + ", ".join(missing) + "."
             )
         if self.store.blocked(0, channel.guild.id):
             raise ValueError(
-                "Este servidor está bloqueado na rede. Fale com o responsável pelo bot."
+                'This server is blocked from the network. Contact the bot owner.'
             )
         panel = next(
             (
@@ -194,7 +194,7 @@ class GlobalRelay:
             for t in self.bot.store.thread_targets()
         ):
             raise ValueError(
-                "Use um canal diferente do painel e do histórico da tier list."
+                'Choose a channel different from the tier list panel and history.'
             )
         hooks = await channel.webhooks()
         hook = next(
@@ -212,11 +212,11 @@ class GlobalRelay:
         if hook is None:
             hook = await channel.create_webhook(
                 name=HOOK_NAME,
-                reason="Chat global ativado pela administração do servidor",
+                reason='Global chat enabled by a server administrator',
             )
         if not hook.token:
             raise ValueError(
-                "O Discord não forneceu acesso ao webhook. Tente novamente."
+                'Discord did not provide webhook access. Please try again.'
             )
         previous = self.store.channel(channel.guild.id)
         if previous:
@@ -246,7 +246,7 @@ class GlobalRelay:
                 warnings.append(
                     "Figurinha "
                     + clean_name(sticker.name, 60)
-                    + " (formato nativo indisponível nos outros servidores)"
+                    + ' (native format unavailable in other servers)'
                 )
             else:
                 extension = (
@@ -264,7 +264,7 @@ class GlobalRelay:
             body += "\n" + "\n".join(warnings)
         if not body.strip() and not assets:
             raise ValueError(
-                "Envie texto ou anexos. Enquetes e encaminhamentos nativos não são copiados pelo chat global."
+                'Send text or attachments. Native polls and forwarded messages are not copied by global chat.'
             )
         reference = getattr(message, "reference", None)
         replied = (
@@ -329,7 +329,7 @@ class GlobalRelay:
                     return
                 await self.notice(
                     message,
-                    "## Participe do chat global\nSuas mensagens ficam neste servidor até você confirmar. Ao participar, o que escrever neste canal será compartilhado com toda a rede de servidores. Abra a confirmação abaixo.",
+                    '## Join global chat\nYour messages stay in this server until you confirm. Once you join, messages you write in this channel will be shared across the server network. Open the confirmation below.',
                     join=True,
                 )
             return
@@ -362,12 +362,12 @@ class GlobalRelay:
                     and not self.store.limit("edit:" + str(message.author.id), 12, 10)
                 ):
                     raise ValueError(
-                        "Muitas edições em sequência. Aguarde alguns segundos; a alteração poderá ser sincronizada quando o limite liberar."
+                        'Too many edits in a row. Wait a few seconds; the change can synchronize when the limit clears.'
                     )
                 if not old:
                     if not self.store.limit("send:" + str(message.author.id), 6, 10):
                         raise ValueError(
-                            "Você enviou mensagens muito rápido. Aguarde alguns segundos; a original continua neste canal."
+                            'You sent messages too quickly. Wait a few seconds; the original remains in this channel.'
                         )
                     if not self.store.limit(
                         "duplicate:" + str(message.author.id),
@@ -376,7 +376,7 @@ class GlobalRelay:
                         data["fingerprint"],
                     ):
                         raise ValueError(
-                            "Essa mensagem já foi enviada recentemente. Evite repetir o mesmo conteúdo."
+                            'This message was shared recently. Please avoid repeating the same content.'
                         )
                 row, changed = self.store.accept(
                     message, data, confirmed_first=confirmed_first
@@ -389,7 +389,7 @@ class GlobalRelay:
                     return
                 if self.bot.health.storage_level == "critical":
                     raise ValueError(
-                        "O compartilhamento de anexos está temporariamente indisponível. A original foi preservada."
+                        'Attachment sharing is temporarily unavailable. The original was preserved.'
                     )
                 targets = [
                     self.channel(d["channel_id"])
@@ -416,7 +416,7 @@ class GlobalRelay:
                     or not self.store.consented(message.author.id)
                 ):
                     raise ValueError(
-                        "O compartilhamento foi interrompido. A original permanece no servidor."
+                        'Sharing was stopped. The original remains in the server.'
                     )
                 # A deleted/edited source while downloading must not publish stale bytes.
                 fresh = await message.channel.fetch_message(message.id)
@@ -435,7 +435,7 @@ class GlobalRelay:
             reason = (
                 str(error)
                 if isinstance(error, ValueError)
-                else "Não foi possível preparar o compartilhamento. A mensagem original foi preservada."
+                else 'Sharing could not be prepared. The original message was preserved.'
             )
             self.store.failed(message.id, reason)
             if not recovery:
@@ -451,14 +451,14 @@ class GlobalRelay:
         channel = self.channel(row["channel_id"])
         cfg = self.store.source(row["channel_id"])
         if not cfg or cfg["guild_id"] != row["guild_id"] or not self.readable(channel):
-            raise ValueError("A origem deixou de estar disponível para a rede.")
+            raise ValueError('The source is no longer available to the network.')
         message = await channel.fetch_message(int(row["id"]))
         if (
             str(message.author.id) != row["user_id"]
             or message.author.bot
             or message.webhook_id
         ):
-            raise ValueError("A autoria da mensagem original não foi confirmada.")
+            raise ValueError("The original message's author could not be confirmed.")
         return message
 
     def parts(self, row, target):
@@ -488,7 +488,7 @@ class GlobalRelay:
                 )
                 if ident:
                     body = (
-                        f"> [Resposta a uma mensagem](https://discord.com/channels/{target.guild.id}/{target.id}/{ident})\n"
+                        f'> [Reply to a message](https://discord.com/channels/{target.guild.id}/{target.id}/{ident})\n'
                         + body
                     )
         assets = data.get("files", [])
@@ -499,7 +499,7 @@ class GlobalRelay:
         ]
         if oversized:
             body += (
-                "\n-# Anexo acima do limite deste servidor: "
+                "\n-# Attachment exceeds this server's limit: "
                 + ", ".join(oversized)[:300]
             )
         usable = [
@@ -523,7 +523,7 @@ class GlobalRelay:
         if part < 0 or not expected:
             self.store.retry(
                 job,
-                "A tentativa anterior não pôde ser identificada; conferência necessária.",
+                'The previous attempt could not be identified; reconciliation is required.',
                 terminal=True,
             )
             return False
@@ -554,7 +554,7 @@ class GlobalRelay:
         # when the remote server might have accepted a request with a lost ACK.
         self.store.retry(
             job,
-            "Entrega não confirmada; preservada para conferência, sem reenviar às cegas.",
+            'Delivery unconfirmed; retained for reconciliation without blind retries.',
             uncertain=part,
             terminal=job["attempts"] >= 6,
         )
@@ -569,7 +569,7 @@ class GlobalRelay:
             and self.store.clock() - row["updated"] > 3600
         ):
             self.store.retry(
-                job, "A fila expirou após uma hora; original preservada.", terminal=True
+                job, 'The queued message expired after one hour; the original was preserved.', terminal=True
             )
             return
         receipts = json.loads(job["receipts"])
@@ -579,7 +579,7 @@ class GlobalRelay:
                 target = self.channel(job["channel_id"])
                 if not self.readable(target):
                     raise ValueError(
-                        "Sem acesso ao destino para localizar a cópia pendente de remoção."
+                        'The destination is inaccessible, so the copy awaiting removal could not be located.'
                     )
                 await self.reconcile_uncertain(job, row, target)
                 return
@@ -661,7 +661,7 @@ class GlobalRelay:
                     for flag in REQUIRED
                 ):
                     raise ValueError(
-                        "A administração precisa conferir as permissões do bot neste canal."
+                        "An administrator needs to check the bot's permissions in this channel."
                     )
                 files, _ = self.media.files(part["files"], target.guild.filesize_limit)
                 existing = receipts[index] if index < len(receipts) else None
@@ -724,14 +724,14 @@ class GlobalRelay:
                         ):
                             self.store.retry(
                                 job,
-                                "O Discord não confirmou a publicação.",
+                                'Discord did not confirm publication.',
                                 uncertain=index,
                             )
                             return
                         if not sent or not getattr(sent, "id", None):
                             self.store.retry(
                                 job,
-                                "O Discord não confirmou a publicação.",
+                                'Discord did not confirm publication.',
                                 uncertain=index,
                             )
                             return
@@ -771,11 +771,11 @@ class GlobalRelay:
             except discord.NotFound:
                 self.store.erase(row["id"])
             except ValueError:
-                self.store.retry(job, "A origem ficou indisponível.", terminal=True)
+                self.store.retry(job, 'The source became unavailable.', terminal=True)
             else:
                 self.store.retry(
                     job,
-                    "O webhook precisa ser reparado pela administração.",
+                    'An administrator needs to repair the webhook.',
                     terminal=True,
                 )
         except (
@@ -789,7 +789,7 @@ class GlobalRelay:
             reason = (
                 str(error)
                 if isinstance(error, ValueError)
-                else f"Falha de entrega (HTTP {status}). A original foi preservada."
+                else f'Delivery failed (HTTP {status}). A original foi preservada.'
             )
             self.store.retry(
                 job,

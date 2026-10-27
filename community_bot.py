@@ -1,4 +1,4 @@
-"""One image and one persistent discussion thread; exactly two slash commands."""
+"""Tier list, global chat and independently configured image-only banners."""
 
 from __future__ import annotations
 import asyncio
@@ -9,6 +9,7 @@ import logging
 import os
 import signal
 import shutil
+import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 from types import SimpleNamespace
@@ -48,7 +49,9 @@ PERMISSIONS = {
 
 
 class CommunityBot(commands.Bot):
-    def __init__(self, data_dir=None, *, backend=None):
+    def __init__(self, data_dir=None, *, backend=None, tierlist_enabled=False):
+        # Archived implementation remains testable; production keeps it paused.
+        self.tierlist_enabled = tierlist_enabled
         intents = discord.Intents.none()
         intents.guilds = intents.guild_messages = intents.message_content = True
         super().__init__(
@@ -96,6 +99,22 @@ class CommunityBot(commands.Bot):
 
         self.globalchat = GlobalRelay(self)
         self.health.add_probe("global_chat", self.globalchat.ready)
+        from banner_relay import BannerRelay
+
+        self.banners = BannerRelay(self)
+        self.daily = BannerRelay(self, kind="daily")
+        from game_knowledge import GameKnowledge, UnavailableKnowledge
+
+        try:
+            self.knowledge = GameKnowledge(self)
+        except (sqlite3.DatabaseError, OSError, ValueError):
+            log.warning('Knowledge archive unavailable; existing files preserved.')
+            self.knowledge = UnavailableKnowledge(self)
+        from instance_storage import InstanceStorage
+
+        self.instance_storage=InstanceStorage(Path(__file__).resolve().parent,self.directory,self.health,
+                                             limit_mb=os.getenv('INSTANCE_DISK_LIMIT_MB','512'))
+        self.globalchat.media.available_space=self.instance_storage.available
         self.owner_ids_set = set()
         self.ui_theme = GameTheme()
         from tier_release import build_info
@@ -108,12 +127,12 @@ class CommunityBot(commands.Bot):
 
     def require_owner(self, i):
         if not self.is_owner_id(i.user.id):
-            raise ValueError("Esta revisão global é exclusiva do responsável pelo bot.")
+            raise ValueError("Only the bot owner can perform this action.")
 
     def require_admin(self, i):
         if not i.guild_id or not i.permissions.manage_guild:
             raise ValueError(
-                "Você precisa de Gerenciar servidor para publicar o painel."
+                "You need Manage Server to configure this feature."
             )
 
     def require_human(self, i):
@@ -123,7 +142,7 @@ class CommunityBot(commands.Bot):
             or (discord.utils.utcnow() - i.user.created_at).total_seconds() < 7 * 86400
         ):
             raise ValueError(
-                "Use uma conta de pessoa com pelo menos sete dias para participar."
+                "Use a user account that is at least seven days old to participate."
             )
 
     def require_thread(self, i, *, index_only=False):
@@ -148,7 +167,13 @@ class CommunityBot(commands.Bot):
     async def setup_hook(self):
         from tier_seed import seed_initial
 
-        seed_initial(self.store, self.catalog)
+        if self.tierlist_enabled:
+            seed_initial(self.store, self.catalog)
+        try:
+            self.knowledge.ensure_wiki()
+        except (sqlite3.DatabaseError, OSError, ValueError):
+            self.knowledge.paused=True
+            log.warning('Knowledge source indexing unavailable; existing archive preserved.')
         from tier_release import label
 
         log.info(
@@ -161,8 +186,9 @@ class CommunityBot(commands.Bot):
         app = await self.application_info()
         await self.ui_theme.refresh(self.http, app.id)
         self.owner_ids_set = {app.team.owner_id if app.team else app.owner.id}
-        self.add_view(ThreadView(self))
-        self.add_view(PollView(self))
+        if self.tierlist_enabled:
+            self.add_view(ThreadView(self))
+            self.add_view(PollView(self))
         from global_views import GlobalPanelView, GlobalDirectView
 
         self.add_view(GlobalPanelView(self))
@@ -178,7 +204,8 @@ class CommunityBot(commands.Bot):
                 item.custom_id = old_ids[item.custom_id]
             else:
                 legacy.remove_item(item)
-        self.add_view(legacy)
+        if self.tierlist_enabled:
+            self.add_view(legacy)
         await self.health.start(
             int(os.getenv("PORT") or os.getenv("SERVER_PORT") or 8080)
         )
@@ -192,10 +219,16 @@ class CommunityBot(commands.Bot):
             self.wiki_loop,
             self.global_loop,
             self.operations_loop,
+            self.banner_loop,
+            self.quota_loop,
         ):
+            if not self.tierlist_enabled and loop in (self.history_loop, self.analysis_loop, self.poll_loop, self.panel_loop, self.wiki_loop):
+                continue
             loop.start()
+        self.banners.start()
         log.info(
-            "Sincronizados somente /tierlist e /chatglobal; imagem e tópico; IA %s.",
+            "Comandos sincronizados; tier list %s; IA %s.",
+            "ativa" if self.tierlist_enabled else "pausada",
             "chave carregada" if self.analyzer.backend.enabled else "sem chave",
         )
 
@@ -209,10 +242,15 @@ class CommunityBot(commands.Bot):
         for row in self.globalchat.store.channels():
             if row["guild_id"] not in actual:
                 self.globalchat.store.remove_guild(row["guild_id"])
+        for feed in (self.banners, self.daily):
+            for row in feed.query("SELECT guild_id FROM banner_targets").fetchall():
+                if row["guild_id"] not in actual:
+                    feed.disable(row["guild_id"])
         log.info(
             "Conectado; %s servidores; aguardando relatos do jogo.", len(self.guilds)
         )
-        await self.cleanup_old_notices()
+        if self.tierlist_enabled:
+            await self.cleanup_old_notices()
 
     async def cleanup_old_notices(self):
         if self.store.get("legacy-notices-cleaned") == "1":
@@ -241,6 +279,8 @@ class CommunityBot(commands.Bot):
         self.store.register_guild(guild.id)
 
     async def on_guild_remove(self, guild):
+        self.banners.disable(guild.id)
+        self.daily.disable(guild.id)
         self.globalchat.store.remove_guild(guild.id)
         self.store.remove_guild(guild.id)
         self.guild_locks.pop(guild.id, None)
@@ -251,6 +291,8 @@ class CommunityBot(commands.Bot):
         await self.globalchat.ingest(message)
 
     def collect_message(self, message):
+        if not self.tierlist_enabled:
+            return
         if (
             not message.guild
             or message.author.bot
@@ -1016,6 +1058,7 @@ class CommunityBot(commands.Bot):
                     (self.store.clock() - 7 * 86400,),
                 )
             report = await asyncio.to_thread(maintain_tier_storage, self.store.path)
+            await asyncio.to_thread(self.knowledge.backup)
             self.health.update_storage(report)
         except Exception as error:
             self.health.backup_error = True
@@ -1059,7 +1102,77 @@ class CommunityBot(commands.Bot):
     async def operations_ready(self):
         await self.wait_until_ready()
 
+    @tasks.loop(seconds=2)
+    async def banner_loop(self):
+        try:
+            await self.banners.cycle()
+            await self.daily.cycle()
+            self.knowledge.prune()
+        except Exception as error:
+            log.warning("Entrega de banners adiada: %s", type(error).__name__)
+
+    @banner_loop.before_loop
+    async def banner_ready(self):
+        await self.wait_until_ready()
+
+    @tasks.loop(seconds=60)
+    async def quota_loop(self):
+        try:
+            await self.instance_storage.refresh(force=True)
+        except OSError:
+            log.warning('Instance storage measurement unavailable.')
+
+    @quota_loop.before_loop
+    async def quota_ready(self):
+        await self.wait_until_ready()
+
     def register_commands(self):
+        async def configure_feed(i, kind):
+            from banner_relay import BannerControls, require_banner_admin
+
+            require_banner_admin(i)
+            command_name = "dailychallenge" if kind == "daily" else "setbanner"
+            if not isinstance(i.channel, discord.TextChannel):
+                raise ValueError(f"Use /{command_name} in a server text channel.")
+            permissions = i.channel.permissions_for(i.guild.me)
+            names = {"view_channel": "View Channel", "send_messages": "Send Messages",
+                     "attach_files": "Attach Files", "read_message_history": "Read Message History"}
+            missing = [label for name, label in names.items() if not getattr(permissions, name, False)]
+            if missing:
+                raise ValueError("Grant the bot these permissions in this channel: " + ", ".join(missing) + ".")
+            await i.response.defer(ephemeral=True, thinking=True)
+            feed = self.daily if kind == "daily" else self.banners
+            async with self.guild_lock(i.guild_id):
+                feed.configure(i.guild_id, i.channel_id)
+            label = "Daily challenges" if kind == "daily" else "Banners"
+            await reply(i, f"{label} will be posted in <#{i.channel_id}>. Only static images will be sent, without captions.\n\n{feed.description(i.guild_id)}",
+                        view=BannerControls(self, i, kind=kind))
+
+        @self.tree.command(
+            name="setbanner",
+            description="Receive character banner images in this channel.",
+        )
+        @app_commands.guild_only()
+        @app_commands.allowed_installs(guilds=True, users=False)
+        @app_commands.default_permissions(manage_guild=True)
+        async def setbanner(i: discord.Interaction):
+            await configure_feed(i, "banner")
+
+        @self.tree.command(name="dailychallenge", description="Receive daily challenge images in this channel.")
+        @app_commands.guild_only()
+        @app_commands.allowed_installs(guilds=True, users=False)
+        @app_commands.default_permissions(manage_guild=True)
+        async def dailychallenge(i: discord.Interaction):
+            await configure_feed(i, "daily")
+
+        @self.tree.command(name="ask", description="Ask a question about Anime Adventures in your preferred language.")
+        @app_commands.guild_only()
+        @app_commands.allowed_installs(guilds=True, users=False)
+        async def ask(i: discord.Interaction):
+            from game_knowledge import AskModal
+
+            await i.response.send_modal(AskModal(self, i))
+
         @self.tree.command(
             name="tierlist",
             description="Prepare ou confira o painel da tier list global neste servidor.",
@@ -1088,8 +1201,8 @@ class CommunityBot(commands.Bot):
             )
 
         @self.tree.command(
-            name="chatglobal",
-            description="Participe do chat global ou administre a conexão deste servidor.",
+            name="globalchat",
+            description="Join global chat or manage this server's connection.",
         )
         @app_commands.guild_only()
         @app_commands.allowed_installs(guilds=True, users=False)
@@ -1103,14 +1216,17 @@ class CommunityBot(commands.Bot):
                 cfg = self.globalchat.store.channel(i.guild_id)
                 if not cfg:
                     raise ValueError(
-                        "O chat global ainda não está conectado neste servidor. Peça à administração para preparar um canal."
+                        "Global chat is not connected in this server yet. Ask an administrator to set up a channel."
                     )
                 if cfg["channel_id"] != str(i.channel_id):
                     raise ValueError(
-                        f"Abra /chatglobal no canal global <#{cfg['channel_id']}> para acessar seus controles pessoais."
+                        f"Open /globalchat in <#{cfg['channel_id']}> to access your private controls."
                     )
                 view = GlobalMemberView(self, i)
             await reply(i, view.description(), view=view)
+
+        if not self.tierlist_enabled:
+            self.tree.remove_command("tierlist")
 
         @self.tree.error
         async def command_error(i, error):
@@ -1122,7 +1238,7 @@ class CommunityBot(commands.Bot):
                 log.warning("Comando indisponível: %s", type(cause).__name__)
                 await reply(
                     i,
-                    "Não consegui concluir agora. Confira as permissões do canal e tente novamente. O estado anterior foi preservado.",
+                    "The action could not be completed. Check the channel permissions and try again. The previous state was preserved.",
                 )
 
     async def close(self):
@@ -1147,6 +1263,8 @@ class CommunityBot(commands.Bot):
             self.wiki_loop,
             self.global_loop,
             self.operations_loop,
+            self.banner_loop,
+            self.quota_loop,
         ):
             task = loop.get_task()
             if task and not task.done():
@@ -1156,6 +1274,9 @@ class CommunityBot(commands.Bot):
                 except asyncio.CancelledError:
                     pass
         await self.health.close()
+        await self.banners.close()
+        await self.daily.close()
+        self.knowledge.close()
         await self.globalchat.close()
         await super().close()
         self.store.close()

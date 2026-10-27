@@ -227,11 +227,11 @@ class Card(discord.ui.LayoutView):
                     }
                 elif controller.__class__.__name__ == "GlobalAdminView":
                     titles = {
-                        0: "Conexão deste servidor",
-                        1: "Moderação deste servidor",
-                        2: "Sua participação",
-                        3: "Moderação da rede · dono do bot",
-                        4: "Operação · dono do bot",
+                        0: "Server connection",
+                        1: "Server moderation",
+                        2: "Your participation",
+                        3: "Network moderation · bot owner",
+                        4: "Operations · bot owner",
                     }
                 if titles:
                     controls.add_item(
@@ -248,7 +248,7 @@ class Card(discord.ui.LayoutView):
             from tier_views import reply
 
             await reply(
-                i, "Estes controles expiraram. Abra novamente pelo painel do bot."
+                i, "These controls expired. Open them again through the bot."
             )
             return False
         return await self.controller.interaction_check(i)
@@ -260,7 +260,7 @@ class Card(discord.ui.LayoutView):
         from tier_views import reply
 
         log.warning("Cartão indisponível: %s", type(error).__name__)
-        await reply(i, "Não consegui concluir agora. Tente novamente em instantes.")
+        await reply(i, "The action could not be completed. Please try again shortly.")
 
 
 def payload(*, bot=None, **kwargs):

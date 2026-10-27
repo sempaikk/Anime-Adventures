@@ -89,6 +89,10 @@ def decorate_controls(view, bot):
     theme = theme_for(bot)
     mapping = {"rollback": "rank", "visual-test": "rank"}
     labels = {
+        "My messages": "items",
+        "Remove copies": "items",
+        "My participation": "units",
+        "Join": "units",
         "Meus envios": "items",
         "Remover cópias": "items",
         "Sugerir imagem": "units",

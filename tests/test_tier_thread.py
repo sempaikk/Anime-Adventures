@@ -159,7 +159,7 @@ class FakeDiscord:
                         name
                     ).default_permissions,
                 )
-                for name in ("tierlist", "chatglobal")
+                for name in ("tierlist", "globalchat", "setbanner", "dailychallenge", "ask")
             ]
         )
 
@@ -242,7 +242,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.backend = SimpleNamespace(
             enabled=False, model="offline-test", analyze=AsyncMock()
         )
-        self.app = CommunityBot(self.temp.name, backend=self.backend)
+        self.app = CommunityBot(self.temp.name, backend=self.backend, tierlist_enabled=True)
         self.app.store.clock = lambda: self.now
         self.app.owner_ids_set = {7}
         self.env = FakeDiscord(self.app, lambda: self.now)
@@ -316,9 +316,9 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
             reply=AsyncMock(),
         )
 
-    async def test_exactly_two_commands_and_no_options(self):
+    async def test_archived_tierlist_and_active_commands_have_no_options(self):
         self.assertEqual(
-            {c.name for c in self.app.tree.get_commands()}, {"tierlist", "chatglobal"}
+            {c.name for c in self.app.tree.get_commands()}, {"tierlist", "globalchat", "setbanner", "dailychallenge", "ask"}
         )
         self.assertTrue(all(not c.parameters for c in self.app.tree.get_commands()))
         self.assertIsNone(self.app.help_command)
@@ -407,7 +407,7 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
             i = self.interaction(admin=False, user=user)
             with (
                 self.subTest(user=user),
-                self.assertRaisesRegex(ValueError, "Gerenciar servidor"),
+                self.assertRaisesRegex(ValueError, 'Manage Server'),
             ):
                 await self.app.tree.get_command("tierlist").callback(i)
             self.assertEqual(self.env.payloads, [])
@@ -451,11 +451,11 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_global_chat_opens_private_admin_setup_without_sharing(self):
         i = self.interaction()
-        await self.app.tree.get_command("chatglobal").callback(i)
+        await self.app.tree.get_command("globalchat").callback(i)
         i.response.send_message.assert_awaited_once()
         self.assertTrue(i.response.send_message.await_args.kwargs["ephemeral"])
         self.assertIn(
-            "Chat global · administração", call_text(i.response.send_message.await_args)
+            'Global chat · administration', call_text(i.response.send_message.await_args)
         )
         self.assertEqual(self.app.globalchat.store.channels(), [])
         self.assertEqual(self.app.globalchat.store.jobs(), [])
@@ -465,20 +465,20 @@ class ThreadRuntimeCase(unittest.IsolatedAsyncioTestCase):
     ):
         self.app.globalchat.store.configure(1, 10, 110, "synthetic-hook", 0)
         i = self.interaction(admin=False, user=8, channel=self.env.channel)
-        await self.app.tree.get_command("chatglobal").callback(i)
+        await self.app.tree.get_command("globalchat").callback(i)
         response = i.response.send_message.await_args
         self.assertTrue(response.kwargs["ephemeral"])
-        self.assertIn("meus controles", call_text(response))
+        self.assertIn('my controls', call_text(response))
         labels = [
             item.get("label")
             for item in component_dicts(response.kwargs["view"])
             if item.get("type") == 2
         ]
-        self.assertIn("Participar", labels)
-        self.assertNotIn("Ativar neste canal", labels)
-        self.assertNotIn("Moderação da rede", labels)
+        self.assertIn("Join", labels)
+        self.assertNotIn("Enable in this channel", labels)
+        self.assertNotIn("Network moderation", labels)
         self.assertEqual(self.env.payloads, [])
-        self.assertIsNone(self.app.tree.get_command("chatglobal").default_permissions)
+        self.assertIsNone(self.app.tree.get_command("globalchat").default_permissions)
         self.assertTrue(
             self.app.tree.get_command("tierlist").default_permissions.manage_guild
         )

@@ -1,0 +1,43 @@
+# Banners e desafio diário
+
+Estado vigente definido pelo responsável em 26/10/2026. Esta entrega pertence somente ao bot; o site continua pausado por tempo indeterminado.
+
+## Origem e destino
+
+| Comando | Origem autorizada | Destino |
+| --- | --- | --- |
+| `/setbanner` | `993219350179876874` | canal onde um administrador executa o comando |
+| `/dailychallenge` | `1326659593199423610` | canal onde um administrador executa o comando |
+| `/ask` | textos de `994219170101219408` e wiki arquivada | resposta privada à pergunta |
+
+Cada servidor define um destino independente para cada feed. Os comandos de configuração exigem Gerenciar servidor ou Administrador, conferem novamente a permissão ao executar e respondem em particular. **Stop receiving** desativa somente aquele feed naquele servidor. Para trocar, execute o comando no novo canal. O bot precisa de Ver canal, Enviar mensagens, Anexar arquivos e Ler histórico. Não há argumento de ID do destino.
+
+**Publicações dos dois feeds contêm somente arquivos de imagem estática**, sem legenda, texto, nome do autor, URL, embed, menção ou botão. São aceitos PNG, JPEG e WebP reais, validados pelo conteúdo. GIF, inclusive estático, APNG/WebP animado, vídeo e texto são rejeitados. O texto escrito por participantes no chat global permanece intacto; as regras de anexos desse chat são separadas.
+
+## Credenciais e instalação
+
+- **`SECONDARY_ACCOUNT_TOKEN`** é o nome vigente do segredo da conta leitora, já renomeado pelo responsável no painel da hospedagem. `BANNER_READER_TOKEN` fica somente como alternativa de compatibilidade, com prioridade para o nome novo. Não solicitar o valor pela conversa.
+- `DISCORD_TOKEN` continua sendo o token do bot que publica/responde. `GROQ_API_KEY` continua sendo a chave da IA; não participa da retransmissão de imagens.
+- Cadastrar como **Segredo** no painel do Bot-Hosting.net. `.env` privado é alternativa. **`.env.example` é versionado e nunca deve conter valores reais.** Não substituir os segredos existentes nem o `DATA_DIR` atual.
+- Atualizar os arquivos a partir da main e reiniciar a instância existente com Python 3.12 e `bot.py`. Somente cadastrar o segredo não instala a atualização.
+- Na primeira inicialização habilitada, `banner_reader.py` prepara `discord.py-self==2.1.0` em `DATA_DIR/.banner-reader-venv`. Precisa de acesso ao PyPI e suporte a venv/pip; a preparação pode levar alguns minutos. A instalação isolada medida nesta sessão ocupou cerca de 80 MiB, sem incluir isso como garantia para outros sistemas.
+- O processo principal permanece com `discord.py==2.7.1`. O segredo da conta é passado por stdin, fora dos argumentos do processo. Os segredos do bot/Groq não entram no ambiente do subprocesso; logs privados do cliente não são repassados.
+- Automação de conta comum é self-bot, proibida pelos termos do Discord e sujeita a suspensão, como explicado ao responsável. Não tentar ultrapassar permissões ou resolver CAPTCHA por evasão. Uma verificação exigida pelo Discord interrompe a autenticação; o responsável precisa conferir a conta no aplicativo oficial.
+
+A conta atua como leitora e **o bot publica com a própria identidade**. O bot não herda permissão para entrar ou ler o servidor de origem. A conexão da conta pode receber metadados de outras áreas conforme o protocolo; o código processa somente as três origens autorizadas. Não afirmar que o token fica limitado a elas. O leitor não envia mensagens, reações ou comandos pela conta.
+
+## Entrega, cache e limites
+
+- `game_sources.py` centraliza as origens. `banner_reader.py` acompanha criação/edição de imagens e o texto de Questões. `banner_relay.py` mantém tabelas separadas `banner_*` e `daily_*` no SQLite do bot.
+- Ao conectar, procura a última imagem recente em no máximo dez mensagens por feed. Um destino novo recebe a mais recente disponível em cache; depois recebe as novas imagens. Não prometer atraso zero: rede, disponibilidade e limites do Discord afetam a entrega.
+- Configurações e recibos sobrevivem a reinícios. Repetir o comando não duplica uma imagem já confirmada. Trocar/desativar cancela trabalhos não enviados e conserva recibos confirmados ou incertos enquanto recentes.
+- Até dez imagens, 8 MiB por arquivo, 16 MiB por conjunto, 32 MiB de cache e até 64 conjuntos recentes por feed. Até 20 milhões de pixels e dimensão máxima de 8.192 pixels. O limite de upload do servidor também é conferido. Os bytes aprovados são mantidos, sem reconstruir artes ou cortar imagens.
+- Cache/recibos expiram em 65 minutos para banners e 26 horas para desafios; configurações persistem. Essas expirações não se aplicam ao histórico de Questões.
+- Nonce estável com enforce_nonce e reconciliação de respostas incertas pelo próprio autor e nonce/nome dos anexos. Não reenviar cegamente uma entrega desconhecida. Se não puder confirmar, aquele conjunto pode ficar sem entrega, em vez de gerar duplicação; o estado aparece na resposta privada. Imagens seguintes são independentes.
+- A cota de disco considera o projeto, dependências, cache e backups, com base nos 512 MB informados pelo responsável. Essa medida local não substitui o painel do provedor. Armazenamento crítico pausa novos anexos; o original é preservado.
+
+## Conhecimento e testes
+
+O texto de Questões tem arquivo próprio e não é enviado como publicação dos feeds. Consulte [knowledge.md](knowledge.md) para consulta multilíngue, compressão, volume, limite, retomada e backup.
+
+Os testes usam bancos temporários, imagens artificiais e APIs simuladas. A importação isolada da biblioteca foi conferida sem login. Isso não comprova autenticação da conta, acesso real aos três canais, publicação ou Groq na hospedagem. Evidências da entrega estão em `CONTINUIDADE.md`.

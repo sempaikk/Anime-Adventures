@@ -5,13 +5,7 @@ import re
 import unicodedata
 from urllib.parse import urlsplit
 
-RULES = """## Regras da conversa
-Respeite as pessoas. Não compartilhe golpes, assédio, ameaças, conteúdo sexual,
-dados pessoais de terceiros ou divulgação em massa. Use Denunciar quando necessário.
-Links comuns e convites ocasionais são permitidos. Links disfarçados, excesso de
-menções, repetição coordenada e rajadas podem impedir o compartilhamento.
-A proteção pode conter temporariamente um servidor por dez minutos, com revisão
-do dono. Ela não aplica banimento permanente nem substitui a moderação humana."""
+RULES = "## Chat rules\nRespect other participants. Do not share scams, harassment, threats, sexual content,\nother people's personal information or mass advertising. Use Report when necessary.\nNormal links and occasional invitations are allowed. Disguised destinations,\nexcessive mentions, coordinated repetition and message bursts can prevent sharing.\nProtection may temporarily restrict a server for ten minutes, subject to owner review.\nIt does not apply permanent bans or replace human moderation."
 
 
 def domain(value):
@@ -27,7 +21,7 @@ def check_links(text):
         target = target.strip("<>")
         if target.casefold().startswith(("javascript:", "data:", "file:")):
             raise ValueError(
-                "Esse link usa um formato inseguro. Envie o endereço HTTPS real, sem disfarçar o destino."
+                'This link uses an unsafe format. Send the actual HTTPS address without disguising its destination.'
             )
         display = domain(shown.strip("<>"))
         actual = domain(target)
@@ -37,11 +31,11 @@ def check_links(text):
             and display.removeprefix("www.") != actual.removeprefix("www.")
         ):
             raise ValueError(
-                "O endereço mostrado no link é diferente do destino. Compartilhe o link real para que todos possam conferir."
+                'The displayed address differs from the destination. Share the actual link so everyone can check it.'
             )
     if len(re.findall(r"<@!?\d+>|<@&\d+>|@everyone|@here", text)) > 10:
         raise ValueError(
-            "Reduza as menções antes de compartilhar. As cópias não notificam pessoas ou cargos."
+            'Reduce mentions before sharing. Copies do not notify users or roles.'
         )
 
 
@@ -53,7 +47,7 @@ class GlobalGuard:
         check_links(message.content or "")
         if sum(int(a.get("size") or 0) for a in data["files"]) > 128 * 1024 * 1024:
             raise ValueError(
-                "Os anexos dessa mensagem ultrapassam 128 MiB de preparo temporário. Envie em partes menores; a original foi preservada."
+                "This message's attachments exceed the 128 MiB preparation limit. Send smaller groups; the original was preserved."
             )
         if not new:
             return
@@ -86,9 +80,9 @@ class GlobalGuard:
         )["n"]
         reason = ""
         if counts["n"] > 120:
-            reason = "Rajada acima de 120 mensagens por minuto na origem."
+            reason = 'The source exceeded 120 messages per minute.'
         elif peers >= 8:
-            reason = "Oito contas repetiram a mesma mensagem em menos de um minuto."
+            reason = 'Eight accounts repeated the same message in less than a minute.'
         elif counts["invites"] > 12:
             reason = "Mais de doze convites compartilhados por minuto na origem."
         if reason:
@@ -96,5 +90,5 @@ class GlobalGuard:
                 "*", "guild", message.guild.id, 600, "automatic", reason
             )
             raise ValueError(
-                "O compartilhamento deste servidor foi contido por dez minutos após uma rajada de mensagens. A conversa local continua disponível; o responsável pelo bot pode revisar a proteção."
+                'Sharing from this server was restricted for ten minutes after a message burst. Local conversation remains available; the bot owner can review the restriction.'
             )

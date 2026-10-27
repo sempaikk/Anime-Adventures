@@ -328,7 +328,7 @@ class NativeRuntimeCase(unittest.IsolatedAsyncioTestCase):
         i = self.interaction()
         await modal.on_error(i, RuntimeError("artificial confirmation failure"))
         text = visible_text(i.response.send_message.await_args.kwargs["view"])
-        self.assertIn("confira o estado", text)
+        self.assertIn('check its status', text)
         self.assertNotIn("Nenhuma alteração foi aplicada", text)
 
     async def test_confirmation_is_private_native_and_keeps_vote_deadline(self):
