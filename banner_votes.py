@@ -35,7 +35,7 @@ def load_assets():
             if image.format != 'PNG' or image.mode != 'RGBA' or max(image.size) > 128 or getattr(image, 'is_animated', False):
                 raise ValueError('Unsupported banner reaction image')
             image.verify()
-        result.append((item['key'] + '_' + item['sha256'][:12], raw))
+        result.append((item['key'], item['sha256'], raw))
     return result
 
 
@@ -61,12 +61,22 @@ class BannerVotes:
         self.next_setup = self.relay.clock() + 60
         try:
             assets = load_assets()
-            known = {emoji.name: emoji for emoji in await self.bot.fetch_application_emojis()}
+            known = {str(emoji.id): emoji for emoji in await self.bot.fetch_application_emojis()}
             selected = []
-            for name, raw in assets:
-                emoji = known.get(name)
+            for name, digest, raw in assets:
+                key = 'banner-vote-emoji:' + digest
+                emoji = known.get(self.bot.store.get(key))
+                legacy_name = name + '_' + digest[:12]
                 if emoji is None:
-                    emoji = await self.bot.create_application_emoji(name=name, image=raw)
+                    emoji = next((item for item in known.values() if item.name == legacy_name), None)
+                if emoji is None:
+                    # Recover a lost create acknowledgment before assigning the public name.
+                    emoji = await self.bot.create_application_emoji(name=legacy_name, image=raw)
+                # Save the ID before renaming: a lost edit acknowledgment must not
+                # replace an existing emoji or disconnect votes from its identity.
+                self.bot.store.set(key, emoji.id)
+                if emoji.name != name:
+                    emoji = await emoji.edit(name=name)
                 selected.append(emoji)
             self.emojis = tuple(selected)
             self.status = 'W/M/L ready.'

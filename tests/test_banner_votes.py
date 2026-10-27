@@ -29,7 +29,7 @@ class BannerVoteCase(unittest.IsolatedAsyncioTestCase):
         self.app.fetch_application_emojis = AsyncMock(side_effect=lambda: list(self.registry))
 
         async def create(*, name, image):
-            emoji = SimpleNamespace(name=name, id=300 + len(self.registry))
+            emoji = self.emoji(name, 300 + len(self.registry))
             self.registry.append(emoji)
             return emoji
 
@@ -38,6 +38,22 @@ class BannerVoteCase(unittest.IsolatedAsyncioTestCase):
             channel.permissions_for.return_value.add_reactions = True
             channel.get_partial_message.side_effect = lambda ident, c=channel: self.message(ident, channel=c)
         self.relay.configure(1, 10)
+
+    def emoji(self, name, ident):
+        emoji = SimpleNamespace(name=name, id=ident)
+
+        async def edit(*, name):
+            updated = self.emoji(name, ident)
+            self.registry[:] = [updated if item.id == ident else item for item in self.registry]
+            return updated
+
+        emoji.edit = AsyncMock(side_effect=edit)
+        return emoji
+
+    def legacy_emojis(self):
+        manifest = Path(__file__).resolve().parents[1] / 'data/banner_votes.json'
+        for index, item in enumerate(json.loads(manifest.read_text())['images']):
+            self.registry.append(self.emoji(item['key'] + '_' + item['sha256'][:12], 300 + index))
 
     def message(self, ident, *, channel=None, author=42, filename='banner-aaaaaaaaaaaaaaaa-0.png', webhook=None):
         message = SimpleNamespace(id=ident, author=SimpleNamespace(id=author), webhook_id=webhook,
@@ -69,6 +85,7 @@ class BannerVoteCase(unittest.IsolatedAsyncioTestCase):
                     'de701d7e4d4692e96fdfbb6d9f2684091f9b3f5791ef6d06d31152e15803f382']
         await self.votes.cycle()
         self.assertEqual(self.app.create_application_emoji.await_count, 3)
+        self.assertEqual([emoji.name for emoji in self.votes.emojis], ['win', 'mid', 'lose'])
         for call, digest in zip(self.app.create_application_emoji.call_args_list, expected):
             self.assertEqual(hashlib.sha256(call.kwargs['image']).hexdigest(), digest)
             with Image.open(io.BytesIO(call.kwargs['image'])) as image:
@@ -76,6 +93,47 @@ class BannerVoteCase(unittest.IsolatedAsyncioTestCase):
         restarted = BannerVotes(self.relay)
         await restarted.cycle()
         self.assertEqual(self.app.create_application_emoji.await_count, 3)
+
+    async def test_legacy_names_are_shortened_in_place_preserving_existing_votes(self):
+        self.legacy_emojis()
+        original = list(self.registry)
+        message = self.message(900)
+        message.reactions = [SimpleNamespace(emoji=emoji, me=True, count=5) for emoji in original]
+        self.assertTrue(await self.votes.ensure_emojis())
+        self.assertEqual([emoji.name for emoji in self.votes.emojis], ['win', 'mid', 'lose'])
+        self.assertEqual([emoji.id for emoji in self.votes.emojis], [emoji.id for emoji in original])
+        self.app.create_application_emoji.assert_not_awaited()
+        for emoji, name in zip(original, ('win', 'mid', 'lose')):
+            emoji.edit.assert_awaited_once_with(name=name)
+        await self.votes.rate(message)
+        message.add_reaction.assert_not_awaited()
+        self.assertEqual([reaction.count for reaction in message.reactions], [5, 5, 5])
+        self.now += 61
+        self.assertTrue(await BannerVotes(self.relay).ensure_emojis())
+        self.app.create_application_emoji.assert_not_awaited()
+        for emoji in self.registry:
+            emoji.edit.assert_not_awaited()
+
+    async def test_lost_rename_ack_recovers_by_saved_id_after_restart_without_replacing_emojis(self):
+        self.legacy_emojis()
+        original_ids = [emoji.id for emoji in self.registry]
+        edit = self.registry[0].edit.side_effect
+
+        async def lost(**kwargs):
+            await edit(**kwargs)
+            raise TimeoutError('Lost rename acknowledgment')
+
+        self.registry[0].edit.side_effect = lost
+        self.assertFalse(await self.votes.ensure_emojis())
+        self.assertEqual(self.registry[0].name, 'win')
+        await self.publish()
+        self.assertEqual(len(self.sent), 1)
+        self.now += 61
+        self.votes = BannerVotes(self.relay)
+        self.assertTrue(await self.votes.ensure_emojis())
+        self.assertEqual([emoji.name for emoji in self.votes.emojis], ['win', 'mid', 'lose'])
+        self.assertEqual([emoji.id for emoji in self.votes.emojis], original_ids)
+        self.app.create_application_emoji.assert_not_awaited()
 
     async def test_lost_emoji_creation_ack_does_not_create_a_duplicate(self):
         create = self.app.create_application_emoji.side_effect
