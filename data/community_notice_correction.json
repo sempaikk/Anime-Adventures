@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "version": "2026.10.27.6",
+  "replaces": "2026.10.27.5",
+  "replaces_fallback": "2026.10.27.4",
+  "replaces_content_sha256": [
+    "c2db5d2b7e3be176cd8cbcfe57026c23df536837296e5e15d3aa773aff84e836"
+  ],
+  "changes": [
+    "Os menus do bot ficaram mais simples e com menos ícones repetidos.",
+    "Uma falha no envio dos banners não interrompe o recebimento do desafio diário."
+  ]
+}

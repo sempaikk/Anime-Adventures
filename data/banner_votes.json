@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "images": [
+    {
+      "key": "win",
+      "path": "assets/banner-votes/win.png",
+      "sha256": "a695742eab67b392a44405b8aa641ce4319d67b4e9e79f2574137bfc371c0aae"
+    },
+    {
+      "key": "mid",
+      "path": "assets/banner-votes/mid.png",
+      "sha256": "5e9d55d0b029e4ee51c4aa27700fd5ea32485514856e9faf0a953477b7bc48c2"
+    },
+    {
+      "key": "lose",
+      "path": "assets/banner-votes/lose.png",
+      "sha256": "de701d7e4d4692e96fdfbb6d9f2684091f9b3f5791ef6d06d31152e15803f382"
+    }
+  ]
+}

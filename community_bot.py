@@ -232,6 +232,7 @@ class CommunityBot(commands.Bot):
             self.operations_loop,
             self.banner_loop,
             self.daily_loop,
+            self.banner_votes_loop,
             self.quota_loop,
         ):
             if not self.tierlist_enabled and loop in (self.history_loop, self.analysis_loop, self.poll_loop, self.panel_loop, self.wiki_loop):
@@ -1143,6 +1144,17 @@ class CommunityBot(commands.Bot):
     async def daily_ready(self):
         await self.wait_until_ready()
 
+    @tasks.loop(seconds=10)
+    async def banner_votes_loop(self):
+        try:
+            await self.banners.votes.cycle()
+        except Exception as error:
+            log.warning('Banner reactions deferred: %s', type(error).__name__)
+
+    @banner_votes_loop.before_loop
+    async def banner_votes_ready(self):
+        await self.wait_until_ready()
+
     @tasks.loop(seconds=60)
     async def quota_loop(self):
         try:
@@ -1285,6 +1297,7 @@ class CommunityBot(commands.Bot):
             self.operations_loop,
             self.banner_loop,
             self.daily_loop,
+            self.banner_votes_loop,
             self.quota_loop,
         ):
             task = loop.get_task()

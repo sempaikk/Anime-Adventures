@@ -13,6 +13,18 @@ Cada servidor define um destino independente para cada feed. Os comandos de conf
 
 **Publicações dos dois feeds contêm somente arquivos de imagem estática**, sem legenda, texto, nome do autor, URL, embed, menção ou botão. São aceitos PNG, JPEG e WebP reais, validados pelo conteúdo. GIF, inclusive estático, APNG/WebP animado, vídeo e texto são rejeitados. O texto escrito por participantes no chat global permanece intacto; as regras de anexos desse chat são separadas.
 
+**A partir da .7, cada imagem de banner é uma mensagem separada, com reações W/M/L independentes.** O desafio diário mantém o formato atual e não recebe essas reações. As reações são controles nativos do Discord; não há legenda, painel de votação ou placar adicional. O primeiro contador inclui a reação inicial do próprio bot, como na referência enviada. O usuário pode usar as reações nativas normalmente; não foi pedido um sistema que limite uma opção por conta.
+
+## Emojis originais e banners antigos
+
+O responsável forneceu três PNGs RGBA 40×40 em `Nova pasta.zip`. Os bytes originais ficam em `assets/banner-votes/`, verificados por SHA-256 em `data/banner_votes.json` e no manifesto da versão. Foram copiados sem recortar, recolorir ou redesenhar. Na primeira inicialização com banners configurados, o bot registra/reutiliza esses três emojis no próprio aplicativo. Nomes internos incluem o hash do arquivo para recuperar cadastros interrompidos sem duplicação. Não ocupa vagas de emoji dos servidores nem depende de Nitro ou software no PC. A documentação oficial permite emojis do aplicativo sem Use External Emojis: [Application-owned emoji](https://docs.discord.com/developers/resources/emoji#emoji-object-applicationowned-emoji).
+
+Além das permissões existentes, o bot precisa de **Adicionar reações** para iniciar W/M/L. Ler histórico também é necessário, como já era para os feeds. Uma falha de cadastro/permissão/reação não interrompe nem republica as imagens. O diagnóstico privado do comando informa a situação e o progresso do histórico.
+
+O trabalho de reações roda separado a cada dez segundos. Primeiro cuida dos novos banners confirmados; depois confere um canal do histórico por ciclo, em páginas de até vinte mensagens e até três banners por etapa. O cursor persiste no SQLite e a leitura continua após reiniciar. **Não há corte de idade para o histórico acessível**: só verifica autoria do próprio bot, ausência de webhook e nomes reconhecidos dos anexos. Não guarda textos ou identidades/votos dos membros. Mensagens antigas permanecem no mesmo lugar/horário; reações já presentes do próprio bot são preservadas. Arquivos, mensagens alheias e conversas não são alterados.
+
+Em mensagens antigas que agrupavam várias imagens, há um W/M/L para o conjunto; não é possível reagir separadamente a anexos da mesma mensagem sem reenviá-los. O responsável foi informado dessa diferença. Os novos banners são enviados separados. Se banner e daily compartilham um canal, arquivos antigos com o mesmo padrão não são classificados por suposição; o envio novo e seus recibos continuam identificados. Mensagem apagada não é recriada, e um limite de reações em uma mensagem é registrado sem bloquear o restante do histórico.
+
 ## Credenciais e instalação
 
 - **`SECONDARY_ACCOUNT_TOKEN`** é o nome vigente do segredo da conta leitora, já renomeado pelo responsável no painel da hospedagem. `BANNER_READER_TOKEN` fica somente como alternativa de compatibilidade, com prioridade para o nome novo. Não solicitar o valor pela conversa.
@@ -30,6 +42,7 @@ A conta atua como leitora e **o bot publica com a própria identidade**. O bot n
 - `game_sources.py` centraliza as origens. O leitor ativo acompanha somente criação/edição de imagens nas duas origens; a captura de Questões está encerrada. `banner_relay.py` mantém tabelas separadas `banner_*` e `daily_*` no SQLite do bot.
 - Ao conectar, procura a última imagem recente em no máximo dez mensagens por feed. Um destino novo recebe a mais recente disponível em cache; depois recebe as novas imagens. Não prometer atraso zero: rede, disponibilidade e limites do Discord afetam a entrega.
 - Configurações e recibos sobrevivem a reinícios. Repetir o comando não duplica uma imagem já confirmada. Trocar/desativar cancela trabalhos não enviados e conserva recibos confirmados ou incertos enquanto recentes.
+- A .7 mantém recibos individuais por mensagem de origem, hash da imagem e destino. Alterar outra imagem ou reordenar anexos não republica uma imagem já confirmada da mesma publicação. Reinício no meio do envio reconcilia cada imagem; confirmação perdida não gera reenvio cego. Lotes antigos confirmados/incertos não são transformados em novos uploads na migração. Recibos individuais seguem a janela dos banners; o cursor histórico de reações é separado.
 - Até dez imagens, 8 MiB por arquivo, 16 MiB por conjunto, 32 MiB de cache e até 64 conjuntos recentes por feed. Até 20 milhões de pixels e dimensão máxima de 8.192 pixels. O limite de upload do servidor também é conferido. Os bytes aprovados são mantidos, sem reconstruir artes ou cortar imagens.
 - Cache/recibos expiram em 65 minutos para banners e 26 horas para desafios; configurações persistem. Essas expirações não se aplicam ao histórico de Questões.
 - Nonce estável com enforce_nonce e reconciliação de respostas incertas pelo próprio autor e nonce/nome dos anexos. Não reenviar cegamente uma entrega desconhecida. Se não puder confirmar, aquele conjunto pode ficar sem entrega, em vez de gerar duplicação; o estado aparece na resposta privada. Imagens seguintes são independentes.
@@ -39,7 +52,7 @@ A conta atua como leitora e **o bot publica com a própria identidade**. O bot n
 
 O recurso de perguntas foi cancelado em 27/10/2026. O processo normal não coleta Questões nem armazena conhecimento/abre conexão com o PC. Banners e desafios dependem apenas da hospedagem.
 
-Os testes usam bancos temporários, imagens artificiais e APIs simuladas. A importação isolada da biblioteca foi conferida sem login. O responsável confirmou a entrega real dos banners; o desafio diário ainda precisa de confirmação própria. Evidências da entrega estão em `CONTINUIDADE.md`.
+Os testes usam bancos temporários, imagens artificiais e APIs simuladas. A importação isolada da biblioteca foi conferida sem login. O responsável confirmou a entrega real dos banners; painel/relatório posteriores confirmam também recibos do desafio diário. Cadastro dos novos emojis, cliques dos membros e reações históricas reais ainda precisam de conferência na hospedagem após carregar a .7. Evidências estão em `CONTINUIDADE.md`.
 
 Na revisão `2026.10.27.3`, cada feed tem seu próprio ciclo de entrega. Queda do leitor compartilhado afeta o estado dos dois feeds; falta de acesso a uma origem permanece individual. Excluir um destino desativa só aquele feed. O dono confere destinos, estado de origem e último recibo recente em **Bot status**, privado. [Servidor central e testes privados](community-server.md).
 

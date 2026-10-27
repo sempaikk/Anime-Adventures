@@ -15,13 +15,14 @@ from discord.http import handle_message_parameters
 
 CENTRAL_GUILD_ID = 1554953245204422807
 CENTRAL_UPDATE_CHANNEL_ID = 1564498826423959652
-# This correction is the owner's explicit exception. Later releases always post anew.
+# One fixed editorial correction; never use new release notes to rewrite history.
 NOTICE_CORRECTION_VERSION = "2026.10.27.6"
 UPDATES_PATH = Path(__file__).with_name("data") / "community_updates.json"
+CORRECTION_PATH = Path(__file__).with_name("data") / "community_notice_correction.json"
 REPORT_PERMISSIONS = (
     "view_channel", "send_messages", "read_message_history", "attach_files",
     "embed_links", "manage_webhooks", "manage_roles", "manage_channels",
-    "administrator",
+    "administrator", "add_reactions",
 )
 
 
@@ -68,6 +69,13 @@ class CommunityHub:
         if data.get('schema') != 1 or data.get('version') != build['version']:
             self.status = "No user-facing notes for the running version."
             return None
+        if data.get('requires_banner_reactions') and not self.bot.banners.votes.emojis:
+            self.status = 'The banner reaction setup must finish before its announcement.'
+            return None
+        return self.note_text(data)
+
+    @staticmethod
+    def note_text(data):
         changes = data.get('changes')
         if not isinstance(changes, list) or not changes or not all(
                 isinstance(change, str) and change.strip() for change in changes):
@@ -77,11 +85,16 @@ class CommunityHub:
             raise ValueError("Community release notes exceed the message limit")
         return text
 
-    async def revise_previous_update(self, guild, key, text):
-        """Correct the owner-identified notice in place, using its saved receipt."""
-        if self.bot.build['version'] != NOTICE_CORRECTION_VERSION:
-            return False
-        data = json.loads(UPDATES_PATH.read_text(encoding='utf-8'))
+    async def correct_legacy_notice(self, guild):
+        """Carry the one approved correction across skipped deploys, independently of new notes."""
+        key = f'community-update:{CENTRAL_GUILD_ID}:{NOTICE_CORRECTION_VERSION}'
+        completed = json.loads(self.bot.store.get(key) or '{}')
+        if completed.get('state') == 'sent':
+            return True
+        data = json.loads(CORRECTION_PATH.read_text(encoding='utf-8'))
+        if data.get('schema') != 1 or data.get('version') != NOTICE_CORRECTION_VERSION:
+            raise ValueError('Invalid fixed notice correction')
+        text = self.note_text(data)
         saved = None
         for previous in (data.get('replaces'), data.get('replaces_fallback')):
             if previous:
@@ -129,6 +142,9 @@ class CommunityHub:
             text = self.release_note()
             if not text:
                 return
+            corrected = await self.correct_legacy_notice(guild)
+            if corrected and self.bot.build['version'] == NOTICE_CORRECTION_VERSION:
+                return
             key = f"community-update:{CENTRAL_GUILD_ID}:{self.bot.build['version']}"
             receipt = json.loads(self.bot.store.get(key) or '{}')
             if receipt.get('state') == 'sent':
@@ -156,8 +172,6 @@ class CommunityHub:
                 return
             channel = self.update_channel(guild)
             if channel is None:
-                return
-            if await self.revise_previous_update(guild, key, text):
                 return
             receipt = {
                 'state': 'sending', 'channel_id': str(channel.id),

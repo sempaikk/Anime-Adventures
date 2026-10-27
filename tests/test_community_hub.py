@@ -38,6 +38,10 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         self.bot.owner_ids_set = {7}
         self.bot._connection.user = SimpleNamespace(id=42)
         self.bot.build = {'version': '2026.10.27.6', 'verified': True}
+        self.historical_notes = Path(__file__).resolve().parents[1] / 'data/community_notice_correction.json'
+        self.notes_patch = patch('community_hub.UPDATES_PATH', self.historical_notes)
+        self.notes_patch.start()
+        self.addCleanup(self.notes_patch.stop)
         self.hub = self.bot.community
         self.now = 2_000_000_000.0
         self.bot.store.clock = lambda: self.now
@@ -219,6 +223,27 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.bot.http.send_message.await_count, 2)
         message.edit.assert_awaited_once()
         self.assertEqual(self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.6'), corrected_receipt)
+
+    async def test_new_banner_feature_waits_for_emojis_then_posts_a_new_notice_after_old_correction(self):
+        current_path = Path(__file__).resolve().parents[1] / 'data/community_updates.json'
+        data = json.loads(current_path.read_text())
+        self.bot.build['version'] = data['version']
+        message = self.previous_notice(version='2026.10.27.5', content=PREVIOUS_PORTUGUESE_NOTICE)
+        with patch('community_hub.UPDATES_PATH', current_path):
+            await self.hub.publish_update()
+            self.bot.http.send_message.assert_not_awaited()
+            message.edit.assert_not_awaited()
+            self.bot.banners.votes.emojis = (SimpleNamespace(id=1), SimpleNamespace(id=2), SimpleNamespace(id=3))
+            self.now += 300
+            await self.hub.publish_update()
+        message.edit.assert_awaited_once()
+        self.assertNotIn('W/M/L', message.edit.call_args.kwargs['content'])
+        self.bot.http.send_message.assert_awaited_once()
+        text = self.bot.http.send_message.call_args.kwargs['params'].payload['content']
+        self.assertIn('W/M/L', text)
+        self.assertEqual(self.receipt()['message_id'], '999')
+        correction = json.loads(self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.6'))
+        self.assertEqual(correction['message_id'], '888')
 
     async def test_lost_edit_ack_is_reconciled_without_a_duplicate_notice(self):
         message = self.previous_notice()

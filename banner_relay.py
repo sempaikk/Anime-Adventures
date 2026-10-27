@@ -94,6 +94,12 @@ class BannerRelay:
             message_id TEXT, PRIMARY KEY(event_id,channel_id));
           CREATE INDEX IF NOT EXISTS banner_pending ON banner_jobs(state,attempted_at);
         """.replace("banner_", self.kind + "_"))
+        if kind == 'banner':
+            from banner_images import BannerImages
+            from banner_votes import BannerVotes
+
+            self.images = BannerImages(self)
+            self.votes = BannerVotes(self)
 
     def query(self, statement, parameters=()):
         return self.db.execute(statement.replace("banner_", self.kind + "_"), parameters)
@@ -113,6 +119,8 @@ class BannerRelay:
             if latest:
                 self.query("INSERT OR IGNORE INTO banner_jobs(event_id,guild_id,channel_id) VALUES(?,?,?)", (latest[0], guild_id, channel_id))
                 self.query("UPDATE banner_jobs SET state='pending' WHERE event_id=? AND channel_id=? AND state='unavailable'", (latest[0], channel_id))
+        if self.kind == 'banner':
+            self.images.resume(guild_id, channel_id)
 
     def disable(self, guild_id):
         with self.db:
@@ -141,6 +149,8 @@ class BannerRelay:
                     "oversize": "\nAn image exceeded this server's attachment size limit.",
                     "uncertain": "\nA delivery is awaiting confirmation from Discord. The bot is checking the result to avoid duplicates.",
                 }.get(job[0], "")
+            if self.kind == 'banner' and self.target(guild_id):
+                status += '\n**W/M/L reactions:** ' + self.votes.description(guild_id)
         return status
 
     def private_status(self, guild_id):
@@ -315,6 +325,8 @@ class BannerRelay:
             for row in self.query("SELECT digest FROM banner_assets").fetchall():
                 if row[0] not in used:
                     self.query("DELETE FROM banner_assets WHERE digest=?", (row[0],))
+        if self.kind == 'banner':
+            self.images.prune()
 
     def assets(self, event_id):
         event = self.query("SELECT * FROM banner_events WHERE id=?", (event_id,)).fetchone()
@@ -346,6 +358,9 @@ class BannerRelay:
                 return
             assets = self.assets(job["event_id"])
             if not assets or any(asset is None for asset in assets):
+                return
+            if self.kind == 'banner' and (job['layout'] == 'images' or job['state'] == 'pending'):
+                await self.images.deliver(job, channel, assets)
                 return
             names = [f"banner-{job['event_id'][:16]}-{index}.{asset['extension']}" for index, asset in enumerate(assets)]
             if job["state"] in {"sending", "uncertain"}:
