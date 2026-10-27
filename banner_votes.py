@@ -121,6 +121,31 @@ class BannerVotes:
                 text += f" {row['skipped']} message(s) already reached Discord's reaction limit."
         return text
 
+    def release_pending(self):
+        """Read confirmed progress only; never start work from the announcement task."""
+        targets = self.db.execute('''SELECT t.channel_id,b.done,b.skipped FROM banner_targets t
+            LEFT JOIN banner_vote_backfill b ON b.guild_id=t.guild_id AND b.channel_id=t.channel_id''').fetchall()
+        if not targets:
+            return None
+        if not self.emojis or self.lock.locked():
+            return 'Banner reaction setup or processing is still running.'
+        if any(not self.bot.store.get('banner-vote-order-scan:1:' + row['channel_id'])
+               or self.bot.store.get('banner-vote-order-cutoff:1:' + row['channel_id']) is None
+               or not row['done'] for row in targets):
+            return 'Historical W/M/L checks must finish in every configured banner channel.'
+        if any(row['skipped'] for row in targets):
+            return 'Some historical banners reached the reaction limit; check the private banner status.'
+        if self.db.execute('''SELECT 1 FROM banner_vote_order_repairs r JOIN banner_targets t
+                ON t.guild_id=r.guild_id AND t.channel_id=r.channel_id
+                WHERE r.phase<>'done' LIMIT 1''').fetchone():
+            return 'An old W/M/L vote repair is still awaiting confirmation.'
+        if self.db.execute('''SELECT 1 FROM banner_image_receipts r JOIN banner_targets t
+                ON t.guild_id=r.guild_id AND t.channel_id=r.channel_id
+                WHERE r.state='sent' AND r.reactions<>7 AND r.expires_at>? LIMIT 1''',
+                (self.relay.clock(),)).fetchone():
+            return 'W/M/L reactions on delivered banners are still awaiting confirmation.'
+        return None
+
     def target_channel(self, guild_id, channel_id):
         target = self.relay.target(guild_id)
         if not target or target['channel_id'] != str(channel_id):

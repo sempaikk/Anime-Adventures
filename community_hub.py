@@ -70,9 +70,20 @@ class CommunityHub:
             self.status = "No user-facing notes for the running version."
             return None
         if data.get('requires_banner_reactions') and not self.bot.banners.votes.emojis:
-            self.status = 'The banner reaction setup must finish before its announcement.'
+            self.status = 'Update announcement waiting: the banner reaction setup must finish.'
+            return None
+        if not self.update_complete():
             return None
         return self.note_text(data)
+
+    def update_complete(self):
+        # Every new notice uses this gate, including releases without a W/M/L flag.
+        # Future asynchronous migrations must expose confirmed completion here too.
+        pending = self.bot.banners.votes.release_pending()
+        if pending:
+            self.status = 'Update announcement waiting: ' + pending
+            return False
+        return True
 
     @staticmethod
     def note_text(data):
@@ -171,7 +182,7 @@ class CommunityHub:
                 self.status = "An update is awaiting confirmation; it will not be posted twice."
                 return
             channel = self.update_channel(guild)
-            if channel is None:
+            if channel is None or not self.update_complete():
                 return
             receipt = {
                 'state': 'sending', 'channel_id': str(channel.id),

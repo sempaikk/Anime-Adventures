@@ -1,8 +1,9 @@
 {
   "schema": 1,
-  "version": "2026.10.27.11",
+  "version": "2026.10.27.12",
   "requires_banner_reactions": true,
   "changes": [
-    "A correção da ordem W/M/L nos banners antigos agora alcança todos os servidores com banners configurados. As votações afetadas são reiniciadas uma única vez."
+    "A ordem W/M/L dos banners antigos foi corrigida em todos os servidores com banners configurados. As votações afetadas foram reiniciadas uma única vez.",
+    "Os avisos de atualização agora são publicados depois que as mudanças terminam de ser aplicadas."
   ]
 }
