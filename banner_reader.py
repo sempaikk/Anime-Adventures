@@ -147,6 +147,8 @@ async def listen(config):
         async def on_raw_message_edit(self, event):
             if event.channel_id not in sources:
                 return
+            if event.channel_id == questions and not questions_enabled:
+                return
             try:
                 channel = self.get_channel(event.channel_id) or await self.fetch_channel(event.channel_id)
                 message = await channel.fetch_message(event.message_id)

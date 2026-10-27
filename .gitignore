@@ -10,4 +10,10 @@ backups/
 state/
 .env.*
 !.env.example
+*.private.json
+*.private.txt
+migration-receipt.json
+transfer.download
+*.lock
+pc-knowledge-package/
 .DS_Store

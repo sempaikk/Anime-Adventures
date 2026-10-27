@@ -34,7 +34,7 @@ class GlobalOperations:
             "paused": self.store.network_paused(),
             "heartbeat": max(0, int(now - self.relay.last_cycle)),
             "storage": getattr(self.bot.health, "storage_level", "unknown"),
-            "archive_paused": bool(getattr(getattr(self.bot,'knowledge',None),'paused',False)),
+            "archive_paused": bool(getattr(getattr(self.bot,'knowledge',None),'paused',False)) and (not getattr(self.bot.knowledge,'remote',False) or self.bot.knowledge.online),
         }
 
     def description(self, *, compact=False):
@@ -70,9 +70,16 @@ class GlobalOperations:
         knowledge=getattr(self.bot,'knowledge',None)
         if knowledge:
             info=knowledge.statistics()
-            today=info['days'][0]['messages'] if info['days'] else 0
-            text+=f"\n**Game knowledge:** {info['messages']} saved messages · {info['bytes']/1048576:.1f}/{info['limit']/1048576:.0f} MiB · latest observed day: {today} messages."
-            if info['paused']:
+            if info.get('remote'):
+                text+=f"\n**PC question service:** {'online' if info['online'] else 'offline'} · {info['messages']} saved messages · {info['bytes']/1048576:.1f} MiB on the PC (last received status)."
+                if info.get('last_answer'):
+                    text+=f"\n**Last PC answer:** <t:{int(info['last_answer'])}:R>."
+                if not info['online']:
+                    text+='\nQuestions are unavailable until the PC program reconnects. Image feeds and global chat remain independent.'
+            else:
+                today=info['days'][0]['messages'] if info['days'] else 0
+                text+=f"\n**Game knowledge:** {info['messages']} saved messages · {info['bytes']/1048576:.1f}/{info['limit']/1048576:.0f} MiB · latest observed day: {today} messages."
+            if info['paused'] and (not info.get('remote') or info['online']):
                 text+='\n**Q&A capture paused.** Saved history is preserved. Check storage and backups before restarting collection.'
         return text
 

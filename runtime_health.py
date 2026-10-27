@@ -87,7 +87,7 @@ class RuntimeHealth:
             "backup_error": self.backup_error,
         }
 
-    async def start(self, port):
+    async def start(self, port, *, routes=None):
         async def live(request):
             return web.json_response(
                 {"status": "alive"}, headers={"Cache-Control": "no-store"}
@@ -106,9 +106,11 @@ class RuntimeHealth:
                 headers={"Cache-Control": "no-store"},
             )
 
-        app = web.Application(client_max_size=1024)
+        app = web.Application(client_max_size=32768 if routes else 1024)
         app.router.add_get("/health", live)
         app.router.add_get("/ready", ready)
+        if routes:
+            routes(app)
         self.runner = web.AppRunner(app, access_log=None)
         await self.runner.setup()
         site = web.TCPSite(self.runner, "0.0.0.0", port)

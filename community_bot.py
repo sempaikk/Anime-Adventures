@@ -106,7 +106,11 @@ class CommunityBot(commands.Bot):
         from game_knowledge import GameKnowledge, UnavailableKnowledge
 
         try:
-            self.knowledge = GameKnowledge(self)
+            if os.getenv('KNOWLEDGE_MODE', 'local').lower() == 'pc':
+                from knowledge_remote import RemoteKnowledge
+                self.knowledge = RemoteKnowledge(self)
+            else:
+                self.knowledge = GameKnowledge(self)
         except (sqlite3.DatabaseError, OSError, ValueError):
             log.warning('Knowledge archive unavailable; existing files preserved.')
             self.knowledge = UnavailableKnowledge(self)
@@ -207,7 +211,8 @@ class CommunityBot(commands.Bot):
         if self.tierlist_enabled:
             self.add_view(legacy)
         await self.health.start(
-            int(os.getenv("PORT") or os.getenv("SERVER_PORT") or 8080)
+            int(os.getenv("PORT") or os.getenv("SERVER_PORT") or 8080),
+            routes=getattr(self.knowledge, 'install_routes', None),
         )
         await self.tree.sync()
         for loop in (
@@ -1273,6 +1278,8 @@ class CommunityBot(commands.Bot):
                     await task
                 except asyncio.CancelledError:
                     pass
+        if getattr(self.knowledge, 'remote', False):
+            await self.knowledge.aclose()
         await self.health.close()
         await self.banners.close()
         await self.daily.close()

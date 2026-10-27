@@ -1,5 +1,7 @@
 # Anime Adventures
 
+**Conhecimento no PC:** o responsável autorizou migrar a base de perguntas para `D:\Armazenamento do Bot`. Programa Windows e conexão autenticada preparados; instalação/ativação e transferência reais seguem [LEIA-ME-PC.md](LEIA-ME-PC.md). Em modo PC, `/ask` só funciona enquanto esse programa estiver conectado; a Groq continua sendo a IA. Preservar os dados hospedados até conferir a importação.
+
 Chat entre servidores, imagens do jogo e perguntas com fontes. A tier list está pausada, com código e dados arquivados. **Comandos atuais, todos em inglês e sem argumentos:**
 
 - **`/globalchat`** — controles pessoais privados e administração do chat entre servidores. Substitui o nome anterior `/chatglobal`, mantendo configurações, consentimentos e histórico.

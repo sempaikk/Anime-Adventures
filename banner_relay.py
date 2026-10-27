@@ -5,6 +5,7 @@ import asyncio
 import hashlib
 import io
 import json
+import inspect
 import logging
 import math
 import os
@@ -177,9 +178,13 @@ class BannerRelay:
                             elif channel_id == str(DAILY_CHANNEL_ID):
                                 await self.bot.daily.accept(event)
                         elif event.get("event") in {"question", "question_delete"}:
-                            self.bot.knowledge.ingest(event)
+                            result = self.bot.knowledge.ingest(event)
+                            if inspect.isawaitable(result):
+                                await result
                         elif event.get('event')=='question_checkpoint':
-                            self.bot.knowledge.checkpoint(event)
+                            result = self.bot.knowledge.checkpoint(event)
+                            if inspect.isawaitable(result):
+                                await result
                         elif event.get("event") in {"installing", "connecting", "ready", "source_unavailable", "login_failed", "account_action_required", "reader_failed"}:
                             self.status = event["event"]
                             self.bot.daily.status = self.status

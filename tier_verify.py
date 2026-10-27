@@ -25,6 +25,7 @@ HOST_TEST_PATTERNS = (
     "test_global*.py",
     "test_banner*.py",
     "test_game_knowledge.py",
+    "test_knowledge_pc.py",
     "test_reader_recovery.py",
     "test_instance_storage.py",
     "test_runtime_health.py",

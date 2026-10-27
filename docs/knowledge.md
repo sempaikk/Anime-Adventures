@@ -2,6 +2,8 @@
 
 ## Funcionamento de `/ask`
 
+**Atualização posterior:** o responsável autorizou migrar o conhecimento para seu PC. O modo `KNOWLEDGE_MODE=pc` e a instalação em `D:\Armazenamento do Bot` estão descritos em [pc-knowledge.md](pc-knowledge.md). As seções de reserva de 64 MiB e armazenamento hospedado abaixo descrevem o modo local anterior, preservado até a migração ser ativada. Mudar o armazenamento não corrige a busca por upgrades/níveis.
+
 O comando abre um formulário privado de até 500 caracteres. A resposta também é privada. Comandos, menus e avisos fixos ficam em inglês; **a resposta da IA segue o idioma da pergunta**. A localidade do Discord serve de apoio em perguntas ambíguas. Não traduzir mensagens autorais dos participantes no chat global.
 
 `GROQ_API_KEY` é reutilizada. O modelo padrão é `openai/gpt-oss-120b`, substituível por `GROQ_MODEL`; o modelo roda na Groq, não nos 256 MB de RAM do bot. O programa seleciona trechos por pesquisa local e envia apenas esses trechos e a pergunta. Nunca envia a base inteira, nomes/IDs de usuários como metadados ou as credenciais. O modelo não recebe ferramentas para executar ações.
@@ -48,7 +50,7 @@ Exemplo de escala, **sem medir o canal real**: 10 mil mensagens/dia de 500 bytes
 
 A manutenção faz uma cópia local consistente em **`DATA_DIR/knowledge-backup.sqlite3`**, rotacionada no máximo uma vez por dia, com verificação e substituição atômica. Essa cópia pode chegar ao tamanho do banco. Não está dentro do backup de retratos da tier list; preservar/exportar os dois arquivos. Uma cópia no mesmo volume não protege contra exclusão da hospedagem ou falha desse volume. Nenhum histórico real, banco, backup ou segredo deve ir para o GitHub.
 
-O responsável perguntou sobre usar seu **HD pessoal de 1 TB** e confirmou que deseja deixar isso como **plano futuro, sem implementação nesta entrega**. Foi explicado que é viável com um pequeno serviço no PC, pasta limitada e conexão autenticada, preferencialmente mantendo cache no bot. Depende de PC/internet disponíveis e exige backup separado. Nenhum agente, túnel, VPN, exportação para o PC ou mudança de armazenamento remoto foi configurado. Não executar o plano futuro por suposição; continuar a implementação atual na hospedagem.
+No primeiro pedido, o **HD pessoal de 1 TB** ficou reservado como plano futuro. **O pedido posterior substituiu essa decisão:** implementar o programa do PC, manter o conteúdo de perguntas nele e deixar `/ask` indisponível enquanto o PC/programa estiver offline, sem outra cópia ativa de conhecimento na hospedagem. Pasta e endereço estão registrados no guia de PC. A execução no Windows, a transferência real e a remoção da base anterior ainda dependem das etapas guiadas; não confundir código preparado com dados já transferidos.
 
 ## Validação
 

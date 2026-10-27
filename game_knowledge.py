@@ -92,13 +92,14 @@ class GameAnswerBackend:
 
 
 class GameKnowledge:
-    def __init__(self, bot, *, backend=None):
+    def __init__(self, bot, *, backend=None, max_bytes=None, free_margin_mb=32):
         self.bot, self.clock = bot, bot.store.clock
         self.path = bot.directory / 'knowledge.sqlite3'
         self.db = sqlite3.connect(self.path, timeout=1)
         self.db.row_factory = sqlite3.Row
         self.db.execute('PRAGMA busy_timeout=1000')
-        self.max_bytes = max(16, min(128, int(os.getenv('KNOWLEDGE_MAX_MB', '64')))) * 1024 * 1024
+        self.max_bytes = max_bytes if max_bytes is not None else max(16, min(128, int(os.getenv('KNOWLEDGE_MAX_MB', '64')))) * 1024 * 1024
+        self.free_margin = free_margin_mb * 1024 * 1024
         page_size = self.db.execute('PRAGMA page_size').fetchone()[0]
         self.db.execute(f'PRAGMA max_page_count={self.max_bytes // page_size}')
         self.paused = False
@@ -208,7 +209,7 @@ class GameKnowledge:
                 reply = str(event["reply_to"]) if event.get("reply_to") else None
                 if reply and (not reply.isdecimal() or len(reply) > 22 or reply == ident):
                     return False
-                if self.bot.health.storage_level=='critical' or self.used_bytes()>=self.max_bytes-2*1024*1024 or shutil.disk_usage(self.bot.directory).free<32*1024*1024:
+                if self.bot.health.storage_level=='critical' or self.used_bytes()>=self.max_bytes-2*1024*1024 or shutil.disk_usage(self.bot.directory).free<self.free_margin:
                     self.paused=True
                     return False
                 if previous:
