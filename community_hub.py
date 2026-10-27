@@ -15,6 +15,8 @@ from discord.http import handle_message_parameters
 
 CENTRAL_GUILD_ID = 1554953245204422807
 CENTRAL_UPDATE_CHANNEL_ID = 1564498826423959652
+# This correction is the owner's explicit exception. Later releases always post anew.
+NOTICE_CORRECTION_VERSION = "2026.10.27.6"
 UPDATES_PATH = Path(__file__).with_name("data") / "community_updates.json"
 REPORT_PERMISSIONS = (
     "view_channel", "send_messages", "read_message_history", "attach_files",
@@ -77,11 +79,16 @@ class CommunityHub:
 
     async def revise_previous_update(self, guild, key, text):
         """Correct the owner-identified notice in place, using its saved receipt."""
-        previous = json.loads(UPDATES_PATH.read_text(encoding='utf-8')).get('replaces')
-        if not previous:
+        if self.bot.build['version'] != NOTICE_CORRECTION_VERSION:
             return False
-        saved = self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:{previous}')
-        if not saved:
+        data = json.loads(UPDATES_PATH.read_text(encoding='utf-8'))
+        saved = None
+        for previous in (data.get('replaces'), data.get('replaces_fallback')):
+            if previous:
+                saved = self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:{previous}')
+                if saved:
+                    break
+        if saved is None:
             return False
         receipt = json.loads(saved)
         if receipt.get('state') != 'sent' or not receipt.get('message_id'):
@@ -96,8 +103,9 @@ class CommunityHub:
         try:
             message = await channel.fetch_message(int(receipt['message_id']))
             old_header = f'Anime Adventures · Update {previous}\n\n'
+            known_body = hashlib.sha256(message.content.encode('utf-8')).hexdigest() in data.get('replaces_content_sha256', [])
             if (message.author.id != self.bot.user.id or message.webhook_id
-                    or not (message.content.startswith(old_header) or message.content == text)):
+                    or not (message.content.startswith(old_header) or known_body or message.content == text)):
                 self.status = 'The previous message could not be verified as the bot update.'
                 return True
             if message.content != text:

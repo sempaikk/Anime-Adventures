@@ -3,10 +3,11 @@
 import asyncio
 from datetime import datetime, timezone
 import json
+from pathlib import Path
 import tempfile
 import unittest
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import discord
 
@@ -20,13 +21,23 @@ async def messages(values):
         yield value
 
 
+PREVIOUS_PORTUGUESE_NOTICE = '\n'.join([
+    '- Os menus e botões agora usam texto. O único ícone decorativo fica no painel privado de status do bot.',
+    '- As atualizações continuam chegando neste canal mesmo se o nome dele mudar.',
+    '- Os banners e desafios diários são enviados de forma independente. Uma falha em um deles não interrompe o outro.',
+    '- O painel privado mostra os canais configurados, a conexão com as fontes e as últimas entregas confirmadas.',
+    '- Os controles do chat global conferem a configuração atual antes de pausar ou retomar a conexão, evitando alterações feitas por painéis antigos.',
+    '- As novidades relevantes do bot serão publicadas aqui. As confirmações de configuração e os relatórios continuam privados.',
+])
+
+
 class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.bot = CommunityBot(self.temp.name)
         self.bot.owner_ids_set = {7}
         self.bot._connection.user = SimpleNamespace(id=42)
-        self.bot.build = {'version': '2026.10.27.5', 'verified': True}
+        self.bot.build = {'version': '2026.10.27.6', 'verified': True}
         self.hub = self.bot.community
         self.now = 2_000_000_000.0
         self.bot.store.clock = lambda: self.now
@@ -80,7 +91,7 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         )
 
     def receipt(self):
-        return json.loads(self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.5') or '{}')
+        return json.loads(self.bot.store.get(f"community-update:{CENTRAL_GUILD_ID}:{self.bot.build['version']}") or '{}')
 
     async def test_only_designated_server_and_verified_matching_release_can_publish(self):
         self.guild.id = 1
@@ -140,7 +151,7 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.bot.http.send_message.await_count, 1)
         self.assertTrue(payloads[0]['enforce_nonce'])
         self.assertEqual(payloads[0]['allowed_mentions']['parse'], [])
-        self.assertTrue(payloads[0]['content'].startswith('- Os menus e botões'))
+        self.assertTrue(payloads[0]['content'].startswith('- Os menus do bot'))
         self.assertNotIn('Anime Adventures · Update', payloads[0]['content'])
         self.assertNotIn(self.bot.build['version'], payloads[0]['content'])
         from community_hub import CommunityHub
@@ -149,12 +160,12 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.bot.http.send_message.await_count, 1)
         self.assertEqual(self.receipt()['state'], 'sent')
 
-    def previous_notice(self):
+    def previous_notice(self, *, version='2026.10.27.4', content=None):
         receipt = {'state': 'sent', 'channel_id': str(CENTRAL_UPDATE_CHANNEL_ID),
                    'message_id': '888', 'nonce': '1234', 'attempted_at': self.now - 300}
-        self.bot.store.set(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.4', json.dumps(receipt))
+        self.bot.store.set(f'community-update:{CENTRAL_GUILD_ID}:{version}', json.dumps(receipt))
         message = SimpleNamespace(id=888, author=SimpleNamespace(id=42), webhook_id=None,
-                                  content='Anime Adventures · Update 2026.10.27.4\n\n- Previous English notice.',
+                                  content=content or f'Anime Adventures · Update {version}\n\n- Previous English notice.',
                                   edit=AsyncMock())
         self.channel.fetch_message = AsyncMock(return_value=message)
         return message
@@ -164,16 +175,50 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         await self.hub.publish_update()
         message.edit.assert_awaited_once()
         content = message.edit.call_args.kwargs['content']
-        self.assertTrue(content.startswith('- Os menus e botões'))
+        self.assertTrue(content.startswith('- Os menus do bot'))
         self.assertNotIn('2026.10.27.', content)
         self.assertEqual(message.edit.call_args.kwargs['allowed_mentions'].to_dict()['parse'], [])
         self.assertEqual(self.receipt()['message_id'], '888')
         self.bot.http.send_message.assert_not_awaited()
+
         from community_hub import CommunityHub
         self.hub = CommunityHub(self.bot)
         await self.hub.publish_update()
         message.edit.assert_awaited_once()
         self.bot.http.send_message.assert_not_awaited()
+
+    async def test_current_portuguese_notice_is_trimmed_to_member_facing_changes(self):
+        message = self.previous_notice(version='2026.10.27.5', content=PREVIOUS_PORTUGUESE_NOTICE)
+        await self.hub.publish_update()
+        message.edit.assert_awaited_once()
+        text = message.edit.call_args.kwargs['content']
+        self.assertEqual(len(text.splitlines()), 2)
+        self.assertNotIn('privado', text)
+        self.assertNotIn('configuração', text)
+        self.assertEqual(self.receipt()['message_id'], '888')
+        self.bot.http.send_message.assert_not_awaited()
+
+    async def test_later_small_updates_create_new_messages_and_preserve_previous_notice(self):
+        message = self.previous_notice()
+        await self.hub.publish_update()
+        message.edit.assert_awaited_once()
+        corrected_receipt = self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.6')
+        path = Path(self.temp.name) / 'future-updates.json'
+        self.bot.http.send_message.side_effect = [{'id': '999'}, {'id': '1000'}]
+        with patch('community_hub.UPDATES_PATH', path):
+            for version, message_id in (('2026.10.27.7', '999'), ('2026.10.27.8', '1000')):
+                self.bot.build['version'] = version
+                path.write_text(json.dumps({'schema': 1, 'version': version,
+                                            'changes': ['Uma pequena melhoria para quem usa o bot.'],
+                                            'replaces': '2026.10.27.6'}), encoding='utf-8')
+                self.now += 300
+                await self.hub.publish_update()
+                self.assertEqual(self.receipt()['message_id'], message_id)
+            from community_hub import CommunityHub
+            await CommunityHub(self.bot).publish_update()
+        self.assertEqual(self.bot.http.send_message.await_count, 2)
+        message.edit.assert_awaited_once()
+        self.assertEqual(self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.6'), corrected_receipt)
 
     async def test_lost_edit_ack_is_reconciled_without_a_duplicate_notice(self):
         message = self.previous_notice()
