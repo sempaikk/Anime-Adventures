@@ -12,6 +12,8 @@ import aiohttp
 import discord
 from PIL import Image
 
+from banner_vote_order import BannerVoteOrder
+
 ROOT = Path(__file__).resolve().parent
 ASSET_FILE = ROOT / 'data/banner_votes.json'
 KEYS = ('win', 'mid', 'lose')
@@ -52,6 +54,7 @@ class BannerVotes:
             rated INTEGER NOT NULL DEFAULT 0, skipped INTEGER NOT NULL DEFAULT 0,
             next_scan REAL NOT NULL DEFAULT 0)''')
         self.db.commit()
+        self.order = BannerVoteOrder(self)
 
     async def ensure_emojis(self):
         if self.emojis:
@@ -211,7 +214,11 @@ class BannerVotes:
                         if self.target_channel(row['guild_id'], row['channel_id']) is None:
                             return
                         try:
-                            await self.rate(message, refresh_names=True)
+                            repaired = await self.order.repair(message, channel)
+                            if repaired is None:
+                                return
+                            if not repaired:
+                                await self.rate(message, refresh_names=True)
                         except discord.HTTPException as error:
                             if error.code not in (10008, 30010):
                                 raise
@@ -239,6 +246,7 @@ class BannerVotes:
                 self.db.execute('DELETE FROM banner_vote_backfill WHERE channel_id NOT IN (SELECT channel_id FROM banner_targets)')
             if not self.db.execute('SELECT 1 FROM banner_targets LIMIT 1').fetchone() or not await self.ensure_emojis():
                 return
+            self.order.prepare_scan()
             await self.live_reactions()
             if self.emojis:
                 await self.backfill()

@@ -64,7 +64,8 @@ class BannerVoteCase(unittest.IsolatedAsyncioTestCase):
         async def add(emoji):
             self.reaction_calls.append((channel.id, ident, emoji.id))
             self.reacted.add((channel.id, ident, emoji.id))
-            existing = next((reaction for reaction in message.reactions if reaction.emoji.id == emoji.id), None)
+            existing = next((reaction for reaction in message.reactions
+                             if getattr(reaction.emoji, 'id', None) == emoji.id), None)
             if existing:
                 if not existing.me:
                     existing.count += 1
@@ -74,7 +75,8 @@ class BannerVoteCase(unittest.IsolatedAsyncioTestCase):
 
         async def remove(emoji, user):
             self.assertEqual(user.id, self.app.user.id)
-            existing = next(reaction for reaction in message.reactions if reaction.emoji.id == emoji.id)
+            existing = next(reaction for reaction in message.reactions
+                            if getattr(reaction.emoji, 'id', None) == emoji.id)
             if existing.me:
                 existing.me = False
                 existing.count -= 1
@@ -84,13 +86,19 @@ class BannerVoteCase(unittest.IsolatedAsyncioTestCase):
 
         message.add_reaction = AsyncMock(side_effect=add)
         message.remove_reaction = AsyncMock(side_effect=remove)
+        async def clear(emoji):
+            message.reactions[:] = [reaction for reaction in message.reactions
+                                    if getattr(reaction.emoji, 'id', None) != emoji.id]
+            self.reacted.discard((channel.id, ident, emoji.id))
+        message.clear_reaction = AsyncMock(side_effect=clear)
+        message.clear_reactions = AsyncMock(side_effect=AssertionError('Unrelated reactions must be preserved'))
         return message
 
-    def history_page(self, messages):
+    def history_page(self, messages, channel_id=10):
         def page(*, limit, before=None, **kwargs):
             selected = [m for m in messages if before is None or m.id < before.id][:limit]
             return fixtures.iterate(selected)
-        self.channels[10].history.side_effect = page
+        self.channels[channel_id].history.side_effect = page
 
     async def publish(self):
         await self.relay.accept(self.event())
