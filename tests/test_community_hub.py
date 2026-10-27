@@ -26,7 +26,7 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         self.bot = CommunityBot(self.temp.name)
         self.bot.owner_ids_set = {7}
         self.bot._connection.user = SimpleNamespace(id=42)
-        self.bot.build = {'version': '2026.10.27.4', 'verified': True}
+        self.bot.build = {'version': '2026.10.27.5', 'verified': True}
         self.hub = self.bot.community
         self.now = 2_000_000_000.0
         self.bot.store.clock = lambda: self.now
@@ -80,7 +80,7 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         )
 
     def receipt(self):
-        return json.loads(self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.4') or '{}')
+        return json.loads(self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.5') or '{}')
 
     async def test_only_designated_server_and_verified_matching_release_can_publish(self):
         self.guild.id = 1
@@ -140,12 +140,67 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.bot.http.send_message.await_count, 1)
         self.assertTrue(payloads[0]['enforce_nonce'])
         self.assertEqual(payloads[0]['allowed_mentions']['parse'], [])
-        self.assertIn('2026.10.27.4', payloads[0]['content'])
+        self.assertTrue(payloads[0]['content'].startswith('- Os menus e botões'))
+        self.assertNotIn('Anime Adventures · Update', payloads[0]['content'])
+        self.assertNotIn(self.bot.build['version'], payloads[0]['content'])
         from community_hub import CommunityHub
         self.hub = CommunityHub(self.bot)
         await self.hub.publish_update()
         self.assertEqual(self.bot.http.send_message.await_count, 1)
         self.assertEqual(self.receipt()['state'], 'sent')
+
+    def previous_notice(self):
+        receipt = {'state': 'sent', 'channel_id': str(CENTRAL_UPDATE_CHANNEL_ID),
+                   'message_id': '888', 'nonce': '1234', 'attempted_at': self.now - 300}
+        self.bot.store.set(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.4', json.dumps(receipt))
+        message = SimpleNamespace(id=888, author=SimpleNamespace(id=42), webhook_id=None,
+                                  content='Anime Adventures · Update 2026.10.27.4\n\n- Previous English notice.',
+                                  edit=AsyncMock())
+        self.channel.fetch_message = AsyncMock(return_value=message)
+        return message
+
+    async def test_previous_english_notice_is_corrected_in_place_once(self):
+        message = self.previous_notice()
+        await self.hub.publish_update()
+        message.edit.assert_awaited_once()
+        content = message.edit.call_args.kwargs['content']
+        self.assertTrue(content.startswith('- Os menus e botões'))
+        self.assertNotIn('2026.10.27.', content)
+        self.assertEqual(message.edit.call_args.kwargs['allowed_mentions'].to_dict()['parse'], [])
+        self.assertEqual(self.receipt()['message_id'], '888')
+        self.bot.http.send_message.assert_not_awaited()
+        from community_hub import CommunityHub
+        self.hub = CommunityHub(self.bot)
+        await self.hub.publish_update()
+        message.edit.assert_awaited_once()
+        self.bot.http.send_message.assert_not_awaited()
+
+    async def test_lost_edit_ack_is_reconciled_without_a_duplicate_notice(self):
+        message = self.previous_notice()
+
+        async def edit(**kwargs):
+            message.content = kwargs['content']
+            raise TimeoutError('Synthetic lost edit acknowledgment')
+
+        message.edit.side_effect = edit
+        await self.hub.publish_update()
+        self.assertEqual(self.receipt(), {})
+        self.now += 300
+        await self.hub.publish_update()
+        self.assertEqual(self.receipt()['state'], 'sent')
+        message.edit.assert_awaited_once()
+        self.bot.http.send_message.assert_not_awaited()
+
+    async def test_correction_rejects_other_authors_webhooks_or_unrelated_messages(self):
+        for field, value in (('author', SimpleNamespace(id=99)), ('webhook_id', 123), ('content', 'A different message')):
+            with self.subTest(field=field):
+                message = self.previous_notice()
+                setattr(message, field, value)
+                self.now += 300
+                await self.hub.publish_update()
+                message.edit.assert_not_awaited()
+                self.bot.http.send_message.assert_not_awaited()
+                self.assertEqual(self.receipt(), {})
 
     async def test_lost_ack_is_reconciled_in_original_channel_without_reposting(self):
         self.bot.http.send_message.side_effect = TimeoutError('synthetic lost acknowledgment')

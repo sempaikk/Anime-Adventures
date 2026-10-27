@@ -10,7 +10,7 @@ Chat entre servidores e imagens do jogo. A tier list está pausada, com código 
 - **`/setbanner`** — quem tem **Administrador** ou **Gerenciar servidor** define o canal atual para receber apenas as imagens dos banners. Cada servidor tem um destino próprio; a confirmação e o botão de desativar são privados. [Configuração e teste](docs/banners.md).
 - **`/dailychallenge`** — define o próprio canal para receber as imagens do desafio diário. Configuração independente do banner em cada servidor; mesma exigência de permissão.
 
-**Interface fixa em inglês.** Textos escritos pelos participantes do chat global mantêm o idioma original. Banners/desafios enviam somente imagens estáticas PNG/JPEG/WebP, sem GIF, vídeo, texto ou legenda. Comandos de configuração têm confirmação privada e **Stop receiving**.
+**Interface fixa em inglês; avisos de atualização em português.** Os avisos contêm apenas os tópicos, sem cabeçalho com nome/versão; a identificação técnica permanece privada. Textos escritos pelos participantes do chat global mantêm o idioma original. Banners/desafios enviam somente imagens estáticas PNG/JPEG/WebP, sem GIF, vídeo, texto ou legenda. Comandos de configuração têm confirmação privada e **Stop receiving**.
 
 Hospedagem atual: Bot-Hosting.net, Python 3.12 e início em `bot.py`. Preservar `DATA_DIR`, `DISCORD_TOKEN` e `SECONDARY_ACCOUNT_TOKEN`. A instância informada tem 256 MB RAM e 512 MB disco; o leitor fica em ambiente isolado na hospedagem. O PC do responsável não participa dos feeds. Variáveis antigas de IA/conhecimento podem ser removidas do painel após atualizar. O site permanece pausado.
 

@@ -1,12 +1,13 @@
 {
   "schema": 1,
-  "version": "2026.10.27.4",
+  "version": "2026.10.27.5",
+  "replaces": "2026.10.27.4",
   "changes": [
-    "Menus and buttons now use text, with a single decorative game icon in the private Bot status panel.",
-    "Bot updates now use this channel's identity and keep working when its name changes.",
-    "Banner and daily challenge deliveries now run independently, so an error in one feed does not pause the other.",
-    "Private feed diagnostics show the configured destination, source status and recent confirmed delivery.",
-    "Global chat now rechecks its settings before pausing or resuming, preventing outdated controls from changing a newer configuration.",
-    "Relevant bot updates will be posted here. Setup confirmations and diagnostic reports remain private."
+    "Os menus e botões agora usam texto. O único ícone decorativo fica no painel privado de status do bot.",
+    "As atualizações continuam chegando neste canal mesmo se o nome dele mudar.",
+    "Os banners e desafios diários são enviados de forma independente. Uma falha em um deles não interrompe o outro.",
+    "O painel privado mostra os canais configurados, a conexão com as fontes e as últimas entregas confirmadas.",
+    "Os controles do chat global conferem a configuração atual antes de pausar ou retomar a conexão, evitando alterações feitas por painéis antigos.",
+    "As novidades relevantes do bot serão publicadas aqui. As confirmações de configuração e os relatórios continuam privados."
   ]
 }

@@ -70,10 +70,43 @@ class CommunityHub:
         if not isinstance(changes, list) or not changes or not all(
                 isinstance(change, str) and change.strip() for change in changes):
             raise ValueError("Invalid community release notes")
-        text = f"Anime Adventures · Update {build['version']}\n\n" + '\n'.join('- ' + change for change in changes)
+        text = '\n'.join('- ' + change for change in changes)
         if len(text.encode('utf-16-le')) // 2 > 1900:
             raise ValueError("Community release notes exceed the message limit")
         return text
+
+    async def revise_previous_update(self, guild, key, text):
+        """Correct the owner-identified notice in place, using its saved receipt."""
+        previous = json.loads(UPDATES_PATH.read_text(encoding='utf-8')).get('replaces')
+        if not previous:
+            return False
+        saved = self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:{previous}')
+        if not saved:
+            return False
+        receipt = json.loads(saved)
+        if receipt.get('state') != 'sent' or not receipt.get('message_id'):
+            self.status = 'The previous update is awaiting confirmation; its correction will wait.'
+            return True
+        channel = self.update_channel(guild)
+        if channel is None:
+            return True
+        if receipt.get('channel_id') != str(channel.id):
+            self.status = 'The previous update belongs to a different channel. Check its receipt.'
+            return True
+        try:
+            message = await channel.fetch_message(int(receipt['message_id']))
+            old_header = f'Anime Adventures · Update {previous}\n\n'
+            if (message.author.id != self.bot.user.id or message.webhook_id
+                    or not (message.content.startswith(old_header) or message.content == text)):
+                self.status = 'The previous message could not be verified as the bot update.'
+                return True
+            if message.content != text:
+                await message.edit(content=text, allowed_mentions=discord.AllowedMentions.none())
+            self.bot.store.set(key, json.dumps(receipt))
+            self.status = f"Current update corrected in <#{channel.id}>."
+        except (discord.HTTPException, aiohttp.ClientError, TimeoutError, OSError):
+            self.status = 'The previous update could not be corrected yet. Its original message was preserved.'
+        return True
 
     async def publish_update(self):
         """Called only after Gateway readiness; never run by an offline diagnostic."""
@@ -115,6 +148,8 @@ class CommunityHub:
                 return
             channel = self.update_channel(guild)
             if channel is None:
+                return
+            if await self.revise_previous_update(guild, key, text):
                 return
             receipt = {
                 'state': 'sending', 'channel_id': str(channel.id),

@@ -2,6 +2,8 @@
 
 Servidor definido pelo responsável: **1554953245204422807**. O servidor antigo de testes foi excluído. Os comandos ativos continuam `/globalchat`, `/setbanner` e `/dailychallenge`; perguntas, PC e tier list permanecem encerrados/arquivados.
 
+É o servidor oficial tanto do bot quanto da comunidade. O responsável reforçou que os avisos e a opção de feedback são exclusivos dele; não disponibilizar essa opção aos outros servidores. Os avisos já respeitam esse limite. O ciclo atual não implementa comando/canal novo de feedback nem altera as denúncias existentes do chat global. As recomendações de cargos/canais estão no [plano de permissões](community-permissions-plan.md); esse plano ainda não foi aplicado no Discord.
+
 ## Relatório privado do servidor
 
 Depois de atualizar a hospedagem, o dono do aplicativo que também tem Gerenciar servidor abre `/globalchat` no servidor central, escolhe **Bot status** e **Server report**. Não é necessário ativar ou mover o chat global para usar o diagnóstico. A resposta e o arquivo `community-server-report.json` são privados.
@@ -15,6 +17,10 @@ A máquina de desenvolvimento não recebe acesso ao Discord por conhecer o ID do
 O relatório privado da instância confirmou o canal de anúncios **1564498826423959652**. A versão .3 procurava `update-log` no singular e não reconheceu o nome real `updates-logs`. A partir de .4, o bot usa exclusivamente o ID confirmado dentro do servidor central. Renomear esse canal não altera o destino; nomes parecidos em outros canais não redirecionam a publicação. Precisa de Ver canal, Enviar mensagens e Ler histórico. Não usa um destino de banner, desafio ou chat global para esse fim. Se o canal for excluído ou ficar inacessível, aguarda correção em vez de publicar em outro lugar.
 
 As notas ficam em `data/community_updates.json`, com a versão exata e mudanças relevantes ao uso. Cada entrega funcional precisa atualizar essa lista e o manifesto do pacote. Revisões internas sem efeito para os membros não recebem anúncio. Só a versão que estiver rodando com arquivos verificados pode publicar; testes locais não anunciam nada. Não publica retrospectivamente releases antigas nem mensagens de teste, resultados da suíte ou relatórios administrativos.
+
+Por pedido posterior do responsável, os avisos são **em português e começam diretamente pelos tópicos**. Não incluir cabeçalho com nome do bot, “Update”, número de versão, data ou título técnico. A versão serve internamente para conferir o pacote e deduplicar, permanecendo nos diagnósticos privados. A interface dos comandos continua em inglês.
+
+A .5 tem uma correção editorial explícita da mensagem .4, indicada por `replaces`. Com recibo confirmado no canal autorizado, confere autoria do próprio bot, ausência de webhook e conteúdo esperado, edita a mensagem original e reaproveita seu recibo. Se a confirmação da edição se perder, confere o conteúdo antes de tentar novamente. Não altera mensagens alheias, não recria mensagem apagada e não publica outra enquanto a correção registrada não puder ser confirmada. Instalações sem recibo anterior publicam os tópicos em português normalmente. Remover `replaces` nas próximas novidades funcionais: esse campo é destinado apenas à correção editorial solicitada. O responsável pediu carregar esta correção junto do próximo reinício necessário, não exigir um reinício adicional só por ela.
 
 Há um recibo persistente por versão no banco existente. Reiniciar ou renomear o canal não duplica o aviso. A confirmação perdida é pesquisada no canal original; sem conseguir confirmar, não reenvia cegamente. O envio não menciona membros/cargos e não faz crosspost de anúncios. **Bot status** informa se houve publicação, falta de canal/permissão ou confirmação pendente. A verificação ocorre a cada 30 s; indisponibilidades são reavaliadas em até cinco minutos.
 
