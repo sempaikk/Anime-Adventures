@@ -4,10 +4,11 @@ O responsável relatou alertas privados desde a noite anterior: ambas as fontes 
 
 Foi reproduzida uma falha concreta do leitor isolado: DISCONNECT desativava image_ready; o poll continuava emitindo heartbeat, mas ignorava todas as consultas; RESUMED não executa outro READY e não restaurava o estado. Os dois testes de recuperação falharam antes da correção, com zero imagens recebidas de ambas as fontes. Agora o poll HTTP não depende da conexão do Gateway e RESUMED faz consulta imediata com o mesmo tracker/poller, reativando um trabalhador encerrado quando necessário. Não muda fontes, credenciais, cache, recibos, votos, destinos ou limites; login/verificação continuam sem contorno. A correção vale para todos os servidores que usam esses feeds.
 
-- 273 testes offline passaram em Python 3.12, incluindo três cenários novos: retomada RESUMED sem duplicar imagens/trabalhadores, consulta HTTP durante desconexão do Gateway e retomada de poll encerrado.
+- 273 testes offline passaram em Python 3.12, incluindo três cenários novos: retomada RESUMED sem duplicar imagens/trabalhadores, consulta HTTP durante desconexão do Gateway e retomada de poll encerrado. O wheel público discord.py-self 2.1.0 foi inspecionado fora do repositório e confirma que parse_resumed despacha resumed, sem chamar READY; nenhuma conta real foi usada.
 - Manifesto: 2026.10.28.2, 77 arquivos, fingerprint 31a98fa4b56e (prefixo). Log local: /tmp/adventures-reader-recovery-tests.log.
 - Nota pública preparada com um único tópico em português sobre a interrupção de banners/daily após reconexão; mensagem nova somente na comunidade oficial, com os gates existentes. Não editar avisos anteriores, publicar detalhes privados ou reativar megafone.
-- Commit/CI desta correção: registrar depois do envio. A ativação real ainda depende de **Reiniciar** na Bot-Hosting e conferir **Running version 2026.10.28.2**; não pedir ZIP nem refazer destinos. Continuar o diagnóstico com o console prometido se os alertas persistirem. Não afirmar reinício ou recuperação observada por esta sessão.
+- Implementação enviada em [41e1643562f6fdbf68d1e7fa367bd8da57432361](https://github.com/sempaikk/Anime-Adventures/commit/41e1643562f6fdbf68d1e7fa367bd8da57432361). O [Bot checks](https://github.com/sempaikk/Anime-Adventures/actions/runs/40703234011) concluiu com sucesso (Python 3.12). Este registro final é somente documental; não muda o manifesto nem exige outro reinício.
+- A ativação real ainda depende de **Reiniciar** na Bot-Hosting e conferir **Running version 2026.10.28.2**; não pedir ZIP nem refazer destinos. Continuar o diagnóstico com o console prometido se os alertas persistirem. Não afirmar reinício ou recuperação observada por esta sessão.
 
 # Histórico da entrega — 2026.10.28.1
 
