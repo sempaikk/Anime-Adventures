@@ -60,7 +60,7 @@ Somente benefícios percebidos pelos players, em português e sem cabeçalho/ver
 - Manifesto 77 arquivos, versão 2026.10.28.1, fingerprint 196f625dd282d521b98d65ac204413fbff720094b405c76cd01cc64c08a1854c.
 - Pacote /tmp/Adventures-2026.10.28.1.zip com 87 arquivos, 206.679 bytes, SHA-256 5551f19b87fdc3f91acc14e27f463631c8c3d3e4ba7715ff675942fd012198b1. Preflight passou também após extrair o ZIP; não leu credenciais ou banco real.
 - git diff --check e busca por nomes retirados passaram; arte W/M/L e pacote Windows histórico de remoção intactos. downloads/Remover-Python-e-Bot-Windows.zip mantém SHA-256 d4c68ff5626d5ab46bc48b5c746fdf4065a29441bd924deaa37616a2db0ada29; não reempacotar ou orientar bypass do Defender.
-- Commit e CI serão registrados após o envio.
+- Implementação enviada em [140a729475f8c86e335b0c77fddeb399ac14aba0](https://github.com/sempaikk/Anime-Adventures/commit/140a729475f8c86e335b0c77fddeb399ac14aba0). O [Bot checks](https://github.com/sempaikk/Anime-Adventures/actions/runs/40635309854) concluiu com sucesso; os 270 testes passaram também no CI com Python 3.12. Este registro final fica em commit separado de documentação, sem mudança no runtime, manifesto ou pacote.
 
 ## Ativação real pendente
 
