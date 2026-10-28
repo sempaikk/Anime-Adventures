@@ -54,9 +54,3 @@ class DailyCurrent:
                             (event_id, source_message, created_at))
         self.db.execute("UPDATE daily_jobs SET state='superseded' WHERE event_id<>? AND state='pending'",
                         (event_id,))
-
-    def publication_current(self, channel_id, message_id):
-        return bool(self.db.execute('''SELECT 1 FROM daily_jobs j JOIN daily_current c ON c.event_id=j.event_id
-            JOIN daily_source_head h ON h.singleton=c.singleton AND h.source_message=c.source_message
-            WHERE j.channel_id=? AND j.message_id=? AND j.state='sent' LIMIT 1''',
-            (str(channel_id), str(message_id))).fetchone())

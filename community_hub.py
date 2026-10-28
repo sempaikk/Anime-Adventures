@@ -79,8 +79,7 @@ class CommunityHub:
     def update_complete(self):
         # Every new notice uses this gate, including releases without a W/M/L flag.
         # Future asynchronous migrations must expose confirmed completion here too.
-        pending = (self.bot.banners.votes.release_pending()
-                   or self.bot.feed_publications.release_pending())
+        pending = self.bot.banners.votes.release_pending()
         if pending:
             self.status = 'Update announcement waiting: ' + pending
             return False

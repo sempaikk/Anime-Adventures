@@ -5,8 +5,6 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import AsyncMock
 
-import discord
-
 from community_bot import CommunityBot
 from daily_current import DailyCurrent
 from game_sources import DAILY_CHANNEL_ID
@@ -210,28 +208,6 @@ class DailyCurrentCase(unittest.IsolatedAsyncioTestCase):
         await self.daily.cycle()
         self.assertEqual(len(self.sent), 1)
         self.assertEqual(self.daily.query('SELECT state FROM banner_jobs').fetchone()[0], 'sent')
-
-    async def test_stale_daily_crosspost_queue_is_ignored_without_publishing_yesterday(self):
-        self.channels[10].type = discord.ChannelType.news
-        await self.daily.accept(self.daily_event(100, age=24 * 3600))
-        await self.daily.cycle()
-        self.app.feed_publications.prepare()
-        old = self.daily.db.execute('SELECT * FROM feed_publications').fetchone()
-        await self.daily.accept(self.daily_event(200))
-        self.app.feed_publications.prepare()
-        await self.app.feed_publications.publish(old)
-        self.channels[10].fetch_message.assert_not_called()
-        self.assertEqual(self.daily.db.execute('SELECT state FROM feed_publications').fetchone()[0], 'ignored')
-
-    async def test_daily_crosspost_also_waits_for_source_confirmation_after_restart(self):
-        self.channels[10].type = discord.ChannelType.news
-        await self.daily.accept(self.daily_event(100, age=24 * 3600))
-        await self.daily.cycle()
-        self.daily.status = 'connecting'
-        await self.app.feed_publications.cycle()
-        self.channels[10].fetch_message.assert_not_called()
-        row = self.daily.db.execute('SELECT * FROM feed_publications').fetchone()
-        self.assertEqual((row['state'], row['issue']), ('pending', 'source'))
 
 
 if __name__ == '__main__':

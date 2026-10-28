@@ -103,9 +103,6 @@ class CommunityBot(commands.Bot):
 
         self.banners = BannerRelay(self)
         self.daily = BannerRelay(self, kind="daily")
-        from feed_publications import FeedPublications
-
-        self.feed_publications = FeedPublications(self)
         from knowledge_disabled import DisabledKnowledge
         self.knowledge = DisabledKnowledge(self)
         # Historical offline tests only. No environment variable activates /ask.
@@ -236,7 +233,6 @@ class CommunityBot(commands.Bot):
             self.banner_loop,
             self.daily_loop,
             self.banner_votes_loop,
-            self.feed_publications_loop,
             self.quota_loop,
         ):
             if not self.tierlist_enabled and loop in (self.history_loop, self.analysis_loop, self.poll_loop, self.panel_loop, self.wiki_loop):
@@ -1159,17 +1155,6 @@ class CommunityBot(commands.Bot):
     async def banner_votes_ready(self):
         await self.wait_until_ready()
 
-    @tasks.loop(seconds=5)
-    async def feed_publications_loop(self):
-        try:
-            await self.feed_publications.cycle()
-        except Exception as error:
-            log.warning('Feed announcement publishing deferred: %s', type(error).__name__)
-
-    @feed_publications_loop.before_loop
-    async def feed_publications_ready(self):
-        await self.wait_until_ready()
-
     @tasks.loop(seconds=60)
     async def quota_loop(self):
         try:
@@ -1313,7 +1298,6 @@ class CommunityBot(commands.Bot):
             self.banner_loop,
             self.daily_loop,
             self.banner_votes_loop,
-            self.feed_publications_loop,
             self.quota_loop,
         ):
             task = loop.get_task()

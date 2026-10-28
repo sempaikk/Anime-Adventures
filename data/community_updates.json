@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "version": "2026.10.27.15",
+  "version": "2026.10.27.16",
   "changes": [
-    "O desafio diário agora recupera apenas a publicação mais recente. Reiniciar o bot não traz de volta desafios anteriores nem repete uma imagem já enviada."
+    "Banners e desafios continuam chegando pelo bot nos servidores em que ele está instalado. O encaminhamento automático para seguidores de canais foi desativado."
   ]
 }
