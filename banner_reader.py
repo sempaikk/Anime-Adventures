@@ -106,7 +106,9 @@ async def listen(config):
             while True:
                 await asyncio.sleep(30)
                 emit('heartbeat')
-                if not self.image_ready:continue
+                # History uses authenticated HTTP and can still work while the
+                # Gateway reconnects. DISCONNECT may be followed by RESUMED,
+                # without another READY; it must not latch polling off forever.
                 await asyncio.gather(*(self.poll_source(ident) for ident in sources))
 
         async def poll_source(self, ident):
@@ -127,12 +129,15 @@ async def listen(config):
 
         async def on_ready(self):
             await asyncio.gather(*(self.poll_source(ident) for ident in config['source_channel_ids']))
-            self.image_ready=True
             if self.image_poll is None or self.image_poll.done():
                 self.image_poll=asyncio.create_task(self.poll_images())
 
+        async def on_resumed(self):
+            # Recover messages missed during the disconnect immediately, using
+            # the same tracker and existing poller to avoid duplicate delivery.
+            await self.on_ready()
+
         async def on_disconnect(self):
-            self.image_ready=False
             emit("connecting")
 
         async def on_message(self, message):
@@ -155,7 +160,6 @@ async def listen(config):
     client = Reader(guild_subscriptions=False, chunk_guilds_at_startup=False, max_messages=None)
     client.image_tracker=ImageTracker()
     client.image_channels={}
-    client.image_ready=False
     client.image_poll=None
     try:
         emit("connecting")

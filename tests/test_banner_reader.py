@@ -15,6 +15,70 @@ from game_sources import IMAGE_SOURCE_CHANNELS,BANNER_CHANNEL_ID,DAILY_CHANNEL_I
 
 
 class ReaderImageTests(unittest.IsolatedAsyncioTestCase):
+    async def reconnect_scenario(self, *, resumed, stopped=False):
+        events=[];poll_tasks=[];messages={ident:[] for ident in IMAGE_SOURCE_CHANNELS}
+        connected=asyncio.Event()
+        class Channel:
+            def __init__(self,ident):
+                self.id=ident
+                self.guild=SimpleNamespace(subscribe=AsyncMock())
+            def history(self,**kwargs):
+                async def items():
+                    for value in messages[self.id]:yield value
+                return items()
+        channels={ident:Channel(ident) for ident in IMAGE_SOURCE_CHANNELS}
+        class Client:
+            def __init__(self,**kwargs):pass
+            def get_channel(self,ident):return channels[ident]
+            async def start(self,token):
+                await self.on_ready()
+                poll_tasks.append(self.image_poll)
+                if stopped:
+                    self.image_poll.cancel()
+                    await asyncio.gather(self.image_poll,return_exceptions=True)
+                await self.on_disconnect()
+                for ident in IMAGE_SOURCE_CHANNELS:
+                    messages[ident]=[SimpleNamespace(id=ident+1,channel=channels[ident],
+                        created_at=datetime.now(timezone.utc),edited_at=None,embeds=[],attachments=[
+                            SimpleNamespace(filename='image.png',content_type='image/png',
+                                url=f'https://cdn.discordapp.com/attachments/{ident}/1/image.png')])]
+                handler=getattr(self,'on_resumed',None)
+                if resumed and handler:
+                    await handler()
+                    # A second RESUMED must neither create another poller nor duplicate an image.
+                    await handler()
+                poll_tasks.append(self.image_poll)
+                connected.set()
+                await asyncio.gather(self.image_poll,return_exceptions=True)
+            async def close(self):pass
+        sleeps=0
+        async def tick(delay):
+            nonlocal sleeps
+            self.assertEqual(delay,30)
+            await connected.wait()
+            sleeps+=1
+            if sleeps>1:raise asyncio.CancelledError()
+        fake=SimpleNamespace(Client=Client,TextChannel=Channel,
+            CaptchaRequired=type('CaptchaRequired',(Exception,),{}),LoginFailure=type('LoginFailure',(Exception,),{}))
+        with patch.dict(sys.modules,{'discord':fake}),patch('banner_reader.emit',side_effect=lambda event,**values:events.append({'event':event,**values})),patch('banner_reader.asyncio.sleep',side_effect=tick):
+            self.assertEqual(await listen({'token':'synthetic-only','source_channel_ids':IMAGE_SOURCE_CHANNELS,
+                'daily_channel_id':DAILY_CHANNEL_ID}),0)
+        if stopped:self.assertIsNot(poll_tasks[0],poll_tasks[1])
+        else:self.assertIs(poll_tasks[0],poll_tasks[1])
+        self.assertEqual(len([event for event in events if event['event']=='image']),2)
+        self.assertEqual({event['channel_id'] for event in events if event['event']=='image'},
+            {str(ident) for ident in IMAGE_SOURCE_CHANNELS})
+        self.assertGreaterEqual(len([event for event in events if event['event']=='ready']),4)
+
+    async def test_resumed_session_recovers_both_sources_without_duplicate_pollers_or_images(self):
+        await self.reconnect_scenario(resumed=True)
+
+    async def test_history_polling_continues_during_gateway_disconnection(self):
+        await self.reconnect_scenario(resumed=False)
+
+    async def test_resumed_session_restarts_a_stopped_poller(self):
+        await self.reconnect_scenario(resumed=True,stopped=True)
+
     async def test_large_guild_subscription_is_enabled_and_poll_recovers_missed_image(self):
         events=[];histories=[];clients=[];subscriptions=[];messages={ident:[] for ident in IMAGE_SOURCE_CHANNELS}
         class Channel:

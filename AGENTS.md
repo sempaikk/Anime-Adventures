@@ -30,7 +30,7 @@ Leia CONTINUIDADE.md, confira git status e origin/main antes de editar. Preserve
 
 # Dados e operação
 
-- Hospedagem existente: Bot-Hosting.net, Python 3.12, entrada bot.py, com pull automático do GitHub na inicialização registrado no histórico. O fluxo usual do responsável é clicar em Reiniciar após o envio a origin/main. Não pedir escolher GitHub/ZIP ou reenviar pacote nesse fluxo. Conferir no console Running version 2026.10.28.1 depois do restart; se continuar antiga, diagnosticar a atualização automática. Não afirmar inspeção ao vivo das configurações do painel.
+- Hospedagem existente: Bot-Hosting.net, Python 3.12, entrada bot.py, com pull automático do GitHub na inicialização registrado no histórico. O fluxo usual do responsável é clicar em Reiniciar após o envio a origin/main. Não pedir escolher GitHub/ZIP ou reenviar pacote nesse fluxo. Conferir no console Running version 2026.10.28.2 depois do restart; se continuar antiga, diagnosticar a atualização automática. Não afirmar inspeção ao vivo das configurações do painel.
 - Banco ativo: bot.sqlite3. Migração por reconhecimento de esquema, sob lease exclusivo, com backup e verificação. Não esvaziar configurações, consentimentos, recibos, marcadores de W/M/L ou estado do daily. Bases antigas e tabelas sem uso só saem do arquivo vivo após existir cópia privada verificada.
 - Hospedagem: 256 MB RAM e 512 MB disco. Medir dependências/cache/backups, respeitar margem e falhar preservando o estado. Nenhum segredo, SQLite real, backup ou relatório real vai ao repositório.
 - Assinantes são membros normais; Angelic e Artista decorativos; Mods moderadores. O dono já criou o cargo Adventures no topo e o atribuiu ao bot. Não duplicar cargos nem presumir outras alterações feitas por esta sessão.

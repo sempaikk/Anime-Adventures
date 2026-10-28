@@ -1,4 +1,15 @@
-# Entrega atual — 2026.10.28.1
+# Correção atual — 2026.10.28.2
+
+O responsável relatou alertas privados desde a noite anterior: ambas as fontes sem consulta recente e banners com destinos atrasados/bloqueados. A captura mostra o bot online e avisos separados por uma hora, como o cooldown configurado, mas não informa versão, exceção ou permissões efetivas. Foi solicitado print do console e do Bot status; respondeu que vai enviar. Não afirmar que uma causa na hospedagem foi confirmada sem esses dados.
+
+Foi reproduzida uma falha concreta do leitor isolado: DISCONNECT desativava image_ready; o poll continuava emitindo heartbeat, mas ignorava todas as consultas; RESUMED não executa outro READY e não restaurava o estado. Os dois testes de recuperação falharam antes da correção, com zero imagens recebidas de ambas as fontes. Agora o poll HTTP não depende da conexão do Gateway e RESUMED faz consulta imediata com o mesmo tracker/poller, reativando um trabalhador encerrado quando necessário. Não muda fontes, credenciais, cache, recibos, votos, destinos ou limites; login/verificação continuam sem contorno. A correção vale para todos os servidores que usam esses feeds.
+
+- 273 testes offline passaram em Python 3.12, incluindo três cenários novos: retomada RESUMED sem duplicar imagens/trabalhadores, consulta HTTP durante desconexão do Gateway e retomada de poll encerrado.
+- Manifesto: 2026.10.28.2, 77 arquivos, fingerprint 31a98fa4b56e (prefixo). Log local: /tmp/adventures-reader-recovery-tests.log.
+- Nota pública preparada com um único tópico em português sobre a interrupção de banners/daily após reconexão; mensagem nova somente na comunidade oficial, com os gates existentes. Não editar avisos anteriores, publicar detalhes privados ou reativar megafone.
+- Commit/CI desta correção: registrar depois do envio. A ativação real ainda depende de **Reiniciar** na Bot-Hosting e conferir **Running version 2026.10.28.2**; não pedir ZIP nem refazer destinos. Continuar o diagnóstico com o console prometido se os alertas persistirem. Não afirmar reinício ou recuperação observada por esta sessão.
+
+# Histórico da entrega — 2026.10.28.1
 
 O responsável autorizou implementar todas as melhorias da revisão de uma hora e confirmou expressamente que níveis continuam adiados. O estado anterior está no [registro da .17](https://github.com/sempaikk/Anime-Adventures/blob/b353214b940ea4a4be15b0bfceafa9fc43c3d459/CONTINUIDADE.md); manter histórico no Git, sem reintroduzir funções retiradas.
 
