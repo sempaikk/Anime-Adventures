@@ -22,7 +22,7 @@ HELP += POLICY_LINKS
 
 
 class ScopedView(GuardedView):
-    def __init__(self, bot, i, *, admin=False, owner=False):
+    def __init__(self, bot, i, *, admin=False, owner=False, moderator=False):
         super().__init__(timeout=600)
         self.bot, self.actor, self.guild, self.channel = (
             bot,
@@ -31,6 +31,7 @@ class ScopedView(GuardedView):
             i.channel_id,
         )
         self.admin, self.owner = admin, owner
+        self.moderator = moderator
 
     def require(self, i):
         if (i.user.id, i.guild_id, i.channel_id) != (
@@ -43,6 +44,9 @@ class ScopedView(GuardedView):
             self.bot.require_admin(i)
         if self.owner:
             self.bot.require_owner(i)
+        if self.moderator:
+            from bot_permissions import require_moderator
+            require_moderator(i)
 
     async def interaction_check(self, i):
         try:
@@ -78,6 +82,12 @@ class GlobalPanelView(GuardedView):
 
 
 class GlobalMemberView(ScopedView):
+    def __init__(self,bot,i):
+        super().__init__(bot,i)
+        from community_hub import CENTRAL_GUILD_ID
+        if i.guild_id!=CENTRAL_GUILD_ID:
+            self.remove_item(self.feedback)
+
     def current(self, i):
         self.require(i)
         cfg = self.bot.globalchat.store.channel(i.guild_id)
@@ -111,6 +121,9 @@ class GlobalMemberView(ScopedView):
             state = f"**Sharing is temporarily restricted until <t:{int(held['until'])}:t>.** You can check your messages or contact an administrator."
         elif self.bot.globalchat.store.blocked(self.actor, self.guild):
             state = '**Your participation in this chat is blocked.** Contact a server administrator or the bot owner.'
+        attempt = self.bot.globalchat.store.last_attempt(self.actor,self.guild)
+        if attempt:
+            state += f"\n**Last attempt:** {safe(attempt['reason'],300)} <t:{int(attempt['updated'])}:R>."
         return (
             '## Global chat · my controls\n'
             + state
@@ -143,7 +156,14 @@ class GlobalMemberView(ScopedView):
     @discord.ui.button(label='How it works', row=0)
     async def help(self, i, button):
         self.current(i)
-        await reply(i, HELP)
+        from community_views import SHORT_HELP,HelpView
+        await reply(i, SHORT_HELP,view=HelpView(self.bot,i))
+
+    @discord.ui.button(label='Feedback',row=2)
+    async def feedback(self,i,button):
+        self.require(i)
+        from community_feedback import FeedbackForm
+        await i.response.send_modal(FeedbackForm(self.bot,i))
 
     @discord.ui.button(label='Report', row=1)
     async def report(self, i, button):
@@ -254,6 +274,12 @@ class GlobalAdminView(ScopedView):
             self.remove_item(self.network)
             self.remove_item(self.network_reports)
             self.remove_item(self.operations)
+        from community_hub import CENTRAL_GUILD_ID
+        if i.guild_id!=CENTRAL_GUILD_ID:
+            self.remove_item(self.feedback)
+            self.remove_item(self.feedback_review)
+        elif not bot.is_owner_id(i.user.id):
+            self.remove_item(self.feedback_review)
 
     def current(self, i):
         self.require(i)
@@ -369,6 +395,19 @@ class GlobalAdminView(ScopedView):
         self.bot.require_human(i)
         view = GlobalMemberView(self.bot, i)
         await reply(i, view.description(), view=view)
+
+    @discord.ui.button(label='Feedback',row=2)
+    async def feedback(self,i,button):
+        self.require(i)
+        from community_feedback import FeedbackForm
+        await i.response.send_modal(FeedbackForm(self.bot,i))
+
+    @discord.ui.button(label='Review feedback',row=4)
+    async def feedback_review(self,i,button):
+        self.require(i)
+        from community_feedback import FeedbackInbox
+        view=FeedbackInbox(self.bot,i)
+        await reply(i,view.description(),view=view)
 
     @discord.ui.button(label='Network moderation', row=3)
     async def network(self, i, button):
@@ -596,13 +635,14 @@ class ModerationModal(BoundModal):
             style=discord.TextStyle.paragraph, min_length=5, max_length=500
         )
         self.add_item(discord.ui.Label(text='Action', component=self.action))
-        self.add_item(discord.ui.Label(text="Alvo", component=self.target))
-        self.add_item(discord.ui.Label(text="Motivo", component=self.reason))
+        self.add_item(discord.ui.Label(text='Target', component=self.target))
+        self.add_item(discord.ui.Label(text='Reason', component=self.reason))
 
     async def on_submit(self, i):
         if not await self.interaction_check(i):
             return
-        self.bot.require_admin(i)
+        from bot_permissions import require_moderator
+        require_moderator(i)
         if self.network:
             self.bot.require_owner(i)
         reason = str(self.reason).strip()

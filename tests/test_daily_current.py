@@ -202,7 +202,7 @@ class DailyCurrentCase(unittest.IsolatedAsyncioTestCase):
 
         self.app.http.send_message.side_effect = cancelled
         with self.assertRaises(asyncio.CancelledError):
-            await self.daily.cycle()
+            await self.daily.deliver(self.daily.query('SELECT * FROM banner_jobs').fetchone())
         await self.restart()
         self.now += 31
         await self.daily.cycle()

@@ -14,6 +14,7 @@ import discord
 from discord.http import handle_message_parameters
 
 CENTRAL_GUILD_ID = 1554953245204422807
+CENTRAL_COMMUNITY_INVITE = 'https://discord.gg/qwH7DvdtDZ'
 CENTRAL_UPDATE_CHANNEL_ID = 1564498826423959652
 # One fixed editorial correction; never use new release notes to rewrite history.
 NOTICE_CORRECTION_VERSION = "2026.10.27.6"
@@ -79,6 +80,9 @@ class CommunityHub:
     def update_complete(self):
         # Every new notice uses this gate, including releases without a W/M/L flag.
         # Future asynchronous migrations must expose confirmed completion here too.
+        if self.bot.store.get('bot-profile:1')=='pending':
+            self.status='Update announcement waiting: application profile confirmation is pending.'
+            return False
         pending = self.bot.banners.votes.release_pending()
         if pending:
             self.status = 'Update announcement waiting: ' + pending

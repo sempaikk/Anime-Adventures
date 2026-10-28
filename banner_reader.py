@@ -63,6 +63,7 @@ def image_message(message, sources):
         return None
     return {"event": "image", "channel_id": str(message.channel.id),
             "message_id": str(message.id), "created_at": (getattr(message, "edited_at", None) or message.created_at).timestamp(),
+            "published_at": message.created_at.timestamp(),
             "images": images}
 
 
@@ -86,7 +87,7 @@ async def listen(config):
             recent = []
             async for message in channel.history(limit=50):
                 age=time.time()-(getattr(message,'edited_at',None) or message.created_at).timestamp()
-                if age>(26*3600 if channel.id==daily else 3900):break
+                if age>(26*3600 if channel.id==daily else 3900):continue
                 recent.append(message)
             # A newer image may already be seen while earlier images missed a
             # Gateway event or failed reception. Check the entire bounded page.
@@ -104,34 +105,28 @@ async def listen(config):
         async def poll_images(self):
             while True:
                 await asyncio.sleep(30)
+                emit('heartbeat')
                 if not self.image_ready:continue
-                for ident in sources:
-                    try:
-                        channel=self.image_channels.get(ident)
-                        if channel is None:
-                            channel=self.get_channel(ident) or await self.fetch_channel(ident)
-                            if not isinstance(channel,account_discord.TextChannel):raise ValueError('Unsupported source channel')
-                            await channel.guild.subscribe(typing=True,threads=False,activities=False,member_updates=False)
-                            self.image_channels[ident]=channel
-                        await self.scan_image(channel)
-                    except account_discord.CaptchaRequired:
-                        emit('account_action_required');await self.close();return
-                    except Exception as error:
-                        emit('source_unavailable',channel_id=str(ident),reason=type(error).__name__)
+                await asyncio.gather(*(self.poll_source(ident) for ident in sources))
+
+        async def poll_source(self, ident):
+            try:
+                async def poll():
+                    channel=self.image_channels.get(ident)
+                    if channel is None:
+                        channel=self.get_channel(ident) or await self.fetch_channel(ident)
+                        if not isinstance(channel,account_discord.TextChannel):raise ValueError('Unsupported source channel')
+                        await channel.guild.subscribe(typing=True,threads=False,activities=False,member_updates=False)
+                        self.image_channels[ident]=channel
+                    await self.scan_image(channel)
+                await asyncio.wait_for(poll(),25)
+            except account_discord.CaptchaRequired:
+                emit('account_action_required');await self.close()
+            except Exception as error:
+                emit('source_unavailable',channel_id=str(ident),reason=type(error).__name__)
 
         async def on_ready(self):
-            for ident in config['source_channel_ids']:
-                try:
-                    channel = self.get_channel(ident) or await self.fetch_channel(ident)
-                    if not isinstance(channel, account_discord.TextChannel):
-                        raise ValueError("Source must be a guild text channel")
-                    # Large official guilds require an explicit subscription.
-                    await channel.guild.subscribe(typing=True, threads=False,
-                                                  activities=False, member_updates=False)
-                    self.image_channels[ident]=channel
-                    await self.scan_image(channel)
-                except Exception as error:
-                    emit('source_unavailable',channel_id=str(ident),reason=type(error).__name__)
+            await asyncio.gather(*(self.poll_source(ident) for ident in config['source_channel_ids']))
             self.image_ready=True
             if self.image_poll is None or self.image_poll.done():
                 self.image_poll=asyncio.create_task(self.poll_images())
@@ -152,6 +147,10 @@ async def listen(config):
                 self.publish_image(message)
             except Exception as error:
                 emit('source_unavailable',channel_id=str(event.channel_id),reason=type(error).__name__)
+
+        async def on_raw_message_delete(self, event):
+            if event.channel_id in sources:
+                emit('source_retracted', channel_id=str(event.channel_id), message_id=str(event.message_id))
 
     client = Reader(guild_subscriptions=False, chunk_guilds_at_startup=False, max_messages=None)
     client.image_tracker=ImageTracker()

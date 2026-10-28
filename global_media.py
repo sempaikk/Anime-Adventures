@@ -1,6 +1,7 @@
 """Streaming Discord uploads to bounded disk storage; no arbitrary URL fetches."""
 
 import hashlib
+import asyncio
 import os
 import re
 import shutil
@@ -86,6 +87,8 @@ class GlobalMedia:
         self.reserved = 0
         self.downloads = set()
         self.available_space = None
+        self.budget = None
+        self.cache_lock = asyncio.Lock()
 
     def usage(self):
         return sum(p.stat().st_size for p in self.root.iterdir() if p.is_file())
@@ -99,6 +102,12 @@ class GlobalMedia:
                     del self.in_use[digest]
 
     async def download(self, asset, limit):
+        if self.budget is None or int(asset.get('size') or 0) > limit:
+            return await self._download(asset, limit)
+        async with self.budget.reserve(int(asset.get('size') or 0) or limit):
+            return await self._download(asset, limit)
+
+    async def _download(self, asset, limit):
         if not cdn_url(asset["url"]):
             raise ValueError('The file must be an attachment uploaded to Discord.')
         name = filename(asset["filename"])
@@ -108,23 +117,17 @@ class GlobalMedia:
         if expected < 0:
             raise ValueError('The file size is invalid.')
         reservation = expected or limit
-        used = sum(
-            p.stat().st_size
-            for p in self.root.iterdir()
-            if p.is_file() and p.name not in self.downloads
-        )
-        if used + self.reserved + reservation > CACHE_LIMIT:
-            raise ValueError(
-                'The temporary cache is full. Wait for cleanup before sharing another large file.'
-            )
-        free=await self.available_space() if self.available_space else shutil.disk_usage(self.root).free
-        if free-self.reserved < max(expected, limit) + 16 * 1024 * 1024:
-            raise ValueError(
-                'There is not enough storage to share this file right now. The original message was preserved.'
-            )
+        async with self.cache_lock:
+            used=sum(p.stat().st_size for p in self.root.iterdir() if p.is_file() and p.name not in self.downloads)
+            if used+self.reserved+reservation>CACHE_LIMIT:
+                raise ValueError('The temporary cache is full. Wait for cleanup before sharing another large file.')
+            self.reserved+=reservation
         temporary = None
-        self.reserved += reservation
         try:
+            if self.budget is None:
+                free=await self.available_space() if self.available_space else shutil.disk_usage(self.root).free
+                if free-self.reserved<16*1024*1024:
+                    raise ValueError('There is not enough storage to share this file right now. The original message was preserved.')
             session = await self.session()
             with tempfile.NamedTemporaryFile(
                 dir=self.root, prefix=".download-", delete=False
@@ -163,6 +166,8 @@ class GlobalMedia:
                     raise ValueError(
                         'The attachment download was incomplete. The original was preserved.'
                     )
+            from media_validation import validate_file
+            await asyncio.to_thread(validate_file, temporary, name)
             target = self.root / digest.hexdigest()
             os.replace(temporary, target)
             self.in_use[digest.hexdigest()] = self.in_use.get(digest.hexdigest(), 0) + 1

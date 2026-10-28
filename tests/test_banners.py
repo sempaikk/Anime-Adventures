@@ -84,12 +84,15 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
     async def test_setbanner_uses_current_channel_private_confirmation_and_admin_permission(self):
         self.assertEqual({command.name for command in self.app.tree.get_commands()}, {"setbanner", "globalchat", "dailychallenge"})
         command = self.app.tree.get_command("setbanner")
-        self.assertEqual(command.default_permissions.value, discord.Permissions(manage_guild=True).value)
+        self.assertIsNone(command.default_permissions)
         self.assertFalse(command.parameters)
         i = self.interaction()
         await command.callback(i)
-        self.assertEqual(self.relay.target(1)["channel_id"], "10")
+        self.assertIsNone(self.relay.target(1))
+        panel=i.followup.send.call_args.kwargs['view'].controller
         i.response.defer.assert_awaited_once_with(ephemeral=True, thinking=True)
+        await panel.enable.callback(i)
+        self.assertEqual(self.relay.target(1)["channel_id"], "10")
         self.assertTrue(i.followup.send.call_args.kwargs["ephemeral"])
         self.assertEqual(self.sent, [])
 
@@ -103,12 +106,18 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
 
 
     async def test_members_and_missing_bot_permissions_cannot_configure(self):
+        from feed_views import FeedPanel
         command = self.app.tree.get_command("setbanner")
+        member=self.interaction(admin=False)
+        await command.callback(member)
+        self.assertIsNone(self.relay.target(1))
+        panel=FeedPanel(self.app,member,kind='banner')
+        self.assertNotIn(panel.enable,panel.children)
         with self.assertRaises(ValueError):
-            await command.callback(self.interaction(admin=False))
+            await panel.enable.callback(member)
         self.channels[10].permissions_for.return_value.attach_files = False
         with self.assertRaisesRegex(ValueError, "Attach Files"):
-            await command.callback(self.interaction())
+            await FeedPanel(self.app,self.interaction(),kind='banner').enable.callback(self.interaction())
         self.assertIsNone(self.relay.target(1))
 
     async def test_only_configured_source_is_processed_before_any_download(self):
@@ -278,6 +287,7 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
         self.relay.configure(1, 10)
         i = self.interaction(guild=2, channel=20)
         await self.app.tree.get_command("dailychallenge").callback(i)
+        await i.followup.send.call_args.kwargs['view'].controller.enable.callback(i)
         event = self.event(channel_id=str(DAILY_CHANNEL_ID), created_at=self.now - 12 * 3600)
         self.assertFalse(await self.relay.accept(event))
         self.assertTrue(await daily.accept(event))

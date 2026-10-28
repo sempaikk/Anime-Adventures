@@ -11,4 +11,6 @@ backups/
 state/
 *.private.json
 *.private.txt
+community-server-report*.json
+Adventures-*.zip
 .DS_Store

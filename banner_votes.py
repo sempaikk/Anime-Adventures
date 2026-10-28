@@ -47,6 +47,9 @@ class BannerVotes:
         self.emojis = ()
         self.next_setup = 0
         self.lock = asyncio.Lock()
+        self.active = {}
+        self.slots = asyncio.Semaphore(2)
+        self.backfill_task = None
         self.status = 'Preparing the original W/M/L emojis.'
         self.db.execute('''CREATE TABLE IF NOT EXISTS banner_vote_backfill(
             guild_id TEXT NOT NULL, channel_id TEXT PRIMARY KEY, before_id TEXT,
@@ -127,7 +130,8 @@ class BannerVotes:
             LEFT JOIN banner_vote_backfill b ON b.guild_id=t.guild_id AND b.channel_id=t.channel_id''').fetchall()
         if not targets:
             return None
-        if not self.emojis or self.lock.locked():
+        if (not self.emojis or self.lock.locked() or any(not task.done() for task in self.active.values())
+                or (self.backfill_task is not None and not self.backfill_task.done())):
             return 'Banner reaction setup or processing is still running.'
         if any(not self.bot.store.get('banner-vote-order-scan:1:' + row['channel_id'])
                or self.bot.store.get('banner-vote-order-cutoff:1:' + row['channel_id']) is None
@@ -184,31 +188,59 @@ class BannerVotes:
             self.next_setup = self.relay.clock() + 30
         self.status = 'Some W/M/L reactions are waiting for Discord or channel permissions.'
 
+    def task_finished(self,task):
+        if not task.cancelled():
+            error=task.exception()
+            if error:
+                self.observe_error(error)
+                log.warning('Reactions deferred: stage=worker error=%s',type(error).__name__)
+
     async def live_reactions(self):
         rows = self.db.execute('''SELECT r.* FROM banner_image_receipts r JOIN banner_targets t
             ON t.guild_id=r.guild_id AND t.channel_id=r.channel_id
             WHERE r.state='sent' AND r.reactions<>7 AND r.reaction_after<=? AND r.expires_at>?
-            ORDER BY r.reaction_after LIMIT 8''', (self.relay.clock(), self.relay.clock())).fetchall()
+            ORDER BY r.reaction_after LIMIT 64''', (self.relay.clock(), self.relay.clock())).fetchall()
+        self.active = {key:task for key,task in self.active.items() if not task.done()}
+        groups = {}
         for row in rows:
-            async with self.bot.guild_lock(int(row['guild_id'])):
-                channel = self.target_channel(row['guild_id'], row['channel_id'])
-                def save(mask):
-                    with self.db:
-                        self.db.execute('''UPDATE banner_image_receipts SET reactions=?,reaction_after=?
-                            WHERE source_message=? AND digest=? AND channel_id=?''',
-                            (mask, self.relay.clock() + 30, row['source_message'], row['digest'], row['channel_id']))
-                save(row['reactions'])
-                if channel is None:
-                    continue
+            groups.setdefault(row['channel_id'], []).append(row)
+        for channel, selected in groups.items():
+            if len(self.active)>=16:
+                break
+            if channel not in self.active:
+                self.active[channel] = asyncio.create_task(self.rate_group(selected[:8]),name='banner-reactions')
+                self.active[channel].add_done_callback(self.task_finished)
+        if self.active:
+            await asyncio.wait(self.active.values(),timeout=.05)
+
+    async def rate_group(self, rows):
+        async with self.slots:
+            for row in rows:
                 try:
-                    await self.rate(channel.get_partial_message(int(row['message_id'])), row['reactions'], save)
-                except discord.NotFound as error:
-                    if error.code == 10008:
-                        save(7)  # The owner deleted the image; never recreate it.
-                    else:
-                        self.observe_error(error)
-                except (discord.HTTPException, aiohttp.ClientError, TimeoutError, OSError) as error:
+                    await asyncio.wait_for(self.rate_one(row),30)
+                except (discord.HTTPException,aiohttp.ClientError,TimeoutError,OSError) as error:
                     self.observe_error(error)
+
+    async def rate_one(self, row):
+        async with self.relay.channel_lock(row['channel_id']):
+            channel = self.target_channel(row['guild_id'], row['channel_id'])
+            def save(mask):
+                with self.db:
+                    self.db.execute('''UPDATE banner_image_receipts SET reactions=?,reaction_after=?
+                        WHERE source_message=? AND digest=? AND channel_id=?''',
+                        (mask, self.relay.clock() + 30, row['source_message'], row['digest'], row['channel_id']))
+            save(row['reactions'])
+            if channel is None:
+                return
+            try:
+                await self.rate(channel.get_partial_message(int(row['message_id'])), row['reactions'], save)
+            except discord.NotFound as error:
+                if error.code == 10008:
+                    save(7)  # The owner deleted the image; never recreate it.
+                else:
+                    self.observe_error(error)
+            except (discord.HTTPException, aiohttp.ClientError, TimeoutError, OSError) as error:
+                self.observe_error(error)
 
     async def backfill(self):
         row = self.db.execute('''SELECT b.* FROM banner_vote_backfill b JOIN banner_targets t
@@ -237,7 +269,7 @@ class BannerVotes:
                 if mixed and any(re.search(r'-\d+\.', file.filename) for file in files):
                     banner = False
                 if banner:
-                    async with self.bot.guild_lock(int(row['guild_id'])):
+                    async with self.relay.channel_lock(row['channel_id']):
                         if self.target_channel(row['guild_id'], row['channel_id']) is None:
                             return
                         try:
@@ -275,5 +307,17 @@ class BannerVotes:
                 return
             self.order.prepare_scan()
             await self.live_reactions()
-            if self.emojis:
-                await self.backfill()
+            if self.emojis and not any(not task.done() for task in self.active.values()):
+                if self.backfill_task is None or self.backfill_task.done():
+                    self.backfill_task = asyncio.create_task(self.backfill(),name='banner-history')
+                    self.backfill_task.add_done_callback(self.task_finished)
+                await asyncio.wait([self.backfill_task],timeout=.05)
+
+    async def close(self):
+        tasks = list(self.active.values()) + ([self.backfill_task] if self.backfill_task else [])
+        for task in tasks:
+            task.cancel()
+        if tasks:
+            await asyncio.gather(*tasks,return_exceptions=True)
+        self.active.clear()
+        self.backfill_task = None

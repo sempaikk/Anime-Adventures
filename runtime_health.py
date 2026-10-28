@@ -22,6 +22,8 @@ class RuntimeHealth:
         self.physical_level = "unknown"
         self.quota = None
         self.probes = {}
+        self.memory = None
+        self.memory_level = 'unknown'
 
     def add_probe(self, name, probe):
         self.probes[name] = probe
@@ -67,6 +69,11 @@ class RuntimeHealth:
         self.quota={'used':used,'total':total,'free':max(0,total-used)}
         self.apply_storage_level()
 
+    def update_memory(self, used, total):
+        self.memory = {'used': used, 'total': total} if used is not None else None
+        self.memory_level = ('critical' if used >= total * .9 else 'warning'
+                             if used >= total * .8 else 'ok') if used is not None else 'unknown'
+
     def apply_storage_level(self):
         level=self.physical_level
         if self.quota:
@@ -85,6 +92,7 @@ class RuntimeHealth:
             "storage": self.storage_level,
             "last_backup": self.last_backup,
             "backup_error": self.backup_error,
+            "memory": self.memory_level,
         }
 
     async def start(self, port, *, routes=None):
@@ -98,6 +106,7 @@ class RuntimeHealth:
                 bool(self.ready())
                 and self.database_ready()
                 and self.storage_level != "critical"
+                and self.memory_level != 'critical'
                 and self.services_ready()
             )
             return web.json_response(

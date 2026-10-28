@@ -49,6 +49,7 @@ def relay_name(bot, author):
     )
 
     def identity(value, size):
+        value = clean_name(value, 200)
         value = re.sub(
             r"\[\s*(?:owner|tester)\s*\]", "", str(value), flags=re.I
         ).strip()
@@ -146,6 +147,9 @@ class GlobalRelay:
         p = channel.permissions_for(channel.guild.me)
         return bool(p.view_channel and p.read_message_history)
 
+    def suitable(self, channel):
+        return self.readable(channel) and not channel.is_nsfw()
+
     def webhook(self, ident):
         record = self.store.hook(ident)
         if not record:
@@ -229,7 +233,7 @@ class GlobalRelay:
         for sticker in getattr(message, "stickers", []):
             if sticker.format == discord.StickerFormatType.lottie:
                 warnings.append(
-                    "Figurinha "
+                    'Sticker '
                     + clean_name(sticker.name, 60)
                     + ' (native format unavailable in other servers)'
                 )
@@ -289,7 +293,15 @@ class GlobalRelay:
             or not self.readable(message.channel)
         ):
             return
+        if message.channel.is_nsfw():
+            self.store.active(message.guild.id, False)
+            with self.store.db:
+                self.store.db.execute("UPDATE global_channels SET error=? WHERE guild_id=?",
+                    ('This channel became age-restricted. Choose an unrestricted channel and check the connection.', str(message.guild.id)))
+            return
         if self.store.network_paused():
+            if not recovery:
+                self.store.attempt(message.author.id,message.guild.id,'paused','Sharing is paused. Your original message stayed in this server.')
             return
         if not self.store.message(
             message.id
@@ -303,9 +315,12 @@ class GlobalRelay:
         ):
             return
         if self.store.blocked(message.author.id, message.guild.id):
+            if not recovery:
+                self.store.attempt(message.author.id,message.guild.id,'restricted','Sharing is restricted. Check your private controls or contact a moderator.')
             return
         if not self.store.consented(message.author.id):
             if not recovery:
+                self.store.attempt(message.author.id,message.guild.id,'confirmation','Confirm participation through /globalchat. This message stayed local.')
                 try:
                     self.bot.require_human(
                         SimpleNamespace(user=message.author, guild_id=message.guild.id)
@@ -408,6 +423,8 @@ class GlobalRelay:
                 if self.serialize(fresh)["fingerprint"] != data["fingerprint"]:
                     return
                 self.store.prepared(row["id"], data, row["revision"])
+                if not recovery:
+                    self.store.attempt(message.author.id,message.guild.id,'prepared','Your message was prepared. Open My messages to check delivery progress.')
         except discord.NotFound:
             self.store.erase(message.id)
         except (
@@ -424,6 +441,7 @@ class GlobalRelay:
             )
             self.store.failed(message.id, reason)
             if not recovery:
+                self.store.attempt(message.author.id,message.guild.id,'not_shared',reason)
                 await self.notice(message, reason)
         finally:
             self.media.release(prepared_assets)
@@ -634,7 +652,8 @@ class GlobalRelay:
                     or delivery["state"] == "cancelled"
                     or delivery["suppressed"]
                     or not self.store.source(row["channel_id"])
-                    or not self.readable(original.channel)
+                    or not self.suitable(original.channel)
+                    or target.is_nsfw()
                     or not self.store.consented(row["user_id"])
                     or self.store.blocked(
                         row["user_id"], job["guild_id"], row["guild_id"]
@@ -774,7 +793,7 @@ class GlobalRelay:
             reason = (
                 str(error)
                 if isinstance(error, ValueError)
-                else f'Delivery failed (HTTP {status}). A original foi preservada.'
+                else f'Delivery failed (HTTP {status}). The original was preserved.'
             )
             self.store.retry(
                 job,

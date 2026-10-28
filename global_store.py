@@ -36,6 +36,8 @@ class GlobalStore(ModerationStore):
           PRIMARY KEY(source_id,channel_id));
         CREATE INDEX IF NOT EXISTS global_queue ON global_deliveries(state,next_try);
         CREATE INDEX IF NOT EXISTS global_actor ON global_messages(user_id,created);
+        CREATE INDEX IF NOT EXISTS global_message_expiry ON global_messages(expires);
+        CREATE INDEX IF NOT EXISTS global_payload_cleanup ON global_messages(updated) WHERE payload<>'{}';
         CREATE TABLE IF NOT EXISTS global_receipts(
           message_id TEXT PRIMARY KEY,source_id TEXT NOT NULL,guild_id TEXT NOT NULL,channel_id TEXT NOT NULL);
         CREATE INDEX IF NOT EXISTS global_receipt_source ON global_receipts(source_id);
@@ -55,6 +57,10 @@ class GlobalStore(ModerationStore):
           message_id TEXT NOT NULL DEFAULT '',status TEXT NOT NULL,attempted REAL NOT NULL);
         CREATE TABLE IF NOT EXISTS global_limits(
           key TEXT PRIMARY KEY,window REAL NOT NULL,count INTEGER NOT NULL,fingerprint TEXT NOT NULL DEFAULT '');
+        CREATE TABLE IF NOT EXISTS global_attempts(
+          user_id TEXT NOT NULL,guild_id TEXT NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,
+          updated REAL NOT NULL,PRIMARY KEY(user_id,guild_id));
+        CREATE INDEX IF NOT EXISTS global_attempt_expiry ON global_attempts(updated);
         """)
         self.init_moderation()
         # A previous process may have stopped after Discord accepted a request.
@@ -66,6 +72,17 @@ class GlobalStore(ModerationStore):
 
     def rows(self, sql, args=()):
         return [dict(r) for r in self.db.execute(sql, args)]
+
+    def attempt(self, user, guild, state, reason):
+        with self.db:
+            self.db.execute('INSERT OR REPLACE INTO global_attempts VALUES(?,?,?,?,?)',
+                           (str(user),str(guild),state,reason[:300],self.clock()))
+            self.db.execute('DELETE FROM global_attempts WHERE updated<?', (self.clock()-3600,))
+            self.db.execute('DELETE FROM global_attempts WHERE rowid NOT IN (SELECT rowid FROM global_attempts ORDER BY updated DESC LIMIT 5000)')
+
+    def last_attempt(self, user, guild):
+        return self.one('SELECT * FROM global_attempts WHERE user_id=? AND guild_id=? AND updated>?',
+                        (str(user),str(guild),self.clock()-3600))
 
     def one(self, sql, args=()):
         rows = self.rows(sql, args)
@@ -485,7 +502,7 @@ class GlobalStore(ModerationStore):
                 elif fresh["state"] == "cancelled":
                     state = "cancelled"
             self.db.execute(
-                "UPDATE global_deliveries SET state=?,revision=?,receipts=?,attempts=0,next_try=0,uncertain=-1,error='' WHERE source_id=? AND channel_id=?",
+                "UPDATE global_deliveries SET state=?,revision=?,receipts=?,attempts=0,next_try=0,uncertain=-1,error='',attempt_payload='{}' WHERE source_id=? AND channel_id=?",
                 (
                     state,
                     revision,
@@ -531,9 +548,10 @@ class GlobalStore(ModerationStore):
 
     def cleanup(self):
         expired = self.rows(
-            "SELECT id FROM global_messages WHERE expires<?", (self.clock(),)
+            'SELECT id FROM global_messages WHERE expires<? ORDER BY expires LIMIT 64', (self.clock(),)
         )
         with self.db:
+            self.db.execute('DELETE FROM global_attempts WHERE updated<?', (self.clock()-3600,))
             for row in expired:
                 self.db.execute(
                     "DELETE FROM global_deliveries WHERE source_id=?", (row["id"],)
@@ -541,17 +559,15 @@ class GlobalStore(ModerationStore):
                 self.db.execute(
                     "DELETE FROM global_receipts WHERE source_id=?", (row["id"],)
                 )
+                self.db.execute('DELETE FROM global_messages WHERE id=?',(row['id'],))
             self.db.execute(
-                "DELETE FROM global_messages WHERE expires<?", (self.clock(),)
-            )
-            self.db.execute(
-                """UPDATE global_deliveries SET state='failed',error='A fila expirou após uma hora; a original foi preservada.'
+                """UPDATE global_deliveries SET state='failed',error='The queue expired after one hour; the original was preserved.'
               WHERE state IN ('queued','preparing','uncertain','sending') AND source_id IN
               (SELECT id FROM global_messages WHERE deleted=0 AND updated<?)""",
                 (self.clock() - CONTENT_TTL,),
             )
             self.db.execute(
-                "UPDATE global_messages SET payload='{}' WHERE updated<?",
+                "UPDATE global_messages SET payload='{}' WHERE updated<? AND payload<>'{}'",
                 (self.clock() - CONTENT_TTL,),
             )
             self.db.execute(

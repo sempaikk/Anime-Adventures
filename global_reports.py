@@ -11,7 +11,7 @@ from bot_domain import safe
 
 class ReportInbox(ScopedView):
     def __init__(self, bot, i, *, network=False):
-        super().__init__(bot, i, admin=True, owner=network)
+        super().__init__(bot, i, moderator=True, owner=network)
         self.scope = None if network else i.guild_id
         self.page = 0
         self.status = "pending"
@@ -117,7 +117,7 @@ class ReportInbox(ScopedView):
         placeholder='Report status',
         options=[
             discord.SelectOption(label=v, value=k)
-            for k, v in (*REPORT_STATES.items(), ("all", "Todas"))
+            for k, v in (*REPORT_STATES.items(), ("all", 'All'))
         ],
         row=1,
     )
@@ -183,7 +183,8 @@ class ReportDecision(BoundModal):
     async def on_submit(self, i):
         if not await self.interaction_check(i):
             return
-        self.bot.require_admin(i)
+        from bot_permissions import require_moderator
+        require_moderator(i)
         if self.scope is None:
             self.bot.require_owner(i)
         elif self.scope != i.guild_id:

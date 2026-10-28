@@ -24,7 +24,13 @@ class BannerImages:
                 PRIMARY KEY(source_message,digest,channel_id));
             CREATE INDEX IF NOT EXISTS banner_image_reactions_pending
                 ON banner_image_receipts(reaction_after) WHERE state='sent' AND reactions<>7;
+            CREATE TABLE IF NOT EXISTS banner_delivery_floor(
+                channel_id TEXT PRIMARY KEY,source_message TEXT NOT NULL);
         ''')
+        columns = {row[1] for row in self.db.execute('PRAGMA table_info(banner_image_receipts)')}
+        if 'first_attempt' not in columns:
+            self.db.execute('ALTER TABLE banner_image_receipts ADD COLUMN first_attempt REAL NOT NULL DEFAULT 0')
+        self.db.commit()
 
     def key(self, row):
         return row['source_message'], row['digest'], row['channel_id']
@@ -34,6 +40,9 @@ class BannerImages:
             self.db.execute('''UPDATE banner_image_receipts SET state=?,attempted_at=?,message_id=?
                 WHERE source_message=? AND digest=? AND channel_id=?''',
                 (state, self.relay.clock(), str(message_id) if message_id else None, *self.key(row)))
+            if state == 'sending':
+                self.db.execute('''UPDATE banner_image_receipts SET first_attempt=CASE WHEN first_attempt=0 THEN ? ELSE first_attempt END
+                    WHERE source_message=? AND digest=? AND channel_id=?''', (self.relay.clock(), *self.key(row)))
 
     @staticmethod
     def nonce(row):
@@ -54,14 +63,16 @@ class BannerImages:
             for asset in assets:
                 digest = asset['digest']
                 old = next((row for row in legacy if digest in json.loads(row['images'])), None)
+                floor = self.db.execute('SELECT source_message FROM banner_delivery_floor WHERE channel_id=?', (job['channel_id'],)).fetchone()
+                obsolete = bool(floor and int(event['source_message']) <= int(floor[0]))
                 name_hash = hashlib.sha256((event['source_message'] + ':' + digest).encode()).hexdigest()[:16]
                 filename = f"banner-{name_hash}.{asset['extension']}"
                 self.db.execute('''INSERT OR IGNORE INTO banner_image_receipts
                     (source_message,digest,guild_id,channel_id,filename,state,message_id,expires_at,reactions,attempted_at)
                     VALUES(?,?,?,?,?,?,?,?,?,?)''',
                     (event['source_message'], digest, job['guild_id'], job['channel_id'], filename,
-                     ('legacy' if old['message_id'] and old['state']=='sent' else 'legacy_uncertain') if old else 'pending', old['message_id'] if old else None,
-                     event['created_at'] + self.relay.max_age, 7 if old else 0, old['attempted_at'] if old else 0))
+                     ('legacy' if old['message_id'] and old['state']=='sent' else 'legacy_uncertain') if old else ('legacy' if obsolete else 'pending'), old['message_id'] if old else None,
+                     event['created_at'] + self.relay.max_age, 7 if old or obsolete else 0, old['attempted_at'] if old else 0))
                 if old and old['state'] == 'sent':
                     self.db.execute('''UPDATE banner_image_receipts SET state='legacy',message_id=?,attempted_at=?
                         WHERE source_message=? AND digest=? AND channel_id=? AND state='legacy_uncertain' ''',
@@ -80,13 +91,16 @@ class BannerImages:
         parts = self.prepare(job, assets)
         history = None
         for part, asset in zip(parts, assets):
+            if not self.relay.current_job(job):
+                return
             if part['state'] in {'sent', 'legacy', 'legacy_uncertain', 'unavailable', 'oversize'}:
                 continue
             if part['state'] in {'sending', 'uncertain'}:
                 if self.relay.clock() - part['attempted_at'] < 30:
                     continue
                 if history is None:
-                    history = [message async for message in channel.history(limit=50)]
+                    from feed_history import recent_attempts
+                    history = [message async for message in recent_attempts(channel, part['first_attempt'] or part['attempted_at'])]
                 message = next((message for message in history
                     if message.author.id == self.bot.user.id and not getattr(message, 'webhook_id', None)
                     and (str(getattr(message, 'nonce', None)) == self.nonce(part)
@@ -131,7 +145,15 @@ class BannerImages:
 
     def prune(self):
         with self.db:
-            self.db.execute('DELETE FROM banner_image_receipts WHERE expires_at<=?', (self.relay.clock(),))
+            # Byte cache expiry must not erase the identity of a confirmed send.
+            old = self.db.execute('''WITH ranked AS (SELECT rowid rid,channel_id,source_message,
+                ROW_NUMBER() OVER(PARTITION BY channel_id ORDER BY expires_at DESC,rowid DESC) n
+                FROM banner_image_receipts) SELECT rid,channel_id,source_message FROM ranked WHERE n>48''').fetchall()
+            for row in old:
+                previous = self.db.execute('SELECT source_message FROM banner_delivery_floor WHERE channel_id=?', (row['channel_id'],)).fetchone()
+                floor = max(int(row['source_message']), int(previous[0]) if previous else 0)
+                self.db.execute('INSERT OR REPLACE INTO banner_delivery_floor VALUES(?,?)', (row['channel_id'], str(floor)))
+                self.db.execute('DELETE FROM banner_image_receipts WHERE rowid=?', (row['rid'],))
 
     def resume(self, guild_id, channel_id):
         with self.db:

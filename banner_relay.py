@@ -79,8 +79,16 @@ class BannerRelay:
         self.task = None
         self.process = None
         self.session = None
+        self.receiver = None
         self.status = "not_configured"
+        self.native = False
+        self.require_source_confirmation=False
+        self.last_prune=float('-inf')
         self.accept_lock = asyncio.Lock()
+        self.cycle_lock = asyncio.Lock()
+        self.channel_locks = {}
+        self.deliveries = {}
+        self.delivery_slots = asyncio.Semaphore(2)
         self.db.executescript("""
           CREATE TABLE IF NOT EXISTS banner_targets(
             guild_id TEXT PRIMARY KEY, channel_id TEXT NOT NULL, enabled_at REAL NOT NULL);
@@ -96,7 +104,16 @@ class BannerRelay:
           CREATE INDEX IF NOT EXISTS banner_pending ON banner_jobs(state,attempted_at);
           CREATE TABLE IF NOT EXISTS banner_source_receipts(
             fingerprint TEXT PRIMARY KEY, expires_at REAL NOT NULL);
+          CREATE TABLE IF NOT EXISTS banner_config_versions(
+            guild_id TEXT PRIMARY KEY, generation INTEGER NOT NULL);
         """.replace("banner_", self.kind + "_"))
+        from feed_state import FeedState
+        self.diagnostics = FeedState(self)
+        columns = {row[1] for row in self.query('PRAGMA table_info(banner_jobs)')}
+        for name in ('first_attempt', 'next_try'):
+            if name not in columns:
+                self.query('ALTER TABLE banner_jobs ADD COLUMN '+name+' REAL NOT NULL DEFAULT 0')
+        self.db.commit()
         if kind == 'banner':
             from banner_images import BannerImages
             from banner_votes import BannerVotes
@@ -119,6 +136,7 @@ class BannerRelay:
         if int(channel_id) in SOURCE_CHANNELS:
             raise ValueError("Choose a destination channel different from the source channel.")
         with self.db:
+            self.query('INSERT INTO banner_config_versions VALUES(?,1) ON CONFLICT(guild_id) DO UPDATE SET generation=generation+1', (guild_id,))
             self.query("DELETE FROM banner_jobs WHERE guild_id=? AND channel_id<>? AND state NOT IN ('sent','sending','uncertain')", (guild_id, channel_id))
             self.query("INSERT INTO banner_targets VALUES(?,?,?) ON CONFLICT(guild_id) DO UPDATE SET channel_id=excluded.channel_id,enabled_at=excluded.enabled_at",
                             (guild_id, channel_id, self.clock()))
@@ -133,8 +151,22 @@ class BannerRelay:
 
     def disable(self, guild_id):
         with self.db:
+            self.query('INSERT INTO banner_config_versions VALUES(?,1) ON CONFLICT(guild_id) DO UPDATE SET generation=generation+1', (str(guild_id),))
             self.query("DELETE FROM banner_targets WHERE guild_id=?", (str(guild_id),))
             self.query("DELETE FROM banner_jobs WHERE guild_id=? AND state NOT IN ('sent','sending','uncertain')", (str(guild_id),))
+
+    def generation(self, guild_id):
+        row = self.query('SELECT generation FROM banner_config_versions WHERE guild_id=?', (str(guild_id),)).fetchone()
+        return row[0] if row else 0
+
+    def channel_lock(self, channel_id):
+        return self.channel_locks.setdefault(str(channel_id), asyncio.Lock())
+
+    def current_job(self, job):
+        target = self.target(job['guild_id'])
+        return bool(target and target['channel_id'] == job['channel_id']
+            and ('generation' not in job or job['generation'] == self.generation(job['guild_id']))
+            and (self.kind != 'daily' or self.current_daily.known(job['event_id'])))
 
     def description(self, guild_id=None):
         current = self.status
@@ -175,8 +207,35 @@ class BannerRelay:
         if confirmed:
             text += f"\nLast confirmed delivery: <t:{int(confirmed[0])}:R>."
         else:
-            text += "\nNo confirmed delivery remains in the recent receipt window."
+            summary=self.diagnostics.snapshot(guild_id).get('delivery')
+            text += (f"\nLast confirmed delivery: <t:{int(summary['confirmed'])}:R>." if summary
+                     else "\nNo confirmed delivery remains in the recent receipt window.")
+        state=self.diagnostics.snapshot(guild_id)
+        for key,label in (('polled','Source checked'),('observed','Source image published/updated'),('received','Bytes verified')):
+            text+='\n'+label+(': <t:'+str(int(state[key]))+':R>.' if state[key] else ': not confirmed yet.')
+        text+=f"\nPending deliveries: {state['pending']}."
+        if state['error']:
+            text+=' Last issue: '+state['error'].replace('_',' ')+'.'
         return text
+
+    def ready(self):
+        if not self.query('SELECT 1 FROM banner_targets LIMIT 1').fetchone():
+            return True
+        state=self.diagnostics.snapshot()
+        return self.status=='ready' and state['polled']>0 and self.clock()-state['polled']<120
+
+    def alert_conditions(self):
+        if not self.query('SELECT 1 FROM banner_targets LIMIT 1').fetchone():
+            return {}
+        state=self.diagnostics.snapshot()
+        failures=self.query("SELECT count(*) FROM banner_jobs j JOIN banner_targets t ON t.channel_id=j.channel_id WHERE state IN ('unavailable','oversize')").fetchone()[0]
+        return {
+            self.kind+'_source':(not self.ready(),f'The {self.kind} source has not confirmed a recent successful check. Open private feed diagnostics.'),
+            self.kind+'_delivery':(bool((state['pending'] and state['oldest'] and self.clock()-state['oldest']>180) or failures),
+                f'The {self.kind} feed has delayed or blocked destinations. Check private status and channel permissions.'),
+            self.kind+'_receive':(bool(state['source_message'] and (state['source_message']!=state['received_source'] or state['observed']>state['received_version']) and self.clock()-state['observed_at']>120),
+                f'A new {self.kind} source image has not completed reception. Check private source and download diagnostics.'),
+        }
 
     def start(self):
         if reader_token() and not self.task:
@@ -186,9 +245,19 @@ class BannerRelay:
         await self.bot.wait_until_ready()
         delay = 5
         while True:
-            self.status = "connecting"
-            self.bot.daily.status = "connecting"
+            for feed in (self,self.bot.daily):
+                if not feed.native:
+                    feed.status='connecting'
             try:
+                from feed_receiver import FeedReceiver
+                setup_reservation=None
+                executable=self.bot.directory/'.banner-reader-venv'/'bin'/'python'
+                if not executable.exists() and getattr(self.bot,'instance_storage',None):
+                    reservation=self.bot.instance_storage.reserve(96*1024*1024,memory=48*1024*1024)
+                    await reservation.__aenter__()
+                    setup_reservation=reservation
+                self.receiver = FeedReceiver(self.bot)
+                self.receiver.start()
                 environment = {key: value for key, value in os.environ.items()
                                if key in {"PATH", "SYSTEMROOT", "TMPDIR", "TMP", "TEMP", "LANG", "LC_ALL", "SSL_CERT_FILE", "SSL_CERT_DIR", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"}}
                 self.process = await asyncio.create_subprocess_exec(
@@ -204,27 +273,21 @@ class BannerRelay:
                 await self.process.stdin.drain()
                 self.process.stdin.close()
                 count=0
-                async for line in self.process.stdout:
+                stream = self.process.stdout.__aiter__()
+                while True:
+                    try:
+                        installing=any(feed.status=='installing' for feed in (self,self.bot.daily) if not feed.native)
+                        line = await asyncio.wait_for(anext(stream), 300 if installing else 90)
+                    except StopAsyncIteration:
+                        break
                     try:
                         event = json.loads(line)
-                        if event.get("event") == "image":
-                            channel_id = str(event.get("channel_id"))
-                            if channel_id == str(BANNER_CHANNEL_ID):
-                                await self.accept(event)
-                            elif channel_id == str(DAILY_CHANNEL_ID):
-                                await self.bot.daily.accept(event)
-                        elif event.get("event") in {"installing", "connecting", "ready", "source_unavailable", "login_failed", "account_action_required", "reader_failed"}:
-                            source = str(event.get('channel_id',''))
-                            feed = self if source == str(BANNER_CHANNEL_ID) else self.bot.daily if source == str(DAILY_CHANNEL_ID) else None
-                            if feed:
-                                changed=feed.status!=event['event']
-                                feed.status=event['event']
-                                if changed:log.info('Image source %s: %s (%s).',feed.kind,event['event'],event.get('reason','confirmed'))
-                            elif not source:
-                                self.status = event["event"]
-                                self.bot.daily.status = self.status
-                            if event['event'] == 'ready':
-                                delay = 5
+                        if setup_reservation is not None and event.get('event') in {'connecting','ready'}:
+                            await setup_reservation.__aexit__(None,None,None)
+                            setup_reservation=None
+                        self.receiver.handle(event)
+                        if event.get('event') == 'ready':
+                            delay = 5
                     except (ValueError, TypeError, KeyError, aiohttp.ClientError, asyncio.TimeoutError) as error:
                         log.warning("Image source event deferred (%s); reception can retry automatically.",
                                     type(error).__name__)
@@ -232,16 +295,22 @@ class BannerRelay:
                     if count%25==0:
                         await asyncio.sleep(0)
                 await self.process.wait()
-                if self.status in {"login_failed", "account_action_required"}:
+                if any(feed.status in {'login_failed','account_action_required'} for feed in (self,self.bot.daily) if not feed.native):
                     return
             except asyncio.CancelledError:
                 raise
             except Exception as error:
                 log.warning("Leitor de banners indisponível: %s", type(error).__name__)
             finally:
+                if setup_reservation is not None:
+                    await setup_reservation.__aexit__(None,None,None)
+                if self.receiver:
+                    await self.receiver.close()
+                    self.receiver = None
                 await self.stop_process()
-            self.status = "reader_failed"
-            self.bot.daily.status = "reader_failed"
+            for feed in (self,self.bot.daily):
+                if not feed.native:
+                    feed.status='reader_failed'
             await asyncio.sleep(delay)
             delay = min(delay * 2, 300)
 
@@ -256,6 +325,13 @@ class BannerRelay:
                 await process.wait()
             except ProcessLookupError:
                 pass
+
+    async def stop_reader(self):
+        if self.task:
+            self.task.cancel()
+            await asyncio.gather(self.task,return_exceptions=True)
+            self.task=None
+        await self.stop_process()
 
     async def download(self, url, limit):
         if not image_url(url):
@@ -285,34 +361,64 @@ class BannerRelay:
             return False
         if not all(image_url(url) for url in urls):
             return False
+        published=float(payload.get('published_at',created))
+        if not math.isfinite(published):
+            return False
+        if published<=self.clock()-self.max_age:
+            known_source=self.query('SELECT 1 FROM banner_seen WHERE source_message=? LIMIT 1',(message_id,)).fetchone()
+            current=self.current_daily.current() if self.kind=='daily' else None
+            if not known_source and not (current and current['source_message']==message_id):
+                return False
         if self.bot.health.storage_level == "critical":
             return False
         async with self.accept_lock:
             self.prune()
+            if self.diagnostics.obsolete(message_id):
+                return False
             if self.kind == 'daily' and self.current_daily.older(message_id, created):
                 return False
             if self.kind == 'daily':
-                self.current_daily.observe(message_id)
+                self.current_daily.observe(message_id,created)
+            self.diagnostics.observe(message_id,created)
             fingerprint = hashlib.sha256(json.dumps(image_identity(payload), separators=(',', ':')).encode()).hexdigest()
             if self.query('SELECT 1 FROM banner_source_receipts WHERE fingerprint=?', (fingerprint,)).fetchone():
                 return False
-            images, blobs, size = [], {}, 0
+            images, blobs, size, skipped, partial = [], {}, 0, 0, False
+            last_error=None
             for url in dict.fromkeys(urls):
-                blob = await self.download(url, min(MAX_IMAGE, MAX_BATCH - size))
-                size += len(blob)
-                extension = await asyncio.to_thread(image_extension, blob)
+                try:
+                    blob = await self.download(url, min(MAX_IMAGE, MAX_BATCH - size))
+                    size += len(blob)
+                    extension = await asyncio.to_thread(image_extension, blob)
+                except (ValueError,aiohttp.ClientError,TimeoutError,OSError) as error:
+                    if isinstance(error,ValueError) and str(error)=='Unsupported image':
+                        skipped+=1
+                        continue
+                    if self.kind=='daily':
+                        raise
+                    partial,last_error=True,error
+                    continue
                 digest = hashlib.sha256(blob).hexdigest()
                 if digest not in blobs:
                     images.append(digest)
                     blobs[digest] = (extension, blob)
+            if not images:
+                if last_error:
+                    raise last_error
+                self.diagnostics.error('unsupported_images')
+                return False
             ident = hashlib.sha256((message_id + ":" + ":".join(images)).encode()).hexdigest()
             if (self.query("SELECT 1 FROM banner_events WHERE id=?", (ident,)).fetchone()
-                    or (self.kind == 'daily' and self.current_daily.known(ident))):
+                    or self.diagnostics.known(message_id, images)
+                    or (self.kind == 'daily' and self.current_daily.current() is not None
+                        and self.current_daily.current()['event_id']==ident)):
                 with self.db:
                     if self.kind == 'daily':
                         self.current_daily.remember(ident, message_id, created)
-                    self.query('INSERT OR REPLACE INTO banner_source_receipts VALUES(?,?)',
-                               (fingerprint, created + self.max_age))
+                    if not partial:
+                        self.query('INSERT OR REPLACE INTO banner_source_receipts VALUES(?,?)',
+                                   (fingerprint, created + self.max_age))
+                        self.diagnostics.received(skipped,message_id=message_id,created=created)
                 return False
             used = self.query("SELECT COALESCE(SUM(length(data)),0) FROM banner_assets").fetchone()[0]
             new = sum(len(blob) for digest, (_, blob) in blobs.items() if not self.query("SELECT 1 FROM banner_assets WHERE digest=?", (digest,)).fetchone())
@@ -322,19 +428,29 @@ class BannerRelay:
                 for digest, (extension, blob) in blobs.items():
                     self.query("INSERT OR IGNORE INTO banner_assets VALUES(?,?,?)", (digest, extension, blob))
                 self.query("INSERT INTO banner_events VALUES(?,?,?,?)", (ident, message_id, created, json.dumps(images)))
+                self.diagnostics.remember(message_id, images, created)
+                if not partial:
+                    self.diagnostics.received(skipped,message_id=message_id,created=created)
+                else:
+                    self.query("UPDATE banner_diagnostics SET error='partial_reception' WHERE singleton=1")
                 self.query("UPDATE banner_jobs SET state='superseded' WHERE state='pending' AND event_id IN (SELECT id FROM banner_events WHERE source_message=? AND id<>?)", (message_id, ident))
                 self.query("INSERT OR IGNORE INTO banner_jobs(event_id,guild_id,channel_id) SELECT ?,guild_id,channel_id FROM banner_targets", (ident,))
                 if self.kind == 'daily':
                     self.current_daily.remember(ident, message_id, created)
                 # Confirm only after all bytes, validation and jobs are saved.
                 # A receive retry then needs neither a download nor a new upload.
-                self.query('INSERT OR REPLACE INTO banner_source_receipts VALUES(?,?)',
-                           (fingerprint, created + self.max_age))
+                if not partial:
+                    self.query('INSERT OR REPLACE INTO banner_source_receipts VALUES(?,?)',
+                               (fingerprint, created + self.max_age))
             return True
 
-    def prune(self):
+    def prune(self, *, force=True):
+        if not force and self.clock()-self.last_prune<30:
+            return
+        self.last_prune=self.clock()
         with self.db:
             self.query('DELETE FROM banner_source_receipts WHERE expires_at<=?', (self.clock(),))
+            self.diagnostics.prune()
             self.query("DELETE FROM banner_jobs WHERE event_id IN (SELECT id FROM banner_events WHERE created_at<=?)", (self.clock() - self.max_age,))
             self.query("DELETE FROM banner_events WHERE created_at<=?", (self.clock() - self.max_age,))
             used = {digest for row in self.query("SELECT images FROM banner_events") for digest in json.loads(row[0])}
@@ -354,13 +470,19 @@ class BannerRelay:
         with self.db:
             self.query("UPDATE banner_jobs SET state=?,attempted_at=?,message_id=? WHERE event_id=? AND channel_id=?",
                             (state, self.clock(), str(message_id) if message_id else None, job["event_id"], job["channel_id"]))
+            if state == 'sent':
+                self.diagnostics.confirmed(job)
+            self.query('UPDATE banner_jobs SET first_attempt=CASE WHEN first_attempt=0 AND ?=\'sending\' THEN ? ELSE first_attempt END,next_try=? WHERE event_id=? AND channel_id=?',
+                (state,self.clock(),self.clock()+30 if state=='uncertain' else 0,job['event_id'],job['channel_id']))
 
     @staticmethod
     def nonce(job):
         return str(int(hashlib.sha256((job["event_id"] + job["channel_id"]).encode()).hexdigest()[:15], 16))
 
     async def deliver(self, job):
-        async with self.bot.guild_lock(int(job["guild_id"])):
+        async with self.channel_lock(job['channel_id']):
+            job = dict(job)
+            job['generation'] = self.generation(job['guild_id'])
             target = self.target(job["guild_id"])
             if not target or target["channel_id"] != job["channel_id"]:
                 return
@@ -385,7 +507,8 @@ class BannerRelay:
                 if self.clock() - job["attempted_at"] < 30:
                     return
                 # Uncertain sends are reconciled, never blindly sent again.
-                async for message in channel.history(limit=50):
+                from feed_history import recent_attempts
+                async for message in recent_attempts(channel, job['first_attempt'] or job['attempted_at']):
                     if message.author.id == self.bot.user.id and (str(message.nonce) == self.nonce(job) or [a.filename for a in message.attachments] == names):
                         self.state(job, "sent", message.id)
                         return
@@ -416,21 +539,55 @@ class BannerRelay:
                     file.close()
 
     async def cycle(self):
-        self.prune()
-        if self.bot.health.storage_level == "critical":
+        if self.cycle_lock.locked():
+            return
+        async with self.cycle_lock:
+            await self._cycle()
+
+    async def _cycle(self):
+        self.prune(force=False)
+        if self.bot.health.storage_level == "critical" or getattr(self.bot.health,'memory_level','ok') == 'critical':
+            return
+        if self.require_source_confirmation and self.status!='ready':
             return
         if self.kind == 'daily' and self.status != 'ready':
             return  # Confirm the current source before replaying any cached job.
-        jobs = self.query("SELECT j.* FROM banner_jobs j JOIN banner_targets t ON t.guild_id=j.guild_id AND t.channel_id=j.channel_id WHERE j.state IN ('pending','sending','uncertain')"
+        self.deliveries = {key: task for key,task in self.deliveries.items() if not task.done()}
+        jobs = self.query("SELECT j.* FROM banner_jobs j JOIN banner_targets t ON t.guild_id=j.guild_id AND t.channel_id=j.channel_id WHERE j.state IN ('pending','sending','uncertain') AND j.next_try<=?"
             + (" AND j.event_id=(SELECT c.event_id FROM daily_current c JOIN daily_source_head h ON h.singleton=c.singleton AND h.source_message=c.source_message)" if self.kind == 'daily' else '')
-            + " ORDER BY j.attempted_at LIMIT 8").fetchall()
+            + " ORDER BY j.attempted_at,j.rowid LIMIT 64", (self.clock(),)).fetchall()
+
+        async def run(job):
+            async with self.delivery_slots:
+                try:
+                    await asyncio.wait_for(self.deliver(job), 40)
+                except asyncio.CancelledError:
+                    raise
+                except (discord.HTTPException, aiohttp.ClientError, asyncio.TimeoutError, OSError):
+                    self.diagnostics.error('delivery_deferred')
+                    self.query('UPDATE banner_jobs SET next_try=? WHERE event_id=? AND channel_id=?',
+                               (self.clock()+30,job['event_id'],job['channel_id']))
+                    self.db.commit()
+                except Exception as error:
+                    self.diagnostics.error('delivery_failed')
+                    log.warning('Delivery deferred: feed=%s stage=send error=%s status=%s',self.kind,type(error).__name__,getattr(error,'status',0))
         for job in jobs:
-            try:
-                await self.deliver(job)
-            except (discord.HTTPException, aiohttp.ClientError, asyncio.TimeoutError):
-                log.warning("Conferência de um destino de banners adiada.")
+            if len(self.deliveries)>=16:
+                break
+            if job['channel_id'] not in self.deliveries:
+                self.deliveries[job['channel_id']] = asyncio.create_task(run(job),name='deliver-'+self.kind)
+        if self.deliveries:
+            await asyncio.wait(self.deliveries.values(), timeout=.05)
 
     async def close(self):
+        if self.kind == 'banner':
+            await self.votes.close()
+        tasks = list(self.deliveries.values())
+        for task in tasks:
+            task.cancel()
+        if tasks:
+            await asyncio.gather(*tasks,return_exceptions=True)
+        self.deliveries.clear()
         if self.task:
             self.task.cancel()
             await asyncio.gather(self.task, return_exceptions=True)
@@ -446,6 +603,7 @@ class BannerControls(discord.ui.View):
         super().__init__(timeout=180)
         self.bot, self.actor, self.guild, self.channel = bot, interaction.user.id, interaction.guild_id, interaction.channel_id
         self.feed = bot.daily if kind == "daily" else bot.banners
+        self.generation = self.feed.generation(self.guild)
 
     async def interaction_check(self, interaction):
         from bot_views import reply
@@ -463,9 +621,11 @@ class BannerControls(discord.ui.View):
     async def disable(self, interaction, _button):
         from bot_views import reply
         require_banner_admin(interaction)
+        if not interaction.response.is_done():
+            await interaction.response.defer(ephemeral=True, thinking=True)
         async with self.bot.guild_lock(self.guild):
             target = self.feed.target(self.guild)
-            if not target or target["channel_id"] != str(self.channel):
+            if not target or target["channel_id"] != str(self.channel) or self.feed.generation(self.guild) != self.generation:
                 await reply(interaction, "The configuration changed. Open the setup command in the desired channel to check it.")
                 return
             self.feed.disable(self.guild)

@@ -1,50 +1,47 @@
 # Banners e desafio diário
 
-## Configurar
+## Consulta e configuração
 
-| Comando | Origem | Destino |
-| --- | --- | --- |
-| `/setbanner` | 993219350179876874 | canal onde o administrador executa o comando |
-| `/dailychallenge` | 1326659593199423610 | canal onde o administrador executa o comando |
+`/setbanner` e `/dailychallenge` abrem painéis privados para membros e administradores. **View current images** consulta os arquivos atuais sem modificar configurações. Exige que o membro possa ver e ler o histórico do destino configurado. Uma imagem expirada, retirada da origem ou aguardando verificação não é anunciada como atual.
 
-Cada servidor configura seus próprios destinos. Gerenciar servidor ou Administrador são necessários para configurar; respostas e controles de configuração são privados. Stop receiving desativa apenas aquele feed. Para trocar, execute o comando no novo canal. O bot precisa de Ver canal, Enviar mensagens, Anexar arquivos e Ler histórico; Adicionar reações também é necessário para W/M/L.
+Somente Gerenciar servidor ou Administrador permite **Enable / check this channel** e **Stop receiving**. O primeiro confere Ver canal, Enviar mensagens, Anexar arquivos e Ler histórico, antes de gravar o destino. W/M/L também exige Adicionar reações. Gerenciar mensagens é uma necessidade separada para a correção única de reações antigas, não para enviar novos banners.
 
-As publicações contêm somente arquivos PNG/JPEG/WebP estáticos verificados, sem legenda, texto, URL, embed ou menção. GIF, APNG/WebP animado e vídeo são rejeitados. Cada imagem de banner é enviada separadamente. O desafio diário mantém seu lote e não recebe W/M/L.
+Cada servidor tem seus próprios destinos. Painéis antigos verificam a geração da configuração; um painel anterior não desliga uma configuração refeita no mesmo canal. Cliques são confirmados em particular antes de esperar operações. Uma requisição já aceita pelo Discord pode terminar durante a desativação.
 
-Não há encaminhamento automático pelo megafone para servidores que seguem o canal. A entrega automática é feita pelo bot instalado/configurado em cada servidor. O tipo do canal e seu botão manual nativo não são alterados.
+Fontes exclusivas: banners 993219350179876874 e desafio diário 1326659593199423610. O bot usa seu próprio acesso autorizado quando disponível. Sem acesso, mantém o leitor isolado com SECONDARY_ACCOUNT_TOKEN, sem exigir PC ligado. Não encaminha texto, autores ou outras conversas da origem.
 
-## Recebimento, comparação e entrega
+## Receber e entregar
 
-DISCORD_TOKEN autentica o bot principal. SECONDARY_ACCOUNT_TOKEN autentica o leitor privado das duas origens, executado na hospedagem em ambiente isolado com biblioteca 2.1.0. O principal usa discord.py 2.7.1. Segredos não são enviados em argumentos ou logs. O PC do responsável pode ficar desligado.
+Eventos ao vivo são complementados por consultas de 30 segundos, até 50 mensagens por origem. A inscrição do leitor isolado em servidor grande mantém typing=True. As consultas e os dois trabalhadores de recepção são independentes, com filas limitadas. Ver uma versão nova do daily persiste uma barreira antes de confirmar a origem ou baixar arquivos; uma revisão anterior não passa por essa barreira.
 
-A inscrição de guild grande mantém typing=True. Eventos ao vivo são complementados por poll de 30 segundos, até 50 mensagens recentes. Falha de acesso é separada por origem; queda do leitor afeta ambas. O leitor permite nova tentativa de recepção a cada 60 segundos, com limite de 256 identidades. A conta leitora nunca publica mensagens.
+Apenas PNG/JPEG/WebP estáticos verificados são aceitos. GIF, APNG/WebP animado e vídeo não são publicados nos feeds. Cada imagem de banner vira uma mensagem separada; o daily mantém o lote e não tem W/M/L. Formato incompatível não elimina outras imagens válidas. Falha temporária em uma imagem de banner permite entregar as válidas e recuperar a que falta, sem confirmar a recepção inteira prematuramente. O daily mantém a validação conjunta para não duplicar partes de um desafio.
 
-SHA-256 compara os bytes do arquivo, junto da identidade da publicação. Não é IA nem serviço externo; recompressão pode mudar a assinatura. Uma rotação nova pode reutilizar uma arte e ainda ser uma entrega legítima. Cada destino mantém suas próprias filas e confirmações. A recepção só avança depois de todos os bytes/validação/filas serem salvos. Uma recepção confirmada não exige baixar de novo, inclusive após reiniciar ou renovar assinaturas CDN.
+SHA-256 local compara bytes, com identidade da postagem de origem e recibos de cada destino. Uma postagem genuinamente nova pode reutilizar a mesma arte. Cache expira sem apagar imediatamente a memória leve dos envios. O histórico de origem e os recibos por canal são limitados, com marcos que impedem reabrir publicações antigas já compactadas. Uma edição de texto não transforma um banner antigo em novidade. Uma origem retirada interrompe novos envios; mensagens e votos já publicados permanecem.
 
-Nonce estável, enforce_nonce e reconciliação por autor/nonce/arquivos protegem as entregas. Um resultado incerto é conferido antes de qualquer outro envio; não há reenvio cego. Excluir um post do bot não o recria. Edições/reordenações da origem não repetem imagens já confirmadas da mesma publicação.
+Há até dois uploads ativos por feed e fila limitada por canal. Um destino lento não mantém todos os outros esperando. A ordem dentro do canal é preservada. Timeouts deixam tentativas identificáveis, com nonce estável e reconciliação ao redor do primeiro envio. O bot não reenvia cegamente uma confirmação incerta. Apagar uma imagem entregue não a recria.
 
-## Desafio atual e reinícios
+## Atualidade do daily
 
-Somente a imagem mais recente do daily é candidata à recuperação, mesmo quando já vista. As 26 horas de cache não são uma fila de desafios a republicar. A escolha segue a ordem da origem, sem presumir meia-noite local ou UTC.
+Somente a imagem mais recente da origem é candidata à recuperação. Não cair para ontem quando a atual já foi vista ou ainda precisa de nova tentativa. A versão observada é separada da versão recebida, incluindo alterações de imagem na mesma postagem. Uma edição antiga não ultrapassa uma origem nova. Reiniciar aguarda a confirmação da fonte antes de liberar pendências em cache.
 
-A versão recebida/validada e a postagem mais nova observada são registros separados. Ver uma origem nova bloqueia o desafio anterior enquanto o novo download precisa de outra tentativa. Uma edição de texto em postagem antiga não ultrapassa uma mais nova nem torna sua imagem novamente entregável depois da expiração. Uma mudança real de imagem na mesma postagem continua válida.
-
-Ao reiniciar/reconectar, o daily aguarda confirmar a origem antes de enviar o cache. Pendências de versões anteriores são substituídas; recibos antigos de resultado incerto permanecem sem outro upload. Preservar DATA_DIR mantém essas proteções. Não apagar bancos ou repetir comandos para resolver uma entrega duplicada.
+A retenção de 26 horas é uma política de armazenamento, não um horário de virada do jogo. As telas mostram o horário real da publicação/edição da origem e o da confirmação de entrega.
 
 ## W/M/L
 
-As três artes originais RGBA 40×40 de Nova pasta.zip ficam em assets/banner-votes, verificadas por SHA-256 e sem edição. São emojis do próprio aplicativo com nomes exatos win, mid e lose. Cadastro/renomeação recupera os IDs existentes e só declara prontidão depois de nova consulta ao Discord. Não recria emojis para trocar nomes.
+As artes originais RGBA ficam em assets/banner-votes, verificadas por SHA-256 e sem edição. Os nomes do aplicativo são exatamente win, mid e lose. IDs existentes são preservados; registro/renomeação só declara prontidão após consulta independente ao Discord.
 
-Novos banners recebem W/M/L independentemente. A contagem é a nativa, incluindo a reação inicial do bot; não se exige uma opção por conta. Mensagens antigas que agrupam várias imagens têm uma avaliação para o conjunto e não são divididas/repostadas.
+A contagem nativa inclui a reação inicial do bot e permite mais de uma opção por pessoa. A versão não troca as reações por botões de outra votação. Banners antigos agrupados continuam com uma avaliação para o conjunto, sem dividir ou republicar o histórico.
 
-O histórico acessível dos destinos configurados é conferido em páginas de 20, até três banners por etapa, com cursor persistido. Somente mensagens próprias com anexos reconhecidos recebem reações; mensagens alheias, webhooks e lotes ambíguos em canais misturados não são classificados por suposição.
+A correção única autorizada da ordem vale para TODOS os destinos configurados. Só as reações antigas afetadas podem ser zeradas; corte por canal e fases persistidas preservam votos novos e outros emojis. Reiniciar não repete a limpeza. Falta de permissão pausa o destino afetado; não impede imagens nos outros servidores.
 
-A correção única de ordem autorizada pelo responsável vale para TODOS os servidores com banners configurados. Só as três reações antigas afetadas podem ser zeradas, com Gerenciar mensagens. Imagens, mensagens e outros emojis permanecem. Corte temporal por canal e fases persistidas impedem nova limpeza após começar a recriar as reações, preservando votos novos. Falta de permissão pausa só o destino afetado, sem interromper os outros ou as imagens.
+Reações novas têm prioridade sobre a varredura histórica. Trabalhadores limitados por canal e pela API continuam em segundo plano; não aguardam todos os servidores para concluir uma rodada. A varredura acessível usa cursor persistido, identifica somente imagens próprias conhecidas e não adivinha lotes ambíguos em canais misturados.
 
-## Limites e diagnóstico
+## Recursos e diagnóstico
 
-Até dez imagens por conjunto, 8 MiB por arquivo, 16 MiB por lote, 32 MiB de cache e 64 conjuntos recentes por feed; até 20 milhões de pixels e dimensão máxima de 8.192. O limite de upload do servidor também é respeitado. O original aprovado não é reconstruído ou recortado.
+Limites por feed: 10 imagens, 8 MiB por arquivo, 16 MiB por conjunto, 32 MiB de cache, 64 conjuntos recentes, 20 milhões de pixels e dimensão máxima de 8.192. O limite real de upload de cada servidor também se aplica. As imagens aprovadas não são redesenhadas ou recortadas.
 
-Cache/recibos de banners expiram em 65 minutos; os do daily em 26 horas. Limpeza é por validade e uso, sem apagar arquivos por relógio às 00h50 ou remover posts no Discord. Configurações e os marcadores duráveis de proteção permanecem. Armazenamento crítico pausa novas imagens, considerando a cota da instância, dependências e backups.
+Cache: 65 minutos nos banners e 26 horas no daily. A limpeza não apaga posts do Discord nem ocorre por relógio às 00h50. Reservas de disco e memória consideram preparos paralelos, dependências, instalação do leitor e backups. Pressão de recursos adia novos arquivos preservando dados.
 
-Bot status mostra, em particular, destinos, estado de cada origem, progresso das reações e último recibo disponível. Leitor conectado significa acesso confirmado; não prova que uma imagem foi recebida ou entregue. Testes usam bancos temporários e APIs simuladas; o efeito real depende de atualizar a hospedagem e observar os destinos.
+**Status** diferencia consulta da origem, observação da imagem, bytes verificados e entrega confirmada. O dono vê ainda destinos, filas, falhas e latência recente por destino. Alertas privados distinguem ausência de novidades de falha de recebimento ou entrega. Não há alerta só porque o jogo não publicou imagem nova. Um leitor silencioso é detectado; falhas de autenticação/verificação de conta aguardam ação do responsável, sem contornar verificações.
+
+A publicação automática pelo megafone permanece desativada em todos os servidores. O botão manual e os seguidores nativos do canal não são alterados.

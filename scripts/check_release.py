@@ -33,6 +33,23 @@ def check_release(root=ROOT, data_dir=None):
         "network_used": False,
     }
     database = folder / "bot.sqlite3"
+    legacy=False
+    if not database.exists() and folder.exists():
+        candidates=[]
+        try:
+            for candidate in folder.glob('*.sqlite3'):
+                if candidate.is_symlink():
+                    continue
+                with closing(sqlite3.connect(candidate.resolve().as_uri()+'?mode=ro',uri=True,timeout=1)) as connection:
+                    tables={row[0] for row in connection.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+                    if tables & {'global_channels','banner_targets','daily_targets'}:
+                        candidates.append(candidate)
+            if len(candidates)>1:
+                result.update(state='ambiguous',database_checked=True)
+            elif candidates:
+                database,legacy=candidates[0],True
+        except sqlite3.Error:
+            result.update(state='unavailable',database_checked=True)
     if database.exists():
         try:
             with closing(
@@ -49,16 +66,17 @@ def check_release(root=ROOT, data_dir=None):
                         "SELECT name FROM sqlite_master WHERE type='table'"
                     )
                 }
-                healthy = healthy and {"bot_meta", "bot_audit"}.issubset(
-                    tables
-                )
-            result.update(state="ok" if healthy else "invalid", database_checked=True)
+                healthy = healthy and (legacy or {"bot_meta", "bot_audit"}.issubset(tables))
+            result.update(state=('migration_required' if legacy else 'ok') if healthy else 'invalid', database_checked=True)
+            if legacy:
+                required=2*sum(p.stat().st_size for p in (database,Path(str(database)+'-wal')) if p.exists())+16*1024*1024
+                result['storage_margin']=space.free>=required
         except sqlite3.Error:
             result.update(state="unavailable", database_checked=True)
     result["passed"] = (
         result["program_verified"]
         and result["storage_margin"]
-        and result["state"] in ("new", "ok")
+        and result["state"] in ('new','ok','migration_required')
     )
     return result
 

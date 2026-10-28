@@ -45,10 +45,21 @@ class GlobalOperations:
         quota=getattr(self.bot.health,'quota',None)
         if quota:
             text+=f"\n**Instance files:** {quota['used']/1048576:.1f}/{quota['total']/1048576:.0f} MiB (measured locally)."
+        memory=getattr(self.bot.health,'memory',None)
+        if memory:
+            text+=f"\n**Process memory:** {memory['used']/1048576:.1f}/{memory['total']/1048576:.0f} MiB, including reader children."
+        else:
+            text+='\n**Process memory:** measurement unavailable on this host.'
         text += f"\n**Storage:** {s['storage']} · database {self.bot.store.path.stat().st_size / 1024 / 1024:.1f} MiB · cache {self.relay.media.usage() / 1024 / 1024:.1f} MiB."
         build = getattr(self.bot, "build", None)
         if build:
             text += '\n**Running version:** ' + label(build)
+        for feed in (getattr(self.bot,'banners',None),getattr(self.bot,'daily',None)):
+            if feed:
+                summary=feed.diagnostics.network_summary()
+                text+=f"\n**{feed.kind.title()} network:** {summary['targets']} destinations · {summary['pending']} pending · {summary['blocked']} blocked attempts."
+                if summary['p95'] is not None:
+                    text+=f" Latest per-destination delivery p95: {summary['p95']:.0f} s."
         alerts = self.bot.store.get("global-owner-alerts") != "0"
         text += f"\n**Private alerts:** {('enabled' if alerts else 'disabled')}. Failures must persist for two minutes; each alert type has a one-hour cooldown."
         held = self.store.rows(
@@ -97,6 +108,13 @@ class GlobalOperations:
                 'One or more servers were temporarily restricted after a burst. Check Bot status to review.',
             ),
         }
+        conditions['memory']=(getattr(self.bot.health,'memory_level','unknown')=='critical',
+                              'Memory usage is critically high. Large image preparation is paused; check private status.')
+        conditions['backup']=(bool(getattr(self.bot.health,'backup_error',False)),
+                              'The latest backup attempt failed. The previous verified snapshot remains available.')
+        for feed in (getattr(self.bot,'banners',None),getattr(self.bot,'daily',None)):
+            if feed:
+                conditions.update(feed.alert_conditions())
         for key, (active, text) in conditions.items():
             meta = "global-alert:" + key
             previous = json.loads(self.bot.store.get(meta) or "{}")
@@ -110,7 +128,7 @@ class GlobalOperations:
                             "queue": 'The queue no longer shows the previous delay.',
                             "worker": 'Global chat processing is progressing again.',
                             "containment": 'No servers are currently under temporary restrictions.',
-                        }[key]
+                        }.get(key,'The '+key.replace('_',' ')+' condition has recovered.')
                     )
                 elif previous:
                     self.bot.store.set(meta, "{}")
@@ -143,6 +161,7 @@ class OperationsView(ScopedView):
 
         if i.guild_id != CENTRAL_GUILD_ID:
             self.remove_item(self.server_report)
+            self.remove_item(self.access_review)
 
     def description(self):
         text = self.bot.globalchat.operations.description()
@@ -171,6 +190,28 @@ class OperationsView(ScopedView):
             await reply(i, 'Private server structure and bot permissions. Review this file before sharing it. No messages or credentials are included.', file=report)
         finally:
             report.close()
+
+    @discord.ui.button(label='Review role permissions',row=2)
+    async def access_review(self,i,button):
+        self.require(i)
+        from community_access import AccessReview
+        view=AccessReview(self.bot,i)
+        await reply(i,view.description(),view=view)
+
+    @discord.ui.button(label='Check backup restore',row=2)
+    async def backup_check(self,i,button):
+        self.require(i)
+        await i.response.defer(ephemeral=True,thinking=True)
+        from backup_check import check_restore
+        from bot_storage import make_snapshot
+        import asyncio
+        size=self.bot.store.path.stat().st_size
+        async with self.bot.backup_lock,self.bot.instance_storage.reserve(max(1,size)*4):
+            if getattr(self.bot,'backup_task',None) and not self.bot.backup_task.done():
+                await asyncio.shield(self.bot.backup_task)
+            snapshot,_=await asyncio.to_thread(make_snapshot,self.bot.store.path)
+            report=await asyncio.to_thread(check_restore,snapshot,temporary_parent=self.bot.directory)
+        await reply(i,f'Private restore check passed: {report["tables_checked"]} tables verified in a disposable copy. Live data was not replaced; no snapshot or credentials were uploaded.')
 
     @discord.ui.button(label='Pause / resume network', row=0)
     async def pause(self, i, button):

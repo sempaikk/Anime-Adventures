@@ -5,6 +5,26 @@ import os
 from pathlib import Path
 import shutil
 import time
+from contextlib import asynccontextmanager
+
+
+def process_memory():
+    """Conservative current RSS of this process and its children on Linux."""
+    pending, seen, total = [os.getpid()], set(), 0
+    while pending:
+        pid = pending.pop()
+        if pid in seen:
+            continue
+        seen.add(pid)
+        try:
+            for line in Path(f'/proc/{pid}/status').read_text().splitlines():
+                if line.startswith('VmRSS:'):
+                    total += int(line.split()[1]) * 1024
+            children = Path(f'/proc/{pid}/task/{pid}/children')
+            pending.extend(int(value) for value in children.read_text().split())
+        except (FileNotFoundError, PermissionError, ProcessLookupError):
+            continue
+    return total or None
 
 
 class InstanceStorage:
@@ -14,6 +34,10 @@ class InstanceStorage:
         self.used=0
         self.checked=0
         self.lock=asyncio.Lock()
+        self.reserved = 0
+        self.reserved_memory = 0
+        self.reservation_lock = asyncio.Lock()
+        self.memory_limit = max(64, int(os.getenv('INSTANCE_RAM_LIMIT_MB', '256'))) * 1024 * 1024
 
     def measure(self):
         roots=[self.root]
@@ -40,7 +64,27 @@ class InstanceStorage:
                 self.used=await asyncio.to_thread(self.measure)
                 self.checked=time.monotonic()
                 self.health.update_quota(self.used,self.limit)
+                self.health.update_memory(process_memory(), self.memory_limit)
 
     async def available(self):
         await self.refresh()
-        return max(0,min(shutil.disk_usage(self.root).free,self.limit-self.used))
+        return max(0,min(shutil.disk_usage(self.root).free,self.limit-self.used)-self.reserved)
+
+    @asynccontextmanager
+    async def reserve(self, amount, *, memory=0):
+        amount = max(0, int(amount))
+        async with self.reservation_lock:
+            free = await self.available()
+            rss = process_memory()
+            if free < amount + 16 * 1024 * 1024:
+                raise OSError('Storage budget is reserved for safe operation. Try again after cleanup.')
+            if rss is not None and rss + self.reserved_memory + memory > self.memory_limit * .9:
+                raise OSError('Image preparation is paused while memory usage is high.')
+            self.reserved += amount
+            self.reserved_memory += memory
+        try:
+            yield
+        finally:
+            self.reserved -= amount
+            self.reserved_memory -= memory
+            self.checked = 0

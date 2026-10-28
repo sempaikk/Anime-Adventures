@@ -10,8 +10,13 @@ RULES = "## Chat rules\nRespect other participants. Do not share scams, harassme
 
 def domain(value):
     try:
-        return (urlsplit(value).hostname or "").casefold().rstrip(".")
-    except ValueError:
+        value = ''.join(c for c in unicodedata.normalize('NFKC', value.strip())
+                        if unicodedata.category(c) != 'Cf')
+        if '://' not in value and re.fullmatch(r'(?:[\w-]+\.)+[\w-]{2,63}(?::\d+)?(?:/[^\s]*)?', value):
+            value = 'https://' + value
+        host = (urlsplit(value).hostname or "").casefold().rstrip(".")
+        return host.encode('idna').decode('ascii')
+    except (ValueError, UnicodeError):
         return ""
 
 
@@ -79,12 +84,15 @@ class GlobalGuard:
             (str(message.guild.id), digest, now - 60),
         )["n"]
         reason = ""
-        if counts["n"] > 120:
-            reason = 'The source exceeded 120 messages per minute.'
-        elif peers >= 8:
-            reason = 'Eight accounts repeated the same message in less than a minute.'
+        actor_events=self.store.one('SELECT count(*) n FROM global_traffic WHERE guild_id=? AND user_id=? AND created>?',
+            (str(message.guild.id),str(message.author.id),now-60))['n']
+        if counts['n']>120 and actor_events>60:
+            self.store.restrict('*','user',message.author.id,300,'automatic','Repeated high-volume sharing attempts by one account.')
+            raise ValueError('Your sharing is restricted for five minutes after repeated bursts. Other members can continue talking.')
+        if peers >= 8 and (invite or re.search(r'https?://',text) or counts['n']>=16):
+            reason = 'Coordinated repetition across accounts exceeded the temporary sharing limit.'
         elif counts["invites"] > 12:
-            reason = "Mais de doze convites compartilhados por minuto na origem."
+            reason = 'The source exceeded twelve shared invitations per minute.'
         if reason:
             self.store.restrict(
                 "*", "guild", message.guild.id, 600, "automatic", reason
@@ -92,3 +100,5 @@ class GlobalGuard:
             raise ValueError(
                 'Sharing from this server was restricted for ten minutes after a message burst. Local conversation remains available; the bot owner can review the restriction.'
             )
+        if counts['n']>120:
+            raise ValueError('This source is busy. Wait briefly before sharing another message; the original stays local. No permanent restriction was applied.')

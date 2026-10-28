@@ -44,20 +44,35 @@ class CommunityBot(commands.Bot):
             self.lease.close()
             raise
         self.guild_locks={}
+        self.preview_slots=asyncio.Semaphore(1)
+        self.backup_task=None
+        self.backup_lock=asyncio.Lock()
         self.globalchat=GlobalRelay(self)
         self.health.add_probe('global_chat',self.globalchat.ready)
         self.banners=BannerRelay(self)
         self.daily=BannerRelay(self,kind='daily')
+        from native_sources import NativeSources
+        self.native_sources=NativeSources(self)
+        self.health.add_probe('banners',self.banners.ready)
+        self.health.add_probe('daily',self.daily.ready)
         self.globalchat.media.available_space=self.instance_storage.available
+        self.globalchat.media.budget=self.instance_storage
         self.owner_ids_set=set()
         self.ui_theme=GameTheme()
         self.community=CommunityHub(self)
+        from community_feedback import CommunityFeedback
+        self.feedback=CommunityFeedback(self)
         self.build=build_info()
+        self.health.add_probe('release',lambda:self.build.get('verified',False))
         self.register_commands()
 
     async def setup_hook(self):
         log.info('Running version %s; files %s.',label(self.build),'verified' if self.build['verified'] else 'changed')
         app=await self.application_info()
+        self.profile_application=app
+        from app_profile import configure_profile
+        if self.build.get('verified'):
+            await configure_profile(self,app)
         await self.ui_theme.refresh(self.http,app.id)
         self.owner_ids_set={app.team.owner_id if app.team else app.owner.id}
         from global_views import GlobalPanelView,GlobalDirectView
@@ -65,6 +80,7 @@ class CommunityBot(commands.Bot):
         self.add_view(GlobalDirectView(self))
         await self.health.start(int(os.getenv('PORT') or os.getenv('SERVER_PORT') or 8080))
         await self.tree.sync()
+        self.banners.require_source_confirmation=self.daily.require_source_confirmation=True
         for loop in self.service_loops():
             loop.start()
         self.banners.start()
@@ -72,7 +88,7 @@ class CommunityBot(commands.Bot):
 
     def service_loops(self):
         return (self.maintenance_loop,self.global_loop,self.operations_loop,self.banner_loop,
-                self.daily_loop,self.banner_votes_loop,self.quota_loop)
+                self.daily_loop,self.banner_votes_loop,self.quota_loop,self.source_loop)
 
     async def on_ready(self):
         actual={str(g.id) for g in self.guilds}
@@ -92,17 +108,32 @@ class CommunityBot(commands.Bot):
         self.guild_locks.pop(guild.id,None)
 
     async def on_message(self,message):
+        self.native_sources.event(message)
         await self.globalchat.ingest(message)
 
     async def on_raw_message_delete(self,event):
+        if getattr(event,'channel_id',None) is not None:
+            self.native_sources.delete(event)
         self.globalchat.on_delete(event)
 
     async def on_raw_bulk_message_delete(self,event):
         for ident in event.message_ids:
-            await self.on_raw_message_delete(SimpleNamespace(message_id=ident))
+            await self.on_raw_message_delete(SimpleNamespace(message_id=ident,channel_id=getattr(event,'channel_id',None)))
 
     async def on_raw_message_edit(self,event):
+        await self.native_sources.edit(event)
         await self.globalchat.on_edit(event)
+
+    @tasks.loop(seconds=30)
+    async def source_loop(self):
+        try:
+            await self.native_sources.poll()
+        except Exception as error:
+            log.warning('Authorized source check deferred: %s',type(error).__name__)
+
+    @source_loop.before_loop
+    async def source_ready(self):
+        await self.wait_until_ready()
 
 
     def is_owner_id(self, actor):
@@ -145,6 +176,14 @@ class CommunityBot(commands.Bot):
                 self.globalchat.store.erase(row["id"])
             self.globalchat.store.active(channel.guild.id, False)
 
+    async def on_guild_channel_update(self, before, after):
+        cfg=self.globalchat.store.source(after.id)
+        if cfg and isinstance(after,discord.TextChannel) and after.is_nsfw():
+            self.globalchat.store.active(after.guild.id,False)
+            with self.store.connection:
+                self.store.connection.execute('UPDATE global_channels SET error=? WHERE guild_id=?',
+                    ('Channel became age-restricted. Check its policy before reconnecting.',str(after.guild.id)))
+
     async def on_thread_delete(self, thread):
         await self.on_guild_channel_delete(thread)
 
@@ -152,7 +191,14 @@ class CommunityBot(commands.Bot):
     async def maintenance_loop(self):
         try:
             self.store.cleanup()
-            report = await asyncio.to_thread(maintain_bot_storage,self.store.path)
+            self.feedback.cleanup()
+            async with self.backup_lock,self.instance_storage.reserve(3*self.store.path.stat().st_size):
+                self.backup_task=asyncio.create_task(asyncio.to_thread(maintain_bot_storage,self.store.path))
+                try:
+                    report=await asyncio.shield(self.backup_task)
+                except asyncio.CancelledError:
+                    await self.backup_task
+                    raise
             self.health.update_storage(report)
         except Exception as error:
             self.health.backup_error = True
@@ -192,6 +238,9 @@ class CommunityBot(commands.Bot):
         except Exception as error:
             log.warning("Diagnóstico operacional adiado: %s", type(error).__name__)
         try:
+            if self.store.get('bot-profile:1')=='pending':
+                from app_profile import configure_profile
+                await configure_profile(self,self.profile_application)
             await self.community.publish_update()
         except Exception as error:
             log.warning("Community update deferred: %s", type(error).__name__)
@@ -222,7 +271,7 @@ class CommunityBot(commands.Bot):
     async def daily_ready(self):
         await self.wait_until_ready()
 
-    @tasks.loop(seconds=10)
+    @tasks.loop(seconds=2)
     async def banner_votes_loop(self):
         try:
             await self.banners.votes.cycle()
@@ -246,40 +295,26 @@ class CommunityBot(commands.Bot):
 
     def register_commands(self):
         async def configure_feed(i, kind):
-            from banner_relay import BannerControls, require_banner_admin
-
-            require_banner_admin(i)
+            from feed_views import FeedPanel
             command_name = "dailychallenge" if kind == "daily" else "setbanner"
             if not isinstance(i.channel, discord.TextChannel):
                 raise ValueError(f"Use /{command_name} in a server text channel.")
-            permissions = i.channel.permissions_for(i.guild.me)
-            names = {"view_channel": "View Channel", "send_messages": "Send Messages",
-                     "attach_files": "Attach Files", "read_message_history": "Read Message History"}
-            missing = [label for name, label in names.items() if not getattr(permissions, name, False)]
-            if missing:
-                raise ValueError("Grant the bot these permissions in this channel: " + ", ".join(missing) + ".")
             await i.response.defer(ephemeral=True, thinking=True)
-            feed = self.daily if kind == "daily" else self.banners
-            async with self.guild_lock(i.guild_id):
-                feed.configure(i.guild_id, i.channel_id)
-            label = "Daily challenges" if kind == "daily" else "Banners"
-            await reply(i, f"{label} will be posted in <#{i.channel_id}>. Only static images will be sent, without captions.\n\n{feed.description(i.guild_id)}",
-                        view=BannerControls(self, i, kind=kind))
+            view=FeedPanel(self,i,kind=kind)
+            await reply(i,view.description(),view=view)
 
         @self.tree.command(
             name="setbanner",
-            description="Receive character banner images in this channel.",
+            description="View current banner images or configure this server's feed.",
         )
         @app_commands.guild_only()
         @app_commands.allowed_installs(guilds=True, users=False)
-        @app_commands.default_permissions(manage_guild=True)
         async def setbanner(i: discord.Interaction):
             await configure_feed(i, "banner")
 
-        @self.tree.command(name="dailychallenge", description="Receive daily challenge images in this channel.")
+        @self.tree.command(name="dailychallenge", description="View the current daily challenge or configure this server's feed.")
         @app_commands.guild_only()
         @app_commands.allowed_installs(guilds=True, users=False)
-        @app_commands.default_permissions(manage_guild=True)
         async def dailychallenge(i: discord.Interaction):
             await configure_feed(i, "daily")
 
@@ -298,14 +333,16 @@ class CommunityBot(commands.Bot):
                 self.require_human(i)
                 cfg = self.globalchat.store.channel(i.guild_id)
                 if not cfg:
-                    raise ValueError(
-                        "Global chat is not connected in this server yet. Ask an administrator to set up a channel."
-                    )
-                if cfg["channel_id"] != str(i.channel_id):
+                    from community_views import MemberHome
+                    view=MemberHome(self,i)
+                elif cfg["channel_id"] != str(i.channel_id):
                     raise ValueError(
                         f"Open /globalchat in <#{cfg['channel_id']}> to access your private controls."
                     )
-                view = GlobalMemberView(self, i)
+                else:
+                    from bot_permissions import can_moderate
+                    from community_views import GlobalModeratorView
+                    view = GlobalModeratorView(self,i) if can_moderate(i) else GlobalMemberView(self, i)
             await reply(i, view.description(), view=view)
 
         @self.tree.error
@@ -331,6 +368,7 @@ class CommunityBot(commands.Bot):
                 task.cancel()
                 await asyncio.gather(task,return_exceptions=True)
         await self.health.close()
+        await self.native_sources.close()
         await self.banners.close()
         await self.daily.close()
         await self.globalchat.close()

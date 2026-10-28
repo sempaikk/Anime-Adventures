@@ -22,6 +22,7 @@ class ModerationStore:
           id TEXT PRIMARY KEY,guild_id TEXT NOT NULL,user_id TEXT NOT NULL,hash TEXT NOT NULL,
           invite INTEGER NOT NULL,created REAL NOT NULL);
         CREATE INDEX IF NOT EXISTS global_traffic_origin ON global_traffic(guild_id,created);
+        CREATE INDEX IF NOT EXISTS global_traffic_actor ON global_traffic(guild_id,user_id,created);
         CREATE INDEX IF NOT EXISTS global_traffic_hash ON global_traffic(guild_id,hash,created);
         CREATE INDEX IF NOT EXISTS global_delivery_target ON global_deliveries(channel_id,state);
         CREATE INDEX IF NOT EXISTS global_delivery_origin ON global_messages(guild_id,updated);

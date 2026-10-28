@@ -1,7 +1,13 @@
 {
   "schema": 1,
-  "version": "2026.10.27.17",
+  "version": "2026.10.28.1",
   "changes": [
-    "Os menus e mensagens agora mostram somente os recursos disponíveis: chat global, banners e desafio diário."
+    "Você pode consultar as imagens atuais em particular pelo /setbanner e /dailychallenge, sem alterar o canal que recebe os envios.",
+    "Os banners ganharam proteção contra o reenvio de imagens antigas após edições na origem.",
+    "Se uma imagem de banner falhar, as demais podem chegar normalmente; a recuperação evita repetir as que já foram entregues.",
+    "O chat global mostra o motivo da última tentativa de compartilhamento nos seus controles privados, inclusive com as mensagens diretas fechadas.",
+    "A identificação do dono e dos testadores no chat global e a verificação de endereços disfarçados foram reforçadas.",
+    "Os painéis de consulta e ajuda foram reorganizados para facilitar o uso.",
+    "Na comunidade oficial, o botão Feedback permite enviar sugestões e problemas em particular."
   ]
 }

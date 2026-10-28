@@ -222,7 +222,7 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
             self.engine.store.report_record(row["id"], 2)["status"], "pending"
         )
 
-    async def test_eight_accounts_repeating_text_causes_only_temporary_containment(
+    async def test_eight_accounts_repeating_invites_causes_only_temporary_containment(
         self,
     ):
         for uid in range(100, 108):
@@ -230,7 +230,7 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
             self.engine.store.consent(uid)
             await self.engine.ingest(
                 self.message(
-                    content="Texto repetido por várias contas na origem", author=author
+                    content='Repeated invitation discord.gg/example', author=author
                 )
             )
         self.assertTrue(self.engine.store.restriction(7, 1))

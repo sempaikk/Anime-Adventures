@@ -1,51 +1,67 @@
-# Estado vigente — limpeza do pacote
+# Entrega atual — 2026.10.28.1
 
-Este documento descreve somente o bot atual. O histórico completo anterior está no [registro da versão .16](https://github.com/sempaikk/Anime-Adventures/blob/34c1e2fec9067bf4657aec36c0bb5878256c6113/CONTINUIDADE.md), preservado no Git.
+O responsável autorizou implementar todas as melhorias da revisão de uma hora e confirmou expressamente que níveis continuam adiados. O estado anterior está no [registro da .17](https://github.com/sempaikk/Anime-Adventures/blob/b353214b940ea4a4be15b0bfceafa9fc43c3d459/CONTINUIDADE.md); manter histórico no Git, sem reintroduzir funções retiradas.
 
-## Pedido atual
+## Autorizações, limites e informações novas
 
-O responsável pediu retirar todo o código, nomes, textos e arquivos de funções que não existem mais no bot, deixando apenas os recursos atuais. O pedido substitui a decisão anterior de manter implementações arquivadas dentro do pacote. Remoção autorizada sem nova confirmação. Dados ativos dos servidores precisam permanecer preservados.
+- Somente /globalchat, /setbanner e /dailychallenge, com funções dentro dos painéis. Interface fixa em inglês, notas públicas em português, textos dos participantes preservados. Sem XP, loja, moeda, call ou IA.
+- Servidor oficial 1554953245204422807, bot 1561527465657114644, updates 1564498826423959652, banners 1564496491635282060, daily 1564497284580773919 e global 1563614865677885574.
+- O responsável confirmou o convite público https://discord.gg/qwH7DvdtDZ. Está no botão da comunidade e no perfil do aplicativo, com opção de substituição por COMMUNITY_INVITE_URL. Não perguntar novamente por um convite.
+- Para backup externo, perguntou o efeito de não configurar. Foi explicado que o bot e o snapshot local continuam funcionando, mas perder a hospedagem/pasta pode também perder as cópias locais. Nenhum destino externo foi informado; não escolher serviço, enviar arquivo ou inventar credenciais. A entrega mantém backup privado local e ensaio de restauração.
+- Sem sessão direta de Discord/hospedagem. Todos os testes desta entrega são privados/offline; nenhum envio, alteração de cargo, reinício ou perfil real foi executado por esta máquina. Site separado permanece intocado e congelado.
 
-## Funções que permanecem
+## Mudanças implementadas
 
-- /globalchat: consentimento, relay por webhooks, moderação por escopo, privacidade, denúncias e controles privados do dono.
-- /setbanner: imagens estáticas separadas, W/M/L originais, recuperação e correção única do histórico em todos os servidores.
-- /dailychallenge: só o desafio atual; fonte observada separada de recebimento confirmado, proteção de reinício e de posts apagados.
-- Sem encaminhamento automático pelo megafone, IA, perguntas ou dependência do PC. Hash SHA-256 local e recibos por servidor continuam em uso.
-- Interface fixa em inglês. Notas públicas em português, só efeitos para players, mensagem nova por atualização e somente no canal oficial. Ícone de jogo uma única vez no painel privado.
+### Sete correções reproduzidas
 
-## Identidades e configuração preservadas
+- Memória leve de origem/recibos sobrevive ao cache: edição de texto em banner antigo não republica a mesma arte. Nova postagem genuína pode reutilizá-la. Histórico é limitado e compactado com marcos, sem arquivo de imagens permanente.
+- Geração dos feeds protege Stop receiving e a configuração contra painéis antigos, inclusive quando o canal não muda. Cliques são confirmados antes de esperar trabalho.
+- Espaço de anexo conhecido é reservado pelo tamanho real, sem exigir todo o limite máximo de upload do servidor. Reservas paralelas não ultrapassam o orçamento do cache.
+- Formato incompatível não elimina imagens válidas do mesmo banner. Falha temporária permite recuperar a parte faltante; recibos por imagem impedem repetir as confirmadas. Daily mantém validação conjunta.
+- Mudança de restrição de idade em canal global pausa somente aquela conexão. Verificação também ocorre antes de retransmitir.
+- Limpeza de caracteres invisíveis precede a remoção das etiquetas reservadas Owner/Tester; autorização continua por IDs.
+- Filtro de endereço disfarçado também verifica domínio exibido sem protocolo e normaliza domínio, preservando rótulos descritivos e código.
 
-- Servidor oficial 1554953245204422807. Bot 1561527465657114644.
-- Atualizações 1564498826423959652; banners 1564496491635282060; daily 1564497284580773919; chat global 1563614865677885574.
-- Fontes: banners 993219350179876874; daily 1326659593199423610.
-- DISCORD_TOKEN, SECONDARY_ACCOUNT_TOKEN e DATA_DIR existentes. Não exibir valores, mudar pasta persistente ou pedir reinstalação no PC.
-- Primário discord.py 2.7.1; leitor 2.1.0 isolado. Poll 30 s, reemissão de recepção 60 s, páginas de 50. Preservar typing=True para inscrição de guild grande.
-- Cache 65 min nos banners e 26 h no daily. Até 10 imagens, 8 MiB/arquivo, 16 MiB/lote, 32 MiB/cache por feed. Só estáticos verificados, sem legendas.
-- Cada destino usa seus nonces/recibos; resultado incerto é reconciliado. O reset de W/M/L é autorizado uma vez por banner antigo afetado em todos os destinos, com corte por canal e sem repetir após começar a recriar reações.
+### Feeds, origem e votos
 
-## Implementação concluída
+- Recepção independente por feed, filas de até 64 eventos e barreira persistente para nova versão do daily, inclusive imagem editada na mesma postagem. Queda/timeout não permite liberar uma versão anterior enquanto a nova aguarda validação.
+- Acesso autorizado do bot às duas origens pode substituir a conta leitora. Sem acesso, continua o leitor isolado. Casos mistos preservam o feed nativo quando a conta secundária falha. Não conceder ou presumir acesso externo.
+- Fontes fixas 993219350179876874 e 1326659593199423610. Poll de 30 s, até 50 mensagens; typing=True preservado no leitor 2.1.0. Heartbeat/watchdog detecta leitor travado, e autenticação/verificação de conta não entra em tentativas de contorno.
+- Até dois uploads por feed; tarefas por canal continuam sem prender os demais destinos. Tentativa incerta conserva o primeiro instante/nonce e confere páginas ao redor do envio, sem reupload cego. Origem retirada bloqueia envios novos, preservando publicações existentes.
+- W/M/L continua nativo, com os PNGs originais e nomes win/mid/lose. Trabalhadores limitados processam novos votos antes de histórico. A correção antiga única continua em TODOS os servidores configurados, com corte, fases e preservação de votos novos; não foi reiniciada.
+- Limites de arquivo/lote/cache anteriores preservados. Cache: 65 min banners, 26 h daily; recibos/metadados separados. Não apagar posts nem programar limpeza às 00h50. Publicação pelo megafone continua desativada.
 
-- community_bot.py foi reduzido às três funções atuais e aos seus ciclos. Não há mais carregamento de catálogo, análise, painéis ou modos arquivados.
-- Infraestrutura compartilhada recebeu nomes genéricos: bot_store, bot_storage, bot_domain, bot_ui, bot_views, bot_style e bot_release. data/build.json substitui o manifesto antigo. Scripts atuais têm nomes genéricos.
-- Status usa apenas o ícone clock já registrado, com atribuição em data/status_icon.json; PNGs originais W/M/L permanecem intactos. Arquivos/catálogos/artes e testes de funções retiradas saíram do pacote.
-- Banco atual bot.sqlite3. Sob lease que também respeita locks anteriores, uma base antiga é reconhecida pelas tabelas de serviços ativos. Snapshot privado antes da limpeza, cópia verificada e migração dos metadados por esquema; tabelas global_*, banner_* e daily_* são mantidas. Apenas depois da nova cópia verificada o arquivo original é substituído. A cópia anterior fica em DATA_DIR/backups/before-cleanup.sqlite3.
-- O texto temporário do chat global é mantido na base viva e removido dos snapshots, conforme a política anterior. Consentimentos, webhooks, nonces, pendências e marcadores de W/M/L não são zerados. Erros de integridade, espaço, colisão de metadados ou várias bases candidatas preservam os originais e interrompem a migração.
-- Foram mantidos e portados 221 testes de recursos atuais. Doze testes de migração/backup e um de startup offline ampliam o conjunto para 234. A migração preserva também os registros de moderação global que compartilhavam o esquema anterior; dados de funções retiradas ficam apenas na cópia privada.
-- Não houve acesso direto à hospedagem nem mudanças reais no Discord. Site separado intocado. Níveis continuam adiados.
+### Usabilidade e comunidade
 
-## Arquivo Windows separado
+- Comandos de feed abrem consulta privada sem gravar destino. Membros veem prévia/ajuda; administradores têm configuração, status e parada explícitos. Prévia verifica acesso ao destino, atualidade e limite, sem publicar no canal ou mudar a configuração.
+- Ajuda curta, link de instalação com permissões mínimas e convite oficial; limites de componentes/texto dos painéis conferidos. Perfil do aplicativo usa só as funções atuais e aguarda confirmação, com nova tentativa limitada.
+- Mods com Gerenciar mensagens ou Moderar membros acessam denúncias/restrições locais. Não ganham configuração, diagnóstico do dono ou sanções de rede. Administradores e dono conservam seus escopos.
+- Última tentativa do membro mostra motivo/horário em particular, mesmo com DM fechada, sem guardar o texto original nesse registro e com expiração de uma hora.
+- Feedback apenas na comunidade oficial, formulário privado de erro/sugestão, recibo/deduplicação/limite e caixa de revisão exclusiva do dono. Retenção de 30 dias, até 3.000 entradas. Denúncias do global continuam em todos os servidores.
+- Antiflood proporcional distingue repetição coordenada de celebrações isoladas; excesso concentrado em uma conta não restringe todo o servidor. Sem banimento permanente automático.
+- Review role permissions prepara Assinantes como membro, Artista/Angelic como visual e Mods como moderação. Só aplica quando o dono aciona o plano privado revisado; não muda cargos durante startup. Membros, nomes, hierarquia, @everyone e sobreposições de canais são preservados. Angelic precisa ser inequívoco; não presumir Rlks. Efeito de permissões depende de aplicar e conferir o canal real.
 
-O único pacote histórico de remoção expressamente restaurado pelo dono permanece intacto em downloads/Remover-Python-e-Bot-Windows.zip, SHA-256 d4c68ff5626d5ab46bc48b5c746fdf4065a29441bd924deaa37616a2db0ada29. O alerta original do Defender não foi diagnosticado; não indicar bypass ou classificar como falso positivo. Os antigos instaladores do PC não fazem parte do bot atual.
+### Operação e dados
 
-## Validação da entrega
+- Diagnóstico por feed distingue última consulta, imagem observada, bytes verificados e entrega confirmada; resumo do dono mostra filas, destinos e p95 recente por destino. Alertas privados têm persistência/cooldown e separam falta de novidade de recepção/entrega bloqueada.
+- Cota conjunta de disco e memória considera processos filhos, downloads, arquivos temporários, leitor e backups. Limites padrão 512/256 MiB; orçamento faz reserva antes do preparo. Logs controlados não imprimem tokens, URLs privadas ou corpos de mensagens.
+- Snapshot de manutenção é aguardado no encerramento normal. Check backup restore usa diretório descartável, sem substituir a base viva. CLI equivalente em scripts/check_restore.py. Backups não arquivam texto temporário do chat global.
+- Limpeza de IDs expirada é feita em lotes e com índices; metadados desnecessários de tentativa concluída saem da linha. Recibos/consentimentos/pendências não são zerados. Banco bot.sqlite3 permanece, com adições de esquema compatíveis.
+- scripts/build_package.py produz pacote completo e reproduzível sem .env, estado, backups, relatórios, ambientes ou arquivos históricos de Windows. Documentação atual foi refeita, com links válidos e procedimento de atualização/recuperação. scripts/check_release.py reconhece estado anterior sem migrar durante a conferência.
 
-- Versão 2026.10.27.17; fingerprint c258b79484da3696a14c07f74778ff88baae377d46bbdaa04963022d96966b78; manifesto com 58 arquivos.
-- `python -m unittest discover -s tests -v`: 234 testes passaram, incluindo startup sem rede, dados ativos, entrega, privacidade e falhas de migração.
-- Ensaio adicional com o esquema real anterior, obtido do Git: 48 tabelas reconhecidas; configurações dos três serviços e metadados preservados na nova base, com estruturas inativas somente no backup privado.
-- Preflight passou: arquivos verificados e margem de armazenamento; não leu credenciais nem usou rede. Busca nos arquivos atuais não encontrou os nomes retirados; `git diff --check` passou. Site separado sem alterações.
-- Implementação enviada em [95b323f558c1d92a7d9af3dca19f198f3257f3bf](https://github.com/sempaikk/Anime-Adventures/commit/95b323f558c1d92a7d9af3dca19f198f3257f3bf). O [Bot checks desse commit](https://github.com/sempaikk/Anime-Adventures/actions/runs/40623238775) concluiu com sucesso no GitHub; os 234 testes passaram também no Python 3.12 do CI. Registro final de continuidade em commit separado de documentação, sem mudança no manifesto ou runtime.
+## Notas públicas
 
-## Ativação pendente
+Somente benefícios percebidos pelos players, em português e sem cabeçalho/versão/data. Mensagem nova após integridade e conclusão do trabalho ativo em todos os destinos. O perfil pendente também bloqueia o anúncio; nada de atraso fixo como prova. A única correção editorial antiga em community_notice_correction.json ficou intacta.
 
-Parar o processo, atualizar o pacote completo e reiniciar a hospedagem mantendo DATA_DIR e segredos. A migração é automática; não apagar os dados nem repetir os comandos. Verificação local/CI não comprova uma execução real já atualizada. Não foi feito reinício da hospedagem ou alteração direta de mensagens do Discord nesta sessão.
+## Validação
+
+- 270 testes offline passaram; 36 testes a mais que a .17, com casos de independência, falha parcial, cancelamento, privacidade, escopos, feedback, quotas, restauração e pacote. A adequação dos testes antigos acompanha a configuração explícita e trabalhadores em segundo plano, preservando as verificações de recuperação.
+- Ensaio com 50 servidores simulados, três imagens por rotação e 5 ms de latência simulada: 150 uploads, 450 reações, aproximadamente 1,3 s, banco 0,62 MiB, pico do processo 60,13 MiB sem leitor real. Nenhum acesso externo. Não é garantia de capacidade/tempo da hospedagem ou da API real.
+- Manifesto 77 arquivos, versão 2026.10.28.1, fingerprint 196f625dd282d521b98d65ac204413fbff720094b405c76cd01cc64c08a1854c.
+- Pacote /tmp/Adventures-2026.10.28.1.zip com 87 arquivos, 206.679 bytes, SHA-256 5551f19b87fdc3f91acc14e27f463631c8c3d3e4ba7715ff675942fd012198b1. Preflight passou também após extrair o ZIP; não leu credenciais ou banco real.
+- git diff --check e busca por nomes retirados passaram; arte W/M/L e pacote Windows histórico de remoção intactos. downloads/Remover-Python-e-Bot-Windows.zip mantém SHA-256 d4c68ff5626d5ab46bc48b5c746fdf4065a29441bd924deaa37616a2db0ada29; não reempacotar ou orientar bypass do Defender.
+- Commit e CI serão registrados após o envio.
+
+## Ativação real pendente
+
+Parar o bot, carregar o pacote completo e reiniciar mantendo DATA_DIR e credenciais. Não apagar dados nem refazer os destinos para consultar. Conferir a versão e as etapas de recebimento/entrega no painel privado. Perfil e avisos só têm efeito após a instância carregar a entrega. Para cargos, usar Bot status → Review role permissions e conferir permissões efetivas; não afirmar que foram aplicadas automaticamente.

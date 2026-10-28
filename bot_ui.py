@@ -205,7 +205,7 @@ class Card(discord.ui.LayoutView):
                     }
                 if titles:
                     controls.add_item(
-                        discord.ui.TextDisplay("### " + titles.get(row, "Outras ações"))
+                        discord.ui.TextDisplay('### ' + titles.get(row, 'Other actions'))
                     )
                 controls.add_item(discord.ui.ActionRow(*rows[row]))
             if rows:
@@ -256,7 +256,7 @@ def payload(*, bot=None, **kwargs):
         or len(visible_text(card).encode("utf-16-le")) // 2 > 4000
     ):
         raise ValueError(
-            "Este cartão excede o limite do Discord; divida as informações."
+            'This panel exceeds Discord limits. Open a smaller section.'
         )
     kwargs.update(content=None, embeds=[], view=card)
     return kwargs

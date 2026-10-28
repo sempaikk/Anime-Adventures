@@ -84,7 +84,7 @@ class ImageDeliveryCase(unittest.IsolatedAsyncioTestCase):
 
         self.app.http.send_message.side_effect = interrupted
         with self.assertRaises(asyncio.CancelledError):
-            await self.relay.cycle()
+            await self.relay.deliver(self.jobs()[0])
         self.assertEqual(len(self.sent), 1)
         await self.app.close()
         self.app = CommunityBot(self.temp.name)
@@ -158,7 +158,9 @@ class ImageDeliveryCase(unittest.IsolatedAsyncioTestCase):
         daily = self.app.daily
         daily.clock = lambda: self.now
         daily.download = AsyncMock(return_value=colored('green'))
-        await self.app.tree.get_command('dailychallenge').callback(self.interaction(guild=2, channel=20))
+        setup=self.interaction(guild=2,channel=20)
+        await self.app.tree.get_command('dailychallenge').callback(setup)
+        await setup.followup.send.call_args.kwargs['view'].controller.enable.callback(setup)
         await daily.accept(self.event(channel_id=str(DAILY_CHANNEL_ID), created_at=self.now - 12 * 3600))
         await daily.cycle()
         for _ in range(3):
