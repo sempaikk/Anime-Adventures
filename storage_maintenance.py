@@ -18,11 +18,12 @@ def verify_database(path: Path, *, required_tables=None):
         if result != [('ok',)]:
             raise sqlite3.DatabaseError('A verificação de integridade do banco falhou.')
         tables = {row[0] for row in database.execute("SELECT name FROM sqlite_master WHERE type='table'")}
-        if not (required_tables or {'scores', 'awards', 'metadata'}) <= tables:
-            raise sqlite3.DatabaseError('O arquivo não contém o banco de pontos esperado.')
+        required = {'bot_meta', 'bot_audit'} if required_tables is None else required_tables
+        if not required <= tables:
+            raise sqlite3.DatabaseError('The file does not contain the expected application state.')
 
 
-def snapshot_database(source: Path, destination: Path, *, timeout=10, required_tables=None):
+def snapshot_database(source: Path, destination: Path, *, timeout=10, required_tables=None, transform=None):
     """Copy committed data through SQLite; keep an existing snapshot on any failure."""
     source, destination = source.resolve(), destination.resolve()
     if source == destination:
@@ -33,7 +34,7 @@ def snapshot_database(source: Path, destination: Path, *, timeout=10, required_t
     required = source.stat().st_size + MIN_FREE_BYTES
     if shutil.disk_usage(destination.parent).free < required:
         raise OSError('Espaço insuficiente para uma cópia segura; o banco e a cópia anterior foram preservados.')
-    descriptor, name = tempfile.mkstemp(prefix='.scores-backup-', suffix='.sqlite3', dir=destination.parent)
+    descriptor, name = tempfile.mkstemp(prefix='.bot-backup-', suffix='.sqlite3', dir=destination.parent)
     os.close(descriptor)
     temporary = Path(name)
     deadline = time.monotonic() + timeout
@@ -46,6 +47,8 @@ def snapshot_database(source: Path, destination: Path, *, timeout=10, required_t
         with closing(sqlite3.connect(source.as_uri() + '?mode=ro', uri=True, timeout=1)) as original:
             with closing(sqlite3.connect(temporary)) as copied:
                 original.backup(copied, pages=128, progress=progress, sleep=.01)
+        if transform:
+            transform(temporary)
         verify_database(temporary, required_tables=required_tables)
         with temporary.open('rb') as stream:
             os.fsync(stream.fileno())
@@ -54,7 +57,7 @@ def snapshot_database(source: Path, destination: Path, *, timeout=10, required_t
         temporary.unlink(missing_ok=True)
 
 
-def maintain_storage(database: Path, *, now=None, required_tables=None):
+def maintain_storage(database: Path, *, now=None, required_tables=None, transform=None):
     """Called in a worker thread; at most one daily snapshot is retained."""
     now = time.time() if now is None else now
     backup = database.parent / 'backups' / (database.stem + '-latest.sqlite3')
@@ -63,7 +66,7 @@ def maintain_storage(database: Path, *, now=None, required_tables=None):
     size = database.stat().st_size
     report = {'database_bytes': size, 'free_bytes': free, 'total_bytes': usage.total, 'backup': 'fresh'}
     if not backup.exists() or now - backup.stat().st_mtime >= BACKUP_INTERVAL:
-        snapshot_database(database, backup, required_tables=required_tables)
+        snapshot_database(database, backup, required_tables=required_tables, transform=transform)
         report['backup'] = 'created'
     report['backup_bytes'] = backup.stat().st_size
     report['backup_modified'] = backup.stat().st_mtime

@@ -83,7 +83,6 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_setbanner_uses_current_channel_private_confirmation_and_admin_permission(self):
         self.assertEqual({command.name for command in self.app.tree.get_commands()}, {"setbanner", "globalchat", "dailychallenge"})
-        self.assertFalse(self.app.tierlist_enabled)
         command = self.app.tree.get_command("setbanner")
         self.assertEqual(command.default_permissions.value, discord.Permissions(manage_guild=True).value)
         self.assertFalse(command.parameters)
@@ -94,13 +93,14 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(i.followup.send.call_args.kwargs["ephemeral"])
         self.assertEqual(self.sent, [])
 
-    async def test_paused_tierlist_does_not_collect_server_messages_or_remove_saved_data(self):
-        self.app.store.set("synthetic-preserved-ranking", "keep")
-        self.assertIsNone(self.app.collect_message(SimpleNamespace()))
+    async def test_restart_preserves_active_settings_without_archived_collectors(self):
+        self.app.store.set('saved-feed-setting','keep')
+        await self.app.on_message(SimpleNamespace(guild=None))
         await self.app.close()
-        self.app = CommunityBot(self.temp.name)
-        self.assertEqual(self.app.store.get("synthetic-preserved-ranking"), "keep")
-        self.assertIsNone(self.app.tree.get_command("tierlist"))
+        self.app=CommunityBot(self.temp.name)
+        self.assertEqual(self.app.store.get('saved-feed-setting'),'keep')
+        self.assertEqual({c.name for c in self.app.tree.get_commands()},{'setbanner','dailychallenge','globalchat'})
+
 
     async def test_members_and_missing_bot_permissions_cannot_configure(self):
         command = self.app.tree.get_command("setbanner")
@@ -119,7 +119,7 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.jobs(), [])
 
     async def test_images_only_fan_out_to_each_configured_server_unchanged(self):
-        before = self.app.store.connection.execute("SELECT COUNT(*) FROM tier_publications").fetchone()[0]
+        before = self.app.store.connection.execute("SELECT COUNT(*) FROM bot_audit").fetchone()[0]
         self.relay.configure(1, 10)
         self.relay.configure(2, 20)
         self.assertTrue(await self.relay.accept(self.event(body="Do not forward this text", author="Do not forward")))
@@ -132,7 +132,7 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
             self.assertTrue(item["payload"]["enforce_nonce"])
             self.assertEqual(item["payload"]["allowed_mentions"]["parse"], [])
         self.assertEqual([row["state"] for row in self.jobs()], ["sent", "sent"])
-        self.assertEqual(self.app.store.connection.execute("SELECT COUNT(*) FROM tier_publications").fetchone()[0], before)
+        self.assertEqual(self.app.store.connection.execute("SELECT COUNT(*) FROM bot_audit").fetchone()[0], before)
 
     async def test_repeated_events_edits_and_reconfiguration_do_not_duplicate_images(self):
         self.relay.configure(1, 10)
@@ -254,8 +254,7 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("synthetic-account-secret", repr(spawn.call_args))
         data = json.loads(process.stdin.write.call_args.args[0])
         self.assertEqual(data["source_channel_ids"], list(IMAGE_SOURCE_CHANNELS))
-        self.assertFalse(data['questions_enabled'])
-        self.assertEqual(data['questions_channel_id'],0)
+        self.assertEqual(set(data),{'token','source_channel_ids','daily_channel_id'})
         self.assertEqual(self.relay.status, "login_failed")
 
     async def test_source_failures_do_not_hide_the_other_image_feed_status(self):

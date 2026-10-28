@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tier_store import TierStore
+from bot_store import BotStore
 from global_store import GlobalStore, fingerprint
 
 
@@ -21,7 +21,7 @@ def benchmark(guilds=100, messages=40):
     if not 2 <= guilds <= 1000 or not 1 <= messages <= 200:
         raise ValueError("Use 2 a 1000 servidores e 1 a 200 mensagens.")
     with tempfile.TemporaryDirectory(prefix="global-capacity-") as folder:
-        base = TierStore(Path(folder) / "tierlist.sqlite3")
+        base = BotStore(Path(folder) / "bot.sqlite3")
         try:
             store = GlobalStore(base)
             for gid in range(1, guilds + 1):

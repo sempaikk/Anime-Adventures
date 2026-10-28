@@ -53,5 +53,3 @@ O canal de voz do relatório tem finalidade/nome promocional e bloqueios especí
 Feedback/sugestões do bot ficam exclusivamente no servidor oficial; não criar esse recurso nos demais servidores. Antes de implementar um comando/canal novo, distinguir sugestões do usuário dos avisos automáticos e das denúncias existentes do chat global. Não apagar ou restringir essas denúncias por causa da exclusividade dos updates.
 
 Priorizar respostas privadas para testes. Bloquear @everyone em um canal não o esconde de Administradores; conferir cargos e sobreposições antes de qualquer ensaio que publique. Não mover os feeds públicos nem colocar mensagens artificiais na rede para testar.
-
-Evitar agora loja/moedas, comandos de perguntas/IA, automações no PC, novos bots auxiliares ou uma grande quantidade de categorias. Banners e desafio já têm evidência de entrega; a prioridade é uma base simples de acesso/moderação para a comunidade crescer.

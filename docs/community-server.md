@@ -1,7 +1,5 @@
 # Comunidade central e revisão dos comandos
 
-Servidor definido pelo responsável: **1554953245204422807**. O servidor antigo de testes foi excluído. Os comandos ativos continuam `/globalchat`, `/setbanner` e `/dailychallenge`; perguntas, PC e tier list permanecem encerrados/arquivados.
-
 É o servidor oficial tanto do bot quanto da comunidade. O responsável reforçou que os avisos e a opção de feedback são exclusivos dele; não disponibilizar essa opção aos outros servidores. Os avisos já respeitam esse limite. O ciclo atual não implementa comando/canal novo de feedback nem altera as denúncias existentes do chat global. As recomendações de cargos/canais estão no [plano de permissões](community-permissions-plan.md); esse plano ainda não foi aplicado no Discord.
 
 ## Relatório privado do servidor

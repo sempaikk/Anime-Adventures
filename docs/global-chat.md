@@ -9,14 +9,6 @@
 4. Na primeira mensagem, cada pessoa recebe um convite por DM. Após aceitar, escreve normalmente.
 5. Com DMs bloqueadas, a pessoa abre `/chatglobal` no canal global e confirma em particular.
 
-Há um canal por servidor. Canais com restrição de idade, tópicos e o canal da tier
-list não podem ser escolhidos. O administrador pode pausar, retomar, conferir ou
-trocar a conexão. Pausas não importam o que foi escrito durante a pausa. Usar o
-comando novamente confere o webhook, sem publicar painel no canal.
-Configurações, confirmação e controle de convite único sobrevivem a reinícios.
-Os botões da DM pendente também continuam registrados. Controles privados
-antigos podem vencer, bastando reabrir o comando.
-
 ## Participação e aparência
 
 A confirmação é por conta para toda a rede, incluindo servidores futuros.
@@ -63,12 +55,6 @@ são aceitos. Links no texto continuam sendo links. Um destino sem capacidade
 para um anexo recebe uma indicação em vez de um arquivo incompleto.
 
 ## Controles e moderação
-
-`/chatglobal` está disponível para membros e responde em particular. Só ADMs
-recebem configuração do servidor; funções globais continuam restritas ao dono.
-O comando `/tierlist` continua exclusivo de Gerenciar servidor. Abrir o comando
-não concede permissões para executar funções administrativas: cada ação valida
-a identidade, o contexto e as permissões novamente.
 
 Meus envios é privado e mostra cinco envios por página, com Anterior, Próxima,
 Atualizar e o andamento das entregas. A pessoa
@@ -122,10 +108,6 @@ pode sempre iniciar outra confirmação pelo comando. Cada clique na DM exige
 conta destinatária, canal e mensagem corretos, conexão válida e acesso ao canal.
 Sair do servidor, perder acesso ou um bloqueio impede aceitar pelo convite antigo.
 
-O histórico visível fica no Discord e não é apagado por essa limpeza. Backups
-locais preservam configurações e IDs, mas não o texto temporário nem o cache do
-chat. Retratos da tier list têm armazenamento e política próprios.
-
 Cache de anexos: 256 MiB, reserva para downloads concorrentes e espaço livre
 mínimo. Novos envios também param por pressão no banco (128 MiB de páginas em
 uso) ou 50 mil entregas pendentes. A hospedagem precisa ter espaço para o restante
@@ -169,12 +151,6 @@ reenviar às cegas, reduzindo duplicações. Meus envios mostra pendências/falh
 O relay não promete entrega exatamente uma vez em toda falha possível.
 
 ## Validação
-
-`python -m unittest discover -s tests -p 'test_global*.py' -v` usa bancos e arquivos
-temporários, simula servidores, testa percursos de membro/ADM/dono, mídia, abuso,
-perda de resposta, reinício, retenção e permissões. A Verificação completa do dono
-também inclui esses testes e confere os dois comandos registrados no Discord.
-Os testes da tier list continuam independentes das conversas reais do chat.
 
 Testes simulados não comprovam permissões reais de webhook, legibilidade do
 cliente ou conectividade entre dois servidores reais. Esses resultados devem ser

@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import discord
 import aiohttp
 
-from tier_ui import payload, component_dicts, visible_text
+from bot_ui import payload, component_dicts, visible_text
 
 
 class GlobalOnboarding:

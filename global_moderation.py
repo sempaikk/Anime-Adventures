@@ -76,7 +76,7 @@ class ModerationStore:
             raise ValueError('Explain the reason in 5 to 500 characters.')
         with self.db:
             self.db.execute(
-                "INSERT OR REPLACE INTO tier_meta VALUES(?,?)",
+                "INSERT OR REPLACE INTO bot_meta VALUES(?,?)",
                 ("global-network-paused", str(int(enabled))),
             )
             if enabled:
@@ -85,7 +85,7 @@ class ModerationStore:
                 )
             else:
                 self.db.execute(
-                    "INSERT OR REPLACE INTO tier_meta VALUES(?,?)",
+                    "INSERT OR REPLACE INTO bot_meta VALUES(?,?)",
                     ("global-network-resumed-at", str(self.clock())),
                 )
             self.base.audit(

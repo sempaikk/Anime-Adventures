@@ -181,21 +181,6 @@ class GlobalRelay:
             raise ValueError(
                 'This server is blocked from the network. Contact the bot owner.'
             )
-        panel = next(
-            (
-                p
-                for p in self.bot.store.panels()
-                if str(p["channel_id"]) == str(channel.id)
-            ),
-            None,
-        )
-        if panel or any(
-            str(t["thread_id"]) == str(channel.id)
-            for t in self.bot.store.thread_targets()
-        ):
-            raise ValueError(
-                'Choose a channel different from the tier list panel and history.'
-            )
         hooks = await channel.webhooks()
         hook = next(
             (

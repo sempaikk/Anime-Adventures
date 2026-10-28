@@ -11,7 +11,7 @@ from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from tier_release import build_info
+from bot_release import build_info
 
 
 def check_release(root=ROOT, data_dir=None):
@@ -32,7 +32,7 @@ def check_release(root=ROOT, data_dir=None):
         "credentials_read": False,
         "network_used": False,
     }
-    database = folder / "tierlist.sqlite3"
+    database = folder / "bot.sqlite3"
     if database.exists():
         try:
             with closing(
@@ -49,7 +49,7 @@ def check_release(root=ROOT, data_dir=None):
                         "SELECT name FROM sqlite_master WHERE type='table'"
                     )
                 }
-                healthy = healthy and {"tier_meta", "tier_publications"}.issubset(
+                healthy = healthy and {"bot_meta", "bot_audit"}.issubset(
                     tables
                 )
             result.update(state="ok" if healthy else "invalid", database_checked=True)

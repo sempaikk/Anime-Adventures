@@ -1,2 +1,0 @@
--r requirements.txt
-tzdata>=2025.2,<2028

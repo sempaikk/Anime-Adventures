@@ -5,9 +5,9 @@ import re
 
 import discord
 
-from tier_views import GuardedView, BoundModal, reply
-from tier_ui import payload
-from tier_domain import safe
+from bot_views import GuardedView, BoundModal, reply
+from bot_ui import payload
+from bot_domain import safe
 
 TERMS = "## Before joining\n**Messages you write in global channels will be shared with every server connected to this bot's network, including servers that join later.** This may grow to many or thousands of servers. People in those servers can read your messages and see your display name, avatar and attachments. The bot does not add your @username or server name to the name on copies.\n\n**Your choice applies across the network.** Confirm once per account. You do not need to confirm again in another participating server. Your choice remains saved after bot restarts.\n\n**Write normally.** Original messages stay in their source server. Copies are published through webhooks with Discord's application label. Only global channels enabled by administrators share messages. This does not authorize sharing other channels or private messages.\n\n**You stay in control.** Choose Leave to stop sharing new messages. Editing or deleting an original synchronizes its copies for up to 30 days while the channels remain accessible. People may have seen or saved content before removal. Temporary message text and files are cleaned up within one hour, with periodic checks. Synchronization IDs and reports are kept for up to 30 days. Your confirmation stays saved until you leave.\n\nBy choosing **Confirm and join**, you agree to this sharing. New messages you write in connected global channels will be distributed automatically."
 
@@ -455,7 +455,7 @@ class MyMessagesView(ScopedView):
     async def previous(self, i, button):
         self.require(i)
         self.page = max(0, self.page - 1)
-        from tier_ui import edit_response
+        from bot_ui import edit_response
 
         await edit_response(i, content=self.description(), view=self)
 
@@ -463,14 +463,14 @@ class MyMessagesView(ScopedView):
     async def next(self, i, button):
         self.require(i)
         self.page += 1
-        from tier_ui import edit_response
+        from bot_ui import edit_response
 
         await edit_response(i, content=self.description(), view=self)
 
     @discord.ui.button(label='Refresh', row=0)
     async def reload(self, i, button):
         self.require(i)
-        from tier_ui import edit_response
+        from bot_ui import edit_response
 
         await edit_response(i, content=self.description(), view=self)
 

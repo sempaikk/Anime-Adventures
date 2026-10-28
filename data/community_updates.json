@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "version": "2026.10.27.16",
+  "version": "2026.10.27.17",
   "changes": [
-    "Banners e desafios continuam chegando pelo bot nos servidores em que ele está instalado. O encaminhamento automático para seguidores de canais foi desativado."
+    "Os menus e mensagens agora mostram somente os recursos disponíveis: chat global, banners e desafio diário."
   ]
 }

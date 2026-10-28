@@ -354,7 +354,7 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(await view.interaction_check(self.interaction(actor=8)))
 
     async def test_status_includes_each_local_feed_and_fits_a_private_card(self):
-        from tier_ui import payload
+        from bot_ui import payload
         self.bot.banners.configure(CENTRAL_GUILD_ID, 200)
         self.bot.daily.configure(CENTRAL_GUILD_ID, 201)
         i = self.interaction()

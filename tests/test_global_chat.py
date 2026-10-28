@@ -29,9 +29,9 @@ from global_views import (
     find_message,
 )
 from global_media import cdn_url, filename
-from tier_store import TierStore
-from tier_ui import payload, visible_text
-from tier_backup import make_snapshot, restore_snapshot
+from bot_store import BotStore
+from bot_ui import payload, visible_text
+from bot_storage import make_snapshot, restore_snapshot
 
 
 def missing():
@@ -113,8 +113,8 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.now = [2_000_000_000.0]
-        self.base = TierStore(
-            Path(self.temp.name) / "tierlist.sqlite3", clock=lambda: self.now[0]
+        self.base = BotStore(
+            Path(self.temp.name) / "bot.sqlite3", clock=lambda: self.now[0]
         )
         self.messages = {}
         self.channels = {}
@@ -748,25 +748,21 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
     ):
         import sqlite3
         from contextlib import closing
-        from tier_catalog import TierCatalog
-        from tier_media import MediaLibrary
-
-        MediaLibrary(self.base, TierCatalog())
         source = self.message(content="PRIVATE_CHAT_CACHE_SENTINEL")
         await self.engine.ingest(source)
         await self.flush()
-        directory, _ = make_snapshot(self.base.path, now=self.now[0])
-        with closing(sqlite3.connect(directory / "tierlist.sqlite3")) as database:
+        snapshot, _ = make_snapshot(self.base.path, now=self.now[0])
+        with closing(sqlite3.connect(snapshot)) as database:
             self.assertEqual(
                 database.execute("SELECT payload FROM global_messages").fetchone()[0],
                 "{}",
             )
         self.assertNotIn(
             b"PRIVATE_CHAT_CACHE_SENTINEL",
-            (directory / "tierlist.sqlite3").read_bytes(),
+            (snapshot).read_bytes(),
         )
-        restored = restore_snapshot(directory, Path(self.temp.name) / "restored")
-        recovered = TierStore(restored, clock=lambda: self.now[0])
+        restored = restore_snapshot(snapshot, Path(self.temp.name) / "restored")
+        recovered = BotStore(restored, clock=lambda: self.now[0])
         try:
             global_store = GlobalStore(recovered)
             self.assertTrue(global_store.consented(7))
@@ -1154,7 +1150,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
         webhook = self.send_notice(channel, legacy)
         webhook.webhook_id = 110
         unrelated = self.send_notice(
-            channel, payload(content="Uma mensagem da tier list")
+            channel, payload(content="Uma mensagem de outro aplicativo")
         )
         self.engine.store.db.execute(
             "UPDATE global_channels SET panel_id=? WHERE guild_id=?", (str(old.id), "1")

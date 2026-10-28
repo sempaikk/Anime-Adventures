@@ -13,7 +13,6 @@ import aiohttp
 
 from runtime_health import RuntimeHealth
 from scripts.check_health import check_ready
-import quiz_legacy as app
 
 
 class HealthTests(unittest.IsolatedAsyncioTestCase):
@@ -69,21 +68,3 @@ class HealthTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(check_ready('https://example.com/ready',opener=lambda *a,**k:Response(b'x'*4097)))
         with self.assertRaises(ValueError):
             check_ready('http://example.com/ready')
-
-    async def test_offline_startup_installs_storage_recovery_and_health_without_logging_into_discord(self):
-        client=app.AdventuresBot()
-        loop=asyncio.get_running_loop()
-        with tempfile.TemporaryDirectory() as directory,patch.dict(os.environ,{'DATA_DIR':directory,'PORT':'0'}),\
-                patch.object(client.tree,'sync',new=AsyncMock(return_value=[])),patch.object(loop,'add_signal_handler'):
-            async with client:
-                await client.setup_hook()
-                self.assertEqual(client.scores.path,Path(directory)/'scores.sqlite3')
-                self.assertIsNotNone(client.adventures)
-                self.assertIsNotNone(client.health.runner)
-                self.assertIsNotNone(client.session_task)
-                self.assertIsNotNone(client.host_task)
-                self.assertFalse(client.is_ready())
-                await client.close()
-                self.assertIsNone(client.health.runner)
-                self.assertIsNone(client.session_task)
-                self.assertIsNone(client.host_task)

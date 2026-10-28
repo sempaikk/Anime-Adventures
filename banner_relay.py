@@ -19,7 +19,7 @@ import discord
 from discord.http import handle_message_parameters
 from PIL import Image
 from banner_reader import image_identity
-from game_sources import BANNER_CHANNEL_ID, DAILY_CHANNEL_ID, QUESTIONS_CHANNEL_ID, SOURCE_CHANNELS, IMAGE_SOURCE_CHANNELS, reader_token
+from game_sources import BANNER_CHANNEL_ID, DAILY_CHANNEL_ID, SOURCE_CHANNELS, IMAGE_SOURCE_CHANNELS, reader_token
 
 SOURCE_CHANNEL_IDS = (BANNER_CHANNEL_ID,)
 MAX_IMAGE = 8 * 1024 * 1024
@@ -198,13 +198,8 @@ class BannerRelay:
                     stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.DEVNULL,
                     limit=65536,
                 )
-                config = {"token": reader_token(), "source_channel_ids": SOURCE_CHANNELS,
-                          "questions_channel_id": QUESTIONS_CHANNEL_ID, "daily_channel_id": DAILY_CHANNEL_ID,
-                          "question_after": self.bot.knowledge.get_meta('source-cursor'),
-                          "questions_enabled": not self.bot.knowledge.paused}
-                if getattr(self.bot.knowledge,'disabled',False):
-                    config.update(source_channel_ids=IMAGE_SOURCE_CHANNELS,questions_channel_id=0,
-                                  question_after=None,questions_enabled=False)
+                config = {"token": reader_token(), "source_channel_ids": IMAGE_SOURCE_CHANNELS,
+                          "daily_channel_id": DAILY_CHANNEL_ID}
                 self.process.stdin.write(json.dumps(config).encode() + b"\n")
                 await self.process.stdin.drain()
                 self.process.stdin.close()
@@ -218,14 +213,6 @@ class BannerRelay:
                                 await self.accept(event)
                             elif channel_id == str(DAILY_CHANNEL_ID):
                                 await self.bot.daily.accept(event)
-                        elif event.get("event") in {"question", "question_delete"}:
-                            result = self.bot.knowledge.ingest(event)
-                            if inspect.isawaitable(result):
-                                await result
-                        elif event.get('event')=='question_checkpoint':
-                            result = self.bot.knowledge.checkpoint(event)
-                            if inspect.isawaitable(result):
-                                await result
                         elif event.get("event") in {"installing", "connecting", "ready", "source_unavailable", "login_failed", "account_action_required", "reader_failed"}:
                             source = str(event.get('channel_id',''))
                             feed = self if source == str(BANNER_CHANNEL_ID) else self.bot.daily if source == str(DAILY_CHANNEL_ID) else None
@@ -236,7 +223,6 @@ class BannerRelay:
                             elif not source:
                                 self.status = event["event"]
                                 self.bot.daily.status = self.status
-                            self.bot.knowledge.reader_status = event['event']
                             if event['event'] == 'ready':
                                 delay = 5
                     except (ValueError, TypeError, KeyError, aiohttp.ClientError, asyncio.TimeoutError) as error:
@@ -462,7 +448,7 @@ class BannerControls(discord.ui.View):
         self.feed = bot.daily if kind == "daily" else bot.banners
 
     async def interaction_check(self, interaction):
-        from tier_views import reply
+        from bot_views import reply
         if (interaction.user.id, interaction.guild_id) != (self.actor, self.guild):
             await reply(interaction, "Open the setup command to manage your own server's image feed.")
             return False
@@ -475,7 +461,7 @@ class BannerControls(discord.ui.View):
 
     @discord.ui.button(label="Stop receiving", style=discord.ButtonStyle.danger)
     async def disable(self, interaction, _button):
-        from tier_views import reply
+        from bot_views import reply
         require_banner_admin(interaction)
         async with self.bot.guild_lock(self.guild):
             target = self.feed.target(self.guild)
@@ -487,5 +473,5 @@ class BannerControls(discord.ui.View):
         self.stop()
 
     async def on_error(self, interaction, error, item):
-        from tier_views import reply
+        from bot_views import reply
         await reply(interaction, "The change could not be confirmed. Open the setup command to check it.")

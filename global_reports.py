@@ -4,9 +4,9 @@ import json
 import discord
 from global_views import ScopedView
 from global_moderation import REPORT_STATES
-from tier_views import BoundModal, reply
-from tier_ui import edit_response
-from tier_domain import safe
+from bot_views import BoundModal, reply
+from bot_ui import edit_response
+from bot_domain import safe
 
 
 class ReportInbox(ScopedView):

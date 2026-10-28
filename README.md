@@ -1,194 +1,41 @@
-# Anime Adventures
+# Adventures — bot da comunidade
 
-**Escopo vigente em 27/10/2026:** `/globalchat`, `/setbanner` e `/dailychallenge`. `/ask` e a integração com o PC foram cancelados e não são ativados por `KNOWLEDGE_MODE`. Não é necessário manter o PC ou o Discord do responsável aberto para os feeds de imagens.
+O bot oferece três comandos:
 
-**Pacote automático de remoção retirado:** o responsável mostrou um bloqueio do Microsoft Defender no ZIP que foi distribuído. Não restaurar, permitir, executar ou desativar o antivírus para usá-lo. Os testes de sintaxe/simulação não eram uma análise antimalware. Use apenas a desinstalação pelas configurações do Windows, conforme `LEIA-ME-REMOCAO.txt`; não é necessário baixar outro programa de limpeza.
+- `/globalchat`: participação no chat global e controles privados de administração/moderação.
+- `/setbanner`: envio automático de banners no canal configurado. Cada imagem tem sua votação W/M/L.
+- `/dailychallenge`: envio automático do desafio diário mais recente.
 
-Chat entre servidores e imagens do jogo. A tier list está pausada, com código e dados arquivados. **Comandos atuais, todos em inglês e sem argumentos:**
+A publicação pelo megafone para seguidores de canais fica desativada. Os feeds são entregues diretamente pelo bot instalado em cada servidor. Menus e respostas fixas usam inglês; as notas públicas de atualização são em português, somente no servidor oficial.
 
-- **`/globalchat`** — controles pessoais privados e administração do chat entre servidores. Substitui o nome anterior `/chatglobal`, mantendo configurações, consentimentos e histórico.
-- **`/setbanner`** — quem tem **Administrador** ou **Gerenciar servidor** define o canal atual para receber apenas as imagens dos banners. Cada servidor tem um destino próprio; a confirmação e o botão de desativar são privados. [Configuração e teste](docs/banners.md).
-- Cada imagem de banner chega em uma mensagem própria, com os emojis originais W/M/L para avaliação. O bot também adiciona as reações aos banners antigos acessíveis nos canais configurados, aos poucos e sem reenviar as imagens. Precisa de Adicionar reações; falha nessa permissão não interrompe os banners.
-- **`/dailychallenge`** — define o próprio canal para receber as imagens do desafio diário. Configuração independente do banner em cada servidor; mesma exigência de permissão.
+## Executar
 
-**Interface fixa em inglês; avisos de atualização em português.** Os avisos contêm apenas benefícios percebidos por membros comuns, sem cabeçalho com nome/versão ou detalhes administrativos. Cada atualização, mesmo pequena, gera uma mensagem nova no servidor oficial para preservar o histórico; só a correção atual foi autorizada por edição. Textos escritos pelos participantes do chat global mantêm o idioma original. Banners/desafios enviam somente imagens estáticas PNG/JPEG/WebP, sem GIF, vídeo, texto ou legenda. Comandos de configuração têm confirmação privada e **Stop receiving**.
+Use Python 3.12 e instale `requirements.txt`. Configure `DISCORD_TOKEN`, `SECONDARY_ACCOUNT_TOKEN` e o mesmo `DATA_DIR` já usado pela hospedagem. Inicie `python bot.py`. Nunca publique os valores dos segredos.
 
-Hospedagem atual: Bot-Hosting.net, Python 3.12 e início em `bot.py`. Preservar `DATA_DIR`, `DISCORD_TOKEN` e `SECONDARY_ACCOUNT_TOKEN`. A instância informada tem 256 MB RAM e 512 MB disco; o leitor fica em ambiente isolado na hospedagem. O PC do responsável não participa dos feeds. Variáveis antigas de IA/conhecimento podem ser removidas do painel após atualizar. O site permanece pausado.
+O leitor de imagens usa um ambiente isolado na hospedagem, criado automaticamente quando necessário. O computador pessoal pode permanecer desligado. O processo principal usa discord.py 2.7.1; o leitor usa sua biblioteca isolada 2.1.0.
 
-**Comunidade central:** `1554953245204422807`. O dono acessa o relatório privado em `/globalchat` → **Bot status** → **Server report**, sem ativar o chat. Atualizações relevantes são publicadas uma vez por versão no canal de anúncios confirmado pelo relatório (`1564498826423959652`); mudanças no nome não afetam o destino. A interface mantém um único ícone decorativo em Bot status e texto nos demais controles. Todos os ensaios permanecem privados. O sistema de níveis por mensagens/passivas é apenas ideia futura, sem implementação autorizada agora. [Operação e limites](docs/community-server.md).
+## Atualizar preservando os dados
 
-O site está congelado em Em breve / Coming soon por tempo indeterminado. Não alterar seus arquivos, configuração ou publicação sem novo pedido. Estado desta entrega, testes e publicação: [CONTINUIDADE.md](CONTINUIDADE.md).
+Pare o processo, atualize o pacote completo mantendo DATA_DIR e os segredos, e reinicie. O banco ativo passa a se chamar `bot.sqlite3`. Uma base anterior é reconhecida por suas tabelas dos serviços ativos, copiada e verificada; configurações, consentimentos, imagens e recibos são mantidos. Antes de retirar estruturas sem uso, uma cópia privada fica em `DATA_DIR/backups/before-cleanup.sqlite3`. Falta de espaço, corrupção, conflito ou mais de uma base candidata interrompe a migração sem substituir os dados originais.
 
-## Chat entre servidores
+Não apague o diretório persistente nem seus registros para resolver reenvios. As cópias de segurança não preservam o texto temporário do chat global. Guarde backups em local privado; contêm configurações, identificadores e credenciais de webhooks.
 
-Use `/globalchat` no canal escolhido e **Enable in this channel**. O bot precisa de Ver canal, Enviar mensagens, Ler histórico, Anexar arquivos e Gerenciar webhooks; não precisa de Administrador ou Gerenciar mensagens. Não use canal com restrição de idade. Nenhum painel ou convite é publicado no canal. A primeira mensagem gera um único convite privado; com DMs bloqueadas, a pessoa confirma em `/globalchat`. Os controles são **Join, My messages, How it works, Report e Leave**; ADMs acessam sua participação em **My participation**.
-
-As originais permanecem no servidor onde foram enviadas. Outros servidores recebem cópias por webhook apenas com **nome de exibição e avatar**, sem acrescentar `@username` ou servidor ao nome. As contas autorizadas aparecem como **Nome [Owner]** ou **Nome [Tester]**, com uma etiqueta por conta vinculada ao ID. A marca APP/BOT é do Discord. A confirmação informa o compartilhamento com toda a rede, incluindo servidores futuros, e vale após reinícios. O convite desaparece depois de aceitar ou recusar; não é reenviado a cada mensagem nem em outro servidor. Mensagens anteriores à confirmação ficam locais. Avisos públicos antigos reconhecidos como mensagens do próprio bot são removidos gradualmente, preservando conversas e cópias.
-
-
-Texto e formatação, imagens, GIFs, vídeos, áudios, PDF e TXT são retransmitidos dentro dos limites dos destinos. Figurinhas compatíveis viram imagens. Respostas incluem citação, menções não notificam pessoas/cargos e mensagens longas podem ser divididas. Editar/apagar a original sincroniza as cópias por até 30 dias, enquanto houver acesso; cópias removidas pela moderação local não são recriadas. Reações, enquetes nativas, voz e digitação continuam locais. Veja os detalhes e limites em [docs/global-chat.md](docs/global-chat.md). Denúncias têm revisão privada com páginas, motivo, decisão e responsável; ADMs agem no próprio servidor e o dono pode agir na rede. O dono também dispõe de Estado do bot, alertas privados de falhas persistentes e pausa de emergência.
-
-**Armazenamento:** conteúdo temporário da fila expira após uma hora, com limpeza periódica; arquivos são removidos após as entregas e pendências também expiram. IDs e denúncias ficam por até 30 dias. Configuração e confirmação persistem até alteração/saída. Isso não apaga o histórico do Discord. O cache de anexos tem teto local de 256 MiB; excesso de carga, falta de espaço ou limites da API podem impedir entregas, com acompanhamento em Meus envios. O relay não usa IA nem serviços pagos.
-
-## Tier list arquivada — descrição histórica
-
-As seções de tier list abaixo descrevem o código preservado, não a configuração ativa. `/tierlist`, seus botões persistentes e os ciclos de coleta, leitura inicial, análise, votação e painéis não são iniciados normalmente. Não reativar por iniciativa própria.
-
-### Um canal, uma imagem e um tópico
-
-O administrador usa `/tierlist` em um canal de texto. A mensagem permanente é **somente um PNG**, sem texto, embed ou botões, com o tópico **Votações e histórico** ligado a ela. Quando há uma proposta válida, uma enquete temporária aparece no mesmo canal, com motivo, posições antes/depois, condições, ressalva, prazo e botões para votar. Oferece atalhos para a imagem e o histórico, sem ping coletivo. Repetir o comando reutiliza o conjunto, inclusive em execuções concorrentes. O painel oficial existente é preservado se o comando for usado em outro canal.
-
-O tópico contém o índice editável, enquetes e seus resultados completos. Importações, base inicial, correções do dono e manutenção ficam em registros internos, sem contar como decisões da comunidade. Cópias administrativas antigas são removidas após conferir autor, marcador e servidor. O índice oferece **Sugerir imagem**, **Meus envios**, **Como funciona** e atalhos para a votação aberta e decisões recentes. Ao encerrar, o bot desativa os votos e salva a proposta completa e seu resultado no tópico. O aviso do canal permanece por dois minutos e só é removido após confirmar o histórico. Falha de arquivo, acesso ou limpeza preserva o aviso encerrado para uma nova tentativa. Enquetes anteriores a essa atualização terminam no local original, sem duplicar votos ou renovar o prazo.
-
-A classificação é apresentada somente na imagem, sem exportação textual de posições. O único TXT público é **retratos-pendentes.txt**, com as formas que precisam de foto; ele se atualiza após aprovações/restaurações e desaparece quando não há pendências. O canal retorna à imagem depois da limpeza das enquetes; a própria imagem não recebe botão de histórico e não há segundo canal obrigatório.
-
-Os retratos mantêm os pixels originais, sem ampliação artificial ou geração de personagens. A imagem mostra **Casual — Story/Raids/Portals/Stages à esquerda** e **Infinite à direita**, com posições independentes. Categorias equivalentes ficam alinhadas e crescem juntas conforme entram personagens. Abra a imagem para ampliar no celular. Cada seção tem **META Hill/Hybrid, META Ground, META Support, Good Hill/Hybrid, Good Ground e Good Support**, em ordem da esquerda para a direita e com linhas expansíveis. Cada forma ocupa uma categoria por modo. **A imagem não tem rodapé técnico.** Datas das enquetes e regras ficam no tópico; contadores, versões, conexão e procedência da base ficam nos registros privados. O arquivo não recebe a descrição artificial de ponto que causava um indicador ALT desnecessário.
-
-O catálogo ativo inicial tem **529 identidades/formas, 458 retratos e 71 pendências**. O arquivo histórico preserva as **555 identidades** do módulo Names consultado; **26 formas com silhueta azul substituta** ficam excluídas pelo critério expresso do dono, incluindo Ice Shaper na revisão atual. A política em `data/tier_availability.json` impede a wiki/cache de reativá-las automaticamente; um personagem normal ser azul não é critério de exclusão. Um retrato ausente usa um marcador, sem tomar a imagem de outra evolução. A classificação começa pela referência da Wiki, revisão 46773 de 18/04/2025: **71 formas em Infinite e 76 em Casual**, sem votos fictícios. As 151 entradas das seis categorias foram identificadas: 147 ativas e quatro ocorrências de formas retiradas. Não restam nomes sem correspondência nessa página. A fonte mantém o aviso de possível imprecisão; identificar as formas não comprova o balanceamento. A ordem inicial acompanha a fonte. As formas não classificadas ficam fora da grade, sem categoria arbitrária. As mudanças seguintes exigem propostas e votos. Procedência e importação ficam internas, sem avisos ou links da Wiki no histórico público. Veja a [auditoria do catálogo](docs/tierlist-catalog-audit.md).
-
-As mensagens de enquete, resultado, ajuda e controles usam **Components V2**, com seções, separadores, retratos e botões nativos. Os ícones são da wiki do jogo e só são usados quando combinam com a ação; falhas de verificação mantêm o texto legível sem ícones. Os formulários usam Labels e upload nativo, explicando o destino privado das sugestões.
-
-**Como funciona**, no tópico, explica em particular a leitura da imagem, votos, resultados, formas sem avaliação e envio de retratos. O dono recebe controles técnicos exclusivos. Outros administradores recebem **Conferir painel**, com links e orientações de permissões do próprio servidor, sem dados internos da IA, banco ou revisões globais.
-
-## Análise e votação global
-
-Os resultados explicam por que a proposta foi aplicada, mantida, cancelada ou
-encerrada sem participantes suficientes. O prazo aparece antes dos detalhes
-da enquete. Mensagens de falha de confirmação orientam conferir o estado antes
-de reenviar, sem afirmar incorretamente que uma ação já salva foi desfeita.
-
-O responsável tem **Atualizações do jogo** nos controles privados. Registrar
-um balanceamento exige conferir uma prévia; pausa propostas, cancela enquetes
-em andamento e impede relatos anteriores ao corte de sustentar novas análises.
-Posições, retratos e votos são preservados. A retomada exige conferência das
-fontes. ADMs dos servidores não precisam configurar esse processo. Consulte
-[o procedimento de atualização e verificação da hospedagem](docs/game-updates.md).
-
-A **Verificação completa** identifica a versão do programa e confere os arquivos
-do pacote e a versão carregada ao iniciar. O manifesto fica no repositório;
-tokens, `.env` e bancos dos jogadores não entram nessa identificação.
-
-O bot considera **mensagens novas** sobre Anime Adventures nos canais aos quais tem acesso. Ao entrar no servidor, também faz **uma leitura inicial automática e limitada do histórico público**. Não exige exportar arquivos, escolher canais nem confirmar uma importação. A administração comunica esse funcionamento à comunidade e controla o acesso do bot pelas permissões do Discord.
-
-Na leitura inicial, o bot busca as mensagens mais recentes em até **dez canais públicos**, até **cem mensagens por canal**, **mil mensagens lidas** e **vinte relatos aproveitados**. Ignora canais adultos, canais privados, tópicos e o canal do painel. Aplica os mesmos filtros de relevância, identidade, repetição e frequência das mensagens novas; não envia todo o histórico à IA nem altera posições por coletar um relato. A data original acompanha os comentários na análise; antiguidade, sozinha, não significa desatualização.
-
-A referência inicial é **09/03/2025**, data explícita do Update 20 no [Update Log, revisão 46886](https://animeadventures.fandom.com/wiki/Update_Log?oldid=46886). A entrada posterior **20.4.1 — Fool’s Hunt** não informa data; essa referência é um limite inferior provisório, não a data comprovada do último update. O filtro por conteúdo e as fontes continuam necessários. A leitura não cobre todo o servidor nem garante encontrar todos os relatos antigos.
-
-Uma execução concluída fica registrada no banco e **não se repete a cada reinício**. Permissões ausentes são rechecadas automaticamente; uma execução interrompida tem até três tentativas, separadas por uma hora, com deduplicação. Um servidor é lido por vez, por até um minuto. As mensagens novas continuam sendo coletadas; novas análises aguardam a leitura ativa terminar. Conferir painel/Diagnóstico mostra o andamento de forma privada. Não há um botão adicional para o ADM configurar essa leitura.
-
-O filtro local identifica nomes/formas e contexto do jogo. A IA confirma se a conversa realmente trata de Anime Adventures e compara relatos com fontes da wiki. DMs, bots, webhooks, mensagens encaminhadas/citações isoladas e o próprio painel/tópico são excluídos. Editar ou apagar o original enquanto o bot recebe esses eventos retira o relato de análises futuras; isso não desfaz automaticamente uma decisão publicada. Uma edição/exclusão durante a leitura inicial também impede reintroduzir o texto antigo já recebido no lote. A API e os eventos não garantem descobrir alterações ocorridas enquanto o bot estava desconectado.
-
-1. **No máximo uma proposta global por hora**, com motivo, condições, ressalva, fontes e posições antes/depois. Sem evidência suficiente, não aparece uma votação para preencher horário.
-2. **Dez minutos de votação**, contados da primeira publicação confirmada no Discord. Todas as cópias compartilham o prazo.
-3. **Aprovar / Manter / Mais testes.** São necessários pelo menos **cinco participantes e dois terços a favor** para publicar. Outras situações preservam a lista.
-4. Uma conta conta uma vez na rede e pode trocar seu voto até o prazo. A conta precisa ter pelo menos sete dias. Durante a votação aparece somente o total de participantes; a distribuição é revelada ao encerrar.
-5. Uma aprovação edita a imagem sem esperar o fim da hora. Reiniciar não apaga votos nem renova o prazo. Registro e publicação são atômicos, evitando aplicar uma aprovação duas vezes.
-
-Antes de apurar, a entrega confere pela API que pelo menos uma cópia da votação continua disponível e corresponde à proposta. Isso cobre exclusão ocorrida durante uma desconexão. Indisponibilidade incerta adia a apuração, sem renovar o prazo ou aceitar novos votos. Avisos só são apagados quando o resultado salvo e a própria mensagem do bot passam pela conferência; cópias removidas por moderação não são republicadas como votações. Pendências de arquivo/limpeza aparecem nos controles privados do dono e na conferência do painel do respectivo ADM.
-
-O índice do tópico mostra **quando uma nova análise ficará disponível**, se há relatos aguardando, análise em andamento ou proposta pronta. Com uma votação aberta, mostra também quanto falta para encerrá-la. Os horários usam a contagem relativa do próprio Discord e os prazos persistidos no banco, sem edições por segundo nem chamadas extras à IA. **O contador não garante uma enquete:** sem proposta fundamentada, as posições são preservadas. Pausas de análise não impedem concluir uma votação já aberta.
-
-A IA considera contribuição para o time, custo, mecânicas, funções, condições e limitações. Popularidade ou um atributo isolado não bastam. São exigidos IDs conhecidos, a forma mencionada no relato, confiança mínima, citações literais e números presentes nas citações. Passar outro personagem no mesmo tier exige referência dele também. Fontes ou classificação-base alteradas invalidam uma proposta incompatível.
-
-Resultados recentes entram como contexto; **isso não treina os pesos da IA** nem comprova uma estatística do jogo. Comparações recentes sem evidência nova têm uma janela de estabilidade de 24 horas. O modelo não recebe ferramentas, shell, banco ou controle do Discord. Essas restrições reduzem erros; não garantem interpretação perfeita nem impedem todas as contas alternativas.
-
-## Wiki, retratos e revisão
-
-`data/tier_evidence.json` inclui **1.038 referências** com revisão, URL e hash. São fontes comunitárias, não telemetria do jogo. O bot consulta a API oficial da wiki de maneira limitada: módulos de identidades/dados diariamente e artigos relevantes em lotes pequenos. Durante uma votação, a atualização das fontes é adiada. Falhas preservam o último cache válido e são indicadas no diagnóstico/índice. Uma sincronização parcial não significa que toda a wiki foi revisada naquele instante.
-
-**Sugerir imagem** abre um formulário com personagem/forma, skin, motivo, retrato e print opcional do jogo. São aceitos PNG, JPG e WebP estáticos, até 4 MB por arquivo e quatro milhões de pixels. Os limites de envio são conferidos antes de baixar/preparar arquivos e novamente antes do registro. O processamento aplica a orientação da foto, remove metadados e limita dimensões, duplicatas, frequência e armazenamento. Não executa anexos nem busca URLs fornecidas pelo usuário.
-
-Somente o responsável pelo aplicativo aprova ou rejeita. A revisão privada compara o retrato atual com a sugestão; um recorte de fundo uniforme pode ser experimentado e desfeito antes da aprovação. Não é uma reconstrução da arte por IA. As versões anteriores são preservadas para restauração. Alterar retratos **não altera posições**. Membros consultam **Meus envios** no tópico; a resposta com o andamento é privada.
-
-A lista de contribuição usa o catálogo ativo e os retratos disponíveis, incluindo aprovações locais. Um envio pendente ou rejeitado não remove uma solicitação. Arquivos aprovados são conferidos por hash; se estiverem ausentes ou corrompidos, não escondem a pendência. A restauração recusa uma versão anterior corrompida para preservar o retrato atual. O índice apagado é reparado automaticamente; perda de confirmação da API reaproveita a mensagem já enviada. Uma conferência periódica também encontra exclusões ocorridas enquanto o bot estava desconectado.
-
-Propostas têm **Sinalizar problema**. Os relatos entram na revisão privada, sem acrescentar votos ou modificar posições. O responsável pode suspender uma proposta aberta, reverter a última classificação e restaurar retratos, com auditoria interna. A suspensão aparece no resultado da própria enquete. Administradores de outros servidores não alteram a classificação global diretamente.
-
-## Hospedagem e IA gratuita — histórico da tier list arquivada
-
-No Bot-Hosting.net, use **Python 3.12**, arquivo inicial **`bot.py`**, pull automático do GitHub e estas variáveis:
-
-```dotenv
-DISCORD_TOKEN=segredo_do_bot
-DATA_DIR=./state
-GROQ_API_KEY=segredo_da_conta_gratuita
-# Opcional, somente nos segredos da hospedagem ou .env privado:
-# SECONDARY_ACCOUNT_TOKEN=segredo_da_conta_leitora
-```
-
-Marque as chaves como **Segredo**. Mantenha a conta Groq no plano **Free**, sem ativar cobrança. O modelo inicial é `openai/gpt-oss-120b`; a assinatura do ChatGPT não fornece esse serviço. O bot não contrata planos e não tem fallback pago. Ele não consegue determinar se o proprietário mudou o contrato de cobrança da conta.
-
-Há um orçamento local de **48 chamadas e 150 mil tokens por dia UTC**, com entradas limitadas e intervalo entre análises. Testes de conexão também consomem esse orçamento. Cota excedida, chave ausente, resposta inválida ou indisponibilidade preservam posições. Os limites reais são definidos pela Groq e podem mudar. Recomendamos configurar Zero Data Retention nos controles da conta.
-
-O bot não anexa nomes, IDs do Discord ou nomes de servidores aos pedidos de análise. Menções, URLs, emails e padrões de telefone são removidos do texto antes do envio. Isso não garante anonimização de qualquer texto livre. Comentários locais ficam até sete dias **após a coleta**, inclusive os vindos do histórico; a data original é preservada separadamente. Votos individuais, relatos e sugestões encerradas têm retenção limitada. Backups locais podem conservar dados removidos até sua rotação. Resultados agregados e mensagens públicas de histórico permanecem.
-
-Ative **Message Content Intent** no Developer Portal. A instalação no servidor usa `bot` e `applications.commands` e exige autorização de alguém com **Gerenciar servidor** ou **Administrador**. `/tierlist` tem permissão padrão de Gerenciar servidor e valida essa permissão novamente ao executar; habilitar o comando para outro cargo nas configurações do Discord não libera a criação do painel. Membros não precisam executar comandos para usar os botões. No canal do painel, conceda ao bot:
-
-- Ver canal, Enviar mensagens e Ler histórico;
-- Inserir links e Anexar arquivos;
-- Criar tópicos públicos e Enviar mensagens em tópicos.
-
-**Gerenciar tópicos é opcional**, usado para apagar o tópico técnico vazio após a verificação. Sem isso, ele fica arquivado. Um tópico trancado depende da administração para destrancar. Não é necessário conceder Administrador ou Gerenciar mensagens. O bot não altera permissões do canal; a administração pode impedir mensagens no canal principal e permitir os botões/tópico.
-
-O plano gratuito da hospedagem exige renovação conforme suas regras. `./state` precisa persistir entre reinícios; exporte backups antes de excluir a implantação. Uma segunda instância com o mesmo diretório é recusada pelo bloqueio de processo.
-
-A revisão atual, o procedimento de atualização e as medições locais de fila estão em [docs/bot-operations.md](docs/bot-operations.md). Os ícones ativos são artes do jogo; o ícone de tier list do site foi excluído do tema.
-
-## Verificação da tier list arquivada — descrição histórica
-
-O responsável pelo aplicativo recebe **Verificação completa** na resposta privada de `/tierlist`. Ela:
-
-- executa a suíte automatizada em subprocesso com estado temporário, sem credenciais nem rede externa;
-- confere os comandos registrados na API real contra a configuração ativa; a interface antiga de verificação da tier list permanece arquivada;
-- cria um tópico técnico **privado**, convida o dono, publica/lê/edita uma imagem, confere botões e arquivamento/retomada;
-- testa dez etapas visuais: entrada/remoção, ordem, mudança de tier, expansão/redução da linha, troca de retrato e restauração, comparando cada PNG baixado do Discord com o arquivo enviado;
-- testa cinco etapas da lista de retratos: pendência, envio, aprovação, restauração e rejeição, incluindo remover/recolocar o TXT na mesma mensagem e conferir o arquivo baixado;
-- verifica uma resposta real da Groq, respeitando cota e intervalo;
-- limpa as próprias mensagens técnicas e entrega um relatório JSON privado;
-- oferece **Confirmar teste de interação**, usando um clique real no código de voto com banco temporário.
-
-**Testar personagens na imagem** abre uma demonstração privada com Anterior, Próxima etapa e Executar todas. Também está disponível como **Ver alterações de personagens** no relatório. Posições artificiais recebem o aviso SIMULAÇÃO e nunca são gravadas no ranking global. Os retratos substituídos no ensaio ficam em bancos temporários. A execução automática pode ser interrompida com segurança no encerramento do bot.
-
-O teste da API exige **Criar tópicos privados**. Sem essa permissão, ele informa a limitação e não publica um teste público. A demonstração privada por interação continua disponível. As permissões de moderação do Discord continuam valendo nos tópicos privados.
-
-O subprocesso preserva os caminhos das bibliotecas carregadas pelo bot, incluindo instalações em `.local`, mesmo com HOME temporário. Mantém credenciais removidas, `.env` desativado e rede externa bloqueada. Zero testes é falha, não aprovação.
-
-**Não é preciso reunir cinco pessoas para os testes automatizados.** Os cenários de disputa usam participantes artificiais somente em bancos temporários, sem fabricar votos ou posições públicas. A ferramenta não se passa por uma conta humana. Aparência no celular/computador e seleção humana de anexos são identificadas como verificações do cliente ainda não executadas.
-
-O relatório distingue **isolado, Discord real, Groq real e não testado**. Um log dizendo que a chave foi carregada não confirma a integração. Orientações de estreia e falhas comuns: [docs/community-validation.md](docs/community-validation.md).
-
-O [fechamento da versão](docs/tierlist-launch-review.md) registra a revisão do catálogo, os testes e as etapas que dependem do uso com jogadores.
-
-## Estado, backup e restauração
-
-Mudanças de categorias são transacionais e auditadas. Versões e votos antigos continuam no banco/histórico, mas notas por letras ou as antigas funções não viram Hill/Ground/Support por suposição. A inicialização importa a referência por modo se não houver lista atual compatível. Esta atualização também completa uma base inicial anterior ainda intacta, preservando categorias e ordem relativa já importadas. Não sobrescreve decisões da comunidade, correções humanas ou a base de uma enquete aberta. A complementação adiada pode ocorrer no próximo reinício após o encerramento. Repetir a inicialização não cria versões extras. Propostas, aprovação, reversão e retenção respeitam o modo. A limpeza sempre mantém a versão atual de cada lista. Uma reversão não atravessa a fronteira entre formatos incompatíveis.
-
-`tierlist.sqlite3` guarda o sistema atual; bancos do quiz e da comunidade antiga não viram ranking. As versões antigas permanecem arquivadas, sem executar seus comandos ou filas de chat global. A migração de disponibilidade preserva snapshots, votos e histórico: caso uma forma retirada já estivesse classificada, cria uma revisão auditada removendo-a e mantém a ordem relativa das demais. Cancela propostas incompatíveis e impede a reversão de reintroduzir essas formas. Retratos antigos ficam registrados para histórico/backup; sugestões pendentes dessas formas deixam a fila ativa. Os antigos controles individuais não fazem parte da interface ativa.
-
-Há integridade ao iniciar, manutenção periódica, limites de coleta/votos/mídia e proteção contra espaço insuficiente. O backup diário inclui **SQLite, manifesto e arquivos de mídia verificados**, em `state/backups/tierlist-<instante>/`. A cópia preserva configurações, confirmações e IDs do chat global, mas remove seu conteúdo temporário e não inclui seu cache de anexos. `backups/latest.json` aponta a geração atual; uma geração anterior é mantida. Exporte a pasta inteira. Uma cópia no mesmo disco não protege contra exclusão da hospedagem.
-
-Para restaurar, **pare o bot** e execute, usando o nome real da pasta:
+## Verificar
 
 ```bash
-python scripts/restore_tierlist.py --snapshot ./state/backups/tierlist-<instante> --data-dir ./state --replace
-```
-
-A restauração verifica banco e imagens antes de trocar o estado, recusa uma instância ativa e preserva `pre-restore.sqlite3` quando substitui um banco existente. A próxima inicialização atualiza os painéis. Também existem `/health` e `/ready`, sem dados de jogadores, usando `PORT`, depois `SERVER_PORT`, depois 8080. O workflow opcional de disponibilidade depende de `BOT_HEALTH_URL` no GitHub e de um endereço HTTP exposto pela hospedagem.
-
-## Desenvolvimento e limites da validação
-
-```bash
-python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
+python scripts/check_release.py
 ```
 
-A suíte local/GitHub usa bancos temporários e APIs simuladas. Cobre fluxos de jogador, concorrência, fraude de interação, permissões, arquivos hostis, quota, prazos, reinício, persistência, rollback e restauração. **Passar nela não confirma acesso de produção ao Discord/Groq.** Isso é medido separadamente pelo botão de verificação na hospedagem.
+A verificação de versão usa `data/build.json`, sem ler segredos. Para uma nova entrega, gere o manifesto com `python scripts/build_release.py NOVA_VERSAO` após finalizar o código e os testes.
 
-Escopo consolidado: [docs/tierlist-plan.md](docs/tierlist-plan.md). Fontes oficiais: [tópicos do Discord](https://docs.discord.com/developers/topics/threads), [componentes e upload](https://docs.discord.com/developers/components/reference), [limites da Groq](https://console.groq.com/docs/rate-limits), [controles de dados](https://console.groq.com/docs/your-data). Retratos e trechos da wiki mantêm atribuições/URLs nos manifestos.
+O dono consulta **Bot status** em particular para verificar a versão, fontes, destinos e últimas entregas. Testes reais ficam restritos a canais privados. Os testes automatizados usam estado temporário e APIs simuladas.
 
-A base reproduzível está em `data/tier_initial_wiki.json`, com nomes da fonte,
-linhas, origem da identidade e pendências. Os snapshots e redirecionamentos
-estão em `docs/sources`; `python scripts/build_tier_baseline.py` refaz o artefato
-sem rede ou IA. A revisão está fixada e coincide com a última retornada pela
-API na conferência de 22/10/2026. Atualizar a Wiki não sobrescreve automaticamente os
-votos da comunidade.
+## Documentação
+
+- [Banners e desafio diário](docs/banners.md)
+- [Chat global](docs/global-chat.md)
+- [Servidor oficial e avisos](docs/community-server.md)
+- [Papéis dos cargos](docs/community-permissions-plan.md)
+
+O site separado continua pausado. Os documentos legais publicados permanecem em https://www.adventureswiki.workers.dev/bot/termos/ e https://www.adventureswiki.workers.dev/bot/privacidade/.

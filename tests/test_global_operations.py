@@ -12,10 +12,9 @@ from global_ops import GlobalOperations, OperationsView, NetworkPause
 from global_policy import check_links
 from global_views import MyMessagesView, GlobalAdminView
 from runtime_health import RuntimeHealth
-from tier_style import GameTheme, GAME_KEYS
-from quiz_icons import ICONS
-from tier_ui import payload, visible_text
-from tier_image import render_modes
+from bot_style import GameTheme, GAME_KEYS
+from bot_style import ICONS
+from bot_ui import payload, visible_text
 
 
 class OperationsCase(unittest.IsolatedAsyncioTestCase):
@@ -430,16 +429,16 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn("Envio pessoal 7", view.description())
         self.assertFalse(await view.interaction_check(self.interaction(user=8)))
 
-    async def test_only_game_assets_are_used_even_when_all_legacy_emojis_exist(self):
-        theme = GameTheme()
-        theme.available = set(ICONS)
-        self.assertNotIn("rank", GAME_KEYS)
-        self.assertEqual(theme.icon("rank").id, int(ICONS["units"]["id"]))
-        self.assertNotEqual(theme.icon("rank").id, int(ICONS["rank"]["id"]))
+    async def test_only_the_private_status_icon_is_registered(self):
+        theme=GameTheme()
+        theme.available=set(ICONS)
+        self.assertEqual(GAME_KEYS,{'clock'})
+        self.assertEqual(theme.icon('clock').id,int(ICONS['clock']['id']))
+
 
     async def test_game_icon_appears_only_once_in_bot_status_and_nowhere_in_other_menus(self):
         from global_views import GlobalMemberView, GlobalDirectView, ConsentView
-        from tier_ui import component_dicts
+        from bot_ui import component_dicts
 
         self.app.ui_theme = GameTheme()
         self.app.ui_theme.available = set(ICONS)
@@ -467,27 +466,11 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
         embed.add_field(name='Prazo', value='In ten minutes')
         embed.add_field(name='O que muda', value='A configuration change')
         card = payload(bot=self.app, embed=embed)['view']
-        from tier_ui import component_dicts
+        from bot_ui import component_dicts
 
         self.assertFalse(any(part.get('type') == 11 for part in component_dicts(card)))
         self.assertNotIn('<:', visible_text(card))
 
-    async def test_side_by_side_modes_grow_aligned_without_shrinking_portraits(self):
-        publications = {
-            "casual": {"ranking": []},
-            "infinite": {
-                "ranking": [
-                    {"unit_id": f"x{n}", "tier": "META_HILL", "position": n}
-                    for n in range(21)
-                ]
-            },
-        }
-        with Image.open(io.BytesIO(render_modes(publications, media={}))) as image:
-            self.assertEqual(image.width, 2212)
-            self.assertEqual(image.height, 54 + 8 * 96)
-            self.assertEqual(
-                image.getpixel((20, 54 + 2 * 96)), image.getpixel((1134, 54 + 2 * 96))
-            )
 
     async def test_local_review_cannot_claim_to_remove_the_original(self):
         source, row = await self.reported(guild=1)
@@ -528,14 +511,14 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
 
     async def test_readonly_preflight_does_not_open_a_network_or_modify_state(self):
         from scripts.check_release import check_release
-        from tier_release import manifest
+        from bot_release import manifest
         import json
         from pathlib import Path
 
         root = Path(self.temp.name) / "release"
         (root / "data").mkdir(parents=True)
         (root / "requirements.txt").write_text("")
-        (root / "data/tier_build.json").write_text(json.dumps(manifest("test", root)))
+        (root / "data/build.json").write_text(json.dumps(manifest("test", root)))
         before = self.base.path.read_bytes()
         result = check_release(root, self.base.path.parent)
         self.assertTrue(result["passed"])

@@ -4,9 +4,9 @@ import json
 import discord
 import aiohttp
 from global_views import ScopedView
-from tier_views import BoundModal, reply
-from tier_ui import edit_response, payload
-from tier_release import label
+from bot_views import BoundModal, reply
+from bot_ui import edit_response, payload
+from bot_release import label
 
 
 class GlobalOperations:
@@ -34,7 +34,6 @@ class GlobalOperations:
             "paused": self.store.network_paused(),
             "heartbeat": max(0, int(now - self.relay.last_cycle)),
             "storage": getattr(self.bot.health, "storage_level", "unknown"),
-            "archive_paused": bool(getattr(getattr(self.bot,'knowledge',None),'paused',False)) and (not getattr(self.bot.knowledge,'remote',False) or self.bot.knowledge.online),
         }
 
     def description(self, *, compact=False):
@@ -50,14 +49,6 @@ class GlobalOperations:
         build = getattr(self.bot, "build", None)
         if build:
             text += '\n**Running version:** ' + label(build)
-        for key, title in (() if getattr(getattr(self.bot,'knowledge',None),'disabled',False) else (
-            ("last_connection_success", 'Last successful AI connection'),
-            ("ask_last_success", 'Last successful answer'),
-        )):
-            value = self.bot.store.get(key)
-            text += f"\n**{title}:** " + (
-                f"<t:{int(float(value))}:R>" if value else 'not recorded yet'
-            )
         alerts = self.bot.store.get("global-owner-alerts") != "0"
         text += f"\n**Private alerts:** {('enabled' if alerts else 'disabled')}. Failures must persist for two minutes; each alert type has a one-hour cooldown."
         held = self.store.rows(
@@ -67,20 +58,6 @@ class GlobalOperations:
         for row in held:
             text += f"\n**Server {row['target']}:** restricted until <t:{int(row['until'])}:t>."
         text += '\n-# Use Network moderation to release a server early. Pausing the network stops new sharing; deletions continue to be processed.'
-        knowledge=getattr(self.bot,'knowledge',None)
-        if knowledge and not getattr(knowledge,'disabled',False):
-            info=knowledge.statistics()
-            if info.get('remote'):
-                text+=f"\n**PC question service:** {'online' if info['online'] else 'offline'} · {info['messages']} saved messages · {info['bytes']/1048576:.1f} MiB on the PC (last received status)."
-                if info.get('last_answer'):
-                    text+=f"\n**Last PC answer:** <t:{int(info['last_answer'])}:R>."
-                if not info['online']:
-                    text+='\nQuestions are unavailable until the PC program reconnects. Image feeds and global chat remain independent.'
-            else:
-                today=info['days'][0]['messages'] if info['days'] else 0
-                text+=f"\n**Game knowledge:** {info['messages']} saved messages · {info['bytes']/1048576:.1f}/{info['limit']/1048576:.0f} MiB · latest observed day: {today} messages."
-            if info['paused'] and (not info.get('remote') or info['online']):
-                text+='\n**Q&A capture paused.** Saved history is preserved. Check storage and backups before restarting collection.'
         return text
 
     async def notify(self, text):
@@ -103,10 +80,6 @@ class GlobalOperations:
         s = self.snapshot()
         now = self.store.clock()
         conditions = {
-            "knowledge": (
-                s['archive_paused'],
-                'Q&A capture is paused because its archive is full or unavailable. Saved messages have not been erased. Check storage and download the knowledge backup before making changes.',
-            ),
             "storage": (
                 s["storage"] == "critical",
                 'Storage is critically low. Open the private diagnostics before sharing more files.',
@@ -124,8 +97,6 @@ class GlobalOperations:
                 'One or more servers were temporarily restricted after a burst. Check Bot status to review.',
             ),
         }
-        if getattr(getattr(self.bot,'knowledge',None),'disabled',False):
-            conditions.pop('knowledge',None)
         for key, (active, text) in conditions.items():
             meta = "global-alert:" + key
             previous = json.loads(self.bot.store.get(meta) or "{}")
@@ -139,7 +110,6 @@ class GlobalOperations:
                             "queue": 'The queue no longer shows the previous delay.',
                             "worker": 'Global chat processing is progressing again.',
                             "containment": 'No servers are currently under temporary restrictions.',
-                            "knowledge": 'The knowledge archive is accepting Q&A messages again.',
                         }[key]
                     )
                 elif previous:

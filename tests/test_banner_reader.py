@@ -55,18 +55,18 @@ class ReaderImageTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(any(e['event'].startswith('question') for e in events))
         self.assertEqual(len([e for e in events if e['event']=='image']),1)
 
-    async def test_retired_ask_ignores_old_pc_environment_and_does_not_open_archive(self):
+    async def test_normal_startup_loads_only_the_active_services(self):
         with tempfile.TemporaryDirectory() as folder:
-            source=Path(folder)/'knowledge.sqlite3';source.write_bytes(b'preserve retired archive')
-            with patch.dict('os.environ',{'KNOWLEDGE_MODE':'pc','KNOWLEDGE_BRIDGE_SECRET':'synthetic-old-secret-more-than-32-characters'}):
-                app=CommunityBot(folder)
+            source=Path(folder)/'old-archive.bin'
+            source.write_bytes(b'preserve unrelated archive')
+            app=CommunityBot(folder)
             try:
-                self.assertTrue(app.knowledge.disabled)
-                self.assertIsNone(app.tree.get_command('ask'))
                 self.assertEqual({c.name for c in app.tree.get_commands()},{'setbanner','dailychallenge','globalchat'})
-                self.assertIsNone(getattr(app.knowledge,'install_routes',None))
-                self.assertEqual(source.read_bytes(),b'preserve retired archive')
-            finally:await app.close()
+                self.assertFalse(hasattr(app,'knowledge'))
+                self.assertFalse(hasattr(app,'catalog'))
+                self.assertEqual(source.read_bytes(),b'preserve unrelated archive')
+            finally:
+                await app.close()
 
 
 class ImageTrackerTests(unittest.TestCase):
