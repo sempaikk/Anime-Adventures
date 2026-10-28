@@ -33,7 +33,8 @@ class FeedPublications:
                 WHERE j.state='sent' AND j.message_id IS NOT NULL AND e.created_at>?'''
                 + (" AND j.layout='batch'" if feed.kind == 'banner' else ''),
                 (feed.max_age, now - feed.max_age)).fetchall())
-        return [*images, *batches]
+        return [*images, *(row for row in batches if row['kind'] != 'daily'
+                or self.bot.daily.current_daily.publication_current(row['channel_id'], row['message_id']))]
 
     def receipt(self, row):
         return self.db.execute('''SELECT * FROM feed_publications
@@ -47,6 +48,12 @@ class FeedPublications:
                 self.db.execute(f'''DELETE FROM feed_publications WHERE kind=? AND NOT EXISTS(
                     SELECT 1 FROM {kind}_targets t WHERE t.guild_id=feed_publications.guild_id
                     AND t.channel_id=feed_publications.channel_id)''', (kind,))
+            self.db.execute('''UPDATE feed_publications SET state='ignored' WHERE kind='daily'
+                AND state IN ('pending','sending') AND NOT EXISTS(SELECT 1 FROM daily_jobs j
+                    JOIN daily_current c ON c.event_id=j.event_id
+                    JOIN daily_source_head h ON h.singleton=c.singleton AND h.source_message=c.source_message
+                    WHERE j.channel_id=feed_publications.channel_id
+                    AND j.message_id=feed_publications.message_id AND j.state='sent')''')
             for row in self.deliveries():
                 channel = self.bot.get_channel(int(row['channel_id']))
                 if not isinstance(channel, discord.TextChannel) or channel.type != discord.ChannelType.news:
@@ -92,6 +99,8 @@ class FeedPublications:
         if row:
             if row['issue'] == 'permissions':
                 return 'Publishing is waiting. Grant View Channel, Send Messages and Read Message History.'
+            if row['issue'] == 'source':
+                return 'Publishing is waiting for the latest daily source check.'
             return 'Automatic publishing is waiting for Discord confirmation.'
         return 'Images are published automatically to this announcement channel\'s followers.'
 
@@ -99,6 +108,12 @@ class FeedPublications:
         feed = self.bot.banners if row['kind'] == 'banner' else self.bot.daily
         target = feed.target(row['guild_id'])
         if not target or target['channel_id'] != row['channel_id']:
+            return None
+        if row['kind'] == 'daily' and not feed.current_daily.publication_current(row['channel_id'], row['message_id']):
+            self.save(row, 'ignored')
+            return None
+        if row['kind'] == 'daily' and feed.status != 'ready':
+            self.save(row, 'pending', delay=30, issue='source')
             return None
         channel = self.bot.get_channel(int(row['channel_id']))
         if channel is None:

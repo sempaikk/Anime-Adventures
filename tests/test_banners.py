@@ -36,6 +36,8 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
         self.now = 2_000_000_000.0
         self.relay.clock = lambda: self.now
         self.app.health.storage_level = "ok"
+        # Synthetic feeds represent sources whose initial scan already finished.
+        self.app.daily.status = 'ready'
         self.app._connection.user = SimpleNamespace(id=42)
         self.channels, self.sent, self.history = {}, [], {}
         self.blob = png()

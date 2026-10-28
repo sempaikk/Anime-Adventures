@@ -103,6 +103,10 @@ class BannerRelay:
 
             self.images = BannerImages(self)
             self.votes = BannerVotes(self)
+        else:
+            from daily_current import DailyCurrent
+
+            self.current_daily = DailyCurrent(self)
 
     def query(self, statement, parameters=()):
         return self.db.execute(statement.replace("banner_", self.kind + "_"), parameters)
@@ -118,7 +122,9 @@ class BannerRelay:
             self.query("DELETE FROM banner_jobs WHERE guild_id=? AND channel_id<>? AND state NOT IN ('sent','sending','uncertain')", (guild_id, channel_id))
             self.query("INSERT INTO banner_targets VALUES(?,?,?) ON CONFLICT(guild_id) DO UPDATE SET channel_id=excluded.channel_id,enabled_at=excluded.enabled_at",
                             (guild_id, channel_id, self.clock()))
-            latest = self.query("SELECT id FROM banner_events WHERE created_at>? ORDER BY created_at DESC,rowid DESC LIMIT 1", (self.clock() - self.max_age,)).fetchone()
+            latest = self.query("SELECT id FROM banner_events WHERE created_at>?"
+                + (" AND id=(SELECT c.event_id FROM daily_current c JOIN daily_source_head h ON h.singleton=c.singleton AND h.source_message=c.source_message)" if self.kind == 'daily' else '')
+                + " ORDER BY created_at DESC,rowid DESC LIMIT 1", (self.clock() - self.max_age,)).fetchone()
             if latest:
                 self.query("INSERT OR IGNORE INTO banner_jobs(event_id,guild_id,channel_id) VALUES(?,?,?)", (latest[0], guild_id, channel_id))
                 self.query("UPDATE banner_jobs SET state='pending' WHERE event_id=? AND channel_id=? AND state='unavailable'", (latest[0], channel_id))
@@ -299,6 +305,10 @@ class BannerRelay:
             return False
         async with self.accept_lock:
             self.prune()
+            if self.kind == 'daily' and self.current_daily.older(message_id, created):
+                return False
+            if self.kind == 'daily':
+                self.current_daily.observe(message_id)
             fingerprint = hashlib.sha256(json.dumps(image_identity(payload), separators=(',', ':')).encode()).hexdigest()
             if self.query('SELECT 1 FROM banner_source_receipts WHERE fingerprint=?', (fingerprint,)).fetchone():
                 return False
@@ -312,8 +322,11 @@ class BannerRelay:
                     images.append(digest)
                     blobs[digest] = (extension, blob)
             ident = hashlib.sha256((message_id + ":" + ":".join(images)).encode()).hexdigest()
-            if self.query("SELECT 1 FROM banner_events WHERE id=?", (ident,)).fetchone():
+            if (self.query("SELECT 1 FROM banner_events WHERE id=?", (ident,)).fetchone()
+                    or (self.kind == 'daily' and self.current_daily.known(ident))):
                 with self.db:
+                    if self.kind == 'daily':
+                        self.current_daily.remember(ident, message_id, created)
                     self.query('INSERT OR REPLACE INTO banner_source_receipts VALUES(?,?)',
                                (fingerprint, created + self.max_age))
                 return False
@@ -327,6 +340,8 @@ class BannerRelay:
                 self.query("INSERT INTO banner_events VALUES(?,?,?,?)", (ident, message_id, created, json.dumps(images)))
                 self.query("UPDATE banner_jobs SET state='superseded' WHERE state='pending' AND event_id IN (SELECT id FROM banner_events WHERE source_message=? AND id<>?)", (message_id, ident))
                 self.query("INSERT OR IGNORE INTO banner_jobs(event_id,guild_id,channel_id) SELECT ?,guild_id,channel_id FROM banner_targets", (ident,))
+                if self.kind == 'daily':
+                    self.current_daily.remember(ident, message_id, created)
                 # Confirm only after all bytes, validation and jobs are saved.
                 # A receive retry then needs neither a download nor a new upload.
                 self.query('INSERT OR REPLACE INTO banner_source_receipts VALUES(?,?)',
@@ -364,6 +379,8 @@ class BannerRelay:
         async with self.bot.guild_lock(int(job["guild_id"])):
             target = self.target(job["guild_id"])
             if not target or target["channel_id"] != job["channel_id"]:
+                return
+            if self.kind == 'daily' and not self.current_daily.known(job['event_id']):
                 return
             channel = self.bot.get_channel(int(job["channel_id"]))
             if not isinstance(channel, discord.TextChannel):
@@ -418,7 +435,11 @@ class BannerRelay:
         self.prune()
         if self.bot.health.storage_level == "critical":
             return
-        jobs = self.query("SELECT j.* FROM banner_jobs j JOIN banner_targets t ON t.guild_id=j.guild_id AND t.channel_id=j.channel_id WHERE j.state IN ('pending','sending','uncertain') ORDER BY j.attempted_at LIMIT 8").fetchall()
+        if self.kind == 'daily' and self.status != 'ready':
+            return  # Confirm the current source before replaying any cached job.
+        jobs = self.query("SELECT j.* FROM banner_jobs j JOIN banner_targets t ON t.guild_id=j.guild_id AND t.channel_id=j.channel_id WHERE j.state IN ('pending','sending','uncertain')"
+            + (" AND j.event_id=(SELECT c.event_id FROM daily_current c JOIN daily_source_head h ON h.singleton=c.singleton AND h.source_message=c.source_message)" if self.kind == 'daily' else '')
+            + " ORDER BY j.attempted_at LIMIT 8").fetchall()
         for job in jobs:
             try:
                 await self.deliver(job)

@@ -109,8 +109,15 @@ async def listen(config):
                 recent.append(message)
             # A newer image may already be seen while earlier images missed a
             # Gateway event or failed reception. Check the entire bounded page.
-            for message in reversed(recent):
-                self.publish_image(message)
+            if channel.id == daily:
+                # The 26-hour cache window can contain both yesterday and today.
+                # Only the newest daily image is a recovery candidate.
+                for message in recent:
+                    if self.publish_image(message):
+                        break
+            else:
+                for message in reversed(recent):
+                    self.publish_image(message)
             emit('ready',channel_id=str(channel.id))
 
         async def poll_images(self):

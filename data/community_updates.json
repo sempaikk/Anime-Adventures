@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "version": "2026.10.27.14",
+  "version": "2026.10.27.15",
   "changes": [
-    "Banners e desafios agora recuperam automaticamente falhas temporárias no recebimento e imagens perdidas durante desconexões, sem duplicar os envios já confirmados."
+    "O desafio diário agora recupera apenas a publicação mais recente. Reiniciar o bot não traz de volta desafios anteriores nem repete uma imagem já enviada."
   ]
 }
