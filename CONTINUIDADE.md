@@ -44,7 +44,7 @@ O único pacote histórico de remoção expressamente restaurado pelo dono perma
 - `python -m unittest discover -s tests -v`: 234 testes passaram, incluindo startup sem rede, dados ativos, entrega, privacidade e falhas de migração.
 - Ensaio adicional com o esquema real anterior, obtido do Git: 48 tabelas reconhecidas; configurações dos três serviços e metadados preservados na nova base, com estruturas inativas somente no backup privado.
 - Preflight passou: arquivos verificados e margem de armazenamento; não leu credenciais nem usou rede. Busca nos arquivos atuais não encontrou os nomes retirados; `git diff --check` passou. Site separado sem alterações.
-- Commit e resultado do CI serão registrados após o envio.
+- Implementação enviada em [95b323f558c1d92a7d9af3dca19f198f3257f3bf](https://github.com/sempaikk/Anime-Adventures/commit/95b323f558c1d92a7d9af3dca19f198f3257f3bf). O [Bot checks desse commit](https://github.com/sempaikk/Anime-Adventures/actions/runs/40623238775) concluiu com sucesso no GitHub; os 234 testes passaram também no Python 3.12 do CI. Registro final de continuidade em commit separado de documentação, sem mudança no manifesto ou runtime.
 
 ## Ativação pendente
 
