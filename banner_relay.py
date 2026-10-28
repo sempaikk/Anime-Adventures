@@ -18,6 +18,7 @@ import aiohttp
 import discord
 from discord.http import handle_message_parameters
 from PIL import Image
+from banner_reader import image_identity
 from game_sources import BANNER_CHANNEL_ID, DAILY_CHANNEL_ID, QUESTIONS_CHANNEL_ID, SOURCE_CHANNELS, IMAGE_SOURCE_CHANNELS, reader_token
 
 SOURCE_CHANNEL_IDS = (BANNER_CHANNEL_ID,)
@@ -93,6 +94,8 @@ class BannerRelay:
             state TEXT NOT NULL DEFAULT 'pending', attempted_at REAL NOT NULL DEFAULT 0,
             message_id TEXT, PRIMARY KEY(event_id,channel_id));
           CREATE INDEX IF NOT EXISTS banner_pending ON banner_jobs(state,attempted_at);
+          CREATE TABLE IF NOT EXISTS banner_source_receipts(
+            fingerprint TEXT PRIMARY KEY, expires_at REAL NOT NULL);
         """.replace("banner_", self.kind + "_"))
         if kind == 'banner':
             from banner_images import BannerImages
@@ -232,8 +235,9 @@ class BannerRelay:
                             self.bot.knowledge.reader_status = event['event']
                             if event['event'] == 'ready':
                                 delay = 5
-                    except (ValueError, TypeError, KeyError, aiohttp.ClientError, asyncio.TimeoutError):
-                        log.warning("Uma imagem de banner não pôde ser recebida; detalhes privados omitidos.")
+                    except (ValueError, TypeError, KeyError, aiohttp.ClientError, asyncio.TimeoutError) as error:
+                        log.warning("Image source event deferred (%s); reception can retry automatically.",
+                                    type(error).__name__)
                     count+=1
                     if count%25==0:
                         await asyncio.sleep(0)
@@ -295,6 +299,9 @@ class BannerRelay:
             return False
         async with self.accept_lock:
             self.prune()
+            fingerprint = hashlib.sha256(json.dumps(image_identity(payload), separators=(',', ':')).encode()).hexdigest()
+            if self.query('SELECT 1 FROM banner_source_receipts WHERE fingerprint=?', (fingerprint,)).fetchone():
+                return False
             images, blobs, size = [], {}, 0
             for url in dict.fromkeys(urls):
                 blob = await self.download(url, min(MAX_IMAGE, MAX_BATCH - size))
@@ -306,6 +313,9 @@ class BannerRelay:
                     blobs[digest] = (extension, blob)
             ident = hashlib.sha256((message_id + ":" + ":".join(images)).encode()).hexdigest()
             if self.query("SELECT 1 FROM banner_events WHERE id=?", (ident,)).fetchone():
+                with self.db:
+                    self.query('INSERT OR REPLACE INTO banner_source_receipts VALUES(?,?)',
+                               (fingerprint, created + self.max_age))
                 return False
             used = self.query("SELECT COALESCE(SUM(length(data)),0) FROM banner_assets").fetchone()[0]
             new = sum(len(blob) for digest, (_, blob) in blobs.items() if not self.query("SELECT 1 FROM banner_assets WHERE digest=?", (digest,)).fetchone())
@@ -317,10 +327,15 @@ class BannerRelay:
                 self.query("INSERT INTO banner_events VALUES(?,?,?,?)", (ident, message_id, created, json.dumps(images)))
                 self.query("UPDATE banner_jobs SET state='superseded' WHERE state='pending' AND event_id IN (SELECT id FROM banner_events WHERE source_message=? AND id<>?)", (message_id, ident))
                 self.query("INSERT OR IGNORE INTO banner_jobs(event_id,guild_id,channel_id) SELECT ?,guild_id,channel_id FROM banner_targets", (ident,))
+                # Confirm only after all bytes, validation and jobs are saved.
+                # A receive retry then needs neither a download nor a new upload.
+                self.query('INSERT OR REPLACE INTO banner_source_receipts VALUES(?,?)',
+                           (fingerprint, created + self.max_age))
             return True
 
     def prune(self):
         with self.db:
+            self.query('DELETE FROM banner_source_receipts WHERE expires_at<=?', (self.clock(),))
             self.query("DELETE FROM banner_jobs WHERE event_id IN (SELECT id FROM banner_events WHERE created_at<=?)", (self.clock() - self.max_age,))
             self.query("DELETE FROM banner_events WHERE created_at<=?", (self.clock() - self.max_age,))
             used = {digest for row in self.query("SELECT images FROM banner_events") for digest in json.loads(row[0])}

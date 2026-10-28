@@ -1,8 +1,7 @@
 {
   "schema": 1,
-  "version": "2026.10.27.13",
-  "requires_banner_reactions": true,
+  "version": "2026.10.27.14",
   "changes": [
-    "Banners com W/M/L e desafios diários agora são publicados automaticamente nos canais de anúncios, alcançando também os servidores que seguem esses canais."
+    "Banners e desafios agora recuperam automaticamente falhas temporárias no recebimento e imagens perdidas durante desconexões, sem duplicar os envios já confirmados."
   ]
 }

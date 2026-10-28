@@ -19,17 +19,25 @@ from urllib.parse import urlsplit
 READER_VERSION = "2.1.0"
 
 
+def image_identity(payload):
+    """Stable source identity, excluding expiring CDN signatures."""
+    paths = tuple((urlsplit(url).hostname, urlsplit(url).path) for url in payload['images'])
+    return str(payload['channel_id']), str(payload['message_id']), float(payload['created_at']), paths
+
+
 class ImageTracker:
-    """Bounded polling/live deduplication; signed CDN query renewal is not an edit."""
-    def __init__(self): self.seen = OrderedDict()
+    """Suppress bursts, but retry reception until the parent has persisted it."""
+    def __init__(self):
+        self.seen = OrderedDict()
+        self.clock = time.monotonic
 
     def new(self, payload):
-        paths=tuple((urlsplit(url).hostname,urlsplit(url).path) for url in payload['images'])
-        key=(payload['channel_id'],payload['message_id'],payload['created_at'],paths)
-        if key in self.seen:
+        key, now = image_identity(payload), self.clock()
+        if key in self.seen and now - self.seen[key] < 60:
             self.seen.move_to_end(key)
             return False
-        self.seen[key]=None
+        self.seen[key] = now
+        self.seen.move_to_end(key)
         while len(self.seen)>256:self.seen.popitem(last=False)
         return True
 
@@ -94,10 +102,15 @@ async def listen(config):
             return bool(payload)
 
         async def scan_image(self, channel):
+            recent = []
             async for message in channel.history(limit=50):
                 age=time.time()-(getattr(message,'edited_at',None) or message.created_at).timestamp()
                 if age>(26*3600 if channel.id==daily else 3900):break
-                if self.publish_image(message):break
+                recent.append(message)
+            # A newer image may already be seen while earlier images missed a
+            # Gateway event or failed reception. Check the entire bounded page.
+            for message in reversed(recent):
+                self.publish_image(message)
             emit('ready',channel_id=str(channel.id))
 
         async def poll_images(self):

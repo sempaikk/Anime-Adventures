@@ -225,9 +225,12 @@ class CommunityHubCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.bot.store.get(f'community-update:{CENTRAL_GUILD_ID}:2026.10.27.6'), corrected_receipt)
 
     async def test_new_banner_feature_waits_for_emojis_then_posts_a_new_notice_after_old_correction(self):
-        current_path = Path(__file__).resolve().parents[1] / 'data/community_updates.json'
-        data = json.loads(current_path.read_text())
-        self.bot.build['version'] = data['version']
+        # This historical feature must not require every future release note to
+        # mention W/M/L or depend on emoji registration when it has no such change.
+        current_path = Path(self.temp.name) / 'reaction-notes.json'
+        self.bot.build['version'] = '2026.10.27.7'
+        current_path.write_text(json.dumps({'schema': 1, 'version': self.bot.build['version'],
+            'requires_banner_reactions': True, 'changes': ['Os banners agora têm reações W/M/L.']}))
         message = self.previous_notice(version='2026.10.27.5', content=PREVIOUS_PORTUGUESE_NOTICE)
         with patch('community_hub.UPDATES_PATH', current_path):
             await self.hub.publish_update()
