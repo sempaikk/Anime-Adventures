@@ -172,6 +172,7 @@ class OperationsView(ScopedView):
 
         if self.guild == CENTRAL_GUILD_ID:
             text += '\n\n**Community update log:** ' + self.bot.community.status
+        text += '\n\n**Feed recovery notice:** ' + self.bot.feed_notices.description()
         return text
 
     @discord.ui.button(label='Refresh status', row=0)

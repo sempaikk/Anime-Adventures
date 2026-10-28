@@ -18,6 +18,14 @@ Publicar exige arquivos verificados, versão correspondente e conclusão do trab
 
 As notas não fazem crosspost, não mencionam cargos/membros e não vão a outros servidores. Testes offline não publicam notas.
 
+## Aviso pontual de retomada
+
+Em 28/10/2026, o responsável autorizou uma exceção: pedir desculpas pela interrupção e informar a retomada diretamente nos canais configurados de banners e desafio diário de todos os servidores existentes. O texto é em português, sem menções, anexos, votação ou publicação pelo megafone. Se os dois feeds compartilham um canal, enviar um aviso combinado.
+
+A campanha fixa feed-recovery-2026-10-28 grava destinatários e recibos na primeira ativação verificada. Não inclui canais novos/reconfigurados depois dessa seleção, não muda destinos e não reinicia a cada release/restart. Antes de enviar, exige consulta recente bem-sucedida da fonte e recepção da imagem observada, quando houver; a permissão real do destino também é conferida. Uma fonte indisponível não impede o aviso do outro feed.
+
+Envio incerto é reconciliado pelo nonce ou conteúdo próprio no canal original, sem republicação cega. O prazo termina em 04/11/2026 UTC para não apresentar um incidente antigo como boas-vindas em instalações futuras. **Bot status → Feed recovery notice** mostra o total confirmado, pendente e incerto em particular. Os logs normais de atualização e o feedback permanecem exclusivos da comunidade oficial. A .28.3 acrescenta apenas essa campanha; não duplica a nota pública da correção .28.2 no update-log.
+
 ## Diagnóstico e permissões
 
 O dono com Gerenciar servidor abre **Bot status** e **Server report** para obter o relatório privado. Ele inclui estrutura e permissões, sem histórico, credenciais, URLs de webhook ou lista de membros. Ver a visibilidade de @everyone não certifica privacidade: sobreposições de outros cargos e indivíduos também importam. Nunca versionar relatório real.

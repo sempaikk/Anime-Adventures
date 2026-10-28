@@ -2,9 +2,9 @@
 
 ## Fluxo da hospedagem existente
 
-O histórico registra Bot-Hosting.net, Python 3.12, entrada bot.py e pull automático do GitHub ao iniciar. Com esse fluxo preservado, o responsável clica em **Reiniciar** depois de a nova entrega chegar a origin/main e confere **Running version 2026.10.28.2** no console. Não pedir envio de ZIP ou escolha do método novamente. O ZIP completo é alternativa de implantação manual, não uma etapa adicional obrigatória.
+O histórico registra Bot-Hosting.net, Python 3.12, entrada bot.py e pull automático do GitHub ao iniciar. O print do responsável confirmou o pull e a carga da .28.2 com arquivos verificados. Para acrescentar o aviso autorizado nesta entrega, clicar em **Reiniciar** depois de a nova entrega chegar a origin/main e conferir **Running version 2026.10.28.3** no console. Não pedir envio de ZIP ou escolha do método novamente. O ZIP completo é alternativa de implantação manual, não uma etapa adicional obrigatória.
 
-No incidente relatado depois da .28.1, a captura mostra alertas privados das duas fontes sem consulta recente e de destinos de banner atrasados/bloqueados. A versão e a causa na hospedagem ainda precisam do console/painel privado. A .28.2 corrige uma interrupção reproduzida após DISCONNECT seguido de RESUMED. Se o console continuar na versão anterior após reiniciar, investigar o pull automático. A sessão de desenvolvimento não inspecionou ao vivo as configurações da hospedagem nem executou o restart.
+No incidente relatado depois da .28.1, a captura mostrou alertas privados das duas fontes sem consulta recente e de destinos de banner atrasados/bloqueados. O console posterior confirmou .28.1 com reconexões do Gateway; a .28.2 corrige uma interrupção reproduzida após DISCONNECT seguido de RESUMED. O print seguinte confirma .28.2 e conexão aos quatro servidores, mas ainda não confirma as consultas/entregas dos feeds. A .28.3 mantém essa correção e acrescenta o aviso pontual descrito em [comunidade](community-server.md). Conferir o resumo privado Feed recovery notice; não afirmar envio sem recibo. A sessão de desenvolvimento não inspecionou ao vivo as configurações da hospedagem nem executou o restart.
 
 ## Conferir uma entrega
 

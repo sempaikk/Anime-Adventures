@@ -60,6 +60,8 @@ class CommunityBot(commands.Bot):
         self.owner_ids_set=set()
         self.ui_theme=GameTheme()
         self.community=CommunityHub(self)
+        from feed_notices import FeedNotices
+        self.feed_notices=FeedNotices(self)
         from community_feedback import CommunityFeedback
         self.feedback=CommunityFeedback(self)
         self.build=build_info()
@@ -237,6 +239,10 @@ class CommunityBot(commands.Bot):
             await self.globalchat.operations.check_alerts()
         except Exception as error:
             log.warning("Diagnóstico operacional adiado: %s", type(error).__name__)
+        try:
+            await self.feed_notices.cycle()
+        except Exception as error:
+            log.warning('Feed recovery notice deferred: %s',type(error).__name__)
         try:
             if self.store.get('bot-profile:1')=='pending':
                 from app_profile import configure_profile
