@@ -64,4 +64,6 @@ Somente benefícios percebidos pelos players, em português e sem cabeçalho/ver
 
 ## Ativação real pendente
 
-Parar o bot, carregar o pacote completo e reiniciar mantendo DATA_DIR e credenciais. Não apagar dados nem refazer os destinos para consultar. Conferir a versão e as etapas de recebimento/entrega no painel privado. Perfil e avisos só têm efeito após a instância carregar a entrega. Para cargos, usar Bot status → Review role permissions e conferir permissões efetivas; não afirmar que foram aplicadas automaticamente.
+O responsável lembrou que seu procedimento usual é só clicar em Reiniciar e mostrou a Bot-Hosting.net. O histórico anterior confirma Python 3.12, entrada bot.py e pull automático do GitHub ao iniciar. A orientação genérica de reenviar ZIP e perguntar GitHub/ZIP foi desnecessária; preservar esse contexto. O fluxo esperado agora é **Reiniciar** e conferir **Running version 2026.10.28.1** no console. A captura enviada ainda mostra .27.17, antes da confirmação da atualização. Não afirmar que o restart ou a conferência real já aconteceram. Se a versão continuar antiga depois do restart, investigar o pull automático antes de pedir upload manual.
+
+Manter DATA_DIR e credenciais; não apagar dados nem refazer destinos para consultar. Perfil e avisos só têm efeito após a instância carregar a entrega. Para cargos, usar Bot status → Review role permissions e conferir permissões efetivas; não afirmar que foram aplicadas automaticamente. Esta correção é somente documental, sem nova versão do bot ou alteração no manifesto.

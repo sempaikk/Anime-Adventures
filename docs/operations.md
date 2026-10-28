@@ -1,5 +1,11 @@
 # Operação, atualização e recuperação
 
+## Fluxo da hospedagem existente
+
+O histórico registra Bot-Hosting.net, Python 3.12, entrada bot.py e pull automático do GitHub ao iniciar. Com esse fluxo preservado, o responsável clica em **Reiniciar** depois de a nova entrega chegar a origin/main e confere **Running version 2026.10.28.1** no console. Não pedir envio de ZIP ou escolha do método novamente. O ZIP completo é alternativa de implantação manual, não uma etapa adicional obrigatória.
+
+A captura mais recente ainda mostra Running version 2026.10.27.17; ela não comprova que a .28.1 foi carregada. Se o console continuar na versão anterior após reiniciar, investigar o pull automático. A sessão de desenvolvimento não inspecionou ao vivo as configurações da hospedagem nem executou o restart.
+
 ## Conferir uma entrega
 
 1. Execute os testes offline e gere data/build.json somente depois de finalizar código, dados e testes.

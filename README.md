@@ -20,6 +20,8 @@ A cota padrão é 512 MiB de disco e 256 MiB de memória; `INSTANCE_DISK_LIMIT_M
 
 ## Atualizar sem perder dados
 
+Na Bot-Hosting.net já configurada pelo responsável, o código é buscado automaticamente do GitHub ao iniciar. Depois da publicação no repositório, o procedimento usual é clicar em **Reiniciar**. Confira no console a linha **Running version 2026.10.28.1**. Não é necessário escolher outro método ou enviar ZIP nesse fluxo. Se a versão continuar antiga após reiniciar, conferir o pull automático antes de trocar arquivos manualmente.
+
 Pare o processo, substitua o pacote completo e reinicie preservando DATA_DIR e credenciais. Não apague o estado para resolver duplicações. O banco ativo é `bot.sqlite3`; uma base anterior reconhecida é migrada com cópia privada verificada antes de retirar estruturas sem uso. A cópia fica em `DATA_DIR/backups/before-cleanup.sqlite3`.
 
 A versão acrescenta tabelas/colunas sem zerar configurações, consentimentos, recibos, pendências ou marcadores de W/M/L. Cache de imagens e histórico leve de entregas têm durações distintas. Reiniciar não reinicia votações. Consulte [a operação](docs/operations.md) para o pacote, a conferência e a restauração privada.
