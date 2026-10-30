@@ -10,7 +10,7 @@ from global_views import ScopedView
 from community_hub import CENTRAL_GUILD_ID,CENTRAL_COMMUNITY_INVITE
 
 
-SHORT_HELP = ('## Adventures\n**Game tools:** `/adventures` → sourced historical knowledge, manual plans, calculators, groups and optional reminders.\n\n**Banners:** `/setbanner` → View current images. Administrators enable a destination explicitly. '
+SHORT_HELP = ('## Adventures\n**Banners:** `/setbanner` → View current images. Administrators enable a destination explicitly. '
     'Every banner image has the original win / mid / lose reactions.\n\n'
     '**Daily challenge:** `/dailychallenge` → View current images. Publication time comes from the source; an expired file is not presented as current.\n\n'
     '**Global chat:** `/globalchat` in the configured global channel → Join. Only new messages after confirmation are shared. '
@@ -29,8 +29,6 @@ class HelpView(ScopedView):
             self.add_item(discord.ui.Button(label='Add Adventures',url=f'https://discord.com/oauth2/authorize?client_id={app_id}&scope=bot%20applications.commands&permissions={p.value}'))
             p=install_permissions('images')
             self.add_item(discord.ui.Button(label='Add images only',url=f'https://discord.com/oauth2/authorize?client_id={app_id}&scope=bot%20applications.commands&permissions={p.value}'))
-            p=install_permissions('tools')
-            self.add_item(discord.ui.Button(label='Add game tools only',url=f'https://discord.com/oauth2/authorize?client_id={app_id}&scope=bot%20applications.commands&permissions={p.value}'))
         invite=(os.getenv('COMMUNITY_INVITE_URL') or CENTRAL_COMMUNITY_INVITE).strip()
         try:
             parsed=urlsplit(invite)

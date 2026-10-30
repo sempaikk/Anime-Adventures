@@ -14,6 +14,33 @@ from community_hub import CENTRAL_GUILD_ID
 MAX_SCREENSHOT = 2 * 1024 * 1024
 
 
+class CaseStore:
+    """Private case state independent of optional game features."""
+
+    def __init__(self, base):
+        self.base, self.db = base, base.connection
+        self.clock = lambda: base.clock()
+        self.db.execute('''CREATE TABLE IF NOT EXISTS bot_case_followup(
+          kind TEXT NOT NULL,case_id INTEGER NOT NULL,guild TEXT NOT NULL,assigned TEXT,
+          answer TEXT NOT NULL DEFAULT '',appeal TEXT NOT NULL DEFAULT '',version INTEGER NOT NULL DEFAULT 1,
+          image BLOB,image_type TEXT,image_expires REAL,updated REAL NOT NULL,
+          PRIMARY KEY(kind,case_id,guild))''')
+
+    def one(self, sql, args=()):
+        rows = self.base.rows(sql, args)
+        return rows[0] if rows else None
+
+    def budget(self):
+        pages = self.db.execute('PRAGMA page_count').fetchone()[0] - self.db.execute('PRAGMA freelist_count').fetchone()[0]
+        if pages * self.db.execute('PRAGMA page_size').fetchone()[0] >= 112 * 1024 * 1024:
+            raise ValueError('Private case storage is temporarily full. Existing reports remain saved.')
+
+    def cleanup(self):
+        with self.db:
+            self.db.execute('UPDATE bot_case_followup SET image=NULL,image_type=NULL,image_expires=NULL WHERE image_expires<?', (self.clock(),))
+            self.db.execute('DELETE FROM bot_case_followup WHERE updated<?', (self.clock() - 30 * 86400,))
+
+
 def case(bot, i, kind, ident, *, staff=False):
     if kind not in ('report', 'feedback') or not str(ident).isdigit():
         raise ValueError('Choose Report or Feedback and enter its numeric reference.')
@@ -34,7 +61,7 @@ def case(bot, i, kind, ident, *, staff=False):
 
 
 def followup(bot, guild, kind, ident):
-    return bot.adventures.state.one('SELECT * FROM bot_case_followup WHERE kind=? AND case_id=? AND guild=?', (kind, int(ident), str(guild)))
+    return bot.cases.one('SELECT * FROM bot_case_followup WHERE kind=? AND case_id=? AND guild=?', (kind, int(ident), str(guild)))
 
 
 class CaseForm(BoundModal):
@@ -57,7 +84,7 @@ class CaseForm(BoundModal):
             return
         kind, ident = self.kind.values[0], str(self.reference).strip()
         case(self.bot, i, kind, ident)
-        state = self.bot.adventures.state
+        state = self.bot.cases
         old = followup(self.bot, i.guild_id, kind, ident)
         action = self.action.values[0]
         if action == 'read':
@@ -132,7 +159,7 @@ class CaseReview(BoundModal):
         if not await self.interaction_check(i):
             return
         case(self.bot, i, self.kind, self.ident, staff=True)
-        state = self.bot.adventures.state
+        state = self.bot.cases
         old = followup(self.bot, i.guild_id, self.kind, self.ident)
         action = self.action.values[0]
         if action == 'appeal':

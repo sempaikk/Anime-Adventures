@@ -1,13 +1,12 @@
 # Adventures — bot da comunidade
 
-Quatro comandos, com controles privados:
+Três comandos, com controles privados:
 
 - `/globalchat`: participação, meus envios, denúncias e controles adequados para membros, moderadores, administradores e dono do bot.
 - `/setbanner`: consulta privada das imagens atuais; administradores usam **Enable in this channel** para configurar e **Check connection** para conferir sem mover o destino.
 - `/dailychallenge`: consulta privada do desafio atual e configuração explícita pelo administrador.
-- `/adventures`: consultas com fonte/data, evoluções, metas e times manuais, calculadoras, grupos locais e lembretes pessoais opcionais. **Report global message**, no menu da mensagem, abre a denúncia privada existente.
 
-As informações importadas do jogo são **históricas**, com fonte e data visíveis; não representam uma API atual do jogo. Escolha a forma exata da unidade. O bot não lê inventário interno do Roblox nem promete vitória ou sorte. [Ferramentas e limites](docs/game-tools.md).
+**Report global message**, no menu da mensagem, abre a denúncia privada existente.
 
 Abrir um painel não altera destinos nem republica imagens. Cada banner tem sua própria votação com os emojis originais win, mid e lose. O desafio diário não recebe essas reações. As postagens dos feeds contêm apenas imagens estáticas, sem legenda, propaganda ou publicação automática pelo megafone.
 
@@ -19,11 +18,11 @@ O bot principal usa discord.py 2.7.1. Quando ele tiver acesso autorizado aos doi
 
 A cota padrão é 512 MiB de disco e 256 MiB de memória; `INSTANCE_DISK_LIMIT_MB` e `INSTANCE_RAM_LIMIT_MB` permitem informar limites reais diferentes. As reservas incluem preparos concorrentes, leitor, arquivos temporários e backups. Nunca publique segredos ou bancos reais.
 
-`COMMUNITY_INVITE_URL` permite substituir o convite oficial confirmado pelo responsável: https://discord.gg/qwH7DvdtDZ. Os links de instalação distinguem chat+imagens, somente imagens e ferramentas de consulta sem permissões adicionais. Grupos e eventos precisam das permissões descritas na revisão do administrador; nenhum cargo é criado.
+`COMMUNITY_INVITE_URL` permite substituir o convite oficial confirmado pelo responsável: https://discord.gg/qwH7DvdtDZ. Os links de instalação distinguem chat+imagens e somente imagens; nenhum cargo é criado.
 
 ## Atualizar sem perder dados
 
-Na Bot-Hosting.net já configurada pelo responsável, o código é buscado automaticamente do GitHub ao iniciar. Depois da publicação no repositório, o procedimento usual é clicar em **Reiniciar**. Confira no console a linha **Running version 2026.10.30.1**. Não é necessário enviar ZIP nesse fluxo. Se a versão continuar antiga após reiniciar, conferir o pull automático antes de trocar arquivos manualmente. O dono pode usar `/adventures` → **Private operations** → **Check release / restart** para comparar processo, arquivos e versão disponível; uma consulta externa indisponível é mostrada como desconhecida.
+Na Bot-Hosting.net já configurada pelo responsável, o código é buscado automaticamente do GitHub ao iniciar. Depois da publicação no repositório, o procedimento usual é clicar em **Reiniciar**. Confira no console a linha **Running version 2026.10.30.2**. Não é necessário enviar ZIP nesse fluxo. Se a versão continuar antiga após reiniciar, conferir o pull automático antes de trocar arquivos manualmente.
 
 Em uma implantação manual por ZIP, pare o processo, substitua o pacote completo e reinicie preservando DATA_DIR e credenciais. Essa é uma alternativa ao pull automático, não uma etapa adicional. Não apague o estado para resolver duplicações. O banco ativo é `bot.sqlite3`; uma base anterior reconhecida é migrada com cópia privada verificada antes de retirar estruturas sem uso. A cópia fica em `DATA_DIR/backups/before-cleanup.sqlite3`.
 
@@ -47,6 +46,5 @@ O pacote inclui todos os arquivos exigidos pelo manifesto. Não inclui `.env`, e
 - [Comunidade e avisos](docs/community-server.md)
 - [Permissões da comunidade](docs/community-permissions-plan.md)
 - [Operação e verificação](docs/operations.md)
-- [Ferramentas do jogo, grupos e lembretes](docs/game-tools.md)
 
 O site separado permanece pausado. Termos e privacidade publicados continuam em https://www.adventureswiki.workers.dev/bot/termos/ e https://www.adventureswiki.workers.dev/bot/privacidade/.

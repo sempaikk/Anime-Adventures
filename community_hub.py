@@ -99,11 +99,6 @@ class CommunityHub:
         if requirements.get('requires_commands') and getattr(self.bot,'command_sync_status',None)!='confirmed':
             self.status='Update announcement waiting: new commands must be confirmed by Discord.'
             return False
-        if requirements.get('requires_tools'):
-            tools=getattr(self.bot,'adventures',None)
-            if tools is None or not tools.knowledge().data.get('fingerprint'):
-                self.status='Update announcement waiting: game tools must pass local initialization.'
-                return False
         return True
 
     @staticmethod

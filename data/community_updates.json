@@ -1,17 +1,9 @@
 {
   "schema": 1,
-  "version": "2026.10.30.1",
+  "version": "2026.10.30.2",
   "requires_feeds": [],
   "requires_commands": true,
-  "requires_tools": true,
   "changes": [
-    "O novo /adventures reúne consultas de unidades, itens, evoluções e mecânicas, com fonte e data dos dados históricos.",
-    "Você pode calcular DPS, chances, orçamento de tentativas e tempo de farm usando os valores que informar.",
-    "Favoritos, times, metas de evolução e registros de runs ficam privados; o planejamento distribui seus materiais entre as metas sem contar o mesmo estoque duas vezes.",
-    "Grupos locais têm revisão antes de publicar, botões de participação, confirmação de prontidão, reservas e encerramento. Eventos do Discord são opcionais.",
-    "Lembretes pessoais têm cancelamento, fuso e horários silenciosos. Avisos atrasados podem chegar em um resumo.",
-    "Os painéis de banners e daily abrem links de entregas confirmadas e explicam a diferença entre falta de imagem nova e atraso no envio.",
-    "O menu da mensagem facilita denúncias do chat global. Seus protocolos permitem ler respostas, pedir revisão e anexar um print em particular.",
-    "Nas novas respostas do chat global, o contexto acrescentado pelo bot acompanha edições e remoções sem apagar o texto de quem respondeu."
+    "O comando /adventures e suas ferramentas de consulta, planejamento, grupos e lembretes foram retirados do bot."
   ]
 }

@@ -61,9 +61,9 @@ class ReportInbox(ScopedView):
             return text + '\n\nThere are no reports matching this filter.'
         text += f"\n\n### #{row['id']} · {REPORT_STATES[row['status']]}\n**Submitted reason:** {safe(row['reason'], 500)}"
         text+=f"\nSubmitted <t:{int(row['created'])}:R>."
-        tools=getattr(self.bot,'adventures',None)
-        if tools:
-            record=tools.state.one('SELECT assigned,appeal FROM bot_case_followup WHERE kind=\'report\' AND case_id=? AND guild=?',(row['id'],row['guild_id']))
+        cases=getattr(self.bot,'cases',None)
+        if cases:
+            record=cases.one('SELECT assigned,appeal FROM bot_case_followup WHERE kind=\'report\' AND case_id=? AND guild=?',(row['id'],row['guild_id']))
             if record and record['assigned']:text+='\nAssigned reviewer: '+safe(record['assigned'],30)+'.'
             if record and record['appeal']:text+='\nA private request for review is attached.'
         source = self.bot.globalchat.store.message(row["source_id"])

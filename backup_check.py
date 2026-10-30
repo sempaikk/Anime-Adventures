@@ -45,8 +45,8 @@ def check_restore(snapshot, *, temporary_parent=None):
             bot=SimpleNamespace(store=base)
             BannerRelay(bot)
             BannerRelay(bot,kind='daily')
-            from adventure_store import AdventureStore
-            AdventureStore(base)
+            from case_followup import CaseStore
+            CaseStore(base)
             for table,(columns,digest) in preserved.items():
                 if table_digest(base.connection,table,columns)!=digest:
                     raise sqlite3.DatabaseError('Recovered application state changed during the restore drill.')

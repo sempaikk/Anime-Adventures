@@ -1,4 +1,14 @@
-# Entrega atual — 2026.10.30.1
+# Entrega atual — 2026.10.30.2
+
+O responsável pediu retirar totalmente o comando /adventures, sem aguardar explicação. Esta instrução substitui a autorização anterior para manter a central. Removidos registro do comando, painéis, botões persistentes de grupos, trabalhador de lembretes, consultas, calculadoras, pacote de dados e scripts exclusivos. Ajuda, perfil, instalação e documentação corrente agora descrevem somente os três comandos de feeds/chat e o menu Report global message. Não reintroduzir a central sem novo pedido explícito.
+
+- A sincronização global usa a substituição integral de comandos do Discord; com a inicialização da nova versão, o comando retirado sai da lista remota. Nenhuma sessão administrativa de Discord/Bot-Hosting está disponível nesta execução: não afirmar remoção ao vivo ou restart sem confirmação.
+- Denúncias e feedback preservam seus protocolos privados em CaseStore independente; screenshots continuam expiráveis e excluídos dos snapshots. Correções de citações/filas e consulta de entregas dos feeds permanecem. Horários silenciosos previamente configurados são lidos diretamente, sem carregar a central ou criar suas tabelas novas.
+- Dados já existentes da central não são apagados nem executados; não existe trabalhador que envie seus lembretes ou ative grupos. Estado do global, banners, daily, votos, fontes, credenciais e DATA_DIR preservados. Sem alteração do site/wiki ou do ZIP Windows histórico. Nenhum teste usa servidores reais.
+- Validação local: **341 testes offline, 340 aprovados e um skip preexistente**, log /tmp/adventures-remove-command-tests.log. Inclui substituição do registro remoto por API simulada, ausência de trabalhador/botões antigos, preservação de estado, protocolos e contexto de respostas. Compilação, dependências e git diff --check passaram. Manifesto: **95 arquivos**, fingerprint **6732ed732d10**. Pacote privado de **107 arquivos, 262.178 bytes** montado e verificado, sem rede/credenciais; não enviar ZIP ao responsável neste fluxo. Wiki limpa e SHA-256 do ZIP Windows histórico d4c68ff5626d5ab46bc48b5c746fdf4065a29441bd924deaa37616a2db0ada29 preservado.
+- Ativação pendente pelo fluxo habitual: GitHub → **Reiniciar** → conferir **Running version 2026.10.30.2**. Não pedir ZIP nem reconfiguração de destinos. Commit e resultado do CI serão registrados após a publicação; não afirmar remoção em produção sem restart observado.
+
+# Histórico da entrega — 2026.10.30.1
 
 O responsável autorizou implementar as 60 propostas da terceira revisão de uma hora, depois de receber o relatório. A nova autorização inclui /adventures e o menu Report global message, ampliando a restrição anterior de três comandos. Níveis continuam adiados. Não foram alterados o site/wiki, o ZIP Windows histórico, fontes/credenciais/destinos existentes ou a campanha antiga de recuperação. Não há sessão administrativa de Discord/Bot-Hosting nesta execução; ativação e envios reais ainda não foram observados.
 

@@ -6,7 +6,7 @@
 
 Somente Gerenciar servidor ou Administrador permite **Enable in this channel** e **Stop receiving**. **Check connection** consulta sem reconfigurar. A habilitação confere Ver canal, Enviar mensagens, Anexar arquivos e Ler histórico, antes de gravar o destino. W/M/L também exige Adicionar reações. Gerenciar mensagens é uma necessidade separada para a correção única de reações antigas, não para enviar novos banners.
 
-**Open last delivery** e **Recent deliveries** abrem recibos locais já confirmados, sem reenviar arquivos. **Delivery status** distingue última consulta, recepção e entrega deste servidor. **Report image issue** prepara detalhes para feedback privado na comunidade oficial; não publica denúncias nos feeds. Em `/adventures` → **Server setup**, quiet hours podem suprimir push/desktop sem atrasar a imagem nem prometer ocultar badges de não lidas.
+**Open last delivery** e **Recent deliveries** abrem recibos locais já confirmados, sem reenviar arquivos. **Delivery status** distingue última consulta, recepção e entrega deste servidor. **Report image issue** prepara detalhes para feedback privado na comunidade oficial; não publica denúncias nos feeds. Horários silenciosos já configurados continuam sendo respeitados na entrega: podem suprimir push/desktop sem atrasar a imagem nem prometer ocultar badges de não lidas.
 
 Cada servidor tem seus próprios destinos. Painéis antigos verificam a geração da configuração; um painel anterior não desliga uma configuração refeita no mesmo canal. Cliques são confirmados em particular antes de esperar operações. Uma requisição já aceita pelo Discord pode terminar durante a desativação.
 

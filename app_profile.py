@@ -5,16 +5,13 @@ import aiohttp
 from community_hub import CENTRAL_COMMUNITY_INVITE
 
 DESCRIPTION=('Anime Adventures banners, daily challenge images and opt-in global chat. '
-             'Use /adventures for sourced game knowledge, evolution plans, calculators, groups and personal reminders. '
              'Private feed controls: /setbanner and /dailychallenge. '
              'Community: '+CENTRAL_COMMUNITY_INVITE)
 
 
 def install_permissions(feature='all'):
-    if feature not in {'all','images','tools'}:
+    if feature not in {'all','images'}:
         raise ValueError('Unknown installation feature')
-    if feature=='tools':
-        return discord.Permissions.none()
     return discord.Permissions(view_channel=True,send_messages=True,read_message_history=True,
         attach_files=True,add_reactions=True,manage_webhooks=feature=='all')
 

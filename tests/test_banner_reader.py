@@ -125,7 +125,7 @@ class ReaderImageTests(unittest.IsolatedAsyncioTestCase):
             source.write_bytes(b'preserve unrelated archive')
             app=CommunityBot(folder)
             try:
-                self.assertEqual({c.name for c in app.tree.get_commands()},{'setbanner','dailychallenge','globalchat','adventures','Report global message'})
+                self.assertEqual({c.name for c in app.tree.get_commands()},{'setbanner','dailychallenge','globalchat','Report global message'})
                 self.assertFalse(hasattr(app,'knowledge'))
                 self.assertFalse(hasattr(app,'catalog'))
                 self.assertEqual(source.read_bytes(),b'preserve unrelated archive')

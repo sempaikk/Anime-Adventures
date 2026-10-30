@@ -1,5 +1,9 @@
 """Player-facing delivery links and freshness, with no image re-upload."""
 
+from datetime import datetime
+import json
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
 import discord
 
 from bot_views import reply
@@ -65,17 +69,36 @@ async def latest(feed, i, *, history=False):
     await reply(i, text)
 
 
+def quiet(settings, timestamp):
+    start, end = settings.get('quiet_start'), settings.get('quiet_end')
+    if any(type(value) is not int or not 0 <= value <= 23 for value in (start, end)) or start == end:
+        return False
+    try:
+        hour = datetime.fromtimestamp(timestamp, ZoneInfo(settings.get('timezone', 'UTC'))).hour
+    except (ZoneInfoNotFoundError, ValueError, TypeError):
+        return False
+    return start <= hour < end if start < end else hour >= start or hour < end
+
+
 def silence_payload(bot, guild, params):
-    tools = getattr(bot, 'adventures', None)
-    if tools:
-        from adventure_service import quiet
-        if quiet(tools.state.settings(guild)[0], tools.state.clock()):
-            if params.payload is not None:
-                params.payload['flags'] = params.payload.get('flags', 0) | 4096
-            else:
-                import json
-                for entry in params.multipart:
-                    if entry['name'] == 'payload_json':
-                        data = json.loads(entry['value'])
-                        data['flags'] = data.get('flags', 0) | 4096
-                        entry['value'] = json.dumps(data)
+    # Honor previously configured feed quiet hours without loading removed tools
+    # or creating their tables on fresh installations.
+    if not bot.store.rows("SELECT 1 FROM sqlite_master WHERE type='table' AND name='bot_tool_settings'"):
+        return
+    rows = bot.store.rows('SELECT data FROM bot_tool_settings WHERE guild=?', (str(guild),))
+    if not rows:
+        return
+    try:
+        settings = json.loads(rows[0]['data'])
+    except (ValueError, TypeError):
+        return
+    if not isinstance(settings, dict) or not quiet(settings, bot.store.clock()):
+        return
+    if params.payload is not None:
+        params.payload['flags'] = params.payload.get('flags', 0) | 4096
+    else:
+        for entry in params.multipart:
+            if entry['name'] == 'payload_json':
+                data = json.loads(entry['value'])
+                data['flags'] = data.get('flags', 0) | 4096
+                entry['value'] = json.dumps(data)
