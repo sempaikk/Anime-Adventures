@@ -95,12 +95,13 @@ class Hook:
     async def edit_message(self, ident, **kwargs):
         message = await self.channel.fetch_message(ident)
         message.content = kwargs["content"]
-        message.attachments = [
-            SimpleNamespace(
-                filename=f.filename, size=len(blob := f.fp.read()), blob=blob
-            )
-            for f in kwargs.get("attachments", [])
-        ]
+        if 'attachments' in kwargs:
+            message.attachments = [
+                SimpleNamespace(
+                    filename=f.filename, size=len(blob := f.fp.read()), blob=blob
+                )
+                for f in kwargs['attachments']
+            ]
         return message
 
     async def delete_message(self, ident):

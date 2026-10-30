@@ -112,6 +112,37 @@ class FeedPanel(GuardedView):
     async def view(self,i,button):
         await preview(self.feed,i)
 
+    @discord.ui.button(label='Open last delivery', row=3)
+    async def open_last(self, i, button):
+        from feed_tools import latest
+        await latest(self.feed, i)
+
+    @discord.ui.button(label='Recent deliveries', row=3)
+    async def recent(self, i, button):
+        from feed_tools import latest
+        await latest(self.feed, i, history=True)
+
+    @discord.ui.button(label='Delivery status', row=3)
+    async def player_status(self, i, button):
+        from feed_tools import status
+        await reply(i, status(self.feed, i))
+
+    @discord.ui.button(label='Report image issue', row=4)
+    async def report_image(self, i, button):
+        from community_hub import CENTRAL_GUILD_ID, CENTRAL_COMMUNITY_INVITE
+        from feed_tools import access,records
+        channel=access(self.feed,i)
+        recent=records(self.feed,channel.id)
+        state=self.feed.diagnostics.snapshot(i.guild_id)
+        link=(f"https://discord.com/channels/{i.guild_id}/{channel.id}/{recent[0]['message_id']}" if recent else 'No recent confirmed local link')
+        context=(f"Feed: {self.kind}\nDelivery: {link}\nSource published/updated: {state['observed']}\nRunning version: {self.bot.build.get('version','unknown')}")
+        if i.guild_id == CENTRAL_GUILD_ID:
+            from community_feedback import FeedbackForm
+            form=FeedbackForm(self.bot,i,context=context)
+            await i.response.send_modal(form)
+        else:
+            await reply(i, 'For an incorrect or old feed image, contact the official community: '+CENTRAL_COMMUNITY_INVITE+'\nCopy these details and describe the issue in the private feedback form there:\n\n'+context+'\n\nFeedback is handled privately in the official community.')
+
     @discord.ui.button(label='Enable in this channel',style=discord.ButtonStyle.success,row=1)
     async def enable(self,i,button):
         require_banner_admin(i)

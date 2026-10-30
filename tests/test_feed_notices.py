@@ -216,4 +216,4 @@ class FeedNoticeCase(unittest.IsolatedAsyncioTestCase):
         self.notices.cycle = AsyncMock()
         await self.app.operations_loop.coro(self.app)
         self.notices.cycle.assert_awaited_once()
-        self.assertEqual(len(self.app.service_loops()), 8)
+        self.assertEqual(len(self.app.service_loops()), 9)

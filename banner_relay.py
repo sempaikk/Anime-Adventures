@@ -596,6 +596,8 @@ class BannerRelay:
         self.state(job, "sending")
         try:
             with handle_message_parameters(files=files, allowed_mentions=discord.AllowedMentions.none()) as params:
+                from feed_tools import silence_payload
+                silence_payload(self.bot, job['guild_id'], params)
                 for part in params.multipart:
                     if part["name"] == "payload_json":
                         payload = json.loads(part["value"])

@@ -56,7 +56,7 @@ SIGTERM/SIGINT interrompem trabalhadores e preservam tentativas incertas. O snap
 
 ## Perfil e acesso externo
 
-O aplicativo descreve apenas os três recursos atuais e sugere permissões mínimas de instalação. O próprio bot pode ler as duas origens somente se tiver acesso autorizado nelas; não recebe acesso por ID. O leitor existente continua disponível como fallback. Verificação do aplicativo, Message Content Intent e autorização dos responsáveis pela origem são condições externas que o desenvolvimento não pode conceder.
+O aplicativo descreve feeds, chat global e as ferramentas autorizadas de /adventures, com opções de instalação específicas. Consultas podem ser instaladas sem permissões adicionais de canais; grupos/eventos exigem configuração explícita. O próprio bot pode ler as duas origens somente se tiver acesso autorizado nelas; não recebe acesso por ID. O leitor existente continua disponível como fallback. Verificação do aplicativo, Message Content Intent e autorização dos responsáveis pela origem são condições externas que o desenvolvimento não pode conceder. Requisitos atuais de revisão de intents devem ser conferidos no Developer Portal e na documentação vigente; não presumir regras antigas baseadas apenas no número de servidores.
 
 O convite confirmado da comunidade é https://discord.gg/qwH7DvdtDZ. COMMUNITY_INVITE_URL permite substituí-lo por outro convite confirmado. A revisão de cargos da comunidade só é aplicada pelo dono dentro do painel privado; verificar depois as permissões efetivas nos canais.
 

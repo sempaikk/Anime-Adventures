@@ -50,6 +50,12 @@ class RequestHistory(ScopedView):
         self.require(i)
         await edit_response(i, content=self.description(), view=self)
 
+    @discord.ui.button(label='Read response / request review', row=1)
+    async def case_followup(self, i, button):
+        self.require(i)
+        from case_followup import CaseForm
+        await i.response.send_modal(CaseForm(self.bot, i))
+
 
 class RecentReport(ScopedView):
     def __init__(self, bot, i):

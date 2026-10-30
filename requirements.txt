@@ -1,4 +1,5 @@
 discord.py==2.7.1
 python-dotenv==1.2.4
 Pillow==12.1.1
+tzdata==2026.6
 -c requirements-runtime.txt

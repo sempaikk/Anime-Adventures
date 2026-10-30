@@ -63,6 +63,8 @@ def _scrub_snapshot(path):
         database.execute('PRAGMA secure_delete=ON')
         if 'global_messages' in _tables(database):
             database.execute("UPDATE global_messages SET payload='{}'")
+        if 'bot_case_followup' in _tables(database):
+            database.execute('UPDATE bot_case_followup SET image=NULL,image_type=NULL,image_expires=NULL')
         database.commit()
         database.execute('VACUUM')
 

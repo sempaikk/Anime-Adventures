@@ -10,4 +10,5 @@ pillow==12.1.1
 propcache==0.5.4
 python-dotenv==1.2.4
 typing_extensions==4.16.0
+tzdata==2026.6
 yarl==1.25.1

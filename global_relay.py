@@ -1,6 +1,7 @@
 """Human originals plus webhook copies, with durable receipts and bounded recovery."""
 
 import asyncio
+import hashlib
 import json
 import logging
 import re
@@ -132,6 +133,7 @@ class GlobalRelay:
 
         self.guard = GlobalGuard(self.store)
         self.workers = asyncio.Semaphore(4)
+        self.send_workers = asyncio.Semaphore(3)
         self.last_cycle = self.store.clock()
         from global_ops import GlobalOperations
 
@@ -488,10 +490,10 @@ class GlobalRelay:
             raise ValueError("The original message's author could not be confirmed.")
         return message
 
-    def parts(self, row, target):
+    def reply_prefix(self, row, target):
         data = json.loads(row["payload"])
-        body = data.get("body", "")
-        replied = self.store.message(data.get("reply")) if data.get("reply") else None
+        parent = data.get('reply') or row.get('reply_id')
+        replied = self.store.message(parent) if parent else None
         if (
             replied
             and not replied["deleted"]
@@ -504,7 +506,7 @@ class GlobalRelay:
                 prior.get("body", "").replace("\n", " ")[:140]
             )
             if quote:
-                body = "> " + quote + "\n" + body
+                return "> " + quote + "\n"
             else:
                 receipt = self.store.delivery(replied["id"], target.id)
                 ids = json.loads(receipt["receipts"]) if receipt else []
@@ -514,10 +516,13 @@ class GlobalRelay:
                     else next((x for x in ids if x), None)
                 )
                 if ident:
-                    body = (
-                        f'> [Reply to a message](https://discord.com/channels/{target.guild.id}/{target.id}/{ident})\n'
-                        + body
-                    )
+                    return f'> [Reply to a message](https://discord.com/channels/{target.guild.id}/{target.id}/{ident})\n'
+        return ''
+
+    def parts(self, row, target):
+        data=json.loads(row['payload'])
+        prefix=self.reply_prefix(row,target)
+        body=prefix+data.get('body','')
         assets = data.get("files", [])
         oversized = [
             a["filename"]
@@ -540,9 +545,50 @@ class GlobalRelay:
             {
                 "content": texts[n] if n < len(texts) else "",
                 "files": usable[n * 10 : (n + 1) * 10],
+                'quote_hash': hashlib.sha256(prefix.rstrip('\n').encode()).hexdigest() if n==0 and prefix else '',
             }
             for n in range(count)
         ]
+
+    async def refresh_context(self,job,row,hook,target):
+        """Edit only a positively identified bot prefix, including after cache TTL.
+
+        A digest and IDs survive; the parent's text is never retained longer for
+        this operation. Attachments and the replying author's body are untouched.
+        """
+        receipts=json.loads(job['receipts'])
+        if not receipts or not receipts[0] or not job['quote_hash']:
+            with self.store.db:
+                self.store.db.execute('UPDATE global_deliveries SET quote_dirty=0 WHERE source_id=? AND channel_id=?',(row['id'],job['channel_id']))
+            return False
+        try:
+            message=await target.fetch_message(int(receipts[0]))
+        except discord.NotFound:
+            self.store.suppress(job['guild_id'],job['channel_id'],receipts[0])
+            return True
+        if str(message.webhook_id)!=job['hook_id']:
+            raise ValueError('The referenced copy could not be identified.')
+        first,separator,body=message.content.partition('\n')
+        actual=hashlib.sha256(first.encode()).hexdigest()
+        parent_before=self.store.message(row.get('reply_id')) if row.get('reply_id') else None
+        cfg=self.store.source(job['channel_id'])
+        prefix=self.reply_prefix(row,target) if cfg and cfg['hook_id']==job['hook_id'] and not self.store.network_paused() else ''
+        new_hash=hashlib.sha256(prefix.rstrip('\n').encode()).hexdigest() if prefix else ''
+        if separator and actual==job['quote_hash']:
+            await hook.edit_message(int(receipts[0]),content=prefix+body,allowed_mentions=discord.AllowedMentions.none())
+        elif actual!=new_hash:
+            # Unknown modification is not permission to strip a human-authored
+            # first line. The old digest no longer identifies injected text.
+            new_hash=''
+        parent_after=self.store.message(row.get('reply_id')) if row.get('reply_id') else None
+        child=self.store.message(row['id'])
+        if not child:
+            return True
+        parent_stable=(parent_before or {}).get('revision')==(parent_after or {}).get('revision') and child.get('reply_id')==row.get('reply_id')
+        completed=job['revision']==child['revision'] and parent_stable
+        with self.store.db:
+            self.store.db.execute('UPDATE global_deliveries SET quote_hash=?,quote_dirty=?,state=CASE WHEN ? THEN \'sent\' ELSE \'queued\' END,error=\'\' WHERE source_id=? AND channel_id=?',(new_hash,int(not parent_stable),int(completed),row['id'],job['channel_id']))
+        return completed
 
     async def reconcile_uncertain(self, job, row, target):
         part = job["uncertain"]
@@ -606,7 +652,7 @@ class GlobalRelay:
         if not row:
             return
         if (
-            not (row["deleted"] or job["suppressed"])
+            not (row["deleted"] or job["suppressed"] or job['quote_dirty'])
             and self.store.clock() - row["updated"] > 3600
         ):
             self.store.retry(
@@ -633,6 +679,12 @@ class GlobalRelay:
                             pass
                 self.store.finish(job, row["revision"], [], state="deleted")
                 return
+            if job['quote_dirty'] and job['uncertain']<0:
+                target=self.channel(job['channel_id'])
+                if not self.readable(target):
+                    raise ValueError('The destination is inaccessible; context refresh is pending.')
+                if await self.refresh_context(job,row,hook,target):
+                    return
             cfg = self.store.source(job["channel_id"])
             target = self.channel(job["channel_id"])
             if (
@@ -722,6 +774,9 @@ class GlobalRelay:
                                 job["guild_id"], job["channel_id"], existing
                             )
                             return
+                        if index==0:
+                            with self.store.db:
+                                self.store.db.execute('UPDATE global_deliveries SET quote_hash=?,quote_dirty=0 WHERE source_id=? AND channel_id=?',(part['quote_hash'],row['id'],job['channel_id']))
                     else:
                         attempt = {
                             "fingerprint": fingerprint(
@@ -736,6 +791,8 @@ class GlobalRelay:
                             )
                         }
                         with self.store.db:
+                            if index==0:
+                                self.store.db.execute('UPDATE global_deliveries SET quote_hash=? WHERE source_id=? AND channel_id=?',(part['quote_hash'],row['id'],job['channel_id']))
                             self.store.db.execute(
                                 "UPDATE global_deliveries SET state='sending',uncertain=?,attempted=?,attempt_payload=? WHERE source_id=? AND channel_id=?",
                                 (
@@ -936,7 +993,15 @@ class GlobalRelay:
             self.last_cycle = self.store.clock()
 
             async def run(job):
-                async with self.workers:
+                row=self.store.message(job['source_id'])
+                removal=bool(row and (row['deleted'] or job['suppressed'] or job['quote_dirty']))
+                # At most three regular publications; the fourth slot stays
+                # available to removals even if several destinations stall.
+                from contextlib import AsyncExitStack
+                async with AsyncExitStack() as stack:
+                    if not removal:
+                        await stack.enter_async_context(self.send_workers)
+                    await stack.enter_async_context(self.workers)
                     try:
                         await asyncio.wait_for(self.deliver(job), 90)
                     except asyncio.CancelledError:
@@ -958,7 +1023,9 @@ class GlobalRelay:
                         log.warning("Entrega global adiada: %s", type(error).__name__)
 
             self.deliveries={key:task for key,task in self.deliveries.items() if not task.done()}
-            for job in self.store.jobs(limit=max(0,8-len(self.deliveries)),exclude=self.deliveries):
+            cleanup=self.store.jobs(limit=max(0,8-len(self.deliveries)),exclude=self.deliveries,removals=True)
+            regular=self.store.jobs(limit=max(0,6-len(self.deliveries)-len(cleanup)),exclude=(*self.deliveries,*(j['channel_id'] for j in cleanup)),removals=False)
+            for job in cleanup+regular:
                 task=asyncio.create_task(run(job),name='global-delivery')
                 self.deliveries[job['channel_id']]=task
                 self.tasks.add(task)

@@ -30,6 +30,7 @@ class CommunityCompletionCase(unittest.IsolatedAsyncioTestCase):
         self.hub = self.app.community
         data = json.loads((Path(__file__).resolve().parents[1] / 'data/community_updates.json').read_text())
         self.app.build = {'version': data['version'], 'verified': True}
+        self.app.command_sync_status = 'confirmed'
         self.app.store.clock = lambda: self.now
         # These journeys exercise vote completion independently of the real
         # source-readiness requirement; both synthetic source scans succeeded.

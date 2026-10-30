@@ -20,9 +20,9 @@ class StartupCase(unittest.IsolatedAsyncioTestCase):
             bot.tree.sync=AsyncMock(return_value=[])
             async with bot:
                 await bot.setup_hook()
-                self.assertEqual({c.name for c in bot.tree.get_commands()},{'globalchat','setbanner','dailychallenge'})
+                self.assertEqual({c.name for c in bot.tree.get_commands()},{'globalchat','setbanner','dailychallenge','adventures','Report global message'})
                 self.assertEqual(bot.store.path,Path(folder)/'bot.sqlite3')
-                self.assertEqual(len(bot.service_loops()),8)
+                self.assertEqual(len(bot.service_loops()),9)
                 self.assertIsNotNone(bot.health.runner)
                 self.assertFalse(hasattr(bot,'catalog'))
                 self.assertFalse(hasattr(bot,'analyzer'))

@@ -69,6 +69,18 @@ class GlobalStore(ModerationStore):
           PRIMARY KEY(source_id,channel_id));
         """)
         self.init_moderation()
+        # Store only the reference ID; parent text keeps its existing short TTL.
+        if 'reply_id' not in {r[1] for r in self.db.execute('PRAGMA table_info(global_messages)')}:
+            with self.db:
+                self.db.execute('ALTER TABLE global_messages ADD COLUMN reply_id TEXT')
+                for row in self.db.execute("SELECT id,payload FROM global_messages WHERE payload<>'{}'"):
+                    parent = json.loads(row['payload']).get('reply')
+                    if parent:
+                        self.db.execute('UPDATE global_messages SET reply_id=? WHERE id=?', (str(parent), row['id']))
+        self.db.execute('CREATE INDEX IF NOT EXISTS global_reply_parent ON global_messages(reply_id)')
+        for name,definition in (('quote_hash',"TEXT NOT NULL DEFAULT ''"),('quote_dirty','INTEGER NOT NULL DEFAULT 0')):
+            if name not in {r[1] for r in self.db.execute('PRAGMA table_info(global_deliveries)')}:
+                self.db.execute('ALTER TABLE global_deliveries ADD COLUMN '+name+' '+definition)
         # A previous process may have stopped after Discord accepted a request.
         # Recover that attempt before sending anything else to this destination.
         with self.db:
@@ -394,7 +406,17 @@ class GlobalStore(ModerationStore):
                                 dest["hook_id"],
                             ),
                         )
+            self.db.execute('UPDATE global_messages SET reply_id=? WHERE id=?', (str(data['reply']) if data.get('reply') else None, ident))
+            if old:
+                self.refresh_replies(ident)
         return self.message(ident), True
+
+    def refresh_replies(self, ident):
+        """Invalidate only derived context; never erase the replying author's text."""
+        self.db.execute("""UPDATE global_deliveries SET quote_dirty=1,
+            state=CASE WHEN uncertain>=0 THEN 'uncertain' WHEN state IN ('sent','partial','failed') THEN 'queued' ELSE state END,next_try=0
+            WHERE source_id IN (SELECT id FROM global_messages WHERE reply_id=? AND deleted=0 AND expires>?)
+            AND suppressed=0 AND state NOT IN ('cancelled','deleted')""",(str(ident),self.clock()))
 
     def prepared(self, ident, data, revision):
         with self.db:
@@ -423,6 +445,7 @@ class GlobalStore(ModerationStore):
 
     def erase(self, ident):
         with self.db:
+            self.refresh_replies(ident)
             self.db.execute(
                 "UPDATE global_messages SET deleted=1,payload='{}',revision=revision+1,updated=? WHERE id=? AND deleted=0",
                 (self.clock(), str(ident)),
@@ -450,16 +473,18 @@ class GlobalStore(ModerationStore):
                     (row["id"], str(channel)),
                 )
 
-    def jobs(self, limit=10, *, exclude=()):
+    def jobs(self, limit=10, *, exclude=(), removals=None):
         cursor = self.base.get("global-queue-cursor") or ""
         excluded = tuple(str(x) for x in exclude)
         skip = (' AND d.channel_id NOT IN ('+','.join('?' for _ in excluded)+')') if excluded else ''
+        if removals is not None:
+            skip += ' AND (m.deleted=1 OR d.suppressed=1 OR d.quote_dirty=1)' if removals else ' AND m.deleted=0 AND d.suppressed=0 AND d.quote_dirty=0'
         rows = self.rows(
             """WITH candidates AS (
-          SELECT d.*,ROW_NUMBER() OVER(PARTITION BY d.channel_id ORDER BY CASE WHEN m.deleted=1 OR d.suppressed=1 THEN 0 ELSE 1 END,d.rowid) AS slot
+          SELECT d.*,ROW_NUMBER() OVER(PARTITION BY d.channel_id ORDER BY CASE WHEN m.deleted=1 OR d.suppressed=1 OR d.quote_dirty=1 THEN 0 ELSE 1 END,d.rowid) AS slot
           FROM global_deliveries d JOIN global_messages m ON m.id=d.source_id
           WHERE d.state IN ('queued','uncertain') AND d.next_try<=? AND m.expires>?"""+skip+"""
-          AND ((m.deleted=1 OR d.suppressed=1) OR NOT EXISTS(
+          AND ((m.deleted=1 OR d.suppressed=1 OR d.quote_dirty=1) OR NOT EXISTS(
             SELECT 1 FROM global_deliveries p JOIN global_messages q ON q.id=p.source_id
             WHERE p.channel_id=d.channel_id AND p.rowid<d.rowid AND p.state IN ('queued','preparing','uncertain','sending') AND q.deleted=0 AND p.suppressed=0)))
           SELECT * FROM candidates WHERE slot=1 ORDER BY CASE WHEN channel_id>? THEN 0 ELSE 1 END,channel_id LIMIT ?""",
@@ -497,6 +522,8 @@ class GlobalStore(ModerationStore):
             row = self.message(job["source_id"])
             fresh = self.delivery(job["source_id"], job["channel_id"])
             state = state if row["revision"] == revision else "queued"
+            if fresh.get('quote_dirty') and not row['deleted'] and not fresh['suppressed']:
+                state='queued'
             if not row["deleted"]:
                 if fresh["suppressed"]:
                     # A moderator may act while a POST is already in flight.
@@ -578,7 +605,7 @@ class GlobalStore(ModerationStore):
                 self.db.execute('DELETE FROM global_messages WHERE id=?',(row['id'],))
             self.db.execute(
                 """UPDATE global_deliveries SET state='failed',error='The queue expired after one hour; the original was preserved.'
-              WHERE state IN ('queued','preparing','uncertain','sending') AND source_id IN
+              WHERE state IN ('queued','preparing','uncertain','sending') AND quote_dirty=0 AND source_id IN
               (SELECT id FROM global_messages WHERE deleted=0 AND updated<?)""",
                 (self.clock() - CONTENT_TTL,),
             )

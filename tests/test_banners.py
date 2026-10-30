@@ -82,7 +82,7 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
         return self.relay.db.execute("SELECT * FROM banner_jobs ORDER BY channel_id").fetchall()
 
     async def test_setbanner_uses_current_channel_private_confirmation_and_admin_permission(self):
-        self.assertEqual({command.name for command in self.app.tree.get_commands()}, {"setbanner", "globalchat", "dailychallenge"})
+        self.assertEqual({command.name for command in self.app.tree.get_commands()}, {"setbanner", "globalchat", "dailychallenge", "adventures", "Report global message"})
         command = self.app.tree.get_command("setbanner")
         self.assertIsNone(command.default_permissions)
         self.assertFalse(command.parameters)
@@ -102,7 +102,7 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
         await self.app.close()
         self.app=CommunityBot(self.temp.name)
         self.assertEqual(self.app.store.get('saved-feed-setting'),'keep')
-        self.assertEqual({c.name for c in self.app.tree.get_commands()},{'setbanner','dailychallenge','globalchat'})
+        self.assertEqual({c.name for c in self.app.tree.get_commands()},{'setbanner','dailychallenge','globalchat','adventures','Report global message'})
 
 
     async def test_members_and_missing_bot_permissions_cannot_configure(self):

@@ -210,6 +210,18 @@ class ConsentView(ScopedView):
         self.generation = cfg["generation"]
         self.completed = False
 
+    @discord.ui.button(label='Preview sharing')
+    async def preview(self,i,button):
+        self.require(i)
+        from global_relay import relay_name
+        from global_media import cdn_url
+        name=relay_name(self.bot,i.user)
+        avatar=str(getattr(getattr(i.user,'display_avatar',None),'url',''))
+        text='## Private sharing preview\n**Visible display name:** '+safe(name,100)
+        text+='\n**Avatar:** '+(f'[Your current avatar]({avatar})' if cdn_url(avatar) else 'not available in this preview')
+        text+='\n\n**Example message:** This is the text you choose to share.\n\nCopies use that display name and avatar with Discord\'s application/webhook label. Your @username and server name are not added. Supported attachments keep their filenames and are subject to each destination\'s upload limit. Mentions in copies do not ping people.\n\nThis private preview does not join the network, save a message or send anything to other servers. Read the terms and choose Confirm and join only if you agree.'
+        await reply(i,text)
+
     @discord.ui.button(
         label='Confirm and join', style=discord.ButtonStyle.success
     )

@@ -115,6 +115,8 @@ class BannerImages:
             self.state(part, 'sending')
             try:
                 with handle_message_parameters(files=[file], allowed_mentions=discord.AllowedMentions.none()) as params:
+                    from feed_tools import silence_payload
+                    silence_payload(self.bot, job['guild_id'], params)
                     for entry in params.multipart:
                         if entry['name'] == 'payload_json':
                             data = json.loads(entry['value'])

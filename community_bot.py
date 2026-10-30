@@ -66,6 +66,8 @@ class CommunityBot(commands.Bot):
         self.feed_notices=FeedNotices(self)
         from community_feedback import CommunityFeedback
         self.feedback=CommunityFeedback(self)
+        from adventure_service import AdventureService
+        self.adventures=AdventureService(self)
         self.build=build_info()
         self.health.add_probe('release',lambda:self.build.get('verified',False))
         self.register_commands()
@@ -82,6 +84,8 @@ class CommunityBot(commands.Bot):
         from global_views import GlobalPanelView,GlobalDirectView
         self.add_view(GlobalPanelView(self))
         self.add_view(GlobalDirectView(self))
+        from adventure_views import PartyAction
+        self.add_dynamic_items(PartyAction)
         await self.health.start(int(os.getenv('PORT') or os.getenv('SERVER_PORT') or 8080))
         self.banners.require_source_confirmation=self.daily.require_source_confirmation=True
         for loop in self.service_loops():
@@ -95,7 +99,7 @@ class CommunityBot(commands.Bot):
             try:
                 await asyncio.wait_for(self.tree.sync(),60)
                 self.command_sync_status='confirmed'
-                log.info('Commands synchronized: global chat, banners and daily challenges.')
+                log.info('Commands synchronized: global chat, image feeds, Adventures tools and message reporting.')
                 return
             except asyncio.CancelledError:
                 raise
@@ -107,7 +111,7 @@ class CommunityBot(commands.Bot):
 
     def service_loops(self):
         return (self.maintenance_loop,self.global_loop,self.operations_loop,self.banner_loop,
-                self.daily_loop,self.banner_votes_loop,self.quota_loop,self.source_loop)
+                self.daily_loop,self.banner_votes_loop,self.quota_loop,self.source_loop,self.tools_loop)
 
     async def on_ready(self):
         actual={str(g.id) for g in self.guilds}
@@ -121,6 +125,7 @@ class CommunityBot(commands.Bot):
         log.info('Connected; %s servers.',len(self.guilds))
 
     async def on_guild_remove(self,guild):
+        self.adventures.removed(guild=guild.id)
         self.banners.disable(guild.id)
         self.daily.disable(guild.id)
         self.globalchat.store.remove_guild(guild.id)
@@ -131,6 +136,7 @@ class CommunityBot(commands.Bot):
         await self.globalchat.ingest(message)
 
     async def on_raw_message_delete(self,event):
+        self.adventures.removed(message=event.message_id)
         if getattr(event,'channel_id',None) is not None:
             self.native_sources.delete(event)
         self.globalchat.on_delete(event)
@@ -154,6 +160,17 @@ class CommunityBot(commands.Bot):
     async def source_ready(self):
         await self.wait_until_ready()
 
+    @tasks.loop(seconds=10)
+    async def tools_loop(self):
+        try:
+            await self.adventures.cycle()
+        except Exception as error:
+            log.warning('Optional tools deferred: %s',type(error).__name__)
+
+    @tools_loop.before_loop
+    async def tools_ready(self):
+        await self.wait_until_ready()
+
 
     def is_owner_id(self, actor):
         return actor in self.owner_ids_set
@@ -163,7 +180,7 @@ class CommunityBot(commands.Bot):
             raise ValueError("Only the bot owner can perform this action.")
 
     def require_admin(self, i):
-        if not i.guild_id or not i.permissions.manage_guild:
+        if not i.guild_id or not (i.permissions.manage_guild or getattr(i.permissions,'administrator',False)):
             raise ValueError(
                 "You need Manage Server to configure this feature."
             )
@@ -182,6 +199,7 @@ class CommunityBot(commands.Bot):
         return self.guild_locks.setdefault(int(guild_id), asyncio.Lock())
 
     async def on_guild_channel_delete(self, channel):
+        self.adventures.removed(channel=channel.id)
         for feed in (self.banners, self.daily):
             target = feed.target(channel.guild.id)
             if target and target["channel_id"] == str(channel.id):
@@ -317,6 +335,28 @@ class CommunityBot(commands.Bot):
         await self.wait_until_ready()
 
     def register_commands(self):
+        @self.tree.command(name='adventures',description='Search game knowledge, plan progress, calculate and organize groups.')
+        @app_commands.guild_only()
+        @app_commands.allowed_installs(guilds=True,users=False)
+        async def adventures(i: discord.Interaction):
+            self.require_human(i)
+            from adventure_views import ToolsHome
+            view=ToolsHome(self,i)
+            await reply(i,view.description(),view=view)
+
+        @self.tree.context_menu(name='Report global message')
+        @app_commands.guild_only()
+        @app_commands.allowed_installs(guilds=True,users=False)
+        async def report_global_message(i: discord.Interaction,message: discord.Message):
+            self.require_human(i)
+            if not message.guild or message.guild.id!=i.guild_id or message.channel.id!=i.channel_id:
+                raise ValueError('Use this action on a shared message in the current server channel.')
+            from global_views import MessageAction,find_message
+            find_message(self,i,str(message.id))
+            form=MessageAction(self,i,'report')
+            form.link.default=str(message.id)
+            await i.response.send_modal(form)
+
         async def configure_feed(i, kind):
             from feed_views import FeedPanel
             command_name = "dailychallenge" if kind == "daily" else "setbanner"
@@ -350,7 +390,7 @@ class CommunityBot(commands.Bot):
         async def chatglobal(i: discord.Interaction):
             from global_views import GlobalAdminView, GlobalMemberView
 
-            if i.permissions.manage_guild:
+            if i.permissions.manage_guild or getattr(i.permissions,'administrator',False):
                 view = GlobalAdminView(self, i)
             else:
                 self.require_human(i)

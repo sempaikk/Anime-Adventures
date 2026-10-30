@@ -19,6 +19,8 @@ class CommunityFeedback:
             status TEXT NOT NULL DEFAULT 'pending',version INTEGER NOT NULL DEFAULT 0)''')
         self.db.execute('CREATE INDEX IF NOT EXISTS bot_feedback_pending ON bot_feedback(status,created)')
         self.db.execute('CREATE INDEX IF NOT EXISTS bot_feedback_actor ON bot_feedback(user_id,created)')
+        if 'context' not in {r[1] for r in self.db.execute('PRAGMA table_info(bot_feedback)')}:
+            self.db.execute("ALTER TABLE bot_feedback ADD COLUMN context TEXT NOT NULL DEFAULT ''")
         self.db.commit()
 
     def require(self, i, *, owner=False):
@@ -33,13 +35,15 @@ class CommunityFeedback:
             self.db.execute('DELETE FROM bot_feedback WHERE created<?', (self.bot.store.clock()-30*86400,))
             self.db.execute('DELETE FROM bot_feedback WHERE id NOT IN (SELECT id FROM bot_feedback ORDER BY id DESC LIMIT 3000)')
 
-    def submit(self, i, kind, body):
+    def submit(self, i, kind, body, context=''):
         self.require(i)
         body=body.strip()
         if kind not in {'bug','suggestion'} or not 10<=len(body)<=800:
             raise ValueError('Choose Bug or Suggestion and describe it in 10 to 800 characters.')
+        if not isinstance(context,str) or len(context)>400:
+            raise ValueError('Optional delivery details must fit in 400 characters.')
         self.cleanup()
-        digest=hashlib.sha256((kind+':'+body).encode()).hexdigest()
+        digest=hashlib.sha256((kind+':'+body+(':'+context if context else '')).encode()).hexdigest()
         old=self.db.execute('SELECT id FROM bot_feedback WHERE user_id=? AND fingerprint=? AND created>?',
             (str(i.user.id),digest,self.bot.store.clock()-600)).fetchone()
         if old:
@@ -47,13 +51,13 @@ class CommunityFeedback:
         if not self.bot.globalchat.store.limit('feedback:'+str(i.user.id),3,600):
             raise ValueError('Please wait before sending more feedback.')
         with self.db:
-            cursor=self.db.execute('INSERT INTO bot_feedback(user_id,kind,body,fingerprint,created) VALUES(?,?,?,?,?)',
-                (str(i.user.id),kind,body,digest,self.bot.store.clock()))
+            cursor=self.db.execute('INSERT INTO bot_feedback(user_id,kind,body,fingerprint,created,context) VALUES(?,?,?,?,?,?)',
+                (str(i.user.id),kind,body,digest,self.bot.store.clock(),context.strip()))
         return cursor.lastrowid
 
 
 class FeedbackForm(BoundModal):
-    def __init__(self, bot, i):
+    def __init__(self, bot, i, *, context=None):
         super().__init__(title='Community feedback')
         bot.feedback.require(i)
         self.bind(bot,i)
@@ -61,11 +65,15 @@ class FeedbackForm(BoundModal):
         self.body=discord.ui.TextInput(style=discord.TextStyle.paragraph,min_length=10,max_length=800)
         self.add_item(discord.ui.Label(text='Category',component=self.kind))
         self.add_item(discord.ui.Label(text='Description',description='Read privately by the bot owner; retained for up to 30 days. Do not include secrets.',component=self.body))
+        self.context=None
+        if context:
+            self.context=discord.ui.TextInput(style=discord.TextStyle.paragraph,required=False,max_length=400,default=context[:400])
+            self.add_item(discord.ui.Label(text='Optional delivery details',description='Review before submitting; included only in this private report.',component=self.context))
 
     async def on_submit(self,i):
         if not await self.interaction_check(i):
             return
-        ident=self.bot.feedback.submit(i,self.kind.values[0],str(self.body))
+        ident=self.bot.feedback.submit(i,self.kind.values[0],str(self.body),str(self.context) if self.context else '')
         await reply(i,f'**Feedback #{ident} received.** The bot owner can review it privately. Nothing was posted in a public channel.')
 
 
@@ -90,7 +98,7 @@ class FeedbackInbox(ScopedView):
         self.version=selected['version'] if selected else 0
         self.resolve.disabled=self.dismiss.disabled=not selected
         return ('## Official community feedback\nPrivate review · page '+str(self.page+1)
-            +(f'\n\n**#{selected["id"]} · {selected["kind"]}**\n{safe(selected["body"],800)}\nSubmitted <t:{int(selected["created"])}:R>.' if selected else '\nNo pending feedback.'))
+            +(f'\n\n**#{selected["id"]} · {selected["kind"]}**\n{safe(selected["body"],800)}\n{safe(selected.get("context", ""),400)}\nSubmitted <t:{int(selected["created"])}:R>.' if selected else '\nNo pending feedback.'))
 
     async def refresh(self,i):
         from bot_ui import edit_response
@@ -129,3 +137,12 @@ class FeedbackInbox(ScopedView):
     @discord.ui.button(label='Dismiss',row=2)
     async def dismiss(self,i,button):
         await self.decide(i,'dismissed')
+
+    @discord.ui.button(label='Assign / answer / attachments',row=2)
+    async def follow_up(self,i,button):
+        self.require(i)
+        self.bot.feedback.require(i,owner=True)
+        if self.selected is None:
+            raise ValueError('Choose a feedback case first.')
+        from case_followup import CaseReview
+        await i.response.send_modal(CaseReview(self.bot,i,'feedback',self.selected))

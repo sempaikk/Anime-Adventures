@@ -151,7 +151,7 @@ class RuntimeFeeds(unittest.IsolatedAsyncioTestCase):
 
     async def test_members_only_see_member_actions_and_expired_setup_is_rejected(self):
         member=FeedPanel(self.app,self.interaction(admin=False),kind='banner')
-        self.assertEqual({item.label for item in member.children},{'View current images','How it works'})
+        self.assertEqual({item.label for item in member.children},{'View current images','How it works','Open last delivery','Recent deliveries','Delivery status','Report image issue'})
         i=self.interaction()
         old=FeedPanel(self.app,i,kind='banner')
         self.relay.configure(1,10)

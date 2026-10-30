@@ -27,6 +27,12 @@ def check_restore(snapshot, *, temporary_parent=None):
                 'global_consents','global_channels','banner_targets','daily_targets','banner_config_versions',
                 'daily_config_versions','daily_current','daily_source_head','banner_vote_backfill',
                 'banner_vote_order_repairs','banner_image_receipts','global_receipts'}}
+            for table in ('bot_tool_data','bot_tool_preferences','bot_tool_settings','bot_tool_history','bot_tool_parties','bot_tool_members'):
+                if table in tables:
+                    preserved[table]=([r[1] for r in original.execute('PRAGMA table_info("'+table+'")')],table_digest(original,table))
+            if 'bot_tool_reminders' in tables:
+                columns=['id','user','guild','nonce','generation','due']
+                preserved['bot_tool_reminders']=(columns,table_digest(original,'bot_tool_reminders',columns))
         # Exercise application state readers/migrations on the disposable copy.
         # Never instantiate a Discord client or start source readers/tasks here.
         from bot_store import BotStore
@@ -39,6 +45,8 @@ def check_restore(snapshot, *, temporary_parent=None):
             bot=SimpleNamespace(store=base)
             BannerRelay(bot)
             BannerRelay(bot,kind='daily')
+            from adventure_store import AdventureStore
+            AdventureStore(base)
             for table,(columns,digest) in preserved.items():
                 if table_digest(base.connection,table,columns)!=digest:
                     raise sqlite3.DatabaseError('Recovered application state changed during the restore drill.')

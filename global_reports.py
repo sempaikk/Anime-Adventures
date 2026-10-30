@@ -60,6 +60,12 @@ class ReportInbox(ScopedView):
         if not row:
             return text + '\n\nThere are no reports matching this filter.'
         text += f"\n\n### #{row['id']} · {REPORT_STATES[row['status']]}\n**Submitted reason:** {safe(row['reason'], 500)}"
+        text+=f"\nSubmitted <t:{int(row['created'])}:R>."
+        tools=getattr(self.bot,'adventures',None)
+        if tools:
+            record=tools.state.one('SELECT assigned,appeal FROM bot_case_followup WHERE kind=\'report\' AND case_id=? AND guild=?',(row['id'],row['guild_id']))
+            if record and record['assigned']:text+='\nAssigned reviewer: '+safe(record['assigned'],30)+'.'
+            if record and record['appeal']:text+='\nA private request for review is attached.'
         source = self.bot.globalchat.store.message(row["source_id"])
         cfg = self.bot.globalchat.store.channel(row["guild_id"])
         if source and cfg:
@@ -147,6 +153,15 @@ class ReportInbox(ScopedView):
         self.require(i)
         row = self.bot.globalchat.store.report_record(self.selected, self.scope)
         await i.response.send_modal(ReportDecision(self.bot, i, row, self.scope))
+
+    @discord.ui.button(label='Assign / answer / attachments', row=3)
+    async def follow_up(self, i, button):
+        self.require(i)
+        row = self.bot.globalchat.store.report_record(self.selected, self.scope)
+        if row['guild_id'] != str(i.guild_id):
+            raise ValueError('Open this case in its original server to answer its requester. Network moderation remains in this panel.')
+        from case_followup import CaseReview
+        await i.response.send_modal(CaseReview(self.bot, i, 'report', self.selected))
 
 
 class ReportDecision(BoundModal):
