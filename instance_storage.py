@@ -71,12 +71,16 @@ class InstanceStorage:
         return max(0,min(shutil.disk_usage(self.root).free,self.limit-self.used)-self.reserved)
 
     @asynccontextmanager
-    async def reserve(self, amount, *, memory=0):
+    async def reserve(self, amount, *, memory=0, feature=None):
         amount = max(0, int(amount))
+        memory = max(0, int(memory))
         async with self.reservation_lock:
-            free = await self.available()
+            free = await self.available() if amount else float('inf')
             rss = process_memory()
-            if free < amount + 16 * 1024 * 1024:
+            # New chat uploads leave room for fresh feeds, durable receipts and
+            # a verified snapshot. Existing deletions/reconciliation need no upload.
+            headroom = 48 * 1024 * 1024 if feature == 'global' else 16 * 1024 * 1024
+            if free < amount + headroom:
                 raise OSError('Storage budget is reserved for safe operation. Try again after cleanup.')
             if rss is not None and rss + self.reserved_memory + memory > self.memory_limit * .9:
                 raise OSError('Image preparation is paused while memory usage is high.')
@@ -87,4 +91,5 @@ class InstanceStorage:
         finally:
             self.reserved -= amount
             self.reserved_memory -= memory
-            self.checked = 0
+            if amount:
+                self.checked = 0

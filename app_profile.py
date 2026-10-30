@@ -9,9 +9,11 @@ DESCRIPTION=('Anime Adventures banner images with win / mid / lose reactions, da
              'Community: '+CENTRAL_COMMUNITY_INVITE)
 
 
-def install_permissions():
+def install_permissions(feature='all'):
+    if feature not in {'all','images'}:
+        raise ValueError('Unknown installation feature')
     return discord.Permissions(view_channel=True,send_messages=True,read_message_history=True,
-        attach_files=True,add_reactions=True,manage_webhooks=True)
+        attach_files=True,add_reactions=True,manage_webhooks=feature=='all')
 
 
 async def configure_profile(bot, app):

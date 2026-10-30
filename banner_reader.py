@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 from datetime import datetime, timezone
 import importlib.metadata
+import hashlib
 import json
 import logging
 import os
@@ -17,6 +18,18 @@ from collections import OrderedDict
 from urllib.parse import urlsplit
 
 READER_VERSION = "2.1.0"
+
+
+def dependencies_match():
+    try:
+        for line in Path(__file__).with_name('requirements-reader.txt').read_text().splitlines():
+            if line.strip() and not line.startswith('#'):
+                name,version=line.strip().split('==')
+                if importlib.metadata.version(name)!=version:
+                    return False
+        return importlib.metadata.version('discord.py-self')==READER_VERSION
+    except (OSError,ValueError,importlib.metadata.PackageNotFoundError):
+        return False
 
 
 def image_identity(payload):
@@ -191,10 +204,11 @@ def bootstrap(directory):
         subprocess.run(
             [str(executable), "-m", "pip", "install", "--disable-pip-version-check",
              "--no-input", "--no-cache-dir", "--timeout", "30", "--retries", "1",
-             f"discord.py-self=={READER_VERSION}"],
+             '-r', str(Path(__file__).with_name('requirements-reader.txt'))],
             stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL, timeout=240, check=True,
         )
+    (directory/'.dependencies.sha256').write_text(hashlib.sha256(Path(__file__).with_name('requirements-reader.txt').read_bytes()).hexdigest())
     os.execv(str(executable), [str(executable), "-I", str(Path(__file__).resolve()), "--reader"])
 
 
@@ -202,7 +216,7 @@ if __name__ == "__main__":
     logging.disable(logging.CRITICAL)
     try:
         if sys.argv[1:] == ["--check"]:
-            raise SystemExit(0 if importlib.metadata.version("discord.py-self") == READER_VERSION else 1)
+            raise SystemExit(0 if dependencies_match() else 1)
         if len(sys.argv) == 3 and sys.argv[1] == "--bootstrap":
             bootstrap(sys.argv[2])
         elif sys.argv[1:] == ["--reader"]:

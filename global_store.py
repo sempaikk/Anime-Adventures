@@ -36,6 +36,7 @@ class GlobalStore(ModerationStore):
           PRIMARY KEY(source_id,channel_id));
         CREATE INDEX IF NOT EXISTS global_queue ON global_deliveries(state,next_try);
         CREATE INDEX IF NOT EXISTS global_actor ON global_messages(user_id,created);
+        CREATE INDEX IF NOT EXISTS global_message_created ON global_messages(created);
         CREATE INDEX IF NOT EXISTS global_message_expiry ON global_messages(expires);
         CREATE INDEX IF NOT EXISTS global_payload_cleanup ON global_messages(updated) WHERE payload<>'{}';
         CREATE TABLE IF NOT EXISTS global_receipts(
@@ -48,6 +49,7 @@ class GlobalStore(ModerationStore):
           id INTEGER PRIMARY KEY AUTOINCREMENT,source_id TEXT NOT NULL,reporter TEXT NOT NULL,
           guild_id TEXT NOT NULL,reason TEXT NOT NULL,created REAL NOT NULL,reviewed INTEGER NOT NULL DEFAULT 0,
           UNIQUE(source_id,reporter));
+        CREATE INDEX IF NOT EXISTS global_reports_actor ON global_reports(reporter,guild_id,created);
         CREATE TABLE IF NOT EXISTS global_prompts(
           notice_id TEXT PRIMARY KEY,source_id TEXT NOT NULL,user_id TEXT NOT NULL,
           guild_id TEXT NOT NULL,channel_id TEXT NOT NULL,expires REAL NOT NULL);
@@ -61,6 +63,10 @@ class GlobalStore(ModerationStore):
           user_id TEXT NOT NULL,guild_id TEXT NOT NULL,state TEXT NOT NULL,reason TEXT NOT NULL,
           updated REAL NOT NULL,PRIMARY KEY(user_id,guild_id));
         CREATE INDEX IF NOT EXISTS global_attempt_expiry ON global_attempts(updated);
+        CREATE TABLE IF NOT EXISTS global_reconcile(
+          source_id TEXT NOT NULL,channel_id TEXT NOT NULL,attempted REAL NOT NULL,
+          cursor TEXT NOT NULL DEFAULT '0',matches TEXT NOT NULL DEFAULT '[]',
+          PRIMARY KEY(source_id,channel_id));
         """)
         self.init_moderation()
         # A previous process may have stopped after Discord accepted a request.
@@ -444,18 +450,20 @@ class GlobalStore(ModerationStore):
                     (row["id"], str(channel)),
                 )
 
-    def jobs(self, limit=10):
+    def jobs(self, limit=10, *, exclude=()):
         cursor = self.base.get("global-queue-cursor") or ""
+        excluded = tuple(str(x) for x in exclude)
+        skip = (' AND d.channel_id NOT IN ('+','.join('?' for _ in excluded)+')') if excluded else ''
         rows = self.rows(
             """WITH candidates AS (
           SELECT d.*,ROW_NUMBER() OVER(PARTITION BY d.channel_id ORDER BY CASE WHEN m.deleted=1 OR d.suppressed=1 THEN 0 ELSE 1 END,d.rowid) AS slot
           FROM global_deliveries d JOIN global_messages m ON m.id=d.source_id
-          WHERE d.state IN ('queued','uncertain') AND d.next_try<=? AND m.expires>?
+          WHERE d.state IN ('queued','uncertain') AND d.next_try<=? AND m.expires>?"""+skip+"""
           AND ((m.deleted=1 OR d.suppressed=1) OR NOT EXISTS(
             SELECT 1 FROM global_deliveries p JOIN global_messages q ON q.id=p.source_id
             WHERE p.channel_id=d.channel_id AND p.rowid<d.rowid AND p.state IN ('queued','preparing','uncertain','sending') AND q.deleted=0 AND p.suppressed=0)))
           SELECT * FROM candidates WHERE slot=1 ORDER BY CASE WHEN channel_id>? THEN 0 ELSE 1 END,channel_id LIMIT ?""",
-            (self.clock(), self.clock(), cursor, limit),
+            (self.clock(), self.clock(), *excluded, cursor, limit),
         )
         if rows:
             self.base.set("global-queue-cursor", rows[-1]["channel_id"])
@@ -482,6 +490,7 @@ class GlobalStore(ModerationStore):
                 "INSERT OR REPLACE INTO global_receipts VALUES(?,?,?,?)",
                 (str(ident), job["source_id"], job["guild_id"], job["channel_id"]),
             )
+            self.db.execute('DELETE FROM global_reconcile WHERE source_id=? AND channel_id=?',(job['source_id'],job['channel_id']))
 
     def finish(self, job, revision, receipts, *, state="sent"):
         with self.db:
@@ -538,6 +547,11 @@ class GlobalStore(ModerationStore):
     def report(self, source, user, guild, reason):
         if not 10 <= len(reason.strip()) <= 500:
             raise ValueError('Describe what happened in 10 to 500 characters.')
+        previous=self.one('SELECT id,guild_id FROM global_reports WHERE source_id=? AND reporter=?',(str(source),str(user)))
+        if previous:
+            if previous['guild_id']!=str(guild):
+                raise ValueError('You already reported this network message in another server. That report can be followed in the server where you submitted it; the network owner can also review it.')
+            return previous['id']
         if not self.limit("report:" + str(user), 5, 600):
             raise ValueError('Please wait before submitting another report.')
         with self.db:
@@ -545,13 +559,15 @@ class GlobalStore(ModerationStore):
                 "INSERT OR IGNORE INTO global_reports(source_id,reporter,guild_id,reason,created) VALUES(?,?,?,?,?)",
                 (str(source), str(user), str(guild), reason.strip(), self.clock()),
             )
+        return self.one('SELECT id FROM global_reports WHERE source_id=? AND reporter=?',(str(source),str(user)))['id']
 
     def cleanup(self):
         expired = self.rows(
-            'SELECT id FROM global_messages WHERE expires<? ORDER BY expires LIMIT 64', (self.clock(),)
+            'SELECT id FROM global_messages WHERE expires<? ORDER BY expires LIMIT 512', (self.clock(),)
         )
         with self.db:
             self.db.execute('DELETE FROM global_attempts WHERE updated<?', (self.clock()-3600,))
+            self.db.execute('DELETE FROM global_reconcile WHERE source_id NOT IN (SELECT id FROM global_messages WHERE expires>?)',(self.clock(),))
             for row in expired:
                 self.db.execute(
                     "DELETE FROM global_deliveries WHERE source_id=?", (row["id"],)

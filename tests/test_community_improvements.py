@@ -39,7 +39,7 @@ class CommunityImprovements(unittest.IsolatedAsyncioTestCase):
         i=self.moderator()
         require_moderator(i)
         view=GlobalModeratorView(self.app,i)
-        self.assertEqual({x.label for x in view.children},{'Server reports','Local restrictions','My participation'})
+        self.assertEqual({x.label for x in view.children},{'Server reports','Local restrictions','My participation','Review restrictions'})
         inbox=ReportInbox(self.app,i)
         row=self.engine.store.report_page(2)[0][0]
         self.assertIn('this server',inbox.description())

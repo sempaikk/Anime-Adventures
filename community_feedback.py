@@ -18,6 +18,7 @@ class CommunityFeedback:
             body TEXT NOT NULL,fingerprint TEXT NOT NULL,created REAL NOT NULL,
             status TEXT NOT NULL DEFAULT 'pending',version INTEGER NOT NULL DEFAULT 0)''')
         self.db.execute('CREATE INDEX IF NOT EXISTS bot_feedback_pending ON bot_feedback(status,created)')
+        self.db.execute('CREATE INDEX IF NOT EXISTS bot_feedback_actor ON bot_feedback(user_id,created)')
         self.db.commit()
 
     def require(self, i, *, owner=False):

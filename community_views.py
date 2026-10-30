@@ -27,6 +27,8 @@ class HelpView(ScopedView):
             from app_profile import install_permissions
             p=install_permissions()
             self.add_item(discord.ui.Button(label='Add Adventures',url=f'https://discord.com/oauth2/authorize?client_id={app_id}&scope=bot%20applications.commands&permissions={p.value}'))
+            p=install_permissions('images')
+            self.add_item(discord.ui.Button(label='Add images only',url=f'https://discord.com/oauth2/authorize?client_id={app_id}&scope=bot%20applications.commands&permissions={p.value}'))
         invite=(os.getenv('COMMUNITY_INVITE_URL') or CENTRAL_COMMUNITY_INVITE).strip()
         try:
             parsed=urlsplit(invite)
@@ -57,6 +59,13 @@ class MemberHome(ScopedView):
         from community_feedback import FeedbackForm
         await i.response.send_modal(FeedbackForm(self.bot,i))
 
+    @discord.ui.button(label='My requests',row=0)
+    async def requests(self,i,button):
+        self.require(i)
+        from participant_history import RequestHistory
+        view=RequestHistory(self.bot,i)
+        await reply(i,view.description(),view=view)
+
 
 class GlobalModeratorView(ScopedView):
     def __init__(self,bot,i):
@@ -85,4 +94,11 @@ class GlobalModeratorView(ScopedView):
         self.require(i)
         from global_views import GlobalMemberView
         view=GlobalMemberView(self.bot,i)
+        await reply(i,view.description(),view=view)
+
+    @discord.ui.button(label='Review restrictions',row=0)
+    async def review_restrictions(self,i,button):
+        self.require(i)
+        from participant_history import RestrictionView
+        view=RestrictionView(self.bot,i,network=False)
         await reply(i,view.description(),view=view)

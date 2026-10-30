@@ -104,7 +104,7 @@ class GlobalMedia:
     async def download(self, asset, limit):
         if self.budget is None or int(asset.get('size') or 0) > limit:
             return await self._download(asset, limit)
-        async with self.budget.reserve(int(asset.get('size') or 0) or limit):
+        async with self.budget.reserve(int(asset.get('size') or 0) or limit, feature='global'):
             return await self._download(asset, limit)
 
     async def _download(self, asset, limit):
@@ -166,8 +166,12 @@ class GlobalMedia:
                     raise ValueError(
                         'The attachment download was incomplete. The original was preserved.'
                     )
-            from media_validation import validate_file
-            await asyncio.to_thread(validate_file, temporary, name)
+            from media_validation import validate_file, decode_budget
+            if Path(name).suffix.lower() in {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.avif'}:
+                async with decode_budget(self.budget, temporary):
+                    await asyncio.to_thread(validate_file, temporary, name)
+            else:
+                await asyncio.to_thread(validate_file, temporary, name)
             target = self.root / digest.hexdigest()
             os.replace(temporary, target)
             self.in_use[digest.hexdigest()] = self.in_use.get(digest.hexdigest(), 0) + 1
@@ -210,6 +214,7 @@ class GlobalMedia:
                         self.path(asset),
                         filename=asset["filename"],
                         spoiler=asset["filename"].startswith("SPOILER_"),
+                        description=asset.get('description'),
                     )
                 )
             return files, omitted

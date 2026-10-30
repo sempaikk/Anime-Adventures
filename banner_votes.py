@@ -145,8 +145,7 @@ class BannerVotes:
             return 'An old W/M/L vote repair is still awaiting confirmation.'
         if self.db.execute('''SELECT 1 FROM banner_image_receipts r JOIN banner_targets t
                 ON t.guild_id=r.guild_id AND t.channel_id=r.channel_id
-                WHERE r.state='sent' AND r.reactions<>7 AND r.expires_at>? LIMIT 1''',
-                (self.relay.clock(),)).fetchone():
+                WHERE r.state='sent' AND r.reactions<>7 LIMIT 1''').fetchone():
             return 'W/M/L reactions on delivered banners are still awaiting confirmation.'
         return None
 
@@ -198,8 +197,8 @@ class BannerVotes:
     async def live_reactions(self):
         rows = self.db.execute('''SELECT r.* FROM banner_image_receipts r JOIN banner_targets t
             ON t.guild_id=r.guild_id AND t.channel_id=r.channel_id
-            WHERE r.state='sent' AND r.reactions<>7 AND r.reaction_after<=? AND r.expires_at>?
-            ORDER BY r.reaction_after LIMIT 64''', (self.relay.clock(), self.relay.clock())).fetchall()
+            WHERE r.state='sent' AND r.reactions<>7 AND r.reaction_after<=?
+            ORDER BY r.reaction_after LIMIT 64''', (self.relay.clock(),)).fetchall()
         self.active = {key:task for key,task in self.active.items() if not task.done()}
         groups = {}
         for row in rows:

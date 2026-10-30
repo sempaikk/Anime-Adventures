@@ -1,10 +1,36 @@
 """Bounded format checks, not an antivirus or a content classifier."""
 
 import codecs
+import io
+from contextlib import asynccontextmanager
 from pathlib import Path
 import warnings
 
 from PIL import Image
+
+
+def decoded_memory(source):
+    """Reserve for a full pixel decode without changing the original artwork."""
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter('error', Image.DecompressionBombWarning)
+            with Image.open(io.BytesIO(source) if isinstance(source, bytes) else source) as image:
+                pixels = image.width * image.height
+                if pixels > 20_000_000 or max(image.size) > 8192:
+                    raise ValueError('The image dimensions are outside the sharing limits.')
+                return pixels * 8 + 1024 * 1024
+    except (OSError, SyntaxError, Image.DecompressionBombError, Image.DecompressionBombWarning) as error:
+        raise ValueError('Invalid image') from error
+
+
+@asynccontextmanager
+async def decode_budget(budget, source):
+    amount = decoded_memory(source)
+    if budget is None:
+        yield
+    else:
+        async with budget.reserve(0, memory=amount):
+            yield
 
 
 def validate_file(path, name):
@@ -23,6 +49,10 @@ def validate_file(path, name):
                     if image.format != expected or image.width * image.height > 20_000_000 or max(image.size) > 8192:
                         raise ValueError('The image format or dimensions are outside the sharing limits.')
                     image.verify()
+                # verify() checks the container, but accepts some truncated JPEGs.
+                # Decode the first frame, retaining GIF/AVIF support for global chat.
+                with Image.open(path) as image:
+                    image.load()
         except (OSError, SyntaxError, Image.DecompressionBombError, Image.DecompressionBombWarning) as error:
             raise ValueError('The attachment is not a valid image in its declared format.') from error
         return

@@ -73,11 +73,11 @@ class CommunityHub:
         if data.get('requires_banner_reactions') and not self.bot.banners.votes.emojis:
             self.status = 'Update announcement waiting: the banner reaction setup must finish.'
             return None
-        if not self.update_complete():
+        if not self.update_complete(data):
             return None
         return self.note_text(data)
 
-    def update_complete(self):
+    def update_complete(self, requirements=None):
         # Every new notice uses this gate, including releases without a W/M/L flag.
         # Future asynchronous migrations must expose confirmed completion here too.
         if self.bot.store.get('bot-profile:1')=='pending':
@@ -87,6 +87,15 @@ class CommunityHub:
         if pending:
             self.status = 'Update announcement waiting: ' + pending
             return False
+        if requirements is None:
+            requirements=json.loads(UPDATES_PATH.read_text(encoding='utf-8'))
+        for kind in requirements.get('requires_feeds', []):
+            if kind not in {'banner','daily'}:
+                raise ValueError('Invalid release feature requirement')
+            feed=self.bot.banners if kind=='banner' else self.bot.daily
+            if feed.paused() or not feed.ready():
+                self.status='Update announcement waiting: '+kind+' must confirm current source progress.'
+                return False
         return True
 
     @staticmethod

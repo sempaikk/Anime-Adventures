@@ -153,6 +153,20 @@ class GlobalMemberView(ScopedView):
         view = MyMessagesView(self.bot, i)
         await reply(i, view.description(), view=view)
 
+    @discord.ui.button(label='My requests',row=2)
+    async def requests(self,i,button):
+        self.require(i)
+        from participant_history import RequestHistory
+        view=RequestHistory(self.bot,i)
+        await reply(i,view.description(),view=view)
+
+    @discord.ui.button(label='Choose message to report',row=1)
+    async def recent_report(self,i,button):
+        self.current(i)
+        from participant_history import RecentReport
+        view=RecentReport(self.bot,i)
+        await reply(i,view.description(),view=view)
+
     @discord.ui.button(label='How it works', row=0)
     async def help(self, i, button):
         self.current(i)
@@ -268,10 +282,11 @@ class GlobalAdminView(ScopedView):
         self.activate.label = (
             'Enable in this channel'
             if not cfg or cfg["channel_id"] != str(i.channel_id)
-            else 'Check connection'
+            else 'Repair connection'
         )
         if not bot.is_owner_id(i.user.id):
             self.remove_item(self.network)
+            self.remove_item(self.network_restrictions)
             self.remove_item(self.network_reports)
             self.remove_item(self.operations)
         from community_hub import CENTRAL_GUILD_ID
@@ -359,10 +374,30 @@ class GlobalAdminView(ScopedView):
                 text = '**Connection resumed.** Only new messages will be shared; conversations from the pause are not imported.'
         await reply(i, text)
 
+    @discord.ui.button(label='Server status',row=0)
+    async def server_status(self,i,button):
+        self.require(i)
+        from operations_views import server_overview,diagnostic_text
+        await reply(i,server_overview(self.bot,self.guild)+'\n\n'+diagnostic_text(self.bot,self.guild))
+
     @discord.ui.button(label='Local restrictions', row=1)
     async def blocks(self, i, button):
         self.current(i)
         await i.response.send_modal(ModerationModal(self.bot, i, network=False))
+
+    @discord.ui.button(label='Review restrictions',row=1)
+    async def restrictions(self,i,button):
+        self.require(i)
+        from participant_history import RestrictionView
+        view=RestrictionView(self.bot,i,network=False)
+        await reply(i,view.description(),view=view)
+
+    @discord.ui.button(label='My requests',row=2)
+    async def requests(self,i,button):
+        self.require(i)
+        from participant_history import RequestHistory
+        view=RequestHistory(self.bot,i)
+        await reply(i,view.description(),view=view)
 
     @discord.ui.button(label='Server reports', row=1)
     async def reports(self, i, button):
@@ -424,6 +459,14 @@ class GlobalAdminView(ScopedView):
         view = ReportInbox(self.bot, i, network=True)
         await reply(i, view.description(), view=view)
 
+    @discord.ui.button(label='Network restrictions',row=3)
+    async def network_restrictions(self,i,button):
+        self.require(i)
+        self.bot.require_owner(i)
+        from participant_history import RestrictionView
+        view=RestrictionView(self.bot,i,network=True)
+        await reply(i,view.description(),view=view)
+
 
 class MoveConfirm(ScopedView):
     def __init__(self, bot, i, generation):
@@ -475,12 +518,16 @@ class MyMessagesView(ScopedView):
             )
             states = {x["state"]: x["n"] for x in counts}
             status = f"Shared with {states.get('sent', 0) + states.get('partial', 0)} destination(s)."
+            if states.get('preparing'):
+                status += f" Preparing files for {states['preparing']} destination(s)."
             if states.get("partial"):
                 status += " Some attachments exceeded the destination's limit."
             if any(
                 states.get(k) for k in ("queued", "preparing", "uncertain", "sending")
             ):
-                status += ' There are pending deliveries.'
+                status += ' Waiting to send: '+str(states.get('queued',0))+'.'
+            if states.get('uncertain') or states.get('sending'):
+                status += ' Awaiting Discord confirmation: '+str(states.get('uncertain',0)+states.get('sending',0))+'. Confirmation is being checked to avoid duplicates.'
             if states.get("failed") or row["error"]:
                 status += ' Some deliveries could not be confirmed.'
             text += f"\n**[Message {row['id']}](https://discord.com/channels/{row['guild_id']}/{row['channel_id']}/{row['id']})**\n{safe(data.get('body') or 'The attachment or content has already been removed from the cache.', 100)}\n{status}\n"
@@ -549,12 +596,12 @@ class MessageAction(BoundModal):
         self.bot.require_human(i)
         row = find_message(self.bot, i, str(self.link), own=self.action == "erase")
         if self.action == "report":
-            self.bot.globalchat.store.report(
+            ident=self.bot.globalchat.store.report(
                 row["id"], i.user.id, i.guild_id, str(self.reason)
             )
             await reply(
                 i,
-                "**Report submitted.** This server's administrators and the network owner can review it. Your report is not published in chat.",
+                f"**Report #{ident} submitted.** This server's moderators and the network owner can review it. Use My requests to check its status privately.",
             )
         else:
             if row["user_id"] != str(i.user.id):
@@ -612,6 +659,9 @@ class ModerationModal(BoundModal):
         options = [
             discord.SelectOption(label='Block user', value="block-user"),
             discord.SelectOption(label='Unblock user', value="unblock-user"),
+            discord.SelectOption(label='Restrict user for 15 minutes', value='timeout-900'),
+            discord.SelectOption(label='Restrict user for one hour', value='timeout-3600'),
+            discord.SelectOption(label='Restrict user for one day', value='timeout-86400'),
         ]
         if network:
             options.extend(
@@ -658,20 +708,34 @@ class ModerationModal(BoundModal):
                 self.bot.store.audit("global-removal", i.user.id, str(self.reason))
         else:
             enabled, kind = value.split("-", 1)
+            seconds=int(kind) if enabled=='timeout' else 0
+            kind='user' if seconds else kind
             if kind == "guild" and not self.network:
                 raise ValueError('Server administrators can only block users in their own server.')
             target = str(self.target).strip()
             if target.startswith("https://"):
                 row = find_message(self.bot, i, target, network=self.network)
                 target = row["user_id"] if kind == "user" else row["guild_id"]
-            self.bot.globalchat.store.block(
-                "*" if self.network else i.guild_id,
-                kind,
-                target,
-                i.user.id,
-                str(self.reason),
-                enabled=enabled == "block",
-            )
+            expected=getattr(self,'expected_restriction',None)
+            if expected is not None:
+                scope='*' if self.network else str(i.guild_id)
+                current=self.bot.globalchat.store.rows("SELECT * FROM global_restrictions WHERE scope=? AND kind=? AND target=? AND until>?",(scope,kind,target,self.bot.store.clock()))
+                current+=self.bot.globalchat.store.rows('SELECT * FROM global_blocks WHERE scope=? AND kind=? AND target=?',(scope,kind,target))
+                if enabled!='unblock' or current!=expected:
+                    raise ValueError('This restriction changed. Refresh the list before releasing it.')
+            if seconds:
+                self.bot.globalchat.store.restrict('*' if self.network else i.guild_id,'user',target,seconds,i.user.id,reason)
+                with self.bot.store.connection:
+                    self.bot.store.audit('global-temporary-restriction',i.user.id,reason)
+            else:
+                self.bot.globalchat.store.block(
+                    "*" if self.network else i.guild_id,
+                    kind,
+                    target,
+                    i.user.id,
+                    str(self.reason),
+                    enabled=enabled == "block",
+                )
         await reply(
             i,
             '**Moderation applied.** '

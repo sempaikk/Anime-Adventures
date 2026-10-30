@@ -4,6 +4,8 @@ from contextlib import closing
 from pathlib import Path
 import sqlite3
 import tempfile
+import hashlib
+import json
 
 from bot_storage import restore_snapshot
 from storage_maintenance import verify_database
@@ -21,4 +23,37 @@ def check_restore(snapshot, *, temporary_parent=None):
                 name='"'+table.replace('"','""')+'"'
                 if original.execute('SELECT count(*) FROM '+name).fetchone()!=copy.execute('SELECT count(*) FROM '+name).fetchone():
                     raise sqlite3.DatabaseError('Restored row counts do not match the verified snapshot.')
-        return {'verified':True,'tables_checked':len(tables),'live_database_replaced':False,'network_used':False}
+            preserved={table:([r[1] for r in original.execute('PRAGMA table_info("'+table+'")')],table_digest(original,table)) for table in tables if table in {
+                'global_consents','global_channels','banner_targets','daily_targets','banner_config_versions',
+                'daily_config_versions','daily_current','daily_source_head','banner_vote_backfill',
+                'banner_vote_order_repairs','banner_image_receipts','global_receipts'}}
+        # Exercise application state readers/migrations on the disposable copy.
+        # Never instantiate a Discord client or start source readers/tasks here.
+        from bot_store import BotStore
+        from global_store import GlobalStore
+        from banner_relay import BannerRelay
+        from types import SimpleNamespace
+        base=BotStore(restored)
+        try:
+            GlobalStore(base)
+            bot=SimpleNamespace(store=base)
+            BannerRelay(bot)
+            BannerRelay(bot,kind='daily')
+            for table,(columns,digest) in preserved.items():
+                if table_digest(base.connection,table,columns)!=digest:
+                    raise sqlite3.DatabaseError('Recovered application state changed during the restore drill.')
+        finally:
+            base.close()
+        return {'verified':True,'tables_checked':len(tables),'application_state_checked':len(preserved),
+                'live_database_replaced':False,'network_used':False}
+
+
+def table_digest(db,table,columns=None):
+    name='"'+table.replace('"','""')+'"'
+    digest=hashlib.sha256()
+    # Only small metadata/receipt tables, never export values to the report.
+    fields=','.join('"'+col.replace('"','""')+'"' for col in columns) if columns else '*'
+    for row in db.execute('SELECT '+fields+' FROM '+name+' ORDER BY rowid'):
+        digest.update(json.dumps(tuple(row),separators=(',',':'),default=str).encode())
+        digest.update(b'\n')
+    return digest.hexdigest()

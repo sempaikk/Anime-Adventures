@@ -365,6 +365,10 @@ class OperationsCase(unittest.IsolatedAsyncioTestCase):
         self.app.health.storage_level = "ok"
         await self.engine.operations.check_alerts()
         await self.engine.operations.check_alerts()
+        self.assertEqual(self.author.send.await_count, 1)
+        self.now[0] += 120
+        self.engine.last_cycle = self.now[0]
+        await self.engine.operations.check_alerts()
         self.assertEqual(self.author.send.await_count, 2)
 
     async def test_owner_can_disable_alerts_and_regular_administrators_cannot_open_status_controls(

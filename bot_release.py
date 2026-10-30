@@ -9,7 +9,7 @@ from bot_domain import ROOT
 
 def shipped_files(root=ROOT):
     paths = {root / "requirements.txt"}
-    for pattern in ("*.py", "data/*.json", "scripts/*.py", "tests/*.py", "assets/banner-votes/*.png"):
+    for pattern in ("*.py", "data/*.json", "scripts/*.py", "tests/*.py", "assets/banner-votes/*.png", "requirements*.txt"):
         paths.update(root.glob(pattern))
     paths.discard(root / "data/build.json")
     return sorted(path for path in paths if path.is_file())
@@ -56,7 +56,8 @@ def build_info(root=ROOT):
         fingerprint = hashlib.sha256(
             json.dumps(actual, sort_keys=True).encode()
         ).hexdigest()
-        changed = sorted(name for name in files if files[name] != actual.get(name))
+        unlisted={str(p.relative_to(root)) for p in shipped_files(root)}-set(files)
+        changed = sorted({name for name in files if files[name] != actual.get(name)} | unlisted)
         return {
             "version": expected["version"],
             "fingerprint": fingerprint,

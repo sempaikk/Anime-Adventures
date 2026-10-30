@@ -90,9 +90,8 @@ class BannerImages:
 
         parts = self.prepare(job, assets)
         history = None
+        delay=0
         for part, asset in zip(parts, assets):
-            if not self.relay.current_job(job):
-                return
             if part['state'] in {'sent', 'legacy', 'legacy_uncertain', 'unavailable', 'oversize'}:
                 continue
             if part['state'] in {'sending', 'uncertain'}:
@@ -107,6 +106,8 @@ class BannerImages:
                          or [a.filename for a in message.attachments] == [part['filename']])), None)
                 self.state(part, 'sent' if message else 'uncertain', message.id if message else None)
                 continue
+            if self.relay.paused() or not self.relay.current_job(job):
+                return
             if len(asset['data']) > min(MAX_IMAGE, channel.guild.filesize_limit):
                 self.state(part, 'oversize')
                 continue
@@ -123,10 +124,16 @@ class BannerImages:
                 self.state(part, 'sent', response['id'])
             except (discord.Forbidden, discord.NotFound):
                 self.state(part, 'unavailable')
-            except Exception:
-                self.state(part, 'uncertain')
+            except Exception as error:
+                from delivery_errors import feed_failure,retry_delay
+                self.state(part, feed_failure(error))
+                delay=retry_delay(error)
+                if delay:
+                    break
             finally:
                 file.close()
+        if not self.relay.current_job(job):
+            return
         current = [self.db.execute('''SELECT * FROM banner_image_receipts
             WHERE source_message=? AND digest=? AND channel_id=?''', self.key(part)).fetchone() for part in parts]
         current = [part for part in current if part is not None]
@@ -135,9 +142,14 @@ class BannerImages:
         states = {part['state'] for part in current}
         state = next((value for value, selected in (
             ('uncertain', {'sending', 'uncertain', 'legacy_uncertain'}), ('unavailable', {'unavailable'}),
+            ('rejected', {'rejected'}),
             ('pending', {'pending'}), ('oversize', {'oversize'})) if states & selected), 'sent')
         ident = next((part['message_id'] for part in current if part['message_id']), None)
         self.relay.state(job, state, ident)
+        if delay:
+            with self.db:
+                self.db.execute('UPDATE banner_jobs SET next_try=? WHERE event_id=? AND channel_id=?',
+                    (self.relay.clock()+delay,job['event_id'],job['channel_id']))
         if state == 'sent':
             with self.db:
                 self.db.execute('UPDATE banner_jobs SET attempted_at=? WHERE event_id=? AND channel_id=?',

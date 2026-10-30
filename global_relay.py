@@ -100,6 +100,27 @@ def chunks(text, limit=1900):
     return result
 
 
+def formatted_chunks(text):
+    """Close/reopen code fences between posts; retain the stored original text."""
+    result, fence = [], ''
+    for part in chunks(text, limit=1800):
+        prefix = fence+'\n' if fence else ''
+        for line in part.splitlines(keepends=True):
+            match=re.match(r'^\s{0,3}(`{3,}|~{3,})([^\r\n]*)',line)
+            if match:
+                marker=match[1]
+                if fence and marker[0]==fence[0] and len(marker)>=len(re.match(r'[`~]+',fence)[0]):
+                    fence=''
+                elif not fence:
+                    fence=marker+match[2][:32]
+        suffix='\n'+re.match(r'[`~]+',fence)[0] if fence else ''
+        rendered=prefix+part+suffix
+        if len(rendered.encode('utf-16-le'))//2>1900:
+            return chunks(text)  # Unusually long fence markers still obey Discord limits.
+        result.append(rendered)
+    return result
+
+
 class GlobalRelay:
     def __init__(self, bot):
         self.bot = bot
@@ -121,6 +142,8 @@ class GlobalRelay:
         self.cycle_lock = asyncio.Lock()
         self.source_locks = {}
         self.tasks = set()
+        self.deliveries = {}
+        self.recovery_task = None
         self.round = 0
         self.recovery_index = 0
         self.last_recovery = 0
@@ -228,6 +251,7 @@ class GlobalRelay:
                     "url": item.url,
                     "filename": filename(item.filename),
                     "size": item.size,
+                    **({'description':str(item.description)[:1024]} if getattr(item,'description',None) else {}),
                 }
             )
         for sticker in getattr(message, "stickers", []):
@@ -510,7 +534,7 @@ class GlobalRelay:
             for a in assets
             if not a.get("oversize") and a["size"] <= target.guild.filesize_limit
         ]
-        texts = chunks(body)
+        texts = formatted_chunks(body)
         count = max(len(texts), (len(usable) + 9) // 10)
         return [
             {
@@ -530,9 +554,21 @@ class GlobalRelay:
                 terminal=True,
             )
             return False
-        after = datetime.fromtimestamp(max(0, job["attempted"] - 5), timezone.utc)
-        matches = []
-        async for message in target.history(limit=100, after=after):
+        saved = self.store.one('SELECT * FROM global_reconcile WHERE source_id=? AND channel_id=?',
+                               (job['source_id'],job['channel_id']))
+        if not saved or saved['attempted'] != job['attempted']:
+            saved = {'cursor':'0','matches':'[]'}
+        after = (discord.Object(id=int(saved['cursor'])) if int(saved['cursor'])
+                 else datetime.fromtimestamp(max(0, job['attempted']-5),timezone.utc))
+        matches = set(json.loads(saved['matches']))
+        count, cursor = 0, saved['cursor']
+        # Continue oldest-first from a durable cursor; a busy channel cannot hide
+        # the attempt behind the newest 100 messages. Bound each scan to one page.
+        boundary=discord.Object(id=discord.utils.time_snowflake(
+            datetime.fromtimestamp(job['attempted']+300,timezone.utc),high=True))
+        async for message in target.history(limit=100, after=after, before=boundary, oldest_first=True):
+            count += 1
+            cursor = str(message.id)
             if str(message.webhook_id) != job["hook_id"]:
                 continue
             actual = {
@@ -544,9 +580,12 @@ class GlobalRelay:
                 ],
             }
             if fingerprint(actual) == expected["fingerprint"]:
-                matches.append(message)
-        if len(matches) == 1:
-            self.store.save_receipt(job, part, matches[0].id)
+                matches.add(str(message.id))
+        with self.store.db:
+            self.store.db.execute('INSERT OR REPLACE INTO global_reconcile VALUES(?,?,?,?,?)',
+                (job['source_id'],job['channel_id'],job['attempted'],cursor if count==100 or matches else '0',json.dumps(sorted(matches)[:2])))
+        if len(matches) == 1 and count < 100:
+            self.store.save_receipt(job, part, next(iter(matches)))
             with self.store.db:
                 self.store.db.execute(
                     "UPDATE global_deliveries SET state='queued',next_try=0 WHERE source_id=? AND channel_id=?",
@@ -559,7 +598,6 @@ class GlobalRelay:
             job,
             'Delivery unconfirmed; retained for reconciliation without blind retries.',
             uncertain=part,
-            terminal=job["attempts"] >= 6,
         )
         return False
 
@@ -901,6 +939,11 @@ class GlobalRelay:
                 async with self.workers:
                     try:
                         await asyncio.wait_for(self.deliver(job), 90)
+                    except asyncio.CancelledError:
+                        current=self.store.delivery(job['source_id'],job['channel_id'])
+                        if current and current['state']=='sending':
+                            self.store.retry(current,'Publication interrupted; checking confirmation.',uncertain=current['uncertain'])
+                        raise
                     except TimeoutError:
                         current = self.store.delivery(
                             job["source_id"], job["channel_id"]
@@ -914,11 +957,24 @@ class GlobalRelay:
                     except Exception as error:
                         log.warning("Entrega global adiada: %s", type(error).__name__)
 
-            await asyncio.gather(*(run(job) for job in self.store.jobs(limit=8)))
+            self.deliveries={key:task for key,task in self.deliveries.items() if not task.done()}
+            for job in self.store.jobs(limit=max(0,8-len(self.deliveries)),exclude=self.deliveries):
+                task=asyncio.create_task(run(job),name='global-delivery')
+                self.deliveries[job['channel_id']]=task
+                self.tasks.add(task)
+                task.add_done_callback(self.tasks.discard)
+            if self.deliveries:
+                await asyncio.wait(self.deliveries.values(),timeout=.05)
             self.last_cycle = self.store.clock()
             self.round += 1
-            if self.store.clock() - self.last_recovery >= 10:
-                await self.recover()
+            if self.store.clock() - self.last_recovery >= 10 and (not self.recovery_task or self.recovery_task.done()):
+                self.recovery_task=asyncio.create_task(self.recover(),name='global-source-recovery')
+                self.tasks.add(self.recovery_task)
+                def finished(task):
+                    self.tasks.discard(task)
+                    if not task.cancelled() and task.exception():
+                        log.warning('Global recovery deferred: %s',type(task.exception()).__name__)
+                self.recovery_task.add_done_callback(finished)
                 self.last_recovery = self.store.clock()
 
     def ready(self):

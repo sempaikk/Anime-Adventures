@@ -51,6 +51,10 @@ class GlobalOperations:
         else:
             text+='\n**Process memory:** measurement unavailable on this host.'
         text += f"\n**Storage:** {s['storage']} · database {self.bot.store.path.stat().st_size / 1024 / 1024:.1f} MiB · cache {self.relay.media.usage() / 1024 / 1024:.1f} MiB."
+        from storage_metrics import storage_metrics
+        capacity=storage_metrics(self.store)
+        text+=f"\n**History:** {capacity['stored_copies']} stored copy records · {capacity['reusable']/1048576:.1f} MiB reusable inside SQLite · {capacity['expired_sources']} expired sources awaiting bounded cleanup."
+        text+=f"\n**Growth estimate:** {capacity['daily_sources']} source messages in 24 h × up to {max(0,capacity['active_servers']-1)} other active servers = {capacity['estimated_daily_copies']} copies/day at the current audience (before restrictions)."
         build = getattr(self.bot, "build", None)
         if build:
             text += '\n**Running version:** ' + label(build)
@@ -61,7 +65,11 @@ class GlobalOperations:
                 if summary['p95'] is not None:
                     text+=f" Latest per-destination delivery p95: {summary['p95']:.0f} s."
         alerts = self.bot.store.get("global-owner-alerts") != "0"
-        text += f"\n**Private alerts:** {('enabled' if alerts else 'disabled')}. Failures must persist for two minutes; each alert type has a one-hour cooldown."
+        backup=getattr(self.bot.health,'last_backup',None)
+        text+='\n**Verified local backup:** '+(f'<t:{int(backup)}:R>.' if backup else 'not confirmed yet.')
+        text+=' External copy: not configured; local copies share the hosting failure risk.'
+        text+='\n**Command sync:** '+getattr(self.bot,'command_sync_status','not confirmed in this process')+'.'
+        text += f"\n**Private alerts:** {('enabled' if alerts else 'disabled')}. Failures and recoveries must persist for two minutes; each incident type has a one-hour cooldown."
         held = self.store.rows(
             "SELECT target,until,reason FROM global_restrictions WHERE scope='*' AND kind='guild' AND until>? ORDER BY until LIMIT 5",
             (self.store.clock(),),
@@ -115,13 +123,23 @@ class GlobalOperations:
         for feed in (getattr(self.bot,'banners',None),getattr(self.bot,'daily',None)):
             if feed:
                 conditions.update(feed.alert_conditions())
+        source_keys=[k for k in conditions if k.endswith(('_source','_receive'))]
+        source_issues=[text for key in source_keys for active,text in [conditions.pop(key)] if active]
+        conditions['image_sources']=(bool(source_issues), 'Image source checks or reception are delayed. '
+            'Open private diagnostics; channel permission changes cannot repair an upstream source outage.')
         for key, (active, text) in conditions.items():
             meta = "global-alert:" + key
             previous = json.loads(self.bot.store.get(meta) or "{}")
             if not active:
+                if not previous.get('first'):
+                    continue
+                if not previous.get('cleared'):
+                    previous['cleared']=now
+                if now-previous['cleared']<120:
+                    self.bot.store.set(meta,json.dumps(previous))
+                    continue
                 if previous.get("sent"):
-                    self.bot.store.set(meta, "{}")
-                    await self.notify(
+                    delivered=await self.notify(
                         '## Service recovered\n'
                         + {
                             "storage": 'Storage is no longer critically low.',
@@ -130,14 +148,20 @@ class GlobalOperations:
                             "containment": 'No servers are currently under temporary restrictions.',
                         }.get(key,'The '+key.replace('_',' ')+' condition has recovered.')
                     )
-                elif previous:
-                    self.bot.store.set(meta, "{}")
+                    if not delivered:
+                        self.bot.store.set(meta,json.dumps(previous))
+                        continue
+                previous.update(first=0,sent=False,cleared=0)
+                self.bot.store.set(meta,json.dumps(previous))
                 continue
-            if not previous:
+            if not previous.get('first'):
+                previous.update(first=now,sent=False,cleared=0)
                 self.bot.store.set(
-                    meta, json.dumps({"first": now, "attempted": 0, "sent": False})
+                    meta, json.dumps(previous)
                 )
                 continue
+            previous['cleared']=0
+            self.bot.store.set(meta,json.dumps(previous))
             if (
                 now - previous["first"] < 120
                 or now - previous.get("attempted", 0) < 3600
@@ -181,6 +205,25 @@ class OperationsView(ScopedView):
         await edit_response(
             i, content=self.description(), view=self
         )
+
+    @discord.ui.button(label='Destinations',row=3)
+    async def destinations(self,i,button):
+        self.require(i)
+        from operations_views import DestinationView
+        view=DestinationView(self.bot,i)
+        await reply(i,view.description(),view=view)
+
+    @discord.ui.button(label='Copy diagnostics',row=3)
+    async def diagnostics(self,i,button):
+        self.require(i)
+        from operations_views import diagnostic_text
+        await reply(i,diagnostic_text(self.bot,self.guild))
+
+    @discord.ui.button(label='Feed maintenance',row=3)
+    async def maintenance(self,i,button):
+        self.require(i)
+        from operations_views import FeedMaintenance
+        await i.response.send_modal(FeedMaintenance(self.bot,i))
 
     @discord.ui.button(label='Server report', row=1)
     async def server_report(self, i, button):

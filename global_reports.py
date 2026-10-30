@@ -162,6 +162,8 @@ class ReportDecision(BoundModal):
                 discord.SelectOption(
                     label='Block user for one hour', value="block-hour"
                 ),
+                discord.SelectOption(label='Restrict user for 15 minutes',value='block-quarter'),
+                discord.SelectOption(label='Restrict user for one day',value='block-day'),
                 discord.SelectOption(
                     label='Request copy removal', value="remove"
                 ),

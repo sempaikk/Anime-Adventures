@@ -47,6 +47,8 @@ class CommunityBot(commands.Bot):
         self.preview_slots=asyncio.Semaphore(1)
         self.backup_task=None
         self.backup_lock=asyncio.Lock()
+        self.command_sync_task=None
+        self.command_sync_status='pending'
         self.globalchat=GlobalRelay(self)
         self.health.add_probe('global_chat',self.globalchat.ready)
         self.banners=BannerRelay(self)
@@ -81,12 +83,27 @@ class CommunityBot(commands.Bot):
         self.add_view(GlobalPanelView(self))
         self.add_view(GlobalDirectView(self))
         await self.health.start(int(os.getenv('PORT') or os.getenv('SERVER_PORT') or 8080))
-        await self.tree.sync()
         self.banners.require_source_confirmation=self.daily.require_source_confirmation=True
         for loop in self.service_loops():
             loop.start()
         self.banners.start()
-        log.info('Commands synchronized: global chat, banners and daily challenges.')
+        self.command_sync_task=asyncio.create_task(self.sync_commands(),name='command-sync')
+
+    async def sync_commands(self):
+        delay=15
+        while not self.is_closed():
+            try:
+                await asyncio.wait_for(self.tree.sync(),60)
+                self.command_sync_status='confirmed'
+                log.info('Commands synchronized: global chat, banners and daily challenges.')
+                return
+            except asyncio.CancelledError:
+                raise
+            except Exception as error:
+                self.command_sync_status='retry pending; existing commands and feeds remain active'
+                log.warning('Command sync deferred: %s',type(error).__name__)
+                await asyncio.sleep(delay)
+                delay=min(300,delay*2)
 
     def service_loops(self):
         return (self.maintenance_loop,self.global_loop,self.operations_loop,self.banner_loop,
@@ -359,15 +376,19 @@ class CommunityBot(commands.Bot):
                 await reply(i, str(cause))
             else:
                 log.warning("Comando indisponível: %s", type(cause).__name__)
+                from bot_views import action_error
                 await reply(
                     i,
-                    "The action could not be completed. Check the channel permissions and try again. The previous state was preserved.",
+                    action_error(cause),
                 )
 
     async def close(self):
         if getattr(self,'_bot_closed',False):
             return
         self._bot_closed=True
+        if self.command_sync_task and not self.command_sync_task.done():
+            self.command_sync_task.cancel()
+            await asyncio.gather(self.command_sync_task,return_exceptions=True)
         for loop in self.service_loops():
             task=loop.get_task()
             if task and not task.done():

@@ -7,6 +7,16 @@ from bot_ui import payload
 log=logging.getLogger("adventures.ui")
 
 
+def action_error(error):
+    if isinstance(error,discord.Forbidden):
+        return "Discord denied access. A server administrator needs to check the bot's channel permissions."
+    if getattr(error,'status',0)==429:
+        return 'Discord is limiting requests. Wait for the automatic retry, then check status before repeating the action.'
+    if isinstance(error,OSError):
+        return 'Temporary storage or network access is unavailable. The bot owner can check private diagnostics. Check status before trying again.'
+    return "The action's result could not be confirmed. Check its status before trying again. The bot owner can check private diagnostics."
+
+
 async def reply(i, text=None, **kwargs):
     kwargs.setdefault("ephemeral", True)
     kwargs = payload(bot=getattr(i, "client", None), content=text, **kwargs)
@@ -28,7 +38,7 @@ class GuardedView(discord.ui.View):
             log.warning("Interface indisponível: %s", type(error).__name__)
             await reply(
                 i,
-                "The action's result could not be confirmed. Check its status before trying again.",
+                action_error(error),
             )
 
 
@@ -58,5 +68,5 @@ class BoundModal(discord.ui.Modal):
             log.warning("Formulário indisponível: %s", type(error).__name__)
             await reply(
                 i,
-                "The form's result could not be confirmed. Reopen the controls and check its status before resubmitting.",
+                action_error(error),
             )

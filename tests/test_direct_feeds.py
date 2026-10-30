@@ -107,7 +107,7 @@ class DirectFeedsCase(unittest.IsolatedAsyncioTestCase):
     async def test_retired_queue_does_not_block_release_notices_or_claim_publishing_in_private_status(self):
         self.seed_legacy_queue()
         await self.votes.cycle()
-        self.assertTrue(self.app.community.update_complete())
+        self.assertTrue(self.app.community.update_complete({'requires_feeds':[]}))
         self.assertNotIn('Announcement publishing', self.relay.description(1))
         self.assertNotIn('Announcement publishing', self.app.daily.description(2))
         self.app.http.publish_message.assert_not_awaited()

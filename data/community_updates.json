@@ -1,7 +1,17 @@
 {
   "schema": 1,
-  "version": "2026.10.28.2",
+  "version": "2026.10.29.1",
+  "requires_feeds": [
+    "banner",
+    "daily"
+  ],
   "changes": [
-    "Corrigida uma falha que podia interromper o envio de banners e desafios diários após uma reconexão."
+    "Banners e desafios diários retomam automaticamente o envio da imagem atual quando as permissões do canal são restauradas.",
+    "Reações W/M/L que ficaram pendentes podem ser completadas depois, preservando os votos existentes.",
+    "Um servidor com envio lento deixa de segurar as novas mensagens do chat global nos demais servidores.",
+    "Os painéis separam a consulta da troca de canal e pedem confirmação antes de mudar o destino de imagens.",
+    "Agora você pode acompanhar suas denúncias e seu feedback em particular, além de escolher uma mensagem recente para denunciar.",
+    "Moderadores podem consultar restrições e escolher períodos de 15 minutos, uma hora ou um dia.",
+    "Mensagens longas com blocos de código ficam mais legíveis, e descrições de imagens escritas pelos participantes são preservadas no chat global."
   ]
 }

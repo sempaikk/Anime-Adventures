@@ -31,6 +31,12 @@ class CommunityCompletionCase(unittest.IsolatedAsyncioTestCase):
         data = json.loads((Path(__file__).resolve().parents[1] / 'data/community_updates.json').read_text())
         self.app.build = {'version': data['version'], 'verified': True}
         self.app.store.clock = lambda: self.now
+        # These journeys exercise vote completion independently of the real
+        # source-readiness requirement; both synthetic source scans succeeded.
+        for feed in (self.app.banners,self.app.daily):
+            feed.clock=lambda:self.now
+            feed.status='ready'
+            feed.diagnostics.poll()
         guild = self.channel.guild
         guild.unavailable = False
         guild.get_channel = lambda ident: self.channels.get(ident)
@@ -41,6 +47,8 @@ class CommunityCompletionCase(unittest.IsolatedAsyncioTestCase):
 
     async def announce(self):
         self.now += 301
+        for feed in (self.app.banners,self.app.daily):
+            feed.diagnostics.poll()
         await self.hub.publish_update()
 
     def assert_waiting(self):

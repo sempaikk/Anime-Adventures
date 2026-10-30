@@ -54,6 +54,16 @@ async def _preview(feed, i):
     if row is None or newer_waiting or feed.diagnostics.obsolete(row['source_message']) or feed.status != 'ready':
         await reply(i,'No current verified image is available. The bot is waiting for the source; an old image will not be labelled as current.')
         return
+    from contextlib import AsyncExitStack
+    async with AsyncExitStack() as reservations:
+        budget=getattr(feed.bot,'instance_storage',None)
+        if budget:
+            sizes=feed.query('SELECT length(data) FROM banner_assets WHERE digest IN (SELECT value FROM banner_events,json_each(images) WHERE banner_events.id=?)',(row['id'],)).fetchall()
+            await reservations.enter_async_context(budget.reserve(0,memory=3*sum(r[0] for r in sizes)))
+        await send_preview(feed,i,row)
+
+
+async def send_preview(feed,i,row):
     assets = feed.assets(row['id'])
     if not assets or any(x is None for x in assets):
         raise ValueError('The current files are unavailable. Wait for the next source update.')
@@ -80,6 +90,7 @@ class FeedPanel(GuardedView):
             self.remove_item(self.enable)
             self.remove_item(self.disable)
             self.remove_item(self.status)
+            self.remove_item(self.diagnostics)
 
     async def interaction_check(self, i):
         if (i.user.id,i.guild_id,i.channel_id)!=(self.actor,self.guild,self.channel):
@@ -101,8 +112,17 @@ class FeedPanel(GuardedView):
     async def view(self,i,button):
         await preview(self.feed,i)
 
-    @discord.ui.button(label='Enable / check this channel',style=discord.ButtonStyle.success,row=1)
+    @discord.ui.button(label='Enable in this channel',style=discord.ButtonStyle.success,row=1)
     async def enable(self,i,button):
+        require_banner_admin(i)
+        target=self.feed.target(self.guild)
+        if target and target['channel_id']!=str(self.channel):
+            view=FeedMoveConfirm(self.bot,i,kind=self.kind,generation=self.generation)
+            await reply(i,f'Change the {self.kind} destination from <#{target["channel_id"]}> to <#{self.channel}>? History and votes stay in their original channels.',view=view)
+            return
+        await self.configure(i)
+
+    async def configure(self,i):
         require_banner_admin(i)
         if not isinstance(i.channel,discord.TextChannel):
             raise ValueError('Choose a server text channel.')
@@ -131,11 +151,37 @@ class FeedPanel(GuardedView):
         self.stop()
         await reply(i,'Receiving stopped. History and votes remain. A request already accepted by Discord may finish.')
 
-    @discord.ui.button(label='Status',row=0)
+    @discord.ui.button(label='Check connection',row=0)
     async def status(self,i,button):
         require_banner_admin(i)
-        await reply(i,self.feed.private_status(self.guild))
+        from operations_views import server_overview
+        target=self.feed.target(self.guild)
+        channel=self.bot.get_channel(int(target['channel_id'])) if target else None
+        missing=feed_permissions(channel,channel.guild.me) if isinstance(channel,discord.TextChannel) else ['Configured channel access']
+        await reply(i,server_overview(self.bot,self.guild)+'\n\n'+self.feed.private_status(self.guild)
+            +'\n'+('Administrator action needed: '+', '.join(missing)+'.' if missing else 'Channel permissions are ready. This check does not move or reconfigure the feed.'))
+
+    @discord.ui.button(label='Copy diagnostics',row=2)
+    async def diagnostics(self,i,button):
+        require_banner_admin(i)
+        from operations_views import diagnostic_text
+        await reply(i,diagnostic_text(self.bot,self.guild))
 
     @discord.ui.button(label='How it works',row=0)
     async def help(self,i,button):
         await reply(i,FAQ)
+
+
+class FeedMoveConfirm(GuardedView):
+    def __init__(self,bot,i,*,kind,generation):
+        super().__init__(timeout=180)
+        self.panel=FeedPanel(bot,i,kind=kind)
+        self.panel.generation=generation
+
+    async def interaction_check(self,i):
+        return await self.panel.interaction_check(i)
+
+    @discord.ui.button(label='Confirm destination change',style=discord.ButtonStyle.success)
+    async def confirm(self,i,button):
+        await self.panel.configure(i)
+        self.stop()

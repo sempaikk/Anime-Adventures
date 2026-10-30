@@ -132,7 +132,7 @@ class ModerationStore:
 
     def review_report(self, ident, scope, actor, expected, action, reason):
         if (
-            action not in ("resolve", "dismiss", "reopen", "block-hour", "remove")
+            action not in ("resolve", "dismiss", "reopen", "block-hour", "block-quarter", "block-day", "remove")
             or not 5 <= len(reason.strip()) <= 500
         ):
             raise ValueError(
@@ -142,7 +142,7 @@ class ModerationStore:
         if report["version"] != expected:
             raise ValueError('The report changed. Refresh the list before making a decision.')
         source = self.message(report["source_id"])
-        if action in ("block-hour", "remove") and source is None:
+        if action in ("block-hour", "block-quarter", "block-day", "remove") and source is None:
             raise ValueError(
                 'The message is outside the synchronization window. You can still resolve or dismiss the report.'
             )
@@ -184,14 +184,14 @@ class ModerationStore:
                 "UPDATE global_reports SET reviewed=? WHERE id=?",
                 (int(status != "pending"), ident),
             )
-            if action == "block-hour":
+            if action in {'block-hour','block-quarter','block-day'}:
                 self.db.execute(
                     "INSERT OR REPLACE INTO global_restrictions VALUES(?,?,?,?,?,?,?)",
                     (
                         "*" if scope is None else str(scope),
                         "user",
                         source["user_id"],
-                        self.clock() + 3600,
+                        self.clock() + {'block-hour':3600,'block-quarter':900,'block-day':86400}[action],
                         reason.strip(),
                         str(actor),
                         self.clock(),

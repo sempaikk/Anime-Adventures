@@ -111,5 +111,5 @@ class FeedState:
         timings=sorted(r[0] for r in self.feed.query('SELECT latency FROM banner_delivery_summary ORDER BY confirmed DESC LIMIT 4096'))
         return {'targets':self.feed.query('SELECT count(*) FROM banner_targets').fetchone()[0],
             'pending':sum(states.get(k,0) for k in ('pending','sending','uncertain')),
-            'blocked':sum(states.get(k,0) for k in ('unavailable','oversize')),
+            'blocked':sum(states.get(k,0) for k in ('unavailable','oversize','rejected')),
             'p95':timings[max(0,(95*len(timings)+99)//100-1)] if timings else None}
