@@ -35,7 +35,7 @@ Um administrador escolhe o canal normal de grupos em **Server setup** e confirma
 
 Há até três grupos ativos por organizador e vinte por servidor. Capacidade: duas a doze pessoas, com até doze reservas. A ordem persistente de inscrição e a chave única impedem duplicar a mesma inscrição; reservas ocupam lugares liberados. Grupo encerra duas horas após o horário escolhido, ou quando seu organizador o fecha. O bot atualiza sua própria mensagem, sem recriar uma mensagem removida. Remoção do servidor/canal/mensagem fecha o estado correspondente.
 
-Publicação tem nonce e estado persistente antes do POST. Perda de confirmação exige reconciliação pelo nonce ou identificador controlado da mensagem; ausência de prova não gera repostagem. Eventos nativos são opcionais, acionados pelo organizador e exigem Create Events. Marcar Interested no Discord não reserva vaga no grupo. Confirmação incerta de criação não permite criar outro evento às cegas. Eventos conhecidos criados pelo bot são encerrados quando o grupo fecha, se o acesso permanecer disponível.
+Publicação tem nonce e estado persistente antes do POST. Perda de confirmação exige reconciliação pelo nonce ou identificador controlado da mensagem; ausência de prova não gera repostagem. Eventos nativos ficam desabilitados por padrão; o administrador habilita Scheduled events em Server setup e concede Create Events. Depois, a criação é acionada pelo organizador. Marcar Interested no Discord não reserva vaga no grupo. Confirmação incerta de criação não permite criar outro evento às cegas. Eventos conhecidos criados pelo bot são encerrados quando o grupo fecha, se o acesso permanecer disponível.
 
 ## Lembretes e privacidade
 
