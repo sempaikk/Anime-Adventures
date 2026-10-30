@@ -8,7 +8,7 @@ Três comandos, com controles privados:
 
 **Report global message**, no menu da mensagem, abre a denúncia privada existente.
 
-Abrir um painel não altera destinos nem republica imagens. Cada banner tem sua própria votação com os emojis originais win, mid e lose. O desafio diário não recebe essas reações. As postagens dos feeds contêm apenas imagens estáticas, sem legenda, propaganda ou publicação automática pelo megafone.
+Abrir um painel não altera destinos nem republica imagens. Cada banner tem sua própria votação com os emojis originais win, mid e lose. O desafio diário não recebe essas reações. Imagens normais e encaminhadas nas fontes oficiais passam pela mesma entrega, sem texto, referência ao encaminhamento, propaganda ou publicação automática pelo megafone.
 
 ## Hospedagem
 
@@ -22,7 +22,7 @@ A cota padrão é 512 MiB de disco e 256 MiB de memória; `INSTANCE_DISK_LIMIT_M
 
 ## Atualizar sem perder dados
 
-Na Bot-Hosting.net já configurada pelo responsável, o código é buscado automaticamente do GitHub ao iniciar. Depois da publicação no repositório, o procedimento usual é clicar em **Reiniciar**. Confira no console a linha **Running version 2026.10.30.2**. Não é necessário enviar ZIP nesse fluxo. Se a versão continuar antiga após reiniciar, conferir o pull automático antes de trocar arquivos manualmente.
+Na Bot-Hosting.net já configurada pelo responsável, o código é buscado automaticamente do GitHub ao iniciar. Depois da publicação no repositório, o procedimento usual é clicar em **Reiniciar**. Confira no console a linha **Running version 2026.10.30.3**. Não é necessário enviar ZIP nesse fluxo. Se a versão continuar antiga após reiniciar, conferir o pull automático antes de trocar arquivos manualmente.
 
 Em uma implantação manual por ZIP, pare o processo, substitua o pacote completo e reinicie preservando DATA_DIR e credenciais. Essa é uma alternativa ao pull automático, não uma etapa adicional. Não apague o estado para resolver duplicações. O banco ativo é `bot.sqlite3`; uma base anterior reconhecida é migrada com cópia privada verificada antes de retirar estruturas sem uso. A cópia fica em `DATA_DIR/backups/before-cleanup.sqlite3`.
 

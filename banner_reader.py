@@ -64,16 +64,23 @@ def image_message(message, sources):
     if message.channel.id not in sources:
         return None
     images = []
-    for item in message.attachments:
-        mime = getattr(item, "content_type", "") or ""
-        if mime != "image/gif" and (mime.startswith("image/") or str(item.filename).lower().endswith((".png", ".jpg", ".jpeg", ".webp"))):
-            images.append(str(item.url))
-    for embed in message.embeds:
-        if getattr(embed.image, "url", None):
-            images.append(str(getattr(embed.image, "proxy_url", None) or embed.image.url))
+    # Discord puts forwarded attachments/embeds inside MessageSnapshot objects,
+    # in both pinned SDKs. Inspect only the inline snapshots, never fetch the
+    # referenced channel/message or serialize its text and author information.
+    parts = [message, *(getattr(message, "message_snapshots", None) or ())[:10]]
+    for part in parts:
+        for item in part.attachments:
+            mime = getattr(item, "content_type", "") or ""
+            if mime != "image/gif" and (mime.startswith("image/") or str(item.filename).lower().endswith((".png", ".jpg", ".jpeg", ".webp"))):
+                images.append(str(item.url))
+        for embed in part.embeds:
+            if getattr(embed.image, "url", None):
+                images.append(str(getattr(embed.image, "proxy_url", None) or embed.image.url))
     images = list(dict.fromkeys(images))[:10]
     if not images:
         return None
+    # Identity and age belong to the post in the configured source channel,
+    # rather than the original message preserved in a forward's snapshot.
     return {"event": "image", "channel_id": str(message.channel.id),
             "message_id": str(message.id), "created_at": (getattr(message, "edited_at", None) or message.created_at).timestamp(),
             "published_at": message.created_at.timestamp(),

@@ -1,4 +1,15 @@
-# Entrega atual — 2026.10.30.2
+# Entrega atual — 2026.10.30.3
+
+O responsável mostrou que a origem passou a publicar banners por encaminhamento, enquanto o último envio local era das 17h. Pediu aceitar essas imagens como banners normais, sem textos ou indicação de encaminhamento. A extração anterior só verificava anexos/embeds externos da mensagem; os snapshots eram ignorados.
+
+- banner_reader.image_message agora lê anexos/embeds da postagem e até dez snapshots incluídos. A função é compartilhada pelo leitor isolado e NativeSources, portanto cobre Gateway, histórico, reconexão e busca de edições nas duas bibliotecas já fixadas, sem dependência nova. Não consulta mensagens ou canais referenciados; o escopo continua nas duas fontes autorizadas.
+- Usa ID/canal/horário de publicação e edição da postagem no canal oficial. Não usa o horário/ID antigo do original encaminhado. Limite total de dez imagens e filtros existentes preservados. Texto, autoria, menções e referências nunca entram no protocolo de imagens. Entrega mantém bytes estáticos verificados, mensagens de banner separadas, W/M/L, nonces e recibos existentes; daily conserva sua barreira e não cai para ontem.
+- Testes privados incluem snapshots reais do discord.py 2.7.1, encaminhamento com duas imagens para dois destinos, W/M/L, ausência de texto/referências, envio normal posterior, repetição de Gateway/histórico, reinício, retirada e idade da postagem. O SDK isolado discord.py-self 2.1.0 foi conferido com MessageSnapshot real em execução offline; reader --check passou. Nada foi enviado ao Discord real.
+- Notas públicas em português tratam somente do novo comportamento visível e aguardam confirmação do feed de banners, comandos e gates existentes de integridade/perfil/WML. Nenhuma campanha de desculpas foi recriada. A retirada da central da entrega anterior continua vigente.
+- Validação local: **349 testes offline, 348 aprovados e um skip preexistente**, incluindo oito novos casos de encaminhamento; log /tmp/adventures-forwarded-feeds-tests.log. Dependências, compilação e git diff --check passaram. Reader --check e extração offline com o MessageSnapshot real do SDK isolado passaram. Manifesto verificado: **96 arquivos**, fingerprint **47af231eefd4**. Pacote completo foi montado e inspecionado fora do repositório, sem rede ou leitura de credenciais. Commit/CI serão registrados após a publicação.
+- Site/wiki, ZIP Windows histórico, fontes, credenciais, destinos, DATA_DIR e banco ativo permanecem preservados. Wiki limpa; SHA-256 do ZIP histórico d4c68ff5626d5ab46bc48b5c746fdf4065a29441bd924deaa37616a2db0ada29 intacto. Ativação real ainda não observada: após publicação no GitHub, usar **Reiniciar** e conferir **Running version 2026.10.30.3**. Não pedir ZIP ou refazer destinos.
+
+# Histórico da entrega — 2026.10.30.2
 
 O responsável pediu retirar totalmente o comando /adventures, sem aguardar explicação. Esta instrução substitui a autorização anterior para manter a central. Removidos registro do comando, painéis, botões persistentes de grupos, trabalhador de lembretes, consultas, calculadoras, pacote de dados e scripts exclusivos. Ajuda, perfil, instalação e documentação corrente agora descrevem somente os três comandos de feeds/chat e o menu Report global message. Não reintroduzir a central sem novo pedido explícito.
 

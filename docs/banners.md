@@ -12,6 +12,8 @@ Cada servidor tem seus próprios destinos. Painéis antigos verificam a geraçã
 
 Fontes exclusivas: banners 993219350179876874 e desafio diário 1326659593199423610. O bot usa seu próprio acesso autorizado quando disponível. Sem acesso, mantém o leitor isolado com SECONDARY_ACCOUNT_TOKEN, sem exigir PC ligado. Não encaminha texto, autores ou outras conversas da origem.
 
+Postagens normais e encaminhamentos são aceitos nas mesmas fontes. O leitor verifica os anexos e imagens dos snapshots incluídos no encaminhamento, sem buscar a mensagem ou o canal original. Só os arquivos de imagem passam à entrega; textos, autores, menções, referência e indicação de encaminhamento não são publicados. A identidade e o horário continuam sendo os da postagem no canal oficial, inclusive para edições, retiradas e controle de duplicatas. Os limites de formato, idade e quantidade são os mesmos.
+
 ## Receber e entregar
 
 Eventos ao vivo são complementados por consultas de 30 segundos, até 50 mensagens por origem. A inscrição do leitor isolado em servidor grande mantém typing=True. As consultas e os dois trabalhadores de recepção são independentes, com filas limitadas. Ver uma versão nova do daily persiste uma barreira antes de confirmar a origem ou baixar arquivos; uma revisão anterior não passa por essa barreira.

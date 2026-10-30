@@ -1,9 +1,9 @@
 {
   "schema": 1,
-  "version": "2026.10.30.2",
-  "requires_feeds": [],
+  "version": "2026.10.30.3",
+  "requires_feeds": ["banner"],
   "requires_commands": true,
   "changes": [
-    "O comando /adventures e suas ferramentas de consulta, planejamento, grupos e lembretes foram retirados do bot."
+    "Banners encaminhados na origem agora também são enviados aos servidores. Cada imagem chega separada, sem textos ou indicação de encaminhamento, e mantém sua votação W/M/L."
   ]
 }
