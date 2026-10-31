@@ -136,6 +136,7 @@ class RuntimeFeeds(unittest.IsolatedAsyncioTestCase):
         self.relay.configure(1,10)
         await self.relay.accept(self.event())
         self.relay.status='ready'
+        self.relay.diagnostics.poll()
         i=self.interaction()
         member=MagicMock(spec=discord.Member)
         member.id=7

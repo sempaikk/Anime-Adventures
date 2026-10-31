@@ -1,6 +1,7 @@
 """Classify only definite API rejections; transport ambiguity stays reconcilable."""
 
 import discord
+from feed_contracts import Failure, classify_failure
 
 def feed_failure(error):
     status = getattr(error, 'status', 0)
@@ -10,7 +11,7 @@ def feed_failure(error):
         return 'oversize'
     if status == 400:
         return 'rejected'
-    if status == 429 or isinstance(error,discord.RateLimited):
+    if classify_failure(error,posting=True) == Failure.RATE_LIMIT:
         # discord.py applies Retry-After internally. Do not create another sender.
         return 'pending'
     return 'uncertain'

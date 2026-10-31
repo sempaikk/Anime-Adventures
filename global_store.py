@@ -3,6 +3,7 @@
 import json
 import hashlib
 from global_moderation import ModerationStore
+from feed_contracts import GlobalJobState
 
 RETENTION = 30 * 86400
 CONTENT_TTL = 3600
@@ -531,6 +532,7 @@ class GlobalStore(ModerationStore):
             self.db.execute('DELETE FROM global_reconcile WHERE source_id=? AND channel_id=?',(job['source_id'],job['channel_id']))
 
     def finish(self, job, revision, receipts, *, state="sent"):
+        state = GlobalJobState(state)
         with self.db:
             row = self.message(job["source_id"])
             fresh = self.delivery(job["source_id"], job["channel_id"])

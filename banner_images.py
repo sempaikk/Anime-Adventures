@@ -3,6 +3,7 @@
 import hashlib
 import io
 import json
+from feed_contracts import FeedJobState
 
 import discord
 from discord.http import handle_message_parameters
@@ -36,6 +37,7 @@ class BannerImages:
         return row['source_message'], row['digest'], row['channel_id']
 
     def state(self, row, state, message_id=None):
+        state = FeedJobState(state)
         with self.db:
             self.db.execute('''UPDATE banner_image_receipts SET state=?,attempted_at=?,message_id=?
                 WHERE source_message=? AND digest=? AND channel_id=?''',

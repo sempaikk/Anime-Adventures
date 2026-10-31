@@ -20,6 +20,24 @@ class FeedBoundaries(unittest.IsolatedAsyncioTestCase):
     send=banners.BannerCase.send
     event=banners.BannerCase.event
     jobs=banners.BannerCase.jobs
+    interaction=banners.BannerCase.interaction
+
+    async def test_member_preview_uses_current_source_identity_and_the_same_freshness_gate(self):
+        from unittest.mock import MagicMock
+        import discord
+        from feed_views import preview
+        self.relay.configure(1,10)
+        await self.relay.accept(self.event(message_id='200'))
+        await self.relay.accept(self.event(message_id='100',created_at=self.now+10))
+        self.relay.status='ready'
+        i=self.interaction()
+        i.user=MagicMock(spec=discord.Member,id=7)
+        with patch('feed_views.send_preview',new_callable=AsyncMock) as send:
+            await preview(self.relay,i)
+            send.assert_not_awaited()
+            self.relay.diagnostics.poll()
+            await preview(self.relay,i)
+            self.assertEqual(send.call_args.args[2]['source_message'],'200')
 
     async def test_auxiliary_application_failure_does_not_prevent_existing_workers_starting(self):
         loop=SimpleNamespace(start=AsyncMock(),get_task=lambda:None,cancel=lambda:None)

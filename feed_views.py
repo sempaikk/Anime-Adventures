@@ -46,11 +46,11 @@ async def _preview(feed, i):
         raise ValueError('You need access to the configured feed channel to preview its images.')
     suffix = (" AND id=(SELECT c.event_id FROM daily_current c JOIN daily_source_head h ON h.singleton=c.singleton AND h.source_message=c.source_message)"
               if feed.kind=='daily' else '')
-    row = feed.query('SELECT * FROM banner_events WHERE created_at>?'+suffix+' ORDER BY created_at DESC,rowid DESC LIMIT 1',
-                     (feed.clock()-feed.max_age,)).fetchone()
     state=feed.diagnostics.snapshot()
+    row = feed.query('SELECT * FROM banner_events WHERE created_at>? AND source_message=?'+suffix+' ORDER BY created_at DESC,rowid DESC LIMIT 1',
+                     (feed.clock()-feed.max_age,state['source_message'])).fetchone()
     newer_waiting = feed.diagnostics.awaiting(state)
-    if row is None or newer_waiting or not feed.diagnostics.event_current(row) or feed.diagnostics.obsolete(row['source_message']) or feed.status != 'ready':
+    if row is None or newer_waiting or not feed.diagnostics.event_current(row) or feed.diagnostics.obsolete(row['source_message']) or not feed.ready():
         await reply(i,'No current verified image is available. The bot is waiting for the source; an old image will not be labelled as current.')
         return
     from contextlib import AsyncExitStack

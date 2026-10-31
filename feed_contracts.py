@@ -11,6 +11,30 @@ class Stage(StrEnum):
     DELIVERY = 'delivery'
 
 
+class FeedJobState(StrEnum):
+    PENDING = 'pending'
+    SENDING = 'sending'
+    UNCERTAIN = 'uncertain'
+    SENT = 'sent'
+    UNAVAILABLE = 'unavailable'
+    OVERSIZE = 'oversize'
+    REJECTED = 'rejected'
+    SUPERSEDED = 'superseded'
+    LEGACY_UNCERTAIN = 'legacy_uncertain'
+
+
+class GlobalJobState(StrEnum):
+    PREPARING = 'preparing'
+    QUEUED = 'queued'
+    SENDING = 'sending'
+    UNCERTAIN = 'uncertain'
+    SENT = 'sent'
+    PARTIAL = 'partial'
+    CANCELLED = 'cancelled'
+    FAILED = 'failed'
+    DELETED = 'deleted'
+
+
 class Failure(StrEnum):
     RESOURCE = 'resource'
     RATE_LIMIT = 'rate_limit'
@@ -24,7 +48,7 @@ def classify_failure(error, *, posting=False):
     if getattr(error, 'resource', None) in {'memory', 'disk'}:
         return Failure.RESOURCE
     status = getattr(error, 'status', 0)
-    if status == 429:
+    if status == 429 or type(error).__name__ == 'RateLimited':
         return Failure.RATE_LIMIT
     if status in (400, 401, 403, 404, 413):
         return Failure.PERMANENT

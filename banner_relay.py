@@ -435,6 +435,8 @@ class BannerRelay:
         return [self.query("SELECT * FROM banner_assets WHERE digest=?", (digest,)).fetchone() for digest in json.loads(event["images"])]
 
     def state(self, job, state, message_id=None):
+        from feed_contracts import FeedJobState
+        state = FeedJobState(state)
         with self.db:
             self.query("UPDATE banner_jobs SET state=CASE WHEN state='superseded' THEN state ELSE ? END,attempted_at=?,message_id=? WHERE event_id=? AND channel_id=?",
                             (state, self.clock(), str(message_id) if message_id else None, job["event_id"], job["channel_id"]))
