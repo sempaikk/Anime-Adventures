@@ -1,4 +1,14 @@
-# Entrega atual — 2026.10.30.3
+# Entrega atual — 2026.10.30.4
+
+O responsável pediu uma explicação em português em TODOS os canais de banner dos servidores configurados: causa do incidente com imagens encaminhadas, correção, atraso e por que alguns banners não chegaram. Autorização explícita para essa mensagem pontual; não estender a daily ou divulgação recorrente. Não existe sessão administrativa direta de Discord/Bot-Hosting nesta execução: nenhum envio real ou restart foi observado.
+
+- ForwardedBannerNotices em feed_notices.py reutiliza a entrega de avisos com campanha fixa banner-forwarded-recovery-2026-10-30, nonce/recibo próprios e somente destinos de banner congelados na primeira ativação verificada/online. Corpo fixo em português pede desculpas, explica que encaminhamentos não eram reconhecidos, informa a correção/retomada e esclarece que se recuperam imagens recentes sem republicar todo o histórico perdido.
+- Antes de enviar exige fonte recente e imagem observada recebida, permissões reais e mesma geração/canal; sem menções, anexos, W/M/L ou megafone. Envio incerto reconcilia o próprio aviso no canal original, sem novo POST. Falta de permissão pode retomar após reparo. Novos canais/instalações posteriores não entram; a campanha expira em 06/11/2026 UTC. Não altera dados/recibos/nonce/texto/prazo da campanha de 28/10.
+- Integrado ao operations_loop existente, sem novo comando ou trabalhador periódico. Progresso do aviso em particular no painel do dono: Banner forwarding notice. data/community_updates.json conserva a nota da .30.3 para não repetir a atualização pública da correção somente por acrescentar o aviso solicitado.
+- Validação local: **359 testes offline, 358 aprovados e um skip preexistente**, dez casos novos para a campanha de encaminhamentos e doze casos anteriores preservados; log /tmp/adventures-forwarded-banner-notices-tests.log. Conferidos os quatro servidores simulados com ambos os feeds, envio só aos banners, gates de fonte/recepção/integridade/readiness, escopo congelado, permissões, ACK perdido, resultado incerto, reinício real e independência dos recibos antigos. Manifesto **97 arquivos**, fingerprint **4bac39017c14**; pacote completo montado/inspecionado fora do repositório, dependências/compilação/diff passaram. Commit/CI serão registrados após a publicação.
+- Testes sempre privados, usando APIs simuladas e bancos temporários. Site/wiki, ZIP Windows histórico (SHA-256 d4c68ff5626d5ab46bc48b5c746fdf4065a29441bd924deaa37616a2db0ada29), comandos atuais, imagens, W/M/L, fontes, credenciais, destinos, DATA_DIR e estado preservados. Ativação pendente após publicação: **Reiniciar** e conferir **Running version 2026.10.30.4**. Não pedir ZIP ou reconfiguração de destinos. Não afirmar envios reais sem recibos observados.
+
+# Histórico da entrega — 2026.10.30.3
 
 O responsável mostrou que a origem passou a publicar banners por encaminhamento, enquanto o último envio local era das 17h. Pediu aceitar essas imagens como banners normais, sem textos ou indicação de encaminhamento. A extração anterior só verificava anexos/embeds externos da mensagem; os snapshots eram ignorados.
 

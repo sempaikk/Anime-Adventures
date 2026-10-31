@@ -1,4 +1,4 @@
-"""One explicitly authorized recovery notice for existing image-feed destinations."""
+"""Explicitly authorized incident notices, scoped to existing feed destinations."""
 
 import asyncio
 from datetime import datetime, timezone
@@ -16,6 +16,17 @@ log = logging.getLogger('adventures.notices')
 CAMPAIGN = 'feed-recovery-2026-10-28'
 # This incident must not become a welcome message on future installations.
 EXPIRES_AT = datetime(2026, 11, 4, tzinfo=timezone.utc).timestamp()
+FORWARDED_CAMPAIGN = 'banner-forwarded-recovery-2026-10-30'
+FORWARDED_STARTS_AT = datetime(2026, 10, 30, tzinfo=timezone.utc).timestamp()
+FORWARDED_EXPIRES_AT = datetime(2026, 11, 6, tzinfo=timezone.utc).timestamp()
+FORWARDED_NOTICE = (
+    'Pedimos desculpas pelos atrasos e pela ausência de alguns banners. '
+    'Parte das imagens passou a ser publicada por encaminhamento na origem, e o Adventures ainda não reconhecia esse formato. '
+    'Por isso, alguns banners não chegaram e outros estão chegando com atraso.\n\n'
+    'O problema foi corrigido: agora o bot reconhece tanto imagens normais quanto encaminhadas, e os envios estão sendo retomados. '
+    'A retomada usa as imagens recentes disponíveis; o histórico completo do período sem envios não será republicado, '
+    'para evitar confusão com banners antigos.\n\n'
+    'Obrigado pela paciência e por continuarem usando o Adventures!')
 
 
 def notice_text(kinds):
@@ -27,10 +38,14 @@ def notice_text(kinds):
 
 
 class FeedNotices:
-    def __init__(self, bot):
+    def __init__(self, bot, *, campaign=CAMPAIGN, expires_at=EXPIRES_AT,
+                 kinds=('banner', 'daily'), text=notice_text, starts_at=0,
+                 label='Feed recovery notice'):
         self.bot = bot
         self.db = bot.store.connection
-        self.feeds = {'banner': bot.banners, 'daily': bot.daily}
+        self.feeds = {kind: {'banner': bot.banners, 'daily': bot.daily}[kind] for kind in kinds}
+        self.campaign, self.expires_at, self.starts_at = campaign, expires_at, starts_at
+        self.text, self.label = text, label
         self.lock = asyncio.Lock()
         self.slots = asyncio.Semaphore(2)
         self.last_summary = None
@@ -43,7 +58,7 @@ class FeedNotices:
         self.db.commit()
 
     def snapshot(self):
-        key = 'feed-notice-snapshot:' + CAMPAIGN
+        key = 'feed-notice-snapshot:' + self.campaign
         if self.bot.store.get(key):
             return
         targets = {}
@@ -55,18 +70,18 @@ class FeedNotices:
                 channel['kinds'].append({'kind': kind, 'generation': feed.generation(row['guild_id'])})
         with self.db:
             for channel_id, target in targets.items():
-                nonce = str(int(hashlib.sha256((CAMPAIGN + ':' + channel_id).encode()).hexdigest()[:15], 16))
+                nonce = str(int(hashlib.sha256((self.campaign + ':' + channel_id).encode()).hexdigest()[:15], 16))
                 self.db.execute('''INSERT OR IGNORE INTO bot_feed_notices
                     (campaign,channel_id,guild_id,kinds,body,nonce) VALUES(?,?,?,?,?,?)''',
-                    (CAMPAIGN, channel_id, target['guild'], json.dumps(target['kinds']),
-                     notice_text(target['kinds']), nonce))
+                    (self.campaign, channel_id, target['guild'], json.dumps(target['kinds']),
+                     self.text(target['kinds']), nonce))
             self.db.execute('INSERT OR REPLACE INTO bot_meta VALUES(?,?)', (key, str(self.bot.store.clock())))
 
     def update(self, row, **values):
         with self.db:
             self.db.execute('UPDATE bot_feed_notices SET ' + ','.join(name + '=?' for name in values)
                             + ' WHERE campaign=? AND channel_id=?',
-                            (*values.values(), CAMPAIGN, row['channel_id']))
+                            (*values.values(), self.campaign, row['channel_id']))
 
     def current(self, row, kinds):
         for item in kinds:
@@ -130,7 +145,7 @@ class FeedNotices:
                 self.update(row, next_attempt=self.bot.store.clock() + 30)
                 return
             # Fetching the channel may have awaited; recheck destination and source now.
-            if not self.current(row, kinds) or self.bot.store.clock() >= EXPIRES_AT:
+            if not self.current(row, kinds) or self.bot.store.clock() >= self.expires_at:
                 self.update(row, state='cancelled')
                 return
             self.update(row, state='sending', attempted_at=self.bot.store.clock())
@@ -150,7 +165,7 @@ class FeedNotices:
 
     def description(self):
         rows = self.db.execute('''SELECT state,count(*) FROM bot_feed_notices
-            WHERE campaign=? GROUP BY state''', (CAMPAIGN,)).fetchall()
+            WHERE campaign=? GROUP BY state''', (self.campaign,)).fetchall()
         counts = dict(rows)
         if not rows:
             return 'No destinations queued for this incident.'
@@ -163,21 +178,32 @@ class FeedNotices:
         if self.lock.locked() or not self.bot.is_ready() or not self.bot.build.get('verified'):
             return
         async with self.lock:
-            if self.bot.store.clock() >= EXPIRES_AT:
+            if self.bot.store.clock() < self.starts_at:
+                return
+            if self.bot.store.clock() >= self.expires_at:
                 with self.db:
-                    self.db.execute("UPDATE bot_feed_notices SET state='expired' WHERE campaign=? AND state IN ('pending','blocked')", (CAMPAIGN,))
+                    self.db.execute("UPDATE bot_feed_notices SET state='expired' WHERE campaign=? AND state IN ('pending','blocked')", (self.campaign,))
                 return
             self.snapshot()
             rows = self.db.execute('''SELECT * FROM bot_feed_notices WHERE campaign=?
                 AND state IN ('pending','blocked','sending','uncertain') AND next_attempt<=?
-                ORDER BY next_attempt,rowid LIMIT 4''', (CAMPAIGN, self.bot.store.clock())).fetchall()
+                ORDER BY next_attempt,rowid LIMIT 4''', (self.campaign, self.bot.store.clock())).fetchall()
             results = await asyncio.gather(*(self.deliver(row) for row in rows), return_exceptions=True)
             for result in results:
                 if isinstance(result, asyncio.CancelledError):
                     raise result
                 if isinstance(result, Exception):
-                    log.warning('Feed recovery notice deferred: %s', type(result).__name__)
+                    log.warning('%s deferred: %s', self.label, type(result).__name__)
             summary = self.description()
             if summary != self.last_summary:
                 self.last_summary = summary
-                log.info('Feed recovery notice: %s', summary)
+                log.info('%s: %s', self.label, summary)
+
+
+class ForwardedBannerNotices(FeedNotices):
+    """One banner-only explanation for the separately authorized forwarding incident."""
+
+    def __init__(self, bot):
+        super().__init__(bot, campaign=FORWARDED_CAMPAIGN, expires_at=FORWARDED_EXPIRES_AT,
+                         starts_at=FORWARDED_STARTS_AT, kinds=('banner',),
+                         text=lambda kinds: FORWARDED_NOTICE, label='Banner forwarding notice')

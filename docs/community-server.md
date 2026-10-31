@@ -26,6 +26,14 @@ A campanha fixa feed-recovery-2026-10-28 grava destinatários e recibos na prime
 
 Envio incerto é reconciliado pelo nonce ou conteúdo próprio no canal original, sem republicação cega. O prazo termina em 04/11/2026 UTC para não apresentar um incidente antigo como boas-vindas em instalações futuras. **Bot status → Feed recovery notice** mostra o total confirmado, pendente e incerto em particular. Os logs normais de atualização e o feedback permanecem exclusivos da comunidade oficial. A .28.3 acrescenta apenas essa campanha; não duplica a nota pública da correção .28.2 no update-log.
 
+## Aviso do incidente de encaminhamentos
+
+O responsável autorizou separadamente um aviso em português nos canais de banners de todos os servidores configurados, explicando que parte das imagens passou a chegar por encaminhamento e não era reconhecida, o que causou atrasos e ausência de alguns banners. O texto informa que o suporte foi corrigido e os envios estão sendo retomados com imagens recentes; não promete republicar todo o histórico perdido. Não inclui detalhes internos, menções, anexos, votação ou crosspost e não vai aos canais exclusivos de daily.
+
+A campanha banner-forwarded-recovery-2026-10-30 usa a mesma estrutura de recibos, com chave/nonce próprios e destinatários congelados na primeira ativação verificada. Fonte consultada recentemente, recepção da imagem observada, acesso ao canal e geração da configuração são revalidados. Uma entrega incerta só é reconciliada no canal original, sem reenvio cego. O aviso não se repete em novos releases/reinícios, não acompanha mudanças de canal nem vira boas-vindas para instalações futuras. Expira em 06/11/2026 UTC.
+
+**Bot status → Banner forwarding notice** informa o progresso em particular. O ciclo operacional existente conduz o aviso sem acrescentar outro trabalhador periódico. A campanha anterior de 28/10 mantém sua chave, texto, prazo e recibos intactos. Esta entrega acrescenta somente o aviso solicitado; não cria outra nota regular de atualização nem repete a da correção de encaminhamentos.
+
 ## Diagnóstico e permissões
 
 O dono com Gerenciar servidor abre **Bot status** e **Server report** para obter o relatório privado. Ele inclui estrutura e permissões, sem histórico, credenciais, URLs de webhook ou lista de membros. Ver a visibilidade de @everyone não certifica privacidade: sobreposições de outros cargos e indivíduos também importam. Nunca versionar relatório real.
