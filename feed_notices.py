@@ -19,6 +19,16 @@ EXPIRES_AT = datetime(2026, 11, 4, tzinfo=timezone.utc).timestamp()
 FORWARDED_CAMPAIGN = 'banner-forwarded-recovery-2026-10-30'
 FORWARDED_STARTS_AT = datetime(2026, 10, 30, tzinfo=timezone.utc).timestamp()
 FORWARDED_EXPIRES_AT = datetime(2026, 11, 6, tzinfo=timezone.utc).timestamp()
+RECEPTION_CAMPAIGN = 'banner-reception-recovery-2026-10-31'
+RECEPTION_STARTS_AT = datetime(2026, 10, 31, tzinfo=timezone.utc).timestamp()
+RECEPTION_EXPIRES_AT = datetime(2026, 11, 7, tzinfo=timezone.utc).timestamp()
+RECEPTION_NOTICE = (
+    'Pedimos desculpas pela interrupção e pelos atrasos no envio dos banners. '
+    'Corrigimos uma falha que impedia o recebimento de novas imagens, e este canal já voltou a receber os banners recentes.\n\n'
+    'Os próximos banners continuarão sendo enviados automaticamente. '
+    'As imagens antigas do período da interrupção não serão republicadas em sequência, '
+    'para evitar confusão com os banners atuais.\n\n'
+    'Obrigado pela paciência e por continuarem usando o Adventures!')
 FORWARDED_NOTICE = (
     'Pedimos desculpas pelos atrasos e pela ausência de alguns banners. '
     'Parte das imagens passou a ser publicada por encaminhamento na origem, e o Adventures ainda não reconhecia esse formato. '
@@ -103,6 +113,9 @@ class FeedNotices:
                 return False
         return True
 
+    def destination_recovered(self, row, kinds):
+        return True
+
     async def deliver(self, row):
         async with self.slots:
             kinds = json.loads(row['kinds'])
@@ -141,7 +154,7 @@ class FeedNotices:
                     and (not any(item['kind'] == 'banner' for item in kinds) or permissions.add_reactions)):
                 self.update(row, state='blocked')
                 return
-            if not self.recovered(kinds):
+            if not self.recovered(kinds) or not self.destination_recovered(row, kinds):
                 self.update(row, next_attempt=self.bot.store.clock() + 30)
                 return
             # Fetching the channel may have awaited; recheck destination and source now.
@@ -207,3 +220,21 @@ class ForwardedBannerNotices(FeedNotices):
         super().__init__(bot, campaign=FORWARDED_CAMPAIGN, expires_at=FORWARDED_EXPIRES_AT,
                          starts_at=FORWARDED_STARTS_AT, kinds=('banner',),
                          text=lambda kinds: FORWARDED_NOTICE, label='Banner forwarding notice')
+
+
+class ReceptionRecoveryNotices(FeedNotices):
+    """Current incident: announce recovery only after this channel receives it."""
+
+    def __init__(self, bot):
+        super().__init__(bot, campaign=RECEPTION_CAMPAIGN, expires_at=RECEPTION_EXPIRES_AT,
+                         starts_at=RECEPTION_STARTS_AT, kinds=('banner',),
+                         text=lambda kinds: RECEPTION_NOTICE, label='Banner reception notice')
+
+    def destination_recovered(self, row, kinds):
+        feed = self.feeds['banner']
+        source = feed.diagnostics.snapshot()['source_message']
+        event = feed.query('SELECT id FROM banner_events WHERE source_message=? ORDER BY created_at DESC,rowid DESC LIMIT 1',
+                           (source,)).fetchone()
+        return bool(event and feed.query('''SELECT 1 FROM banner_jobs WHERE event_id=?
+            AND guild_id=? AND channel_id=? AND state='sent' AND message_id IS NOT NULL''',
+            (event['id'], row['guild_id'], row['channel_id'])).fetchone())

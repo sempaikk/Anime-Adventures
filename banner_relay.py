@@ -221,7 +221,11 @@ class BannerRelay:
             text+='\n'+label+(': <t:'+str(int(state[key]))+':R>.' if state[key] else ': not confirmed yet.')
         text+=f"\nPending deliveries: {state['pending']}."
         if state['error']:
-            text+=' Last issue: '+state['error'].replace('_',' ')+'.'
+            issue = {
+                'receive_memory_budget': 'Image reception is waiting for available memory. A successful source check does not confirm that the image bytes were downloaded.',
+                'receive_disk_budget': 'Image reception is waiting for available storage.',
+            }.get(state['error'], state['error'].replace('_', ' ') + '.')
+            text += '\nLast issue: ' + issue
         return text
 
     def ready(self):
@@ -257,7 +261,8 @@ class BannerRelay:
         state=self.diagnostics.snapshot()
         failures=self.query("SELECT count(*) FROM banner_jobs j JOIN banner_targets t ON t.channel_id=j.channel_id WHERE state IN ('unavailable','oversize','rejected')").fetchone()[0]
         return {
-            self.kind+'_source':(not self.ready(),f'The {self.kind} source has not confirmed a recent successful check. Open private feed diagnostics.'),
+            self.kind+'_source':(self.status!='ready' or not state['polled'] or self.clock()-state['polled']>=120,
+                f'The {self.kind} source has not confirmed a recent successful check. Open private feed diagnostics.'),
             self.kind+'_delivery':(bool((state['pending'] and state['oldest'] and self.clock()-state['oldest']>180) or failures),
                 f'The {self.kind} feed has delayed or blocked destinations. Check private status and channel permissions.'),
             self.kind+'_receive':(bool(state['source_message'] and (state['source_message']!=state['received_source'] or state['observed']>state['received_version']) and self.clock()-state['observed_at']>120),
@@ -371,14 +376,31 @@ class BannerRelay:
         async with self.session.get(url, allow_redirects=False) as response:
             if response.status != 200 or (response.content_length is not None and response.content_length > limit):
                 raise ValueError("Image unavailable")
-            blob = bytearray()
-            async for chunk in response.content.iter_chunked(65536):
-                blob.extend(chunk)
-                if len(blob) > limit:
-                    raise ValueError("Image outside limits")
-        return bytes(blob)
+            from feed_memory import receive_memory
+            async with receive_memory(getattr(self.bot, 'instance_storage', None)) as memory:
+                covered = response.content_length or 0
+                # Cover the body builder, immutable bytes/SQLite copy and bounded
+                # transport overhead. Keep the reservations until accept commits.
+                await memory.reserve(2 * covered + 128 * 1024)
+                blob = bytearray()
+                async for chunk in response.content.iter_chunked(65536):
+                    needed = len(blob) + len(chunk)
+                    if needed > limit:
+                        raise ValueError("Image outside limits")
+                    if needed > covered:
+                        await memory.reserve(2 * (needed - covered))
+                        covered = needed
+                    blob.extend(chunk)
+                result = bytes(blob)
+                memory.retain(result)
+                return result
 
     async def accept(self, payload):
+        from feed_memory import receive_memory
+        async with receive_memory(getattr(self.bot, 'instance_storage', None)):
+            return await self._accept(payload)
+
+    async def _accept(self, payload):
         # Check scope, age and bounded shape before any download or storage.
         if str(payload.get("channel_id")) not in {str(value) for value in self.source_ids}:
             return False
@@ -423,6 +445,8 @@ class BannerRelay:
             for url in dict.fromkeys(urls):
                 try:
                     blob = await self.download(url, min(MAX_IMAGE, MAX_BATCH - size))
+                    from feed_memory import current_memory
+                    await current_memory().keep(blob)
                     size += len(blob)
                     from media_validation import decode_budget
                     async with decode_budget(getattr(self.bot,'instance_storage',None), blob):

@@ -34,6 +34,14 @@ A campanha banner-forwarded-recovery-2026-10-30 usa a mesma estrutura de recibos
 
 **Bot status → Banner forwarding notice** informa o progresso em particular. O ciclo operacional existente conduz o aviso sem acrescentar outro trabalhador periódico. A campanha anterior de 28/10 mantém sua chave, texto, prazo e recibos intactos. Esta entrega acrescenta somente o aviso solicitado; não cria outra nota regular de atualização nem repete a da correção de encaminhamentos.
 
+## Aviso do incidente de recepção
+
+Em 31/10/2026, o responsável solicitou novo aviso de desculpas e resolução pela interrupção dos banners. A campanha banner-reception-recovery-2026-10-31 é exclusiva dos destinos de banners existentes, com seleção congelada, nonce e recibo próprios. O texto em português diz que o canal voltou a receber imagens recentes, sem detalhes de memória/hospedagem, menções, anexos, votação ou megafone. Não republica o histórico antigo.
+
+Além de consulta recente e bytes da imagem atual verificados, o envio exige que o último evento da origem observada tenha um trabalho confirmado como sent com ID de mensagem no destino exato. Sucesso em outro servidor, metadados, versão parcial, imagem anterior ou confirmação incerta não liberam o aviso. Permissões/geração continuam sendo revalidadas, e ACK desconhecido só reconcilia a própria tentativa no canal original. Reinício/release não repete o aviso nem inclui destinos adicionados depois. Expira em 07/11/2026 UTC.
+
+**Bot status → Banner reception notice** mostra o progresso privado. O ciclo operacional existente processa a nova campanha. As campanhas de 28/10 e 30/10 mantêm seus textos, recibos, prazos e destinatários; o print de produção de 31/10 confirmou respectivamente 4/4 e 2/2 entregues. A nota regular da nova correção continua exclusiva da comunidade oficial e respeita todos os gates existentes.
+
 ## Diagnóstico e permissões
 
 O dono com Gerenciar servidor abre **Bot status** e **Server report** para obter o relatório privado. Ele inclui estrutura e permissões, sem histórico, credenciais, URLs de webhook ou lista de membros. Ver a visibilidade de @everyone não certifica privacidade: sobreposições de outros cargos e indivíduos também importam. Nunca versionar relatório real.

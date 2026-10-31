@@ -8,6 +8,13 @@ import time
 from contextlib import asynccontextmanager
 
 
+class ResourceBudgetError(OSError):
+    """A controlled, private resource reason; never includes URLs or secrets."""
+    def __init__(self, resource, message):
+        super().__init__(message)
+        self.resource = resource
+
+
 def process_memory():
     """Conservative current RSS of this process and its children on Linux."""
     pending, seen, total = [os.getpid()], set(), 0
@@ -81,9 +88,9 @@ class InstanceStorage:
             # a verified snapshot. Existing deletions/reconciliation need no upload.
             headroom = 48 * 1024 * 1024 if feature == 'global' else 16 * 1024 * 1024
             if free < amount + headroom:
-                raise OSError('Storage budget is reserved for safe operation. Try again after cleanup.')
+                raise ResourceBudgetError('disk', 'Storage budget is reserved for safe operation. Try again after cleanup.')
             if rss is not None and rss + self.reserved_memory + memory > self.memory_limit * .9:
-                raise OSError('Image preparation is paused while memory usage is high.')
+                raise ResourceBudgetError('memory', 'Image preparation is paused while memory usage is high.')
             self.reserved += amount
             self.reserved_memory += memory
         try:

@@ -74,14 +74,20 @@ class FeedReceiver:
                         feed.diagnostics.received(message_id=str(event['message_id']),created=float(event['created_at']))
                     continue
                 if budget:
-                    async with budget.reserve(32*1024*1024, memory=32*1024*1024):
+                    # Disk headroom remains fixed; RAM is reserved by the actual
+                    # image buffers and pixel decoder, before each allocation.
+                    async with budget.reserve(32*1024*1024):
                         await asyncio.wait_for(feed.accept(event), 65)
                 else:
                     await asyncio.wait_for(feed.accept(event), 65)
             except asyncio.CancelledError:
                 raise
             except Exception as error:
-                feed.diagnostics.error('download_or_validation_failed')
+                from instance_storage import ResourceBudgetError
+                issue = 'download_or_validation_failed'
+                if isinstance(error, ResourceBudgetError):
+                    issue = 'receive_memory_budget' if error.resource == 'memory' else 'receive_disk_budget'
+                feed.diagnostics.error(issue)
                 log.warning('Receive deferred: feed=%s stage=receive error=%s status=%s',
                             feed.kind, type(error).__name__, getattr(error, 'status', 0))
             finally:

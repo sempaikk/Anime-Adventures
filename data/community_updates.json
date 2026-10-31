@@ -1,9 +1,9 @@
 {
   "schema": 1,
-  "version": "2026.10.30.3",
+  "version": "2026.10.31.1",
   "requires_feeds": ["banner"],
   "requires_commands": true,
   "changes": [
-    "Banners encaminhados na origem agora também são enviados aos servidores. Cada imagem chega separada, sem textos ou indicação de encaminhamento, e mantém sua votação W/M/L."
+    "Corrigido um problema que podia interromper a chegada de novos banners. Os envios automáticos voltam a acompanhar as imagens recentes, mantendo cada banner separado e sua votação W/M/L."
   ]
 }

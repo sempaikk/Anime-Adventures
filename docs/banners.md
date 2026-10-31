@@ -48,6 +48,10 @@ Limites por feed: 10 imagens, 8 MiB por arquivo, 16 MiB por conjunto, 32 MiB de 
 
 Cache: 65 minutos nos banners e 26 horas no daily. A limpeza não apaga posts do Discord nem ocorre por relógio às 00h50. Reservas de disco e memória consideram preparos paralelos, dependências, instalação do leitor e backups. Pressão de recursos adia novos arquivos preservando dados.
 
+A recepção mantém a reserva de disco de 32 MiB por trabalhador, mas a RAM acompanha os arquivos: comprimento informado antes da leitura, crescimento incremental quando ausente/incorreto e orçamento separado pelos pixels antes do decode. Os buffers ficam cobertos até a confirmação no banco, com liberação em falha/cancelamento. Não há mais reserva fixa adicional de 32 MiB de RAM por feed; ela bloqueava imagens pequenas com 203 MiB já ocupados, pois 235 MiB ultrapassam a margem de 90% dos 256 MiB. O limite da instância e a proteção contra imagens grandes continuam.
+
 **Status** diferencia consulta da origem, observação da imagem, bytes verificados e entrega confirmada. O dono vê ainda destinos, filas, falhas e latência recente por destino. Alertas privados distinguem ausência de novidades de falha de recebimento ou entrega. Não há alerta só porque o jogo não publicou imagem nova. Um leitor silencioso é detectado; falhas de autenticação/verificação de conta aguardam ação do responsável, sem contornar verificações.
+
+Uma consulta bem-sucedida dos metadados não apaga falha de recepção: erros de RAM, disco e download permanecem até os bytes da versão atual serem verificados. Um recibo mais antigo também não limpa o erro nem avança o horário de recepção da imagem atual. O alerta de fonte considera acesso/consulta, e o de recepção considera a imagem observada ainda pendente, com estabilidade/cooldown preservados. **Last issue** no painel privado identifica espera por memória ou armazenamento.
 
 A publicação automática pelo megafone permanece desativada em todos os servidores. O botão manual e os seguidores nativos do canal não são alterados.

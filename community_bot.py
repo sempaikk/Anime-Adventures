@@ -62,9 +62,10 @@ class CommunityBot(commands.Bot):
         self.owner_ids_set=set()
         self.ui_theme=GameTheme()
         self.community=CommunityHub(self)
-        from feed_notices import FeedNotices,ForwardedBannerNotices
+        from feed_notices import FeedNotices,ForwardedBannerNotices,ReceptionRecoveryNotices
         self.feed_notices=FeedNotices(self)
         self.banner_forward_notices=ForwardedBannerNotices(self)
+        self.banner_reception_notices=ReceptionRecoveryNotices(self)
         from community_feedback import CommunityFeedback
         self.feedback=CommunityFeedback(self)
         from case_followup import CaseStore
@@ -267,6 +268,10 @@ class CommunityBot(commands.Bot):
             await self.banner_forward_notices.cycle()
         except Exception as error:
             log.warning('Banner forwarding notice deferred: %s',type(error).__name__)
+        try:
+            await self.banner_reception_notices.cycle()
+        except Exception as error:
+            log.warning('Banner reception notice deferred: %s',type(error).__name__)
         try:
             if self.store.get('bot-profile:1')=='pending':
                 from app_profile import configure_profile

@@ -63,7 +63,12 @@ class FeedState:
         self.db.commit()
 
     def poll(self):
-        self.feed.query("UPDATE banner_diagnostics SET polled=?,error='' WHERE singleton=1", (self.feed.clock(),))
+        # A healthy metadata poll is not proof that a failed image download was
+        # repaired. Retain reception/resource errors until current bytes verify.
+        self.feed.query("""UPDATE banner_diagnostics SET polled=?,error=CASE
+            WHEN error IN ('source_unavailable','authorized_source_unavailable','connecting',
+                           'reader_failed','login_failed','account_action_required') THEN ''
+            ELSE error END WHERE singleton=1""", (self.feed.clock(),))
         self.db.commit()
 
     def error(self, reason):
@@ -73,8 +78,14 @@ class FeedState:
 
     def received(self, skipped=0, *, message_id=None, created=None):
         old=self.feed.query('SELECT source_message,observed FROM banner_diagnostics WHERE singleton=1').fetchone()
+        message_id = message_id or old['source_message']
+        created = created if created is not None else old['observed']
+        if old['source_message'] and (int(message_id) < int(old['source_message']) or
+                (message_id == old['source_message'] and created < old['observed'])):
+            return False
         self.feed.query("UPDATE banner_diagnostics SET received=?,skipped=?,error='',received_source=?,received_version=? WHERE singleton=1",
-                        (self.feed.clock(), skipped,message_id or old['source_message'], created if created is not None else old['observed']))
+                        (self.feed.clock(), skipped,message_id, created))
+        return True
 
     def confirmed(self, job):
         event = self.feed.query('SELECT source_message,created_at FROM banner_events WHERE id=?', (job['event_id'],)).fetchone()
