@@ -889,7 +889,7 @@ class ChatCase(unittest.IsolatedAsyncioTestCase):
             self.engine.media.session = AsyncMock(
                 return_value=SimpleNamespace(get=lambda *a, **kw: response)
             )
-            with self.assertRaises(ValueError):
+            with self.assertRaises(ValueError if status == 302 else OSError):
                 await self.engine.media.download(asset, 100)
             self.assertFalse(list(self.engine.media.root.iterdir()))
             self.assertEqual(self.engine.media.reserved, 0)

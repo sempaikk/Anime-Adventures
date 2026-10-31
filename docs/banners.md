@@ -55,3 +55,6 @@ A recepção mantém a reserva de disco de 32 MiB por trabalhador, mas a RAM aco
 Uma consulta bem-sucedida dos metadados não apaga falha de recepção: erros de RAM, disco e download permanecem até os bytes da versão atual serem verificados. Um recibo mais antigo também não limpa o erro nem avança o horário de recepção da imagem atual. O alerta de fonte considera acesso/consulta, e o de recepção considera a imagem observada ainda pendente, com estabilidade/cooldown preservados. **Last issue** no painel privado identifica espera por memória ou armazenamento.
 
 A publicação automática pelo megafone permanece desativada em todos os servidores. O botão manual e os seguidores nativos do canal não são alterados.
+
+
+Recepção, revisões e recibos (2026.10.31.2): a consulta à origem não comprova bytes recebidos. O painel privado distingue a verificação de bytes do reconhecimento de um recibo salvo. Uma revisão mais nova bloqueia a publicação da anterior até a sua validação, mesmo quando a data de edição de uma mensagem antiga é posterior à de outra postagem. Partes válidas de banners sobrevivem a uma tentativa lenta; a origem só é confirmada após a recepção completa. Imagens já confirmadas não são repetidas. A escolha de daily continua somente no último desafio observado.

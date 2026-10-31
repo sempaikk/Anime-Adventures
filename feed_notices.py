@@ -1,6 +1,7 @@
 """Explicitly authorized incident notices, scoped to existing feed destinations."""
 
 import asyncio
+from runtime_limits import SOURCE_TIMEOUT
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -105,9 +106,13 @@ class FeedNotices:
     def recovered(self, kinds):
         for item in kinds:
             feed = self.feeds[item['kind']]
+            if feed.paused():
+                return False
             if not feed.ready():
                 return False
             state = feed.diagnostics.snapshot()
+            if state['source_message'] and feed.diagnostics.obsolete(state['source_message']):
+                return False
             if state['source_message'] and (state['source_message'] != state['received_source']
                     or state['observed'] > state['received_version']):
                 return False
@@ -126,7 +131,7 @@ class FeedNotices:
             channel = self.bot.get_channel(int(row['channel_id']))
             if channel is None:
                 try:
-                    channel = await asyncio.wait_for(self.bot.fetch_channel(int(row['channel_id'])), 25)
+                    channel = await asyncio.wait_for(self.bot.fetch_channel(int(row['channel_id'])), SOURCE_TIMEOUT)
                 except (discord.HTTPException, aiohttp.ClientError, TimeoutError, OSError):
                     return
             if (not isinstance(channel, discord.TextChannel) or str(channel.guild.id) != row['guild_id']
@@ -138,7 +143,7 @@ class FeedNotices:
             if row['state'] in {'sending', 'uncertain'}:
                 # Reconcile the original attempt; never blindly repost after a crash/timeout.
                 async def reconcile():
-                    async for message in recent_attempts(channel, row['attempted_at']):
+                    async for message in recent_attempts(channel, row['attempted_at'],store=self.db,key=(self.campaign,row['channel_id'])):
                         if (message.author.id == self.bot.user.id and not message.webhook_id
                                 and (str(getattr(message, 'nonce', None)) == row['nonce']
                                      or (message.content == row['body'] and
@@ -146,7 +151,7 @@ class FeedNotices:
                             self.update(row, state='sent', message_id=str(message.id))
                             return
                 try:
-                    await asyncio.wait_for(reconcile(), 25)
+                    await asyncio.wait_for(reconcile(), SOURCE_TIMEOUT)
                 except (discord.HTTPException, aiohttp.ClientError, TimeoutError, OSError):
                     pass
                 return
@@ -167,7 +172,7 @@ class FeedNotices:
                 with handle_message_parameters(content=row['body'], nonce=row['nonce'],
                         allowed_mentions=discord.AllowedMentions.none()) as params:
                     params.payload['enforce_nonce'] = True
-                    message = await asyncio.wait_for(self.bot.http.send_message(channel.id, params=params), 25)
+                    message = await asyncio.wait_for(self.bot.http.send_message(channel.id, params=params), SOURCE_TIMEOUT)
                 state, message_id = 'sent', str(message['id'])
             except (discord.Forbidden, discord.NotFound):
                 state = 'blocked'

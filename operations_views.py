@@ -6,6 +6,7 @@ import discord
 from bot_views import BoundModal, reply
 from bot_ui import edit_response
 from global_views import ScopedView
+from feed_contracts import DIAGNOSTIC_ERRORS
 
 
 def server_overview(bot, guild):
@@ -30,9 +31,9 @@ def diagnostic_text(bot, guild):
         data['feeds'][feed.kind] = {'channel': target['channel_id'] if target else None,
             'reader': feed.status, 'paused': feed.paused(), 'last_check': state['polled'],
             'transport': 'authorized bot' if feed.native else 'isolated reader',
-            'last_verified_bytes': state['received'], 'pending': state['pending'],
-            'issue': issue if issue in {'delivery_deferred', 'delivery_failed', 'partial_reception',
-                'unsupported_images', 'unsupported_source_urls', 'download_failed', 'receive_timeout', 'storage_paused'} else ('source_issue' if issue else '')}
+            'last_verified_bytes': state['received'], 'saved_receipt_checked': state['checked_receipt'],
+            'stages': {stage: state[stage+'_error'] if state[stage+'_error'] in DIAGNOSTIC_ERRORS else '' for stage in ('source','receive','delivery')}, 'pending': state['pending'],
+            'issue': issue if issue in DIAGNOSTIC_ERRORS else ('source_issue' if issue else '')}
     cfg = bot.globalchat.store.channel(guild)
     data['global_chat'] = {'channel': cfg['channel_id'] if cfg else None, 'active': bool(cfg and cfg['active']),
         'states': {r['state']: r['n'] for r in bot.globalchat.store.rows('SELECT state,count(*) n FROM global_deliveries WHERE guild_id=? GROUP BY state', (str(guild),))}}

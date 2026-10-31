@@ -12,7 +12,8 @@ import discord
 from PIL import Image
 
 from banner_reader import image_message
-from banner_relay import BannerControls, SOURCE_CHANNEL_IDS, image_extension, image_url
+from banner_relay import SOURCE_CHANNEL_IDS, image_extension, image_url
+from feed_views import FeedPanel
 from game_sources import DAILY_CHANNEL_ID, SOURCE_CHANNELS, IMAGE_SOURCE_CHANNELS, reader_token
 from community_bot import CommunityBot
 
@@ -79,7 +80,7 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
                                followup=SimpleNamespace(send=AsyncMock()))
 
     def jobs(self):
-        return self.relay.db.execute("SELECT * FROM banner_jobs ORDER BY channel_id").fetchall()
+        return self.relay.db.execute("SELECT * FROM banner_jobs ORDER BY channel_id,rowid").fetchall()
 
     async def test_setbanner_uses_current_channel_private_confirmation_and_admin_permission(self):
         self.assertEqual({command.name for command in self.app.tree.get_commands()}, {"setbanner", "globalchat", "dailychallenge", "Report global message"})
@@ -169,7 +170,7 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
         self.relay.configure(2, 20)
         await self.relay.accept(self.event())
         i = self.interaction()
-        view = BannerControls(self.app, i)
+        view = FeedPanel(self.app, i, kind='banner')
         self.assertFalse(await view.interaction_check(self.interaction(actor=8)))
         self.assertFalse(await view.interaction_check(self.interaction(admin=False)))
         self.assertTrue(await view.interaction_check(i))
@@ -293,7 +294,7 @@ class BannerCase(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(await daily.accept(event))
         await daily.cycle()
         self.assertEqual([item["channel"] for item in self.sent], [20])
-        view = BannerControls(self.app, i, kind="daily")
+        view = FeedPanel(self.app, i, kind="daily")
         await view.disable.callback(i)
         self.assertIsNone(daily.target(2))
         self.assertIsNotNone(self.relay.target(1))

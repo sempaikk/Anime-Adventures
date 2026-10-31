@@ -1,9 +1,14 @@
 {
   "schema": 1,
-  "version": "2026.10.31.1",
-  "requires_feeds": ["banner"],
+  "version": "2026.10.31.2",
+  "requires_feeds": [
+    "banner",
+    "daily"
+  ],
   "requires_commands": true,
   "changes": [
-    "Corrigido um problema que podia interromper a chegada de novos banners. Os envios automáticos voltam a acompanhar as imagens recentes, mantendo cada banner separado e sua votação W/M/L."
+    "Corrigidas interrupções no envio de banners e desafios diários, incluindo atualizações de imagens e retomadas após falhas temporárias.",
+    "Banners que chegam em várias imagens preservam as partes recebidas quando uma transferência demora demais. As tentativas seguintes completam o envio sem repetir as imagens já confirmadas.",
+    "O chat global retoma tentativas interrompidas e verifica as mensagens já publicadas antes de tentar novamente, reduzindo bloqueios na fila e mensagens duplicadas."
   ]
 }

@@ -5,7 +5,7 @@ import io
 import discord
 
 from bot_views import GuardedView, reply
-from banner_relay import BannerControls, require_banner_admin, MAX_IMAGE
+from banner_relay import require_banner_admin, MAX_IMAGE
 
 FAQ = ('## Image feeds\nThe source publishes the game images; the bot forwards verified static files. '
        'The source publication time describes freshness. Cache retention is not a game reset timer.\n\n'
@@ -49,9 +49,8 @@ async def _preview(feed, i):
     row = feed.query('SELECT * FROM banner_events WHERE created_at>?'+suffix+' ORDER BY created_at DESC,rowid DESC LIMIT 1',
                      (feed.clock()-feed.max_age,)).fetchone()
     state=feed.diagnostics.snapshot()
-    newer_waiting=bool(row and state['observed']>row['created_at'] and
-        (state['source_message']!=state['received_source'] or state['observed']>state['received_version']))
-    if row is None or newer_waiting or feed.diagnostics.obsolete(row['source_message']) or feed.status != 'ready':
+    newer_waiting = feed.diagnostics.awaiting(state)
+    if row is None or newer_waiting or not feed.diagnostics.event_current(row) or feed.diagnostics.obsolete(row['source_message']) or feed.status != 'ready':
         await reply(i,'No current verified image is available. The bot is waiting for the source; an old image will not be labelled as current.')
         return
     from contextlib import AsyncExitStack
@@ -60,6 +59,10 @@ async def _preview(feed, i):
         if budget:
             sizes=feed.query('SELECT length(data) FROM banner_assets WHERE digest IN (SELECT value FROM banner_events,json_each(images) WHERE banner_events.id=?)',(row['id'],)).fetchall()
             await reservations.enter_async_context(budget.reserve(0,memory=3*sum(r[0] for r in sizes)))
+        current = feed.target(i.guild_id)
+        permissions = channel.permissions_for(i.user)
+        if not current or current['channel_id'] != target['channel_id'] or not permissions.view_channel or not permissions.read_message_history:
+            raise ValueError('Feed access changed. Open the command again.')
         await send_preview(feed,i,row)
 
 
@@ -96,6 +99,12 @@ class FeedPanel(GuardedView):
         if (i.user.id,i.guild_id,i.channel_id)!=(self.actor,self.guild,self.channel):
             await reply(i,'Open the command to use your own private feed controls.')
             return False
+        if self.admin:
+            try:
+                require_banner_admin(i)
+            except ValueError as error:
+                await reply(i,str(error))
+                return False
         return True
 
     def description(self):

@@ -9,6 +9,8 @@ import inspect
 import logging
 import math
 import os
+from runtime_limits import SOURCE_FRESHNESS, DOWNLOAD_TIMEOUT, DELIVERY_TIMEOUT
+
 from pathlib import Path
 import sys
 import warnings
@@ -166,10 +168,11 @@ class BannerRelay:
 
     def current_job(self, job):
         target = self.target(job['guild_id'])
-        event = self.query('SELECT source_message FROM banner_events WHERE id=?', (job['event_id'],)).fetchone()
+        event = self.query('SELECT * FROM banner_events WHERE id=?', (job['event_id'],)).fetchone()
         current = self.query('SELECT state FROM banner_jobs WHERE event_id=? AND channel_id=?', (job['event_id'],job['channel_id'])).fetchone()
         return bool(target and target['channel_id'] == job['channel_id']
-            and event and not self.diagnostics.obsolete(event['source_message'])
+            and event and event['created_at']>self.clock()-self.max_age
+            and not self.diagnostics.obsolete(event['source_message']) and self.diagnostics.event_current(event)
             and current and current['state'] != 'superseded'
             and ('generation' not in job or job['generation'] == self.generation(job['guild_id']))
             and (self.kind != 'daily' or self.current_daily.known(job['event_id'])))
@@ -205,7 +208,13 @@ class BannerRelay:
         target = self.target(guild_id)
         if not target:
             return f"**{title}:** no destination configured in this server."
-        text = f"**{title}:** <#{target['channel_id']}>. {self.description(guild_id)}"
+        state=self.diagnostics.snapshot(guild_id)
+        if self.paused(): phase='maintenance paused'
+        elif state['source_error']: phase='waiting for source access'
+        elif self.diagnostics.awaiting(state): phase='waiting for current image bytes'
+        elif state['pending']: phase='waiting for Discord delivery confirmation'
+        else: phase='current reception verified' if state['received'] else 'waiting for a source image'
+        text = f"**{title}:** <#{target['channel_id']}>. {phase}. {self.description(guild_id)}"
         confirmed = self.query(
             "SELECT attempted_at FROM banner_jobs WHERE guild_id=? AND channel_id=? AND state='sent' ORDER BY attempted_at DESC LIMIT 1",
             (str(guild_id), target['channel_id']),
@@ -217,7 +226,7 @@ class BannerRelay:
             text += (f"\nLast confirmed delivery: <t:{int(summary['confirmed'])}:R>." if summary
                      else "\nNo confirmed delivery remains in the recent receipt window.")
         state=self.diagnostics.snapshot(guild_id)
-        for key,label in (('polled','Source checked'),('observed','Source image published/updated'),('received','Bytes verified')):
+        for key,label in (('polled','Source checked'),('observed','Source image published/updated'),('received','Bytes verified'),('checked_receipt','Saved receipt confirmed')):
             text+='\n'+label+(': <t:'+str(int(state[key]))+':R>.' if state[key] else ': not confirmed yet.')
         text+=f"\nPending deliveries: {state['pending']}."
         if state['error']:
@@ -234,9 +243,8 @@ class BannerRelay:
         if not self.query('SELECT 1 FROM banner_targets LIMIT 1').fetchone():
             return True
         state=self.diagnostics.snapshot()
-        waiting = (state['source_message'] and (state['source_message'] != state['received_source']
-                   or state['observed'] > state['received_version']) and self.clock()-state['observed_at']>120)
-        return self.status=='ready' and state['polled']>0 and self.clock()-state['polled']<120 and not waiting
+        waiting = self.diagnostics.waiting()
+        return self.status=='ready' and state['polled']>0 and self.clock()-state['polled']<SOURCE_FRESHNESS and not waiting
 
     def paused(self):
         until=float(self.bot.store.get('feed-maintenance-until:'+self.kind) or 0)
@@ -261,11 +269,11 @@ class BannerRelay:
         state=self.diagnostics.snapshot()
         failures=self.query("SELECT count(*) FROM banner_jobs j JOIN banner_targets t ON t.channel_id=j.channel_id WHERE state IN ('unavailable','oversize','rejected')").fetchone()[0]
         return {
-            self.kind+'_source':(self.status!='ready' or not state['polled'] or self.clock()-state['polled']>=120,
+            self.kind+'_source':(self.status!='ready' or not state['polled'] or self.clock()-state['polled']>=SOURCE_FRESHNESS,
                 f'The {self.kind} source has not confirmed a recent successful check. Open private feed diagnostics.'),
             self.kind+'_delivery':(bool((state['pending'] and state['oldest'] and self.clock()-state['oldest']>180) or failures),
                 f'The {self.kind} feed has delayed or blocked destinations. Check private status and channel permissions.'),
-            self.kind+'_receive':(bool(state['source_message'] and (state['source_message']!=state['received_source'] or state['observed']>state['received_version']) and self.clock()-state['observed_at']>120),
+            self.kind+'_receive':(self.diagnostics.waiting(),
                 f'A new {self.kind} source image has not completed reception. Check private source and download diagnostics.'),
         }
 
@@ -372,7 +380,7 @@ class BannerRelay:
         if not image_url(url):
             raise ValueError("Only Discord image attachments/proxies are accepted")
         if self.session is None:
-            self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30))
+            self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=DOWNLOAD_TIMEOUT))
         async with self.session.get(url, allow_redirects=False) as response:
             if response.status != 200 or (response.content_length is not None and response.content_length > limit):
                 raise ValueError("Image unavailable")
@@ -401,109 +409,8 @@ class BannerRelay:
             return await self._accept(payload)
 
     async def _accept(self, payload):
-        # Check scope, age and bounded shape before any download or storage.
-        if str(payload.get("channel_id")) not in {str(value) for value in self.source_ids}:
-            return False
-        created = float(payload["created_at"])
-        if not math.isfinite(created) or not self.clock() - self.max_age < created <= self.clock() + 300:
-            return False
-        message_id = str(payload["message_id"])
-        urls = payload["images"]
-        if not message_id.isdecimal() or len(message_id) > 22 or not isinstance(urls, list) or not 1 <= len(urls) <= 10:
-            return False
-        if self.kind=='daily' and not all(image_url(url) for url in urls):
-            return False
-        skipped_urls = sum(not image_url(url) for url in urls)
-        urls = [url for url in urls if image_url(url)]
-        if not urls:
-            self.diagnostics.error('unsupported_source_urls')
-            return False
-        published=float(payload.get('published_at',created))
-        if not math.isfinite(published):
-            return False
-        if published<=self.clock()-self.max_age:
-            known_source=self.query('SELECT 1 FROM banner_seen WHERE source_message=? LIMIT 1',(message_id,)).fetchone()
-            current=self.current_daily.current() if self.kind=='daily' else None
-            if not known_source and not (current and current['source_message']==message_id):
-                return False
-        if self.bot.health.storage_level == "critical":
-            return False
-        async with self.accept_lock:
-            self.prune()
-            if self.diagnostics.obsolete(message_id):
-                return False
-            if self.kind == 'daily' and self.current_daily.older(message_id, created):
-                return False
-            if self.kind == 'daily':
-                self.current_daily.observe(message_id,created)
-            self.diagnostics.observe(message_id,created)
-            fingerprint = hashlib.sha256(json.dumps(image_identity(payload), separators=(',', ':')).encode()).hexdigest()
-            if self.query('SELECT 1 FROM banner_source_receipts WHERE fingerprint=?', (fingerprint,)).fetchone():
-                return False
-            images, blobs, size, skipped, partial = [], {}, 0, skipped_urls, False
-            last_error=None
-            for url in dict.fromkeys(urls):
-                try:
-                    blob = await self.download(url, min(MAX_IMAGE, MAX_BATCH - size))
-                    from feed_memory import current_memory
-                    await current_memory().keep(blob)
-                    size += len(blob)
-                    from media_validation import decode_budget
-                    async with decode_budget(getattr(self.bot,'instance_storage',None), blob):
-                        extension = await asyncio.to_thread(image_extension, blob)
-                except (ValueError,aiohttp.ClientError,TimeoutError,OSError) as error:
-                    if isinstance(error,ValueError) and str(error)=='Unsupported image':
-                        skipped+=1
-                        continue
-                    if self.kind=='daily':
-                        raise
-                    partial,last_error=True,error
-                    continue
-                digest = hashlib.sha256(blob).hexdigest()
-                if digest not in blobs:
-                    images.append(digest)
-                    blobs[digest] = (extension, blob)
-            if not images:
-                if last_error:
-                    raise last_error
-                self.diagnostics.error('unsupported_images')
-                return False
-            ident = hashlib.sha256((message_id + ":" + ":".join(images)).encode()).hexdigest()
-            if (self.query("SELECT 1 FROM banner_events WHERE id=?", (ident,)).fetchone()
-                    or self.diagnostics.known(message_id, images)
-                    or (self.kind == 'daily' and self.current_daily.current() is not None
-                        and self.current_daily.current()['event_id']==ident)):
-                with self.db:
-                    if self.kind == 'daily':
-                        self.current_daily.remember(ident, message_id, created)
-                    if not partial:
-                        self.query('INSERT OR REPLACE INTO banner_source_receipts VALUES(?,?)',
-                                   (fingerprint, created + self.max_age))
-                        self.diagnostics.received(skipped,message_id=message_id,created=created)
-                return False
-            used = self.query("SELECT COALESCE(SUM(length(data)),0) FROM banner_assets").fetchone()[0]
-            new = sum(len(blob) for digest, (_, blob) in blobs.items() if not self.query("SELECT 1 FROM banner_assets WHERE digest=?", (digest,)).fetchone())
-            if used + new > MAX_CACHE or self.query("SELECT COUNT(*) FROM banner_events").fetchone()[0] >= 64:
-                raise ValueError("Banner cache full")
-            with self.db:
-                for digest, (extension, blob) in blobs.items():
-                    self.query("INSERT OR IGNORE INTO banner_assets VALUES(?,?,?)", (digest, extension, blob))
-                self.query("INSERT INTO banner_events VALUES(?,?,?,?)", (ident, message_id, created, json.dumps(images)))
-                self.diagnostics.remember(message_id, images, created)
-                if not partial:
-                    self.diagnostics.received(skipped,message_id=message_id,created=created)
-                else:
-                    self.query("UPDATE banner_diagnostics SET error='partial_reception' WHERE singleton=1")
-                self.query("UPDATE banner_jobs SET state='superseded' WHERE state='pending' AND event_id IN (SELECT id FROM banner_events WHERE source_message=? AND id<>?)", (message_id, ident))
-                self.query("INSERT OR IGNORE INTO banner_jobs(event_id,guild_id,channel_id) SELECT ?,guild_id,channel_id FROM banner_targets", (ident,))
-                if self.kind == 'daily':
-                    self.current_daily.remember(ident, message_id, created)
-                # Confirm only after all bytes, validation and jobs are saved.
-                # A receive retry then needs neither a download nor a new upload.
-                if not partial:
-                    self.query('INSERT OR REPLACE INTO banner_source_receipts VALUES(?,?)',
-                               (fingerprint, created + self.max_age))
-            return True
+        from feed_ingest import receive
+        return await receive(self, payload)
 
     def prune(self, *, force=True):
         if not force and self.clock()-self.last_prune<30:
@@ -604,7 +511,8 @@ class BannerRelay:
                 return
             # Uncertain sends are reconciled, never blindly sent again.
             from feed_history import recent_attempts
-            async for message in recent_attempts(channel, job['first_attempt'] or job['attempted_at']):
+            async for message in recent_attempts(channel, job['first_attempt'] or job['attempted_at'],
+                    store=self.db,key=(self.kind,job['event_id'],job['channel_id'])):
                 if message.author.id == self.bot.user.id and (str(message.nonce) == self.nonce(job) or [a.filename for a in message.attachments] == names):
                     self.state(job, "sent", message.id)
                     return
@@ -669,7 +577,7 @@ class BannerRelay:
         async def run(job):
             async with self.delivery_slots:
                 try:
-                    await asyncio.wait_for(self.deliver(job), 40)
+                    await asyncio.wait_for(self.deliver(job), DELIVERY_TIMEOUT)
                 except asyncio.CancelledError:
                     raise
                 except (discord.HTTPException, aiohttp.ClientError, asyncio.TimeoutError, OSError):
@@ -705,42 +613,3 @@ class BannerRelay:
         if self.session:
             await self.session.close()
             self.session = None
-
-
-class BannerControls(discord.ui.View):
-    def __init__(self, bot, interaction, *, kind="banner"):
-        super().__init__(timeout=180)
-        self.bot, self.actor, self.guild, self.channel = bot, interaction.user.id, interaction.guild_id, interaction.channel_id
-        self.feed = bot.daily if kind == "daily" else bot.banners
-        self.generation = self.feed.generation(self.guild)
-
-    async def interaction_check(self, interaction):
-        from bot_views import reply
-        if (interaction.user.id, interaction.guild_id) != (self.actor, self.guild):
-            await reply(interaction, "Open the setup command to manage your own server's image feed.")
-            return False
-        try:
-            require_banner_admin(interaction)
-        except ValueError as error:
-            await reply(interaction, str(error))
-            return False
-        return True
-
-    @discord.ui.button(label="Stop receiving", style=discord.ButtonStyle.danger)
-    async def disable(self, interaction, _button):
-        from bot_views import reply
-        require_banner_admin(interaction)
-        if not interaction.response.is_done():
-            await interaction.response.defer(ephemeral=True, thinking=True)
-        async with self.bot.guild_lock(self.guild):
-            target = self.feed.target(self.guild)
-            if not target or target["channel_id"] != str(self.channel) or self.feed.generation(self.guild) != self.generation:
-                await reply(interaction, "The configuration changed. Open the setup command in the desired channel to check it.")
-                return
-            self.feed.disable(self.guild)
-        await reply(interaction, "This image feed has been disabled in this server.")
-        self.stop()
-
-    async def on_error(self, interaction, error, item):
-        from bot_views import reply
-        await reply(interaction, "The change could not be confirmed. Open the setup command to check it.")

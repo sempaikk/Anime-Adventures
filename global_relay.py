@@ -122,7 +122,10 @@ def formatted_chunks(text):
     return result
 
 
-class GlobalRelay:
+from global_delivery import GlobalDelivery
+
+
+class GlobalRelay(GlobalDelivery):
     def __init__(self, bot):
         self.bot = bot
         self.store = GlobalStore(bot.store)
@@ -144,6 +147,7 @@ class GlobalRelay:
         self.cycle_lock = asyncio.Lock()
         self.source_locks = {}
         self.tasks = set()
+        self.ingests = set()
         self.deliveries = {}
         self.recovery_task = None
         self.round = 0
@@ -367,7 +371,7 @@ class GlobalRelay:
             if not accepted or message.created_at.timestamp() < accepted["accepted"]:
                 return
         task = asyncio.current_task()
-        self.tasks.add(task)
+        self.ingests.add(task)
         entry = self.source_locks.setdefault(
             str(message.id), SimpleNamespace(lock=asyncio.Lock(), users=0)
         )
@@ -408,8 +412,8 @@ class GlobalRelay:
                     message, data, confirmed_first=confirmed_first
                 )
                 preparing = self.store.one(
-                    "SELECT 1 FROM global_deliveries WHERE source_id=? AND state='preparing'",
-                    (str(message.id),),
+                    "SELECT 1 FROM global_deliveries WHERE source_id=? AND state='preparing' AND next_try<=?",
+                    (str(message.id),self.store.clock()),
                 )
                 if not changed and not preparing:
                     return
@@ -465,13 +469,17 @@ class GlobalRelay:
                 if isinstance(error, ValueError)
                 else 'Sharing could not be prepared. The original message was preserved.'
             )
-            self.store.failed(message.id, reason)
+            transient = isinstance(error, (aiohttp.ClientError, TimeoutError, OSError)) or getattr(error,'status',0) in (429,500,502,503,504)
+            if transient:
+                self.store.defer_preparation(message.id, reason)
+            else:
+                self.store.failed(message.id, reason)
             if not recovery:
                 self.store.attempt(message.author.id,message.guild.id,'not_shared',reason)
                 await self.notice(message, reason)
         finally:
             self.media.release(prepared_assets)
-            self.tasks.discard(task)
+            self.ingests.discard(task)
             entry.users -= 1
             if not entry.users:
                 self.source_locks.pop(str(message.id), None)
@@ -729,118 +737,10 @@ class GlobalRelay:
                     )
                 await self.ingest(original, recovery=True)
                 return
-            for index, part in enumerate(parts):
-                current = self.store.message(row["id"])
-                if current["deleted"] or current["revision"] != row["revision"]:
-                    return
-                active = self.store.source(job["channel_id"])
-                delivery = self.store.delivery(job["source_id"], job["channel_id"])
-                if (
-                    self.store.network_paused()
-                    or not active
-                    or active["hook_id"] != job["hook_id"]
-                    or delivery["state"] == "cancelled"
-                    or delivery["suppressed"]
-                    or not self.store.source(row["channel_id"])
-                    or not self.suitable(original.channel)
-                    or target.is_nsfw()
-                    or not self.store.consented(row["user_id"])
-                    or self.store.blocked(
-                        row["user_id"], job["guild_id"], row["guild_id"]
-                    )
-                ):
-                    return
-                if not all(
-                    getattr(target.permissions_for(target.guild.me), flag, False)
-                    for flag in REQUIRED
-                ):
-                    raise ValueError(
-                        "An administrator needs to check the bot's permissions in this channel."
-                    )
-                files, _ = self.media.files(part["files"], target.guild.filesize_limit)
-                existing = receipts[index] if index < len(receipts) else None
-                try:
-                    if existing:
-                        try:
-                            await hook.edit_message(
-                                int(existing),
-                                content=part["content"],
-                                attachments=files,
-                                allowed_mentions=discord.AllowedMentions.none(),
-                            )
-                        except discord.NotFound:
-                            # A removed copy is a moderation decision, never resurrect it.
-                            self.store.suppress(
-                                job["guild_id"], job["channel_id"], existing
-                            )
-                            return
-                        if index==0:
-                            with self.store.db:
-                                self.store.db.execute('UPDATE global_deliveries SET quote_hash=?,quote_dirty=0 WHERE source_id=? AND channel_id=?',(part['quote_hash'],row['id'],job['channel_id']))
-                    else:
-                        attempt = {
-                            "fingerprint": fingerprint(
-                                {
-                                    "content": part["content"],
-                                    "username": data["username"],
-                                    "files": [
-                                        {"filename": a["filename"], "size": a["size"]}
-                                        for a in part["files"]
-                                    ],
-                                }
-                            )
-                        }
-                        with self.store.db:
-                            if index==0:
-                                self.store.db.execute('UPDATE global_deliveries SET quote_hash=? WHERE source_id=? AND channel_id=?',(part['quote_hash'],row['id'],job['channel_id']))
-                            self.store.db.execute(
-                                "UPDATE global_deliveries SET state='sending',uncertain=?,attempted=?,attempt_payload=? WHERE source_id=? AND channel_id=?",
-                                (
-                                    index,
-                                    self.store.clock(),
-                                    json.dumps(attempt),
-                                    row["id"],
-                                    job["channel_id"],
-                                ),
-                            )
-                        try:
-                            sent = await hook.send(
-                                part["content"] or None,
-                                username=data["username"],
-                                **(
-                                    {"avatar_url": data["avatar"]}
-                                    if data.get("avatar")
-                                    else {}
-                                ),
-                                files=files,
-                                allowed_mentions=discord.AllowedMentions.none(),
-                                wait=True,
-                            )
-                        except (
-                            TimeoutError,
-                            aiohttp.ClientError,
-                            discord.DiscordServerError,
-                        ):
-                            self.store.retry(
-                                job,
-                                'Discord did not confirm publication.',
-                                uncertain=index,
-                            )
-                            return
-                        if not sent or not getattr(sent, "id", None):
-                            self.store.retry(
-                                job,
-                                'Discord did not confirm publication.',
-                                uncertain=index,
-                            )
-                            return
-                        self.store.save_receipt(job, index, sent.id)
-                        while len(receipts) <= index:
-                            receipts.append(None)
-                        receipts[index] = str(sent.id)
-                finally:
-                    for file in files:
-                        file.close()
+            from global_delivery import DeliveryContext
+            context=DeliveryContext(job,row,hook,target,original,data,parts,receipts)
+            if not await self.publish_parts(context):
+                return
             for ident in receipts[len(parts) :]:
                 if ident:
                     with self.store.db:
@@ -933,6 +833,10 @@ class GlobalRelay:
                     )
 
     async def recover(self):
+        async with asyncio.timeout(60):
+            await self._recover()
+
+    async def _recover(self):
         await self.onboarding.cleanup_private()
         configs = self.store.channels()
         for _ in range(min(5, len(configs))):
@@ -967,8 +871,8 @@ class GlobalRelay:
                 except (discord.HTTPException, ValueError):
                     pass
         for row in self.store.rows(
-            "SELECT m.* FROM global_messages m WHERE m.deleted=0 AND m.expires>? AND (m.checked<? OR EXISTS(SELECT 1 FROM global_deliveries d WHERE d.source_id=m.id AND d.state='preparing')) ORDER BY m.checked LIMIT 5",
-            (self.store.clock(), self.store.clock() - 300),
+            "SELECT m.* FROM global_messages m WHERE m.deleted=0 AND m.expires>? AND (m.checked<? OR EXISTS(SELECT 1 FROM global_deliveries d WHERE d.source_id=m.id AND d.state='preparing' AND d.next_try<=?)) ORDER BY m.checked LIMIT 5",
+            (self.store.clock(), self.store.clock() - 300,self.store.clock()),
         ):
             try:
                 message = await self.original(row)
@@ -987,6 +891,10 @@ class GlobalRelay:
         if self.cycle_lock.locked():
             return
         async with self.cycle_lock:
+            for orphan in self.store.rows("SELECT * FROM global_deliveries WHERE state='sending'"):
+                active = self.deliveries.get(orphan['channel_id'])
+                if (not active or active.done()) and self.store.clock()-orphan['attempted']>90:
+                    self.store.retry(orphan,'Interrupted publication; checking Discord confirmation.',uncertain=orphan['uncertain'])
             if self.store.clock() - self.last_maintenance >= 60:
                 self.maintenance()
                 self.last_maintenance = self.store.clock()
@@ -1020,6 +928,10 @@ class GlobalRelay:
                                 uncertain=current["uncertain"],
                             )
                     except Exception as error:
+                        current = self.store.delivery(job['source_id'],job['channel_id'])
+                        if current and current['state'] not in {'sent','deleted','cancelled','partial'}:
+                            self.store.retry(current,'Delivery interrupted; checking its recorded attempt.',
+                                uncertain=current['uncertain'] if current['state']=='sending' else -1)
                         log.warning("Entrega global adiada: %s", type(error).__name__)
 
             self.deliveries={key:task for key,task in self.deliveries.items() if not task.done()}
@@ -1049,7 +961,12 @@ class GlobalRelay:
             c["active"] for c in self.store.channels()
         ):
             return True
-        return self.store.clock() - self.last_cycle < 240
+        abandoned = any((not self.deliveries.get(row['channel_id']) or self.deliveries[row['channel_id']].done())
+            for row in self.store.rows("SELECT channel_id FROM global_deliveries WHERE state='sending' AND attempted<?",(self.store.clock()-90,)))
+        stalled = self.store.one("""SELECT 1 FROM global_deliveries d JOIN global_messages m ON m.id=d.source_id
+            WHERE d.state IN ('queued','preparing','uncertain','sending')
+            AND MAX(d.attempted,m.updated,d.next_try)<? LIMIT 1""",(self.store.clock()-300,))
+        return self.store.clock() - self.last_cycle < 240 and not abandoned and not stalled
 
     def maintenance(self):
         self.store.cleanup()
@@ -1066,9 +983,10 @@ class GlobalRelay:
 
     async def close(self):
         self.closed = True
-        tasks = [
-            t for t in self.tasks if t is not asyncio.current_task() and not t.done()
-        ]
+        owned = self.tasks | self.ingests | set(self.deliveries.values())
+        if self.recovery_task:
+            owned.add(self.recovery_task)
+        tasks = [t for t in owned if t is not asyncio.current_task() and not t.done()]
         for task in tasks:
             task.cancel()
         if tasks:

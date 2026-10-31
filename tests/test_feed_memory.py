@@ -199,7 +199,8 @@ class FeedMemoryCase(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(self.relay.diagnostics.snapshot()['error'], reason)
         self.relay.diagnostics.error('source_unavailable')
         self.relay.diagnostics.poll()
-        self.assertEqual(self.relay.diagnostics.snapshot()['error'], '')
+        self.assertEqual(self.relay.diagnostics.snapshot()['source_error'], '')
+        self.assertEqual(self.relay.diagnostics.snapshot()['receive_error'], 'download_or_validation_failed')
 
     async def test_owner_alert_distinguishes_memory_reception_from_source_outage(self):
         self.app.store.clock = lambda: self.now

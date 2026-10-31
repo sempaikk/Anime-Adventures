@@ -6,6 +6,18 @@ from pathlib import Path
 import shutil
 import time
 from contextlib import asynccontextmanager
+from runtime_limits import quota
+
+
+class MemoryLease:
+    def __init__(self, owner, amount):
+        self.owner, self.amount, self.materialized = owner, amount, 0
+
+    def materialize(self, amount):
+        taken = min(max(0,int(amount)), self.amount-self.materialized)
+        self.materialized += taken
+        self.owner.materialized_memory += taken
+        return taken
 
 
 class ResourceBudgetError(OSError):
@@ -43,8 +55,15 @@ class InstanceStorage:
         self.lock=asyncio.Lock()
         self.reserved = 0
         self.reserved_memory = 0
+        self.materialized_memory = 0
         self.reservation_lock = asyncio.Lock()
-        self.memory_limit = max(64, int(os.getenv('INSTANCE_RAM_LIMIT_MB', '256'))) * 1024 * 1024
+        self.memory_limit = quota('INSTANCE_RAM_LIMIT_MB',256)
+        try:
+            actual = int(Path('/sys/fs/cgroup/memory.max').read_text().strip())
+            if actual > 0:
+                self.memory_limit = min(self.memory_limit,actual)
+        except (OSError,ValueError):
+            pass
 
     def measure(self):
         roots=[self.root]
@@ -89,14 +108,16 @@ class InstanceStorage:
             headroom = 48 * 1024 * 1024 if feature == 'global' else 16 * 1024 * 1024
             if free < amount + headroom:
                 raise ResourceBudgetError('disk', 'Storage budget is reserved for safe operation. Try again after cleanup.')
-            if rss is not None and rss + self.reserved_memory + memory > self.memory_limit * .9:
+            if rss is not None and rss + self.reserved_memory - self.materialized_memory + memory > self.memory_limit * .9:
                 raise ResourceBudgetError('memory', 'Image preparation is paused while memory usage is high.')
             self.reserved += amount
             self.reserved_memory += memory
+        lease = MemoryLease(self,memory)
         try:
-            yield
+            yield lease
         finally:
             self.reserved -= amount
             self.reserved_memory -= memory
+            self.materialized_memory -= lease.materialized
             if amount:
                 self.checked = 0

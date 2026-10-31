@@ -142,6 +142,8 @@ class GlobalMedia:
                     timeout=aiohttp.ClientTimeout(total=90),
                 ) as response:
                     if response.status != 200:
+                        if response.status in (429,500,502,503,504):
+                            raise OSError('Discord attachment transfer is temporarily unavailable.')
                         raise ValueError(
                             'Discord did not provide the attachment. Please try sending it again.'
                         )
@@ -163,15 +165,16 @@ class GlobalMedia:
                         stream.write(chunk)
                         digest.update(chunk)
                 if not size or (expected and expected != size):
-                    raise ValueError(
+                    raise OSError(
                         'The attachment download was incomplete. The original was preserved.'
                     )
             from media_validation import validate_file, decode_budget
+            from resource_jobs import joined_thread
             if Path(name).suffix.lower() in {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.avif'}:
                 async with decode_budget(self.budget, temporary):
-                    await asyncio.to_thread(validate_file, temporary, name)
+                    await joined_thread(validate_file, temporary, name)
             else:
-                await asyncio.to_thread(validate_file, temporary, name)
+                await joined_thread(validate_file, temporary, name)
             target = self.root / digest.hexdigest()
             os.replace(temporary, target)
             self.in_use[digest.hexdigest()] = self.in_use.get(digest.hexdigest(), 0) + 1

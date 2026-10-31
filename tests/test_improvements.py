@@ -9,7 +9,7 @@ from PIL import Image
 
 import test_banners as feeds
 import test_global_chat as chat
-from banner_relay import BannerControls
+from feed_views import FeedPanel
 from global_policy import check_links
 from global_relay import relay_name
 
@@ -40,9 +40,10 @@ class FeedImprovements(unittest.IsolatedAsyncioTestCase):
     async def test_old_stop_button_preserves_new_configuration_in_same_channel(self):
         self.relay.configure(1, 10)
         i = self.interaction()
-        view = BannerControls(self.app, i)
+        view = FeedPanel(self.app, i, kind='banner')
         self.relay.configure(1, 10)
-        await view.disable.callback(i)
+        with self.assertRaisesRegex(ValueError, 'settings changed'):
+            await view.disable.callback(i)
         self.assertIsNotNone(self.relay.target(1))
 
     async def test_unsupported_extra_image_does_not_discard_valid_banner(self):

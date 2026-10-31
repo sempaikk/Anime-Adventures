@@ -3,6 +3,7 @@
 import asyncio
 
 import discord
+from runtime_limits import SOURCE_TIMEOUT
 
 from banner_reader import image_message
 from feed_receiver import FeedReceiver
@@ -49,7 +50,7 @@ class NativeSources:
                     self.event(message)
             self.receiver.handle({'event':'ready','channel_id':str(ident)})
         try:
-            await asyncio.wait_for(read(),25)
+            await asyncio.wait_for(read(),SOURCE_TIMEOUT)
         except (discord.HTTPException,TimeoutError,OSError):
             feed.native=False
             feed.status='source_unavailable'
@@ -71,7 +72,7 @@ class NativeSources:
         channel=self.channels.get(getattr(event,'channel_id',None))
         if channel is not None:
             try:
-                self.event(await channel.fetch_message(event.message_id))
+                self.event(await asyncio.wait_for(channel.fetch_message(event.message_id),SOURCE_TIMEOUT))
             except (discord.HTTPException,TimeoutError,OSError):
                 return
 

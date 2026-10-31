@@ -443,6 +443,19 @@ class GlobalStore(ModerationStore):
                 (reason, str(ident)),
             )
 
+    def defer_preparation(self, ident, reason):
+        """A known pre-POST failure may retry within the existing content window."""
+        with self.db:
+            row = self.message(ident)
+            if not row or row['deleted']:
+                return
+            self.db.execute('UPDATE global_messages SET error=? WHERE id=?',(reason,str(ident)))
+            self.db.execute("""UPDATE global_deliveries SET
+                state=CASE WHEN attempts>=5 OR ?-?>=3600 THEN 'failed' ELSE 'preparing' END,
+                attempts=attempts+1,next_try=?+MIN(300,15*(1<<MIN(attempts,4))),error=?
+                WHERE source_id=? AND state='preparing'""",
+                (self.clock(),row['updated'],self.clock(),reason,str(ident)))
+
     def erase(self, ident):
         with self.db:
             self.refresh_replies(ident)

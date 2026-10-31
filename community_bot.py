@@ -31,12 +31,15 @@ class CommunityBot(commands.Bot):
         intents=discord.Intents.none()
         intents.guilds=intents.guild_messages=intents.message_content=True
         super().__init__(command_prefix=commands.when_mentioned,intents=intents,help_command=None,
-                         allowed_mentions=discord.AllowedMentions.none())
+                         allowed_mentions=discord.AllowedMentions.none(),max_messages=None)
         self.directory=Path(data_dir or os.getenv('DATA_DIR','state')).resolve()
+        from runtime_limits import quota
+        disk_mib=quota('INSTANCE_DISK_LIMIT_MB',512)//(1024*1024)
+        quota('INSTANCE_RAM_LIMIT_MB',256)
         self.lease=acquire_lease(self.directory)
         self.health=RuntimeHealth(self.is_ready,lambda:self.store.connection)
         self.instance_storage=InstanceStorage(Path(__file__).resolve().parent,self.directory,self.health,
-                                             limit_mb=os.getenv('INSTANCE_DISK_LIMIT_MB','512'))
+                                             limit_mb=disk_mib)
         try:
             self.store=BotStore(prepare_database(self.directory,available_space=lambda:
                 max(0,self.instance_storage.limit-self.instance_storage.measure())))
@@ -49,6 +52,7 @@ class CommunityBot(commands.Bot):
         self.backup_lock=asyncio.Lock()
         self.command_sync_task=None
         self.command_sync_status='pending'
+        self.profile_application=None
         self.globalchat=GlobalRelay(self)
         self.health.add_probe('global_chat',self.globalchat.ready)
         self.banners=BannerRelay(self)
@@ -76,13 +80,10 @@ class CommunityBot(commands.Bot):
 
     async def setup_hook(self):
         log.info('Running version %s; files %s.',label(self.build),'verified' if self.build['verified'] else 'changed')
-        app=await self.application_info()
-        self.profile_application=app
-        from app_profile import configure_profile
-        if self.build.get('verified'):
-            await configure_profile(self,app)
-        await self.ui_theme.refresh(self.http,app.id)
-        self.owner_ids_set={app.team.owner_id if app.team else app.owner.id}
+        try:
+            await asyncio.wait_for(self.refresh_application(),20)
+        except Exception as error:
+            log.warning('Application presentation deferred (%s); source workers can start.',type(error).__name__)
         from global_views import GlobalPanelView,GlobalDirectView
         self.add_view(GlobalPanelView(self))
         self.add_view(GlobalDirectView(self))
@@ -92,6 +93,15 @@ class CommunityBot(commands.Bot):
             loop.start()
         self.banners.start()
         self.command_sync_task=asyncio.create_task(self.sync_commands(),name='command-sync')
+
+    async def refresh_application(self):
+        app = self.profile_application or await self.application_info()
+        self.profile_application=app
+        self.owner_ids_set={app.team.owner_id if app.team else app.owner.id}
+        from app_profile import configure_profile
+        if self.build.get('verified'):
+            await configure_profile(self,app)
+        await self.ui_theme.refresh(self.http,app.id)
 
     async def sync_commands(self):
         delay=15
@@ -273,6 +283,8 @@ class CommunityBot(commands.Bot):
         except Exception as error:
             log.warning('Banner reception notice deferred: %s',type(error).__name__)
         try:
+            if self.profile_application is None:
+                await asyncio.wait_for(self.refresh_application(),20)
             if self.store.get('bot-profile:1')=='pending':
                 from app_profile import configure_profile
                 await configure_profile(self,self.profile_application)

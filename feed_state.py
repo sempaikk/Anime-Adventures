@@ -2,6 +2,8 @@
 
 import hashlib
 import json
+from feed_contracts import error_stage
+from runtime_limits import SOURCE_FRESHNESS
 
 
 class FeedState:
@@ -17,9 +19,16 @@ class FeedState:
             skipped INTEGER NOT NULL DEFAULT 0)''')
         feed.query('INSERT OR IGNORE INTO banner_diagnostics(singleton) VALUES(1)')
         columns={row[1] for row in feed.query('PRAGMA table_info(banner_diagnostics)')}
-        for name,definition in (('received_source',"TEXT NOT NULL DEFAULT ''"),('received_version','REAL NOT NULL DEFAULT 0'),('observed_at','REAL NOT NULL DEFAULT 0')):
+        for name,definition in (('received_source',"TEXT NOT NULL DEFAULT ''"),('received_version','REAL NOT NULL DEFAULT 0'),('observed_at','REAL NOT NULL DEFAULT 0'),
+                ('pending_since','REAL NOT NULL DEFAULT 0'),('checked_receipt','REAL NOT NULL DEFAULT 0'),
+                ('source_error',"TEXT NOT NULL DEFAULT ''"),('receive_error',"TEXT NOT NULL DEFAULT ''"),('delivery_error',"TEXT NOT NULL DEFAULT ''")):
             if name not in columns:
                 feed.query('ALTER TABLE banner_diagnostics ADD COLUMN '+name+' '+definition)
+        feed.query('''CREATE TABLE IF NOT EXISTS banner_source_versions(
+            source_message TEXT PRIMARY KEY, observed REAL NOT NULL,
+            verified REAL NOT NULL DEFAULT 0, signature TEXT NOT NULL DEFAULT '')''')
+        feed.query('CREATE INDEX IF NOT EXISTS banner_receipt_expiry ON banner_source_receipts(expires_at)')
+        feed.query('CREATE INDEX IF NOT EXISTS banner_destination_queue ON banner_jobs(channel_id,state,attempted_at)')
         feed.query('CREATE TABLE IF NOT EXISTS banner_source_floor(singleton INTEGER PRIMARY KEY CHECK(singleton=1), source_message TEXT NOT NULL)')
         feed.query('CREATE TABLE IF NOT EXISTS banner_retracted(source_message TEXT PRIMARY KEY, observed REAL NOT NULL)')
         feed.query('''CREATE TABLE IF NOT EXISTS banner_delivery_summary(
@@ -55,17 +64,40 @@ class FeedState:
             (message_id, self.signature(images), created))
 
     def observe(self, message_id, created):
-        old=self.feed.query('SELECT source_message,observed FROM banner_diagnostics WHERE singleton=1').fetchone()
+        self.feed.query('''INSERT INTO banner_source_versions(source_message,observed) VALUES(?,?)
+            ON CONFLICT(source_message) DO UPDATE SET observed=MAX(observed,excluded.observed)''', (message_id,created))
+        old=self.feed.query('SELECT * FROM banner_diagnostics WHERE singleton=1').fetchone()
         if old['source_message'] and (int(message_id)<int(old['source_message']) or (message_id==old['source_message'] and created<=old['observed'])):
+            self.db.commit()
             return
-        self.feed.query('UPDATE banner_diagnostics SET observed=?,source_message=?,observed_at=? WHERE singleton=1',
-            (created, message_id,self.feed.clock()))
+        pending = self.awaiting(old)
+        since = (old['pending_since'] or old['observed_at']) if pending else self.feed.clock()
+        self.feed.query('UPDATE banner_diagnostics SET observed=?,source_message=?,observed_at=?,pending_since=? WHERE singleton=1',
+            (created, message_id,self.feed.clock(),since or self.feed.clock()))
         self.db.commit()
+
+    @staticmethod
+    def awaiting(state):
+        return bool(state['source_message'] and (state['source_message'] != state['received_source']
+                    or state['observed'] > state['received_version']))
+
+    def waiting(self, seconds=SOURCE_FRESHNESS):
+        state = self.snapshot()
+        return self.awaiting(state) and self.feed.clock() - (state['pending_since'] or state['observed_at']) > seconds
+
+    def newer_version(self, message_id, created):
+        row = self.feed.query('SELECT observed FROM banner_source_versions WHERE source_message=?', (message_id,)).fetchone()
+        return bool(row and row[0] > created)
+
+    def event_current(self, event):
+        row = self.feed.query('SELECT * FROM banner_source_versions WHERE source_message=?', (event['source_message'],)).fetchone()
+        return not row or event['created_at'] >= row['observed'] or (row['verified'] >= row['observed']
+            and row['signature'] == self.signature(json.loads(event['images'])))
 
     def poll(self):
         # A healthy metadata poll is not proof that a failed image download was
         # repaired. Retain reception/resource errors until current bytes verify.
-        self.feed.query("""UPDATE banner_diagnostics SET polled=?,error=CASE
+        self.feed.query("""UPDATE banner_diagnostics SET polled=?,source_error='',error=CASE
             WHEN error IN ('source_unavailable','authorized_source_unavailable','connecting',
                            'reader_failed','login_failed','account_action_required') THEN ''
             ELSE error END WHERE singleton=1""", (self.feed.clock(),))
@@ -73,18 +105,26 @@ class FeedState:
 
     def error(self, reason):
         # Controlled short reason codes only; never serialize exceptions or URLs.
-        self.feed.query('UPDATE banner_diagnostics SET error=? WHERE singleton=1', (reason[:60],))
+        stage = error_stage(reason)
+        self.feed.query('UPDATE banner_diagnostics SET error=?,' + stage + '_error=? WHERE singleton=1', (reason[:60],reason[:60]))
         self.db.commit()
 
-    def received(self, skipped=0, *, message_id=None, created=None):
+    def received(self, skipped=0, *, message_id=None, created=None, images=None, downloaded=True):
         old=self.feed.query('SELECT source_message,observed FROM banner_diagnostics WHERE singleton=1').fetchone()
         message_id = message_id or old['source_message']
         created = created if created is not None else old['observed']
+        if message_id:
+            self.feed.query('''INSERT INTO banner_source_versions(source_message,observed,verified,signature) VALUES(?,?,?,?)
+                ON CONFLICT(source_message) DO UPDATE SET verified=MAX(verified,excluded.verified),
+                signature=CASE WHEN excluded.signature<>'' THEN excluded.signature ELSE signature END''',
+                (message_id,created,created,self.signature(images) if images else ''))
         if old['source_message'] and (int(message_id) < int(old['source_message']) or
                 (message_id == old['source_message'] and created < old['observed'])):
             return False
-        self.feed.query("UPDATE banner_diagnostics SET received=?,skipped=?,error='',received_source=?,received_version=? WHERE singleton=1",
-                        (self.feed.clock(), skipped,message_id, created))
+        self.feed.query("""UPDATE banner_diagnostics SET received=CASE WHEN ? THEN ? ELSE received END,
+            checked_receipt=?,skipped=?,receive_error='',error=CASE WHEN error IN ('delivery_deferred','delivery_failed') THEN error ELSE '' END,
+            received_source=?,received_version=?,pending_since=0 WHERE singleton=1""",
+            (downloaded,self.feed.clock(),self.feed.clock(),skipped,message_id,created))
         return True
 
     def confirmed(self, job):
@@ -92,6 +132,8 @@ class FeedState:
         if event:
             self.feed.query('INSERT OR REPLACE INTO banner_delivery_summary VALUES(?,?,?,?)',
                 (job['channel_id'], self.feed.clock(), event['source_message'], max(0, self.feed.clock()-event['created_at'])))
+        if not self.feed.query("SELECT 1 FROM banner_jobs WHERE state IN ('unavailable','oversize','rejected') LIMIT 1").fetchone():
+            self.feed.query("UPDATE banner_diagnostics SET delivery_error='',error=CASE WHEN error LIKE 'delivery_%' THEN '' ELSE error END WHERE singleton=1")
 
     def prune(self):
         # Keep a small global source history, not one image archive per server.
@@ -104,9 +146,12 @@ class FeedState:
         self.feed.query('''DELETE FROM banner_seen WHERE rowid NOT IN
             (SELECT rowid FROM banner_seen ORDER BY length(source_message) DESC,source_message DESC,observed DESC LIMIT 2048)''')
         self.feed.query('DELETE FROM banner_delivery_summary WHERE channel_id NOT IN (SELECT channel_id FROM banner_targets)')
+        self.feed.query('''DELETE FROM banner_source_versions WHERE source_message NOT IN
+            (SELECT source_message FROM banner_source_versions ORDER BY length(source_message) DESC,source_message DESC LIMIT 2048)''')
 
     def snapshot(self, guild_id=None):
         result = dict(self.feed.query('SELECT * FROM banner_diagnostics WHERE singleton=1').fetchone())
+        result['error'] = result['source_error'] or result['receive_error'] or result['delivery_error'] or result['error']
         target = self.feed.target(guild_id) if guild_id is not None else None
         if target:
             row = self.feed.query('SELECT * FROM banner_delivery_summary WHERE channel_id=?', (target['channel_id'],)).fetchone()

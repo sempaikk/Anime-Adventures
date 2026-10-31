@@ -99,7 +99,8 @@ class BannerImages:
                     continue
                 if history is None:
                     from feed_history import recent_attempts
-                    history = [message async for message in recent_attempts(channel, part['first_attempt'] or part['attempted_at'])]
+                    history = [message async for message in recent_attempts(channel, part['first_attempt'] or part['attempted_at'],
+                        store=self.db,key=('image',*self.key(part)))]
                 message = next((message for message in history
                     if message.author.id == self.bot.user.id and not getattr(message, 'webhook_id', None)
                     and (str(getattr(message, 'nonce', None)) == self.nonce(part)

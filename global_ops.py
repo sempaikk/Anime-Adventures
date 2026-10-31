@@ -1,6 +1,7 @@
 """Owner-only operational view and quiet, persistent alerts for sustained failures."""
 
 import json
+from runtime_limits import INCIDENT_STABILITY
 import discord
 import aiohttp
 from global_views import ScopedView
@@ -145,7 +146,7 @@ class GlobalOperations:
                     continue
                 if not previous.get('cleared'):
                     previous['cleared']=now
-                if now-previous['cleared']<120:
+                if now-previous['cleared']<INCIDENT_STABILITY:
                     self.bot.store.set(meta,json.dumps(previous))
                     continue
                 if previous.get("sent"):
@@ -172,8 +173,10 @@ class GlobalOperations:
                 continue
             previous['cleared']=0
             self.bot.store.set(meta,json.dumps(previous))
+            if previous.get('sent') and previous.get('body') == text:
+                continue
             if (
-                now - previous["first"] < 120
+                now - previous["first"] < INCIDENT_STABILITY
                 or now - previous.get("attempted", 0) < 3600
             ):
                 continue
@@ -185,6 +188,8 @@ class GlobalOperations:
                 + '\n-# This alert is private and is not repeated for every message.'
             )
             previous["sent"] = previous.get("sent", False) or delivered
+            if delivered:
+                previous['body'] = text
             self.bot.store.set(meta, json.dumps(previous))
 
 

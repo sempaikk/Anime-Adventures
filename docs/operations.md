@@ -90,3 +90,18 @@ A cópia só pode ser considerada externa quando transferida ao destino privado 
 `/ready` agora detecta também recepção parada apesar de consultas recentes; pausas deliberadas não são falhas. `.github/workflows/availability.yml` continua pronto para uma URL pública HTTPS de `/ready` em `BOT_HEALTH_URL`. O endpoint publica apenas ready/unavailable. Não se configura uma URL com base em IDs, prints ou suposições sobre o painel. Esta sessão não conseguiu consultar as variáveis do GitHub pela API; não confirmou monitor externo ativo.
 
 [Mapa da revisão e limites externos](review-improvements.md).
+
+
+## Reliability review — 2026.10.31.2
+
+Source checks, current source revisions, downloaded/verified bytes, saved receipts and destination confirmations are separate durable facts. Copy diagnostics includes only controlled stage/reason codes. Repeated metadata checks do not clear a reception incident; new source revisions do not restart its stability clock. Identical private alerts are sent once per continuing incident, retaining the existing stability/cooldown and recovery rules.
+
+Reception coalesces duplicate queued events and renews signed CDN URLs from the existing fixed-source polling. A daily revision supersedes older queued revisions. The current observed source revision blocks stale uploads and member previews until verified. Completed valid banner files survive the overall reception deadline without acknowledging the incomplete source. Daily stays atomic.
+
+Memory admission combines measured RSS (main and reader), outstanding reservations and retained compressed bytes already represented in RSS. Decoder reservations remain held until the actual validation thread finishes, including cancellation. Message caching in the main Discord SDK is disabled because raw events/fresh fetches are used. Effective cgroup RAM can lower, never raise, the configured quota. No hosting limit was increased.
+
+Unexpected publication exceptions preserve uncertain attempts. Reconciliation uses a persistent 100-message page cursor and a five-minute original-attempt window, across restarts; uncertainty never causes a blind POST. Global preparation uses bounded retry/backoff for temporary transfer/resource failures. Readiness checks overdue progress as well as heartbeats. Auxiliary application presentation failures do not prevent feed startup; owner-only authorization remains closed until application ownership is verified.
+
+Code boundaries: feed_contracts (validated envelopes, stages and failure classes), runtime_limits (shared validated quotas/timers), feed_ingest (scope, transfer, validation, transaction), resource_jobs (joined cancellation-safe validation), global_delivery (part publication). No command or public product feature was added.
+
+Incident campaigns, recipients, deadlines and receipts remain intact. The reception apology is sent only after the actual current banner reaches that exact destination. Deploying code alone does not announce recovery. Production activation and deliveries still require the hosting restart and an observed running version.
