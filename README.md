@@ -2,6 +2,23 @@
 
 Personalize textos, números, imagens e aparência da página do Anime Adventures no seu navegador.
 
+## [Baixar o atualizador automático para Windows x64 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Atualizador-v1.0.0-Windows-x64.zip)
+
+Configure uma vez:
+
+1. No editor atual, use **Perfis e cenas → Exportar todos os perfis** e guarde o backup.
+2. Extraia o ZIP do atualizador e abra **AA-Atualizador.exe**.
+3. Clique em **Escolher pasta** e selecione a **mesma pasta AA-Visual-Editor já instalada**, que contém `manifest.json`. Se precisar, confira a pasta de origem nos detalhes da extensão, em **Carregada de**.
+4. Clique em **Ativar atualização automática**.
+
+O programa inicia quando você entra na conta do Windows, verifica novas versões a cada minuto e atualiza os arquivos na mesma pasta. Depois de uma nova versão, clique em **Recarregar** na extensão e dê **F5** no site. Mantenha a extensão instalada.
+
+No menu Iniciar, procure **Atualizador AA Visual Editor** para usar **Verificar agora** ou **Desativar automático**. O atualizador guarda três cópias anteriores do código e não lê nem modifica os perfis e imagens do Chrome. Os pacotes são conferidos por assinatura Ed25519 e SHA-256. O executável inicial não possui assinatura Authenticode.
+
+**Validação do atualizador:** 19 testes do núcleo com 36 verificações incluindo subtestes, detector de concorrência e pacote real da extensão. O executável Windows x64, a interface GUI e a solicitação `asInvoker` foram compilados/conferidos estaticamente. A janela, o menu Iniciar e a inicialização na conta do Windows não foram executados neste ambiente Linux.
+
+[Código-fonte do atualizador (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Atualizador-v1.0.0-FONTE.zip).
+
 ## [Baixar a versão corrigida 2.0.1 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Visual-Editor-v2.0.1.zip)
 
 ### Atualizar mantendo seus dados
