@@ -2,7 +2,11 @@
 
 Personalize textos, números, imagens e aparência da página do Anime Adventures no seu navegador.
 
-## [Baixar o atualizador automático para Windows x64 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Atualizador-v1.0.0-Windows-x64.zip)
+## [Baixar o atualizador 0.1 para Windows x64 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Atualizador-v1.0.1-Windows-x64.zip)
+
+A extensão e o atualizador usam a mesma arte de Madara e a versão visível **0.1**. O número exibido só muda quando o usuário pedir. O ícone da janela, o executável, o atalho e as informações do produto seguem essa identificação.
+
+**Se já configurou o programa:** feche a janela antiga, extraia o ZIP novo, abra `AA-Atualizador.exe` e clique em **Ativar / configurar automático**. A pasta da extensão será recuperada da configuração existente. A versão antiga do programa não troca seu próprio executável automaticamente.
 
 Configure uma vez:
 
@@ -15,9 +19,9 @@ O programa inicia quando você entra na conta do Windows, verifica novas versõe
 
 No menu Iniciar, procure **Atualizador AA Visual Editor** para usar **Verificar agora** ou **Desativar automático**. O atualizador guarda três cópias anteriores do código e não lê nem modifica os perfis e imagens do Chrome. Os pacotes são conferidos por assinatura Ed25519 e SHA-256. O executável inicial não possui assinatura Authenticode.
 
-**Validação do atualizador:** 19 testes do núcleo com 36 verificações incluindo subtestes, detector de concorrência e pacote real da extensão. O executável Windows x64, a interface GUI e a solicitação `asInvoker` foram compilados/conferidos estaticamente. A janela, o menu Iniciar e a inicialização na conta do Windows não foram executados neste ambiente Linux.
+**Validação do atualizador:** 20 testes do núcleo com 37 verificações incluindo subtestes, detector de concorrência e pacote real da extensão. O executável Windows x64, a interface GUI e a solicitação `asInvoker` foram compilados/conferidos estaticamente. A janela, o menu Iniciar e a inicialização na conta do Windows não foram executados neste ambiente Linux.
 
-[Código-fonte do atualizador (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Atualizador-v1.0.0-FONTE.zip).
+[Código-fonte do atualizador (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Atualizador-v1.0.1-FONTE.zip).
 
 ## [Baixar a extensão — versão visível 0.1 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Visual-Editor-v2.0.2.zip)
 
