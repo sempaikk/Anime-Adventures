@@ -19,7 +19,9 @@ No menu Iniciar, procure **Atualizador AA Visual Editor** para usar **Verificar 
 
 [Código-fonte do atualizador (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Atualizador-v1.0.0-FONTE.zip).
 
-## [Baixar a versão corrigida 2.0.1 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Visual-Editor-v2.0.1.zip)
+## [Baixar a extensão — versão visível 0.1 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Visual-Editor-v2.0.2.zip)
+
+O ícone usa a arte do Anime Adventures escolhida pelo usuário. A versão exibida no Chrome permanece **0.1** até ele solicitar outro número; correções continuam chegando pelo atualizador automático.
 
 ### Atualizar mantendo seus dados
 
@@ -47,6 +49,6 @@ No Edge, use `edge://extensions`.
 
 O formato dos dados e as três permissões da extensão foram mantidos. As alterações são locais à página do jogo 8304191830. Guia completo incluído no ZIP.
 
-**Verificação:** 102 testes aprovados, incluindo os 76 anteriores. Ensaio com 1.800 alterações e 360 recriações de contador. Os testes usam Chromium com página sintética e APIs Chrome simuladas; instalação real, captura nativa e BetterBLOX instalado não foram executados neste ambiente.
+**Verificação:** a revisão funcional anterior passou em 102 testes. Esta entrega mantém todos os scripts JavaScript idênticos e valida os novos ícones, a versão exibida, a integridade do pacote e a instalação pelo mecanismo de atualização. Ensaio com 1.800 alterações e 360 recriações de contador. Os testes usam Chromium com página sintética e APIs Chrome simuladas; instalação real, captura nativa e BetterBLOX instalado não foram executados neste ambiente.
 
-**Pacote:** 75.092 bytes; 19 arquivos. SHA-256: `b0650eaf0565871ebfcb90a39f11919271e5366b0b03457acf8bdae8480bd547`.
+**Pacote:** 117.017 bytes; 19 arquivos. SHA-256: `e56359d9d537e7c8a180d6d3ce1b94b7586c1bcbbba1bf28f20419dae7d2dcec`.
