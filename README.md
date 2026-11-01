@@ -2,18 +2,34 @@
 
 Personalize textos, números, imagens e aparência da página do Anime Adventures no seu navegador.
 
-## [Baixar a extensão — versão 2.0.0 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Visual-Editor-v2.0.0.zip)
+## [Baixar a versão corrigida 2.0.1 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Visual-Editor-v2.0.1.zip)
 
-1. Baixe o ZIP e, no Explorador de Arquivos do Windows, clique com o botão direito e escolha **Extrair Tudo**.
-2. No Chrome, abra `chrome://extensions`, ative **Modo do desenvolvedor** e clique em **Carregar sem compactação**.
-3. Selecione a pasta **AA-Visual-Editor**, que contém `manifest.json`, e atualize a página do Anime Adventures. **Alt+Shift+E** inicia a seleção para editar.
+### Atualizar mantendo seus dados
 
-No Edge, use `edge://extensions`. Para atualizar uma instalação existente, mantenha a mesma pasta instalada, substitua os arquivos e clique em **Recarregar** na extensão existente.
+1. No editor atual, abra **Perfis e cenas → Exportar todos os perfis** e guarde o backup JSON.
+2. Baixe o ZIP e escolha **Extrair Tudo** no Explorador de Arquivos do Windows.
+3. Copie os arquivos novos para **dentro da mesma pasta AA-Visual-Editor já instalada**, substituindo os anteriores. Mantenha o caminho da pasta.
+4. Abra `chrome://extensions` e clique em **Recarregar** na extensão existente. Atualize a página do Anime Adventures com F5.
+5. Se uma alteração antiga estiver pendente, clique em **Ativar seleção por clique**, selecione novamente o campo e use **Aplicar texto**.
 
-As alterações são locais à página do jogo 8304191830. Guia completo incluído no ZIP.
+Mantenha a extensão instalada durante a atualização para conservar seu armazenamento.
 
-Distribuição independente em ramificação própria; o código do bot permanece no branch principal.
+### Primeira instalação
 
-**Verificação:** ZIP de 72,350 bytes e 19 arquivos. SHA-256: `8e3dfc176b36dcaadbb8afc40a700157f1c3fceeb1d358cb2de2d8b1e9153f56`.
+Extraia o ZIP. Em `chrome://extensions`, ative **Modo do desenvolvedor**, escolha **Carregar sem compactação** e selecione a pasta **AA-Visual-Editor** que contém `manifest.json`. Atualize a página do Anime Adventures e clique no botão **AA Editor** no canto inferior direito.
 
-A extensão passou em 76 testes offline de formato, armazenamento e navegador com APIs Chrome simuladas. A captura nativa e o BetterBLOX instalado não foram testados no computador do responsável.
+No Edge, use `edge://extensions`.
+
+### Correções incluídas
+
+- Aplicar e reaplicar texto/números, contadores sem ID, mudanças de posição e troca de nós pelo site.
+- Seleção em grupo, campos rápidos, aparência avançada, unidades e restauração dos valores reais.
+- Prévias de texto e imagem, confirmação de imagem por link, cancelamento e transformação remota quando o servidor permite CORS.
+- Backup completo com alterações ainda não salvas, proteção das imagens das cópias de recuperação e mensagens corretas de salvamento/importação.
+- Detecção tardia do rodapé do BetterBLOX e validação de atalhos importados.
+
+O formato dos dados e as três permissões da extensão foram mantidos. As alterações são locais à página do jogo 8304191830. Guia completo incluído no ZIP.
+
+**Verificação:** 102 testes aprovados, incluindo os 76 anteriores. Ensaio com 1.800 alterações e 360 recriações de contador. Os testes usam Chromium com página sintética e APIs Chrome simuladas; instalação real, captura nativa e BetterBLOX instalado não foram executados neste ambiente.
+
+**Pacote:** 75.092 bytes; 19 arquivos. SHA-256: `b0650eaf0565871ebfcb90a39f11919271e5366b0b03457acf8bdae8480bd547`.
