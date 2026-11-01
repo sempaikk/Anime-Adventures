@@ -2,6 +2,8 @@
 80640067547bb49536f2b453fc0527dad3596b0b6e02854fbfb41a236608a51f  AA-Atualizador-v1.0.0-Windows-x64.zip
 ab35f5e2a6982727846bd7b7198b13af0e334061709adbf3d7c8129d60a23026  AA-Atualizador-v1.0.1-FONTE.zip
 9f553810bfc3ddb9d7456b115a863fae94428f56253e1597eacf0351952b0574  AA-Atualizador-v1.0.1-Windows-x64.zip
+9f553810bfc3ddb9d7456b115a863fae94428f56253e1597eacf0351952b0574  AA-Visual-Editor-Atualizador-Windows.zip
 8e3dfc176b36dcaadbb8afc40a700157f1c3fceeb1d358cb2de2d8b1e9153f56  AA-Visual-Editor-v2.0.0.zip
 b0650eaf0565871ebfcb90a39f11919271e5366b0b03457acf8bdae8480bd547  AA-Visual-Editor-v2.0.1.zip
 e56359d9d537e7c8a180d6d3ce1b94b7586c1bcbbba1bf28f20419dae7d2dcec  AA-Visual-Editor-v2.0.2.zip
+e56359d9d537e7c8a180d6d3ce1b94b7586c1bcbbba1bf28f20419dae7d2dcec  AA-Visual-Editor.zip

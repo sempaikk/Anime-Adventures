@@ -2,7 +2,7 @@
 
 Personalize textos, números, imagens e aparência da página do Anime Adventures no seu navegador.
 
-## [Baixar o atualizador 0.1 para Windows x64 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Atualizador-v1.0.1-Windows-x64.zip)
+## [Baixar o atualizador 0.1 para Windows x64 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Visual-Editor-Atualizador-Windows.zip)
 
 A extensão e o atualizador usam a mesma arte de Madara e a versão visível **0.1**. O número exibido só muda quando o usuário pedir. O ícone da janela, o executável, o atalho e as informações do produto seguem essa identificação.
 
@@ -23,7 +23,7 @@ No menu Iniciar, procure **Atualizador AA Visual Editor** para usar **Verificar 
 
 [Código-fonte do atualizador (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Atualizador-v1.0.1-FONTE.zip).
 
-## [Baixar a extensão — versão visível 0.1 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Visual-Editor-v2.0.2.zip)
+## [Baixar a extensão — versão visível 0.1 (.zip)](https://raw.githubusercontent.com/sempaikk/Anime-Adventures/refs/heads/aa-visual-editor-downloads/AA-Visual-Editor.zip)
 
 O ícone usa a arte do Anime Adventures escolhida pelo usuário. A versão exibida no Chrome permanece **0.1** até ele solicitar outro número; correções continuam chegando pelo atualizador automático.
 
